@@ -1,0 +1,82 @@
+#### Gestionar archivos binarios y saltos de línea ####
+
+# Default: let Git auto-detect text vs binary
+* text=auto
+
+### Documentos de Microsoft Office ###
+
+# Microsoft Word
+
+*.doc    binary -text
+*.docx   binary -text
+*.docm   binary -text
+*.dotx   binary -text
+*.dotm   binary -text
+
+# Microsoft Excel 
+
+*.xls    binary -text
+*.xlsx   binary -text
+*.xlsm   binary -text
+*.xltx   binary -text
+*.xltm   binary -text
+*.xlsb   binary -text
+
+# Microsoft PowerPoint Presentations
+
+*.ppt    binary -text
+*.pptx   binary -text
+*.pptm   binary -text
+*.potx   binary -text
+*.potm   binary -text
+*.ppsx   binary -text
+*.ppsm   binary -text
+
+
+# Microsoft Access Databases
+*.mdb    binary -text
+*.accdb  binary -text
+*.accde  binary -text
+
+# Microsoft Visio Diagrams
+
+*.vsd    binary -text
+*.vsdx   binary -text
+*.vsdm   binary -text
+
+# Microsoft Project Files
+
+*.mpp    binary -text
+*.mpt    binary -text
+
+
+# Microsoft OneNote
+
+*.one    binary -text
+*.onetoc2 binary -text
+
+
+# Microsoft Publisher
+
+*.pub    binary -text
+
+
+# Otros tipos de documentos
+
+*.odb    binary -text
+*.ods    binary -text
+*.odp    binary -text
+*.odt    binary -text
+
+### Archivos de Imágenes ###
+
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+
+# Archivos compilados como binarios que sean librerías 
+*.class binary
+*.jar   binary
+
