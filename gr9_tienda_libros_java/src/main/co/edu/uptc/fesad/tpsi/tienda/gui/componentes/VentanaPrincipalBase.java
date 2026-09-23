@@ -1,6 +1,6 @@
 /// @author Andres Avila
 
-package co.edu.uptc.fesad.tpsi.tienda.gui.base;
+package main.co.edu.uptc.fesad.tpsi.tienda.gui.componentes;
 
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
@@ -19,9 +19,6 @@ public abstract class VentanaPrincipalBase extends JFrame {
   public VentanaPrincipalBase(String titulo) {
     super(titulo);
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    
-    inicializarComponente();
-    
     setLocationRelativeTo(null);
   }
   
