@@ -1,7 +1,8 @@
-package co.edu.uptc.negocio;
+package co.edu.uptc.negocio.validacion;
 
 import co.edu.uptc.negocio.modelo.Categoria;
 import co.edu.uptc.negocio.modelo.Formato;
+import co.edu.uptc.negocio.validacion.ValidadorDatos;
 
 import java.time.Year;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.regex.Pattern;
  * @author Oscar Clavijo
  */
 
-public class ValidarDatos {
+public class ValidadorDatos {
 	
 	  // Patrón para validar ISBN-13: 13 dígitos, puede tener guiones
     private static final Pattern PATRON_ISBN = Pattern.compile("^(\\d{3}-?)?\\d{1,5}-?\\d{1,7}-?\\d{1,7}-?\\d$");
