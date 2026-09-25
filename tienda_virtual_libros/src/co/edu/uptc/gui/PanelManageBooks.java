@@ -22,6 +22,7 @@ import java.util.List;
  * @author Oscar Clavijo
  * @version 1.0 - Septiembre 2026
  */
+@SuppressWarnings("serial")
 public class PanelManageBooks extends JPanel {
 
     private GestorLibros gestorLibros;

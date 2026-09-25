@@ -5,7 +5,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
 /**
  * Panel de reportes administrativos.
  * 
@@ -20,6 +19,7 @@ import java.time.format.DateTimeFormatter;
  * @author Oscar Clavijo
  * @version 1.0 - Septiembre 2026
  */
+@SuppressWarnings({ "serial", "unused" })
 public class PanelAdministradorReportes extends JPanel {
 
     private JTextField txtFechaInicial;

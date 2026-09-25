@@ -21,10 +21,12 @@ import java.util.regex.Pattern;
 public class ValidadorDatos {
 	
 	  // Patrón para validar ISBN-13: 13 dígitos, puede tener guiones
-    private static final Pattern PATRON_ISBN = Pattern.compile("^(\\d{3}-?)?\\d{1,5}-?\\d{1,7}-?\\d{1,7}-?\\d$");
+    @SuppressWarnings("unused")
+	private static final Pattern PATRON_ISBN = Pattern.compile("^(\\d{3}-?)?\\d{1,5}-?\\d{1,7}-?\\d{1,7}-?\\d$");
     
     // Patrón para validar que no haya caracteres especiales raros en títulos
-    private static final Pattern PATRON_TITULO = Pattern.compile("^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ0-9\\s.,;:!?()\\-]+$");
+    @SuppressWarnings("unused")
+	private static final Pattern PATRON_TITULO = Pattern.compile("^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ0-9\\s.,;:!?()\\-]+$");
 
     /**
      * Valida que el ISBN tenga formato correcto (13 dígitos).

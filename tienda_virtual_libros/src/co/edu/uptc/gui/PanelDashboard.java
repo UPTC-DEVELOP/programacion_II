@@ -18,6 +18,7 @@ import java.awt.*;
  * @author Oscar Clavijo
  * @version 1.0 - Septiembre 2026
  */
+@SuppressWarnings("serial")
 public class PanelDashboard extends JPanel {
 
     private GestorLibros gestorLibros;
