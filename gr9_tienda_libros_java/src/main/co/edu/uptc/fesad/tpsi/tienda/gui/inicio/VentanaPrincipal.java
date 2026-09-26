@@ -51,6 +51,8 @@ public class VentanaPrincipal extends VentanaPrincipalBase {
     panelDivisor.setEnabled(false);
     
     getContentPane().add(panelDivisor, BorderLayout.CENTER);
+    setLocationByPlatform(true);
+    setLocationRelativeTo(null);
   }
   
   /// Obtiene el panel del contenido principal de la aplicación.
