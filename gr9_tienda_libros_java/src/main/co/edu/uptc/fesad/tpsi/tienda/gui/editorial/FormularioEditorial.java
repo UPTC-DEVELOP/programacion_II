@@ -8,6 +8,7 @@ import java.awt.GridLayout;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
@@ -28,6 +29,8 @@ public class FormularioEditorial extends PanelBase {
   private JTextField txtNombre;
   
   private JButton btnGuardar;
+  
+  private JButton btnEliminar;
   
   /// Crea un nuevo objeto [FormularioEditoria][FormularioEditoria] con el enrutador de
   /// eventos dado.
@@ -58,6 +61,30 @@ public class FormularioEditorial extends PanelBase {
     
     JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 4));
     
+    // crear el botón eliminar pero deshabilitado inicialmente
+    this.btnEliminar = new JButton("Eliminar");
+    this.btnEliminar.setEnabled(false);
+    
+    this.btnEliminar.addActionListener((e) -> {
+      // primero, se le pregunta al usuario si realmente quiere eliminar la editorial
+      // TODO: consultar cómo establecer que la opción predeterminada sea 'NO'
+      int respuesta = JOptionPane.showConfirmDialog(
+        this,
+        String.format("¿Desea eliminar la editorial '%s' ?", this.txtNombre.getText()),
+        "Confirmar Eliminación",
+        JOptionPane.YES_NO_OPTION,
+        JOptionPane.WARNING_MESSAGE
+      );
+      
+      // segundo, enviar la solicitud de eliminación sólo si el usuario confirmó
+      if (respuesta == JOptionPane.YES_OPTION) {
+      // enviarle al enrutador el ID de la editorial porque el controlador solo necesita saber
+      // el ID de la editorial que se quiere eliminar.
+        getEnrutadorEventos().manejarEvento(ControladorEditorial.EDITORIAL_ELIMINAR, this.idEditorial);
+      }
+    });
+    
+    // crear el botón guardar
     this.btnGuardar = new JButton("Guardar");
     
     this.btnGuardar
@@ -68,6 +95,7 @@ public class FormularioEditorial extends PanelBase {
         getEnrutadorEventos().manejarEvento(ControladorEditorial.EDITORIAL_GUARDAR, editorial);
       });
     
+    panelBotones.add(this.btnEliminar);
     panelBotones.add(this.btnGuardar);
     add(panelBotones, BorderLayout.SOUTH);
     
@@ -80,11 +108,25 @@ public class FormularioEditorial extends PanelBase {
     Editorial editorial = (Editorial) elemento;
     // evitar el error de objeto nulo
     if (elemento == null) {
+      // entonces el formulario mostrará una editorial nueva con valores predeterminados
       editorial = new Editorial();
     }
     
+    // el formulario manejará internamente este id
     this.idEditorial = editorial.getId();
+    
+    // mostrar en el formulario los datos de la editorial
     this.txtNombre.setText(editorial.getNombre());
+    
+    // habilitar el botón eliminar sólo si la editorial ya existe (o sea, porque tiene un ID)
+    if (this.idEditorial != null) {
+      this.btnEliminar.setEnabled(true);
+    } else {
+      // ID es nulo, luego la editorial no existe, o es solo un objeto editorial predeterminado
+      // en blanco
+      this.btnEliminar.setEnabled(false);
+    }
+    
     // poner el foco al campo nombre
     this.txtNombre.requestFocusInWindow();
   }

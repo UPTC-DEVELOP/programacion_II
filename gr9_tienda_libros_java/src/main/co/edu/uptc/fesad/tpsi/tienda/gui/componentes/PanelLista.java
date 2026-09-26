@@ -66,9 +66,12 @@ public class PanelLista extends PanelBase {
         if (!e.getValueIsAdjusting() && this.tablaLista.getSelectedRow() >= 0) {
           // obtener el índice de la fila seleccionada
           int indiceFila = this.tablaLista.getSelectedRow();
+          
+          if (this.funcionFilaSeleccionada != null) {
           // llamar a la función manejadora del evento de fila seleccionada y enviarle el índice de
           // la fila
-          this.funcionFilaSeleccionada.aceptar(indiceFila);
+            this.funcionFilaSeleccionada.aceptar(indiceFila);
+          }
         }
       });
     

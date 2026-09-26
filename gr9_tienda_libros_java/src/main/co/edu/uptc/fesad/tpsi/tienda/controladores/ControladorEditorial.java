@@ -1,50 +1,35 @@
 //
 package main.co.edu.uptc.fesad.tpsi.tienda.controladores;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 import main.co.edu.uptc.fesad.tpsi.tienda.gui.editorial.PanelEditoriales;
 import main.co.edu.uptc.fesad.tpsi.tienda.negocio.Editorial;
+import main.co.edu.uptc.fesad.tpsi.tienda.persistencia.IRepositorioEditorial;
 
 //
 public class ControladorEditorial extends ControladorBase {
-  private PanelEditoriales panelEditoriales;
   
+
   public static final String EDITORIAL_INICIO = "editorial.inicio";
   public static final String EDITORIAL_NUEVO = "editorial.nuevo";
   public static final String EDITORIAL_EDITAR = "editorial.editar";
   public static final String EDITORIAL_GUARDAR = "editorial.guardar";
   public static final String EDITORIAL_LISTAR = "editorial.listar";
+  public static final String EDITORIAL_ELIMINAR = "editorial.eliminar";
   
-  /// Lista de editoriales que actúa como la base de datos de editoriales.
-  private List<Editorial> editoriales;
-  
-  /// este es un truco para generar ids
-  private final AtomicLong contador = new AtomicLong(10);
+  private PanelEditoriales panelEditoriales;
+  private IRepositorioEditorial repositorio;
   
   //
   public ControladorEditorial(
     EnrutadorEventos enrutador,
-    PanelEditoriales panel
+    PanelEditoriales panel,
+    IRepositorioEditorial repositorio
   ) {
     super(enrutador);
     this.panelEditoriales = panel;
-    
-    // lista de editoriales para probar la interfaz gráfica
-    this.editoriales = new ArrayList<Editorial>();
-    
-    this.editoriales = new ArrayList<Editorial>() {
-      {
-        add(new Editorial(1L, "Oceano"));
-        add(new Editorial(5L, "Planeta"));
-        add(new Editorial(3L, "Pearson"));
-        add(new Editorial(8L, "ECOE"));
-        add(new Editorial(6L, "McGraw-Hill"));
-      }
-    };
-    
+    this.repositorio = repositorio;
   }
   
   /// @see main.co.edu.uptc.fesad.tpsi.tienda.controladores.ControladorBase#inicializar()
@@ -63,7 +48,7 @@ public class ControladorEditorial extends ControladorBase {
   /// Carga la lista de editoriales y las visualiza en la tabla visual de datos de usuario.
   public void listar() {
     // cargar la lista de editoriales
-    cargarDatos();
+    List<Editorial> editoriales = this.repositorio.listar();
     
     // convertir la lista de editoriales en un array de objetos para el modelo de datos de la
     // tabla.
@@ -71,14 +56,14 @@ public class ControladorEditorial extends ControladorBase {
     int cantidadAtributos = 2; // la editorial tiene id y nombre
     
     // array contenedor de dos dimensiones:
-    // - dimensión 0: los índices
-    // - dimensión 1: un array de atributos
-    Object[][] filas = new Object[this.editoriales.size()][cantidadAtributos];
+    // - dimensión 0: los índices de las filas
+    // - dimensión 1: un array de los atributos
+    Object[][] filas = new Object[editoriales.size()][cantidadAtributos];
     
     // recorrer la lista de editoriales y crear un array Object que contenga los atributos, y
     // asignar el array Object a una posición del array contenedor
-    for (int i = 0; i < this.editoriales.size(); i++) {
-      Editorial editorial = this.editoriales.get(i);
+    for (int i = 0; i < editoriales.size(); i++) {
+      Editorial editorial = editoriales.get(i);
       
       filas[i] = new Object[] { editorial.getId(), editorial.getNombre() };
     }
@@ -88,7 +73,7 @@ public class ControladorEditorial extends ControladorBase {
   }
   
   public void nuevo() {
-    // el formulario mostrará una editorial en blanco.
+    // enviando un objeto nulo, el formulario mostrará una editorial predeterminada en blanco.
     this.panelEditoriales.prepararFormulario(null);
   }
   
@@ -96,77 +81,65 @@ public class ControladorEditorial extends ControladorBase {
   /// 
   /// @param id ID de la editorial que se quiere editar.
   public void editar(Object id) {
-    // si el id es nulo, no hay nada qué mostrar
+    // si el ID es nulo, no se puede editar nada
     if (id == null) {
       return;
     }
     
-    // obtener el id de la editorial
+    // convertir el id de la editorial
     Long idEditorial = (Long) id;
     
-    // buscar la editorial que concida con el id
-    Editorial editorial = null;
-    for (Editorial editorialActual : this.editoriales) {
-      if (editorialActual.getId()
-        .equals(idEditorial)) {
-        editorial = editorialActual;
-        break;
-      }
-    }
-    
-    // si no se encontró la editorial, no hay nada qué mostrar
-    if (editorial == null) {
-      return;
-    }
+    // se busca editoriales con ese ID. Se supone que el ID es único
+    List<Editorial> editoriales = this.repositorio.buscarPorId(idEditorial);
     
     // si se encontró la editorial, mostrarla
-    this.panelEditoriales.prepararFormulario(editorial);
+    if (editoriales.size() > 0) {
+      this.panelEditoriales.prepararFormulario(editoriales.get(0));
+    } else {
+      this.panelEditoriales.prepararFormulario(null);
+    }
   }
   
   public void guardar(Object elemento) {
-    // si el elemento es nulo, no se puede guardar nada
+    // si el objeto es nulo, no se puede guardar nada
     if (elemento == null) {
       return;
     }
     
-    // obtener la editorial que se quiere guardar
+    // obtener la editorial
     Editorial editorial = (Editorial) elemento;
     
-    // creo que aquí van más validaciones
-    if (editorial.getNombre()
-      .isEmpty()) {
+    try {
+      this.repositorio.guardar(editorial);
+    } catch (IllegalArgumentException ex) {
+      // TODO: hacer algo con las posibles excepciones
       return;
     }
     
-    // todo depende del id
-    // si el id es nulo, la editorial no se ha guardado en la base de datos
-    if (editorial.getId() == null) {
-      // usar el truco para generar un id único
-      Long idNuevo = this.contador.incrementAndGet();
-      editorial.setId(idNuevo);
-      // agregar la editorial a la base de datos
-      this.editoriales.add(editorial);
-    }
-    // el id no es nulo, luego toca reemplazar la editorial en la base de datos
-    else {
-      for (int i = 0; i < this.editoriales.size(); i++) {
-        if (this.editoriales.get(i)
-          .getId()
-          .equals(editorial.getId())) {
-          // reemplazar el objeto editorial
-          this.editoriales.set(i, editorial);
-          break;
-        }
-      }
-    }
-    
     // se terminó de guardar, limpiar el formulario y actualizar la tabla de datos
+    // null hace que el formulario se limpie
     this.panelEditoriales.prepararFormulario(null);
     listar();
   }
   
-  private void cargarDatos() {
-    // TODO: cargar la lista de editoriales con editoriales de prueba
+  /// Elimina una editorial con el id dado.
+  /// 
+  /// @param elemento ID de la editorial que se quiere eliminar. Es de tipo Long.
+  public void eliminar(Object elemento) {
+    // si el objeto es nulo, no se puede eliminar nada
+    if (elemento == null) {
+      return;
+    }
+    
+    boolean eliminado = this.repositorio.eliminar((Long) elemento);
+    
+    // limpiar el formulario y actualizar la tabla visual
+    // null hace que el formulario se limpie
+    if (eliminado) {
+    this.panelEditoriales.prepararFormulario(null);
+      listar();
+    }
   }
+  
   
 }

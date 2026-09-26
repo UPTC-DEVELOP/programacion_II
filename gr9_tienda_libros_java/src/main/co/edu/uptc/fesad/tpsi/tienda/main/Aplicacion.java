@@ -7,6 +7,8 @@ import main.co.edu.uptc.fesad.tpsi.tienda.controladores.EnrutadorEventos;
 import main.co.edu.uptc.fesad.tpsi.tienda.gui.editorial.PanelEditoriales;
 import main.co.edu.uptc.fesad.tpsi.tienda.gui.inicio.PanelContenidoPrincipal;
 import main.co.edu.uptc.fesad.tpsi.tienda.gui.inicio.VentanaPrincipal;
+import main.co.edu.uptc.fesad.tpsi.tienda.persistencia.IRepositorioEditorial;
+import main.co.edu.uptc.fesad.tpsi.tienda.persistencia.RepositorioEditorialEnMemoria;
 
 /// Representa la aplicación.
 public class Aplicacion {
@@ -32,8 +34,14 @@ public class Aplicacion {
   public VentanaPrincipal getVentanaPrincipal() { return this.ventanaPrincipal; }
   
   public void inicializarAplicacion() {
+    // crear los repositorios de datos. Se usa el poliformismo para adaptarse a cualquier
+    // repositorio: en este caso, un repositorio en la memoria RAM.
+    IRepositorioEditorial repositorioEditorial = new RepositorioEditorialEnMemoria();
+    
     crearControladorNavegacion();
-    crearControlEditorial();
+    
+    // el controlador de editorial necesita el repositorio de datos
+    crearControlEditorial(repositorioEditorial);
   }
   
   /// Crea o inicializa el controlador que controla la navegacion.
@@ -90,14 +98,14 @@ public class Aplicacion {
     return controladorNavegacion;
   }
   
-  public ControladorEditorial crearControlEditorial() {
+  public ControladorEditorial crearControlEditorial(IRepositorioEditorial repositorio) {
     // primero, obtener la vista que este controlador debe manejar
     PanelEditoriales panel = this.ventanaPrincipal.getPanelContenidoPrincipal()
       .getPanelGestionCatalogo()
       .getPanelEditoriales();
     
     // segundo, crear el controlador pasando la vista y el enrutador de eventos
-    ControladorEditorial controladorEditorial = new ControladorEditorial(this.enrutadorEventos, panel);
+    ControladorEditorial controladorEditorial = new ControladorEditorial(this.enrutadorEventos, panel, repositorio);
     
     // tercero, asociar los eventos de navegación con sus manejadores
     
@@ -114,11 +122,16 @@ public class Aplicacion {
     this.enrutadorEventos
       .registrarEvento(ControladorEditorial.EDITORIAL_NUEVO, (elemento) -> controladorEditorial.nuevo());
     
+    // elemento es el ID de la editorial que se quiere mostrar para editar
     this.enrutadorEventos
       .registrarEvento(ControladorEditorial.EDITORIAL_EDITAR, (elemento) -> controladorEditorial.editar(elemento));
     
     this.enrutadorEventos
       .registrarEvento(ControladorEditorial.EDITORIAL_GUARDAR, (elemento) -> controladorEditorial.guardar(elemento));
+    
+    // elemento es el ID de la editorial que se quiere eliminar
+    this.enrutadorEventos
+      .registrarEvento(ControladorEditorial.EDITORIAL_ELIMINAR, (elemento) -> controladorEditorial.eliminar(elemento));
     
     return controladorEditorial;
   }
