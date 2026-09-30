@@ -42,6 +42,8 @@ public class ItemCompra {
 
     public void setLibro(Libro libro) {
         this.libro = libro;
+        calcularSubtotal();
+        calcularImpuestos();
     }
 
     public int getCantidad() {
@@ -50,6 +52,8 @@ public class ItemCompra {
 
     public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
+        calcularSubtotal();
+        calcularImpuestos();
     }
 
     public double getSubtotal() {
@@ -70,7 +74,8 @@ public class ItemCompra {
 
     @Override
     public String toString() {
-        return libro.getTitulo() + " x" + cantidad
+        String titulo = (libro == null) ? "(sin libro)" : libro.getTitulo();
+        return titulo + " x" + cantidad
                 + " = " + subtotal + " (+ IVA " + impuestos + ")";
     }
 }

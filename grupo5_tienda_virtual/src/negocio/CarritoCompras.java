@@ -8,6 +8,8 @@ import java.util.Map;
  */
 public class CarritoCompras {
 
+    private static final double TOLERANCIA_IVA = 0.01;
+
     private Map<Libro, Integer> items;
 
     public CarritoCompras() {
@@ -65,15 +67,26 @@ public class CarritoCompras {
         double total = 0;
         for (Map.Entry<Libro, Integer> e : items.entrySet()) {
             Libro libro = e.getKey();
-            if (libro.getPorcentajeIva() == porcentaje) {
-                total += libro.getPrecio() * e.getValue() * (porcentaje / 100.0);
+            if (Math.abs(libro.getPorcentajeIva() - porcentaje) < TOLERANCIA_IVA) {
+                total += libro.getPrecio() * e.getValue() * (libro.getPorcentajeIva() / 100.0);
             }
         }
         return total;
     }
 
     public double calcularTotal() {
-        return calcularSubtotal() + calcularIVA19() + calcularIVA5();
+        double total = 0;
+        for (Map.Entry<Libro, Integer> e : items.entrySet()) {
+            Libro libro = e.getKey();
+            double subtotal = libro.getPrecio() * e.getValue();
+            total += subtotal + subtotal * (libro.getPorcentajeIva() / 100.0);
+        }
+        return total;
+    }
+
+    public double calcularTotal(double descuento) {
+        double total = calcularTotal();
+        return total - total * descuento;
     }
 
     public Map<Libro, Integer> getItems() {
