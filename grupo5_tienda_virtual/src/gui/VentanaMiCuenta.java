@@ -7,6 +7,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -17,7 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import negocio.Cliente;
-import negocio.ClienteRegular;
 import negocio.ControladorCliente;
 
 /**
@@ -50,6 +51,15 @@ public class VentanaMiCuenta extends JFrame {
         add(crearFormulario(), BorderLayout.CENTER);
         add(crearBoton(), BorderLayout.SOUTH);
 
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                if (padre != null) {
+                    padre.setVisible(true);
+                }
+            }
+        });
+
         cargarDatos();
     }
 
@@ -59,6 +69,7 @@ public class VentanaMiCuenta extends JFrame {
 
         txtNombre = new JTextField(18);
         txtCorreo = new JTextField(18);
+        txtCorreo.setEditable(false);
         txtDireccion = new JTextField(18);
         txtTelefono = new JTextField(18);
 
@@ -129,13 +140,16 @@ public class VentanaMiCuenta extends JFrame {
             return;
         }
 
-        Cliente datos = new ClienteRegular();
-        datos.setNombreCompleto(txtNombre.getText().trim());
-        datos.setDireccion(txtDireccion.getText().trim());
-        datos.setTelefono(txtTelefono.getText().trim());
-        datos.setContrasena(cliente.getContrasena());
+        String nombre = txtNombre.getText().trim();
+        String direccion = txtDireccion.getText().trim();
+        String telefono = txtTelefono.getText().trim();
 
-        if (controlador.actualizar(cliente.getCorreo(), datos)) {
+        if (nombre.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El nombre completo es obligatorio.");
+            return;
+        }
+
+        if (controlador.actualizarDatos(cliente.getCorreo(), nombre, direccion, telefono)) {
             JOptionPane.showMessageDialog(this, "Datos actualizados correctamente.");
         } else {
             JOptionPane.showMessageDialog(this, "No se pudieron actualizar los datos.");
