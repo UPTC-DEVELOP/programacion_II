@@ -5,6 +5,9 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -31,6 +34,7 @@ public class VentanaClientes extends JFrame {
     private static final long serialVersionUID = 1L;
 
     private ControladorCliente controlador;
+    private String correoSeleccionado;
 
     private JTextField txtNombre;
     private JTextField txtCorreo;
@@ -65,6 +69,22 @@ public class VentanaClientes extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 accionRegistrar();
+            }
+        });
+
+        btnActualizar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                accionActualizar();
+            }
+        });
+
+        tabla.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    cargarSeleccionEnFormulario();
+                }
             }
         });
     }
@@ -178,6 +198,43 @@ public class VentanaClientes extends JFrame {
         txtTelefono.setText("");
         txtContrasena.setText("");
         cmbTipo.setSelectedIndex(0);
+    }
+
+    private void cargarSeleccionEnFormulario() {
+        int fila = tabla.getSelectedRow();
+        if (fila < 0) {
+            return;
+        }
+        correoSeleccionado = (String) modeloTabla.getValueAt(fila, 1);
+        Cliente cliente = controlador.buscar(correoSeleccionado);
+        if (cliente == null) {
+            return;
+        }
+        txtNombre.setText(cliente.getNombreCompleto());
+        txtCorreo.setText(cliente.getCorreo());
+        txtDireccion.setText(cliente.getDireccion());
+        txtTelefono.setText(cliente.getTelefono());
+        txtContrasena.setText(cliente.getContrasena());
+        cmbTipo.setSelectedItem((cliente instanceof ClientePremium) ? "Premium" : "Regular");
+    }
+
+    private void accionActualizar() {
+        if (correoSeleccionado == null) {
+            JOptionPane.showMessageDialog(this, "Seleccione un cliente de la tabla.");
+            return;
+        }
+        Cliente datos = new ClienteRegular();
+        datos.setNombreCompleto(txtNombre.getText().trim());
+        datos.setDireccion(txtDireccion.getText().trim());
+        datos.setTelefono(txtTelefono.getText().trim());
+        datos.setContrasena(new String(txtContrasena.getPassword()));
+
+        if (controlador.actualizar(correoSeleccionado, datos)) {
+            JOptionPane.showMessageDialog(this, "Cliente actualizado correctamente.");
+            cargarTabla();
+        } else {
+            JOptionPane.showMessageDialog(this, "No se pudo actualizar el cliente.");
+        }
     }
 
     public JTextField getTxtNombre() {
