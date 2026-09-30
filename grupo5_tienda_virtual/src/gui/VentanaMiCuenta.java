@@ -29,15 +29,17 @@ public class VentanaMiCuenta extends JFrame {
 
     private ControladorCliente controlador;
     private Cliente cliente;
+    private JFrame padre;
 
     private JTextField txtNombre;
     private JTextField txtCorreo;
     private JTextField txtDireccion;
     private JTextField txtTelefono;
 
-    public VentanaMiCuenta(ControladorCliente controlador, Cliente cliente) {
+    public VentanaMiCuenta(ControladorCliente controlador, Cliente cliente, JFrame padre) {
         this.controlador = controlador;
         this.cliente = cliente;
+        this.padre = padre;
 
         setTitle("Mi Cuenta");
         setSize(420, 300);
@@ -85,15 +87,30 @@ public class VentanaMiCuenta extends JFrame {
 
     private JPanel crearBoton() {
         JPanel panel = new JPanel();
+        JButton btnAtras = new JButton("Atr\u00e1s");
         JButton btnGuardar = new JButton("Guardar cambios");
+        btnAtras.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                volver();
+            }
+        });
         btnGuardar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 accionGuardar();
             }
         });
+        panel.add(btnAtras);
         panel.add(btnGuardar);
         return panel;
+    }
+
+    private void volver() {
+        dispose();
+        if (padre != null) {
+            padre.setVisible(true);
+        }
     }
 
     private void cargarDatos() {

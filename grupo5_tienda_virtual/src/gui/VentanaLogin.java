@@ -102,7 +102,8 @@ public class VentanaLogin extends JFrame {
         btnRegistrarse.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new VentanaRegistroCliente(controlador).setVisible(true);
+                new VentanaRegistroCliente(controlador, VentanaLogin.this).setVisible(true);
+                setVisible(false);
             }
         });
 
@@ -128,8 +129,8 @@ public class VentanaLogin extends JFrame {
 
         Cliente cliente = controlador.iniciarSesion(correo, contrasena);
         if (cliente != null) {
-            new VentanaMiCuenta(controlador, cliente).setVisible(true);
-            dispose();
+            new VentanaMiCuenta(controlador, cliente, VentanaLogin.this).setVisible(true);
+            setVisible(false);
         } else {
             JOptionPane.showMessageDialog(this, "Correo o contrasena no validos.");
         }

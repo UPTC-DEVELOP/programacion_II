@@ -31,6 +31,7 @@ public class VentanaRegistroCliente extends JFrame {
     private static final long serialVersionUID = 1L;
 
     private ControladorCliente controlador;
+    private JFrame padre;
 
     private JTextField txtNombre;
     private JTextField txtCorreo;
@@ -39,8 +40,9 @@ public class VentanaRegistroCliente extends JFrame {
     private JPasswordField txtContrasena;
     private JComboBox<String> cmbTipo;
 
-    public VentanaRegistroCliente(ControladorCliente controlador) {
+    public VentanaRegistroCliente(ControladorCliente controlador, JFrame padre) {
         this.controlador = controlador;
+        this.padre = padre;
 
         setTitle("Registro de Cliente");
         setSize(420, 360);
@@ -90,15 +92,30 @@ public class VentanaRegistroCliente extends JFrame {
 
     private JPanel crearBoton() {
         JPanel panel = new JPanel();
+        JButton btnAtras = new JButton("Atr\u00e1s");
         JButton btnRegistrarse = new JButton("Registrarse");
+        btnAtras.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                volver();
+            }
+        });
         btnRegistrarse.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 accionRegistrarse();
             }
         });
+        panel.add(btnAtras);
         panel.add(btnRegistrarse);
         return panel;
+    }
+
+    private void volver() {
+        dispose();
+        if (padre != null) {
+            padre.setVisible(true);
+        }
     }
 
     private void accionRegistrarse() {
