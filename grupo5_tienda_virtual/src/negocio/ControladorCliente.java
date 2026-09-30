@@ -15,7 +15,9 @@ public class ControladorCliente {
     }
 
     public boolean registrar(Cliente cliente) {
-        if (cliente == null || buscar(cliente.getCorreo()) != null) {
+        if (cliente == null || cliente.getCorreo() == null
+                || cliente.getCorreo().trim().isEmpty()
+                || buscar(cliente.getCorreo()) != null) {
             return false;
         }
         clientes.add(cliente);
@@ -23,7 +25,7 @@ public class ControladorCliente {
     }
 
     public List<Cliente> listar() {
-        return clientes;
+        return new ArrayList<Cliente>(clientes);
     }
 
     public Cliente buscar(String correo) {
@@ -31,22 +33,22 @@ public class ControladorCliente {
             return null;
         }
         for (Cliente cliente : clientes) {
-            if (correo.equals(cliente.getCorreo())) {
+            if (correo.equalsIgnoreCase(cliente.getCorreo())) {
                 return cliente;
             }
         }
         return null;
     }
 
-    public boolean actualizar(String correo, Cliente datos) {
+    public boolean actualizarDatos(String correo, String nombreCompleto,
+            String direccion, String telefono) {
         Cliente actual = buscar(correo);
-        if (actual == null || datos == null) {
+        if (actual == null) {
             return false;
         }
-        actual.setNombreCompleto(datos.getNombreCompleto());
-        actual.setDireccion(datos.getDireccion());
-        actual.setTelefono(datos.getTelefono());
-        actual.setContrasena(datos.getContrasena());
+        actual.setNombreCompleto(nombreCompleto);
+        actual.setDireccion(direccion);
+        actual.setTelefono(telefono);
         return true;
     }
 
