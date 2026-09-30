@@ -2,17 +2,25 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+
+import negocio.Cliente;
+import negocio.ClientePremium;
+import negocio.ClienteRegular;
+import negocio.ControladorCliente;
 
 /**
  * Ventana de gestion de clientes: formulario de datos, tabla de listado y
@@ -21,6 +29,8 @@ import javax.swing.table.DefaultTableModel;
 public class VentanaClientes extends JFrame {
 
     private static final long serialVersionUID = 1L;
+
+    private ControladorCliente controlador;
 
     private JTextField txtNombre;
     private JTextField txtCorreo;
@@ -39,6 +49,8 @@ public class VentanaClientes extends JFrame {
     private JButton btnIniciarSesion;
 
     public VentanaClientes() {
+        controlador = new ControladorCliente();
+
         setTitle("Gestion de Clientes");
         setSize(780, 520);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -48,6 +60,13 @@ public class VentanaClientes extends JFrame {
         add(crearFormulario(), BorderLayout.NORTH);
         add(crearTabla(), BorderLayout.CENTER);
         add(crearBotones(), BorderLayout.SOUTH);
+
+        btnRegistrar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                accionRegistrar();
+            }
+        });
     }
 
     private JPanel crearFormulario() {
@@ -106,6 +125,59 @@ public class VentanaClientes extends JFrame {
         panel.add(btnIniciarSesion);
 
         return panel;
+    }
+
+    private void accionRegistrar() {
+        String nombre = txtNombre.getText().trim();
+        String correo = txtCorreo.getText().trim();
+        String direccion = txtDireccion.getText().trim();
+        String telefono = txtTelefono.getText().trim();
+        String contrasena = new String(txtContrasena.getPassword());
+
+        if (nombre.isEmpty() || correo.isEmpty() || contrasena.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Nombre, correo y contrasena son obligatorios.");
+            return;
+        }
+
+        Cliente cliente;
+        if ("Premium".equals(cmbTipo.getSelectedItem())) {
+            cliente = new ClientePremium(nombre, correo, contrasena);
+        } else {
+            cliente = new ClienteRegular(nombre, correo, contrasena);
+        }
+        cliente.setDireccion(direccion);
+        cliente.setTelefono(telefono);
+
+        if (controlador.registrar(cliente)) {
+            JOptionPane.showMessageDialog(this, "Cliente registrado correctamente.");
+            limpiarFormulario();
+            cargarTabla();
+        } else {
+            JOptionPane.showMessageDialog(this, "Ya existe un cliente con ese correo.");
+        }
+    }
+
+    private void cargarTabla() {
+        modeloTabla.setRowCount(0);
+        for (Cliente cliente : controlador.listar()) {
+            modeloTabla.addRow(new Object[] {
+                    cliente.getNombreCompleto(),
+                    cliente.getCorreo(),
+                    cliente.getDireccion(),
+                    cliente.getTelefono(),
+                    (cliente instanceof ClientePremium) ? "Premium" : "Regular"
+            });
+        }
+    }
+
+    private void limpiarFormulario() {
+        txtNombre.setText("");
+        txtCorreo.setText("");
+        txtDireccion.setText("");
+        txtTelefono.setText("");
+        txtContrasena.setText("");
+        cmbTipo.setSelectedIndex(0);
     }
 
     public JTextField getTxtNombre() {
