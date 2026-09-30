@@ -123,7 +123,7 @@ public class VentanaLogin extends JFrame {
         String contrasena = new String(txtContrasena.getPassword());
 
         if (correo.isEmpty() || contrasena.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Correo y contrasena obligatorios.");
+            JOptionPane.showMessageDialog(this, "Correo y contrase\u00f1a obligatorios.");
             return;
         }
 
@@ -132,7 +132,7 @@ public class VentanaLogin extends JFrame {
             new VentanaMiCuenta(controlador, cliente, VentanaLogin.this).setVisible(true);
             setVisible(false);
         } else {
-            JOptionPane.showMessageDialog(this, "Correo o contrasena no validos.");
+            JOptionPane.showMessageDialog(this, "Correo o contrase\u00f1a no v\u00e1lidos.");
         }
     }
 }

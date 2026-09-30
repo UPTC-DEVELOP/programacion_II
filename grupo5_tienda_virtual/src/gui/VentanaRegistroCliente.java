@@ -7,6 +7,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -30,6 +32,9 @@ public class VentanaRegistroCliente extends JFrame {
 
     private static final long serialVersionUID = 1L;
 
+    private static final String TIPO_REGULAR = "Regular";
+    private static final String TIPO_PREMIUM = "Premium";
+
     private ControladorCliente controlador;
     private JFrame padre;
 
@@ -52,6 +57,15 @@ public class VentanaRegistroCliente extends JFrame {
 
         add(crearFormulario(), BorderLayout.CENTER);
         add(crearBoton(), BorderLayout.SOUTH);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                if (padre != null) {
+                    padre.setVisible(true);
+                }
+            }
+        });
     }
 
     private JPanel crearFormulario() {
@@ -63,7 +77,7 @@ public class VentanaRegistroCliente extends JFrame {
         txtDireccion = new JTextField(18);
         txtTelefono = new JTextField(18);
         txtContrasena = new JPasswordField(18);
-        cmbTipo = new JComboBox<String>(new String[] { "Regular", "Premium" });
+        cmbTipo = new JComboBox<String>(new String[] { TIPO_REGULAR, TIPO_PREMIUM });
 
         agregarCampo(panel, "Nombre completo:", txtNombre, 0);
         agregarCampo(panel, "Correo electr\u00f3nico:", txtCorreo, 1);
@@ -127,12 +141,12 @@ public class VentanaRegistroCliente extends JFrame {
 
         if (nombre.isEmpty() || correo.isEmpty() || contrasena.isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "Nombre, correo y contrasena son obligatorios.");
+                    "Nombre, correo y contrase\u00f1a son obligatorios.");
             return;
         }
 
         Cliente cliente;
-        if ("Premium".equals(cmbTipo.getSelectedItem())) {
+        if (TIPO_PREMIUM.equals(cmbTipo.getSelectedItem())) {
             cliente = new ClientePremium(nombre, correo, contrasena);
         } else {
             cliente = new ClienteRegular(nombre, correo, contrasena);
