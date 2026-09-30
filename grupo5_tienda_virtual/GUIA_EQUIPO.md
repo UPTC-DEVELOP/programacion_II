@@ -157,6 +157,8 @@ javac -encoding UTF-8 -d bin src\negocio\*.java src\gui\*.java
 java -cp bin gui.Main
 ```
 
+> Cuando la capa `persistencia` tenga clases, agregar `src\persistencia\*.java`.
+
 Credenciales de prueba: **`juan@uptc.edu.co` / `1234`**.
 
 ---
