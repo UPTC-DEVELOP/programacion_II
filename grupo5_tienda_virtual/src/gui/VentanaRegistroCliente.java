@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import negocio.Cliente;
@@ -35,13 +36,14 @@ public class VentanaRegistroCliente extends JFrame {
     private JTextField txtCorreo;
     private JTextField txtDireccion;
     private JTextField txtTelefono;
+    private JPasswordField txtContrasena;
     private JComboBox<String> cmbTipo;
 
     public VentanaRegistroCliente(ControladorCliente controlador) {
         this.controlador = controlador;
 
         setTitle("Registro de Cliente");
-        setSize(420, 320);
+        setSize(420, 360);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(8, 8));
@@ -58,13 +60,15 @@ public class VentanaRegistroCliente extends JFrame {
         txtCorreo = new JTextField(18);
         txtDireccion = new JTextField(18);
         txtTelefono = new JTextField(18);
+        txtContrasena = new JPasswordField(18);
         cmbTipo = new JComboBox<String>(new String[] { "Regular", "Premium" });
 
         agregarCampo(panel, "Nombre completo:", txtNombre, 0);
         agregarCampo(panel, "Correo electr\u00f3nico:", txtCorreo, 1);
         agregarCampo(panel, "Direcci\u00f3n:", txtDireccion, 2);
         agregarCampo(panel, "Tel\u00e9fono:", txtTelefono, 3);
-        agregarCampo(panel, "Tipo de cliente:", cmbTipo, 4);
+        agregarCampo(panel, "Contrase\u00f1a:", txtContrasena, 4);
+        agregarCampo(panel, "Tipo de cliente:", cmbTipo, 5);
 
         return panel;
     }
@@ -102,17 +106,19 @@ public class VentanaRegistroCliente extends JFrame {
         String correo = txtCorreo.getText().trim();
         String direccion = txtDireccion.getText().trim();
         String telefono = txtTelefono.getText().trim();
+        String contrasena = new String(txtContrasena.getPassword());
 
-        if (nombre.isEmpty() || correo.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Nombre y correo son obligatorios.");
+        if (nombre.isEmpty() || correo.isEmpty() || contrasena.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Nombre, correo y contrasena son obligatorios.");
             return;
         }
 
         Cliente cliente;
         if ("Premium".equals(cmbTipo.getSelectedItem())) {
-            cliente = new ClientePremium(nombre, correo, "");
+            cliente = new ClientePremium(nombre, correo, contrasena);
         } else {
-            cliente = new ClienteRegular(nombre, correo, "");
+            cliente = new ClienteRegular(nombre, correo, contrasena);
         }
         cliente.setDireccion(direccion);
         cliente.setTelefono(telefono);
@@ -130,6 +136,7 @@ public class VentanaRegistroCliente extends JFrame {
         txtCorreo.setText("");
         txtDireccion.setText("");
         txtTelefono.setText("");
+        txtContrasena.setText("");
         cmbTipo.setSelectedIndex(0);
     }
 }
