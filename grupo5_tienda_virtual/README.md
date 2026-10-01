@@ -38,9 +38,11 @@ Java 8 o superior.
 ## Compilación y ejecución
 
 ```bat
-javac -d bin src\negocio\*.java src\persistencia\*.java src\gui\*.java
+javac -encoding UTF-8 -d bin src\negocio\*.java src\gui\*.java
 java -cp bin gui.Main
 ```
+
+> Cuando la capa `persistencia` tenga clases, agregar `src\persistencia\*.java`.
 
 ## Estructura
 
