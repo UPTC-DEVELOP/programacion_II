@@ -185,7 +185,7 @@ Punto de entrada y ventana principal. Cada módulo incorpora sus propias pantall
 
 ```
 + Main.main(args: String[]): void
-+ VentanaPrincipal()
++ VentanaPrincipal()      // pendiente (aun no creada)
 ```
 
 ---

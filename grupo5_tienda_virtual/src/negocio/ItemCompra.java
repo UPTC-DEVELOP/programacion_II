@@ -74,7 +74,8 @@ public class ItemCompra {
 
     @Override
     public String toString() {
-        return libro.getTitulo() + " x" + cantidad
+        String titulo = (libro == null) ? "(sin libro)" : libro.getTitulo();
+        return titulo + " x" + cantidad
                 + " = " + subtotal + " (+ IVA " + impuestos + ")";
     }
 }
