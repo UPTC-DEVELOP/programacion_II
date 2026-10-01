@@ -13,26 +13,38 @@ public class CarritoCompras {
     public CarritoCompras() {
         this.items = new LinkedHashMap<Libro, Integer>();
     }
-
+// AGREGAR LIBRO
+    
     public void agregarLibro(Libro libro, int cantidad) {
         if (libro == null || cantidad <= 0) {
             return;
         }
+
         Integer actual = items.get(libro);
+
         if (actual == null) {
-            items.put(libro, cantidad);
+            if (cantidad <= libro.getCantidadDisponible()) {
+                items.put(libro, cantidad);
+            }
         } else {
-            items.put(libro, actual + cantidad);
+            int nuevaCantidad = actual + cantidad;
+
+            if (nuevaCantidad <= libro.getCantidadDisponible()) {
+                items.put(libro, nuevaCantidad);
+            }
         }
     }
-
+    
+    // MODIFCAR CANTIDAD 
+    
     public void modificarCantidad(Libro libro, int nuevaCantidad) {
         if (libro == null || !items.containsKey(libro)) {
             return;
         }
+
         if (nuevaCantidad <= 0) {
             items.remove(libro);
-        } else {
+        } else if (nuevaCantidad <= libro.getCantidadDisponible()) {
             items.put(libro, nuevaCantidad);
         }
     }
