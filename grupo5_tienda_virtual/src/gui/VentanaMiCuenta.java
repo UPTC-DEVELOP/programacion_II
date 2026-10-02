@@ -20,6 +20,8 @@ import javax.swing.JTextField;
 
 import negocio.Cliente;
 import negocio.ControladorCliente;
+import negocio.ControladorLibro;
+import negocio.Libro;
 
 /**
  * Ventana "Mi Cuenta": el cliente actualiza sus datos (segun el prototipo).
@@ -29,6 +31,7 @@ public class VentanaMiCuenta extends JFrame {
     private static final long serialVersionUID = 1L;
 
     private ControladorCliente controlador;
+    private ControladorLibro controladorLibro;
     private Cliente cliente;
     private JFrame padre;
 
@@ -37,8 +40,12 @@ public class VentanaMiCuenta extends JFrame {
     private JTextField txtDireccion;
     private JTextField txtTelefono;
 
-    public VentanaMiCuenta(ControladorCliente controlador, Cliente cliente, JFrame padre) {
+    public VentanaMiCuenta(
+            ControladorCliente controlador,ControladorLibro controladorLibro,Cliente cliente,
+            JFrame padre) {
+
         this.controlador = controlador;
+        this.controladorLibro = controladorLibro;
         this.cliente = cliente;
         this.padre = padre;
 
@@ -100,6 +107,7 @@ public class VentanaMiCuenta extends JFrame {
         JPanel panel = new JPanel();
         JButton btnAtras = new JButton("Atr\u00e1s");
         JButton btnGuardar = new JButton("Guardar cambios");
+        JButton btnCompras = new JButton("Compras");
         btnAtras.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -111,9 +119,18 @@ public class VentanaMiCuenta extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 accionGuardar();
             }
+            
+        });
+        
+        btnCompras.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                abrirCompras();
+            }
         });
         panel.add(btnAtras);
         panel.add(btnGuardar);
+        panel.add(btnCompras);
         return panel;
     }
 
@@ -154,5 +171,18 @@ public class VentanaMiCuenta extends JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "No se pudieron actualizar los datos.");
         }
+    }
+    
+ // ABRIR VENTANA DE COMPRAS Liz 
+    private void abrirCompras() {
+
+        VentanaCompras ventanaCompras = new VentanaCompras(cliente, controladorLibro);
+
+        for (Object obj : controladorLibro.listar()) {
+            Libro libro = (Libro) obj;
+            ventanaCompras.getCmbLibro().addItem(libro);
+        }
+
+        ventanaCompras.setVisible(true);
     }
 }
