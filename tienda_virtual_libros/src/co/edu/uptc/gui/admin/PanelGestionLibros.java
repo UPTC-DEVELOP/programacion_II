@@ -1,7 +1,5 @@
 package co.edu.uptc.gui.admin;
 
-
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -20,10 +18,10 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-/*
-import co.edu.uptc.libros.eventos.EventoAdmin;
-import co.edu.uptc.libros.negocio.dto.LibroDto;
-*/
+import co.edu.uptc.gui.eventos.admin.EventoAdmin;
+import co.edu.uptc.negocio.admin.dto.LibroDto;
+
+
 /**
  * CLASE PanelGestionLibros  (paquete: gui)  extends JPanel
  * ---------------------------------------------------------------------------

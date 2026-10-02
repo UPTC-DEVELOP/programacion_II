@@ -4,8 +4,9 @@ package co.edu.uptc.negocio.admin;
 import java.time.Year;
 import java.util.List;
 
-//import co.edu.uptc.libros.interfaces.IValidadorLibro;
-//import co.edu.uptc.libros.negocio.dto.LibroDto;
+import co.edu.uptc.gui.interfaz.admin.IValidadorLibro;
+import co.edu.uptc.negocio.admin.dto.LibroDto;
+
 
 /**
  * CLASE ValidadorLibro  (paquete: negocio)  implements IValidadorLibro

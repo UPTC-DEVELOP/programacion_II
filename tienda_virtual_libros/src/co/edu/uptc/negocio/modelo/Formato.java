@@ -1,5 +1,6 @@
 package co.edu.uptc.negocio.modelo;
 
+
 /**
  * ENUMERACIÓN Formato  (paquete: modelo.enums)
  * ---------------------------------------------------------------------------
@@ -42,4 +43,3 @@ public enum Formato {
         return etiqueta;
     }
 }
-

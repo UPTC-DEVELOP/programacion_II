@@ -1,8 +1,8 @@
 package co.edu.uptc.negocio.admin.dto;
 
+import co.edu.uptc.negocio.modelo.Categoria;
 
 
-//import co.edu.uptc.libros.modelo.enums.Categoria;
 
 /**
  * DTO FiltroLibroDto  (paquete: negocio.dto)

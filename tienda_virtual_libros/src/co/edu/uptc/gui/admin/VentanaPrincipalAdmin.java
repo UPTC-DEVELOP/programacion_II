@@ -1,7 +1,5 @@
 package co.edu.uptc.gui.admin;
 
-
-
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.event.ActionListener;
@@ -11,12 +9,12 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-/*
-import co.edu.uptc.libros.eventos.Pantalla;
-import co.edu.uptc.libros.interfaces.IVistaAdmin;
-import co.edu.uptc.libros.negocio.dto.LibroDto;
-import co.edu.uptc.libros.negocio.dto.VentaResumenDto;
-*/
+import co.edu.uptc.gui.eventos.admin.Pantalla;
+import co.edu.uptc.gui.interfaz.admin.IVistaAdmin;
+import co.edu.uptc.negocio.admin.dto.LibroDto;
+import co.edu.uptc.negocio.admin.dto.VentaResumenDto;
+
+
 
 /**
  * CLASE VentanaPrincipalAdmin  (paquete: gui)  extends JFrame  implements IVistaAdmin

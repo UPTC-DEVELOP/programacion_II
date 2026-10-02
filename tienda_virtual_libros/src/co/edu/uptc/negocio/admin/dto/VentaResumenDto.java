@@ -1,6 +1,5 @@
 package co.edu.uptc.negocio.admin.dto;
 
-
 import java.util.List;
 
 /**

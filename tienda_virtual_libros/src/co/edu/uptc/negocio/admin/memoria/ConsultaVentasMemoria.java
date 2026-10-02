@@ -1,11 +1,12 @@
 package co.edu.uptc.negocio.admin.memoria;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
-//import co.edu.uptc.libros.interfaces.IConsultaVentas;
-//import co.edu.uptc.libros.negocio.dto.VentaResumenDto;
+import co.edu.uptc.gui.interfaz.admin.IConsultaVentas;
+import co.edu.uptc.negocio.admin.dto.VentaResumenDto;
+
+
 
 /**
  * CLASE ConsultaVentasMemoria  (paquete: negocio.memoria)  implements IConsultaVentas

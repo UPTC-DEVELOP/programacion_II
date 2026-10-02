@@ -1,7 +1,9 @@
 package co.edu.uptc.negocio.admin;
 
-//import co.edu.uptc.libros.modelo.Libro;
-//import co.edu.uptc.libros.negocio.dto.LibroDto;
+import co.edu.uptc.negocio.admin.dto.LibroDto;
+import co.edu.uptc.negocio.modelo.Libro;
+
+
 
 /**
  * CLASE LibroMapper  (paquete: negocio)

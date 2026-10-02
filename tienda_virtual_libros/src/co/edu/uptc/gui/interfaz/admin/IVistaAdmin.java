@@ -3,11 +3,10 @@ package co.edu.uptc.gui.interfaz.admin;
 
 import java.util.List;
 
-/*
-import co.edu.uptc.libros.eventos.Pantalla;
-import co.edu.uptc.libros.negocio.dto.LibroDto;
-import co.edu.uptc.libros.negocio.dto.VentaResumenDto;
-*/
+import co.edu.uptc.gui.eventos.admin.Pantalla;
+import co.edu.uptc.negocio.admin.dto.LibroDto;
+import co.edu.uptc.negocio.admin.dto.VentaResumenDto;
+
 
 /**
  * INTERFAZ IVistaAdmin  (paquete: interfaces)

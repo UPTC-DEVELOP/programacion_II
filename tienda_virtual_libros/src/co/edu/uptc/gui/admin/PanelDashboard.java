@@ -13,7 +13,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
-//import co.edu.uptc.libros.negocio.dto.VentaResumenDto;
+import co.edu.uptc.negocio.admin.dto.VentaResumenDto;
+
+
 
 /**
  * CLASE PanelDashboard  (paquete: gui)  extends JPanel

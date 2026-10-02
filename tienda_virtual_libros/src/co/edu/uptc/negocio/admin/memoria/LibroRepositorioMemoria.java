@@ -1,11 +1,11 @@
 package co.edu.uptc.negocio.admin.memoria;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
-//import co.edu.uptc.libros.interfaces.ILibroRepositorio;
-//import co.edu.uptc.libros.modelo.Libro;
+import co.edu.uptc.gui.interfaz.admin.ILibroRepositorio;
+import co.edu.uptc.negocio.modelo.Libro;
+
 
 /**
  * CLASE LibroRepositorioMemoria  (paquete: negocio.memoria)  implements ILibroRepositorio

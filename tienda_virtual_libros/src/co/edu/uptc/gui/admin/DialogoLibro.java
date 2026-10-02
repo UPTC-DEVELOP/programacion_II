@@ -24,9 +24,11 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-//import co.edu.uptc.libros.modelo.enums.Categoria;
-//import co.edu.uptc.libros.modelo.enums.Formato;
-//import co.edu.uptc.libros.negocio.dto.LibroDto;
+import co.edu.uptc.negocio.admin.dto.LibroDto;
+import co.edu.uptc.negocio.modelo.Categoria;
+import co.edu.uptc.negocio.modelo.Formato;
+
+
 
 /**
  * CLASE DialogoLibro  (paquete: gui)  extends JDialog

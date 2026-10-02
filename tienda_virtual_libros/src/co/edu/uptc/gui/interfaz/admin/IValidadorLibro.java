@@ -1,9 +1,9 @@
 package co.edu.uptc.gui.interfaz.admin;
 
-/*
-import co.edu.uptc.libros.negocio.dto.LibroDto;
-import co.edu.uptc.libros.negocio.ReglaNegocioException;
-*/
+import co.edu.uptc.negocio.admin.ReglaNegocioException;
+import co.edu.uptc.negocio.admin.dto.LibroDto;
+
+
 /**
  * INTERFAZ IValidadorLibro  (paquete: interfaces)
  * ---------------------------------------------------------------------------

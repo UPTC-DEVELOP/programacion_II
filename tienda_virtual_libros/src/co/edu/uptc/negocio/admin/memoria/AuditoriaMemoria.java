@@ -5,7 +5,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-//import co.edu.uptc.libros.interfaces.IAuditoria;
+import co.edu.uptc.gui.interfaz.admin.IAuditoria;
+
 
 /**
  * CLASE AuditoriaMemoria  (paquete: negocio.memoria)  implements IAuditoria

@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-/*
-import co.edu.uptc.libros.interfaces.IConsultaVentas;
-import co.edu.uptc.libros.interfaces.IGestionReporte;
-import co.edu.uptc.libros.interfaces.ILibroRepositorio;
-import co.edu.uptc.libros.negocio.dto.VentaResumenDto;
-*/
+import co.edu.uptc.gui.interfaz.admin.IConsultaVentas;
+import co.edu.uptc.gui.interfaz.admin.IGestionReporte;
+import co.edu.uptc.gui.interfaz.admin.ILibroRepositorio;
+import co.edu.uptc.negocio.admin.dto.VentaResumenDto;
+
+
 /**
  * CLASE GestionReporte  (paquete: negocio)  implements IGestionReporte
  * ---------------------------------------------------------------------------

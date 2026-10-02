@@ -1,12 +1,10 @@
 package co.edu.uptc.negocio.admin.dto;
 
-
-
 import java.util.ArrayList;
 import java.util.List;
 
-//import co.edu.uptc.libros.modelo.enums.Categoria;
-//import co.edu.uptc.libros.modelo.enums.Formato;
+import co.edu.uptc.negocio.modelo.Categoria;
+import co.edu.uptc.negocio.modelo.Formato;
 
 /**
  * DTO (Data Transfer Object) LibroDto  (paquete: negocio.dto)

@@ -1,7 +1,5 @@
 package co.edu.uptc.gui.admin;
 
-
-
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -17,10 +15,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-/*
-import co.edu.uptc.libros.eventos.EventoAdmin;
-import co.edu.uptc.libros.negocio.dto.VentaResumenDto;
-*/
+
+import co.edu.uptc.gui.eventos.admin.EventoAdmin;
+import co.edu.uptc.negocio.admin.dto.VentaResumenDto;
+
 /**
  * CLASE PanelReportes  (paquete: gui)  extends JPanel
  * ---------------------------------------------------------------------------

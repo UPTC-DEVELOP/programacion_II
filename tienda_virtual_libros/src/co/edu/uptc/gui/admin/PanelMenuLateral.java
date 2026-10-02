@@ -11,7 +11,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-//import co.edu.uptc.libros.eventos.EventoAdmin;
+import co.edu.uptc.gui.eventos.admin.EventoAdmin;
+
+
 
 /**
  * CLASE PanelMenuLateral  (paquete: gui)  extends JPanel

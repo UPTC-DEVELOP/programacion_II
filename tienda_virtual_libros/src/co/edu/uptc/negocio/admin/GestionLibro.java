@@ -6,15 +6,16 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-/*import co.edu.uptc.libros.interfaces.IAuditoria;
-import co.edu.uptc.libros.interfaces.IConsultaVentas;
-import co.edu.uptc.libros.interfaces.IGestionLibro;
-import co.edu.uptc.libros.interfaces.ILibroRepositorio;
-import co.edu.uptc.libros.interfaces.IValidadorLibro;
-import co.edu.uptc.libros.modelo.Libro;
-import co.edu.uptc.libros.negocio.dto.FiltroLibroDto;
-import co.edu.uptc.libros.negocio.dto.LibroDto;
-*/
+import co.edu.uptc.gui.interfaz.admin.IAuditoria;
+import co.edu.uptc.gui.interfaz.admin.IConsultaVentas;
+import co.edu.uptc.gui.interfaz.admin.IGestionLibro;
+import co.edu.uptc.gui.interfaz.admin.ILibroRepositorio;
+import co.edu.uptc.gui.interfaz.admin.IValidadorLibro;
+import co.edu.uptc.negocio.admin.dto.FiltroLibroDto;
+import co.edu.uptc.negocio.admin.dto.LibroDto;
+import co.edu.uptc.negocio.modelo.Libro;
+
+
 /**
  * CLASE GestionLibro  (paquete: negocio)  implements IGestionLibro
  * ---------------------------------------------------------------------------

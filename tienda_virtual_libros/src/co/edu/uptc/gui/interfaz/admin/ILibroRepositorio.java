@@ -3,7 +3,8 @@ package co.edu.uptc.gui.interfaz.admin;
 
 import java.util.List;
 
-//import co.edu.uptc.libros.modelo.Libro;
+import co.edu.uptc.negocio.modelo.Libro;
+
 
 /**
  * INTERFAZ ILibroRepositorio  (paquete: interfaces)

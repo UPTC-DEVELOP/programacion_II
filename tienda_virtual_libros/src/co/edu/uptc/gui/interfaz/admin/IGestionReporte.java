@@ -2,7 +2,9 @@ package co.edu.uptc.gui.interfaz.admin;
 
 import java.util.List;
 
-//import co.edu.uptc.libros.negocio.dto.VentaResumenDto;
+import co.edu.uptc.negocio.admin.dto.VentaResumenDto;
+
+
 
 /**
  * INTERFAZ IGestionReporte  (paquete: interfaces)
