@@ -2,22 +2,22 @@ package co.edu.uptc;
 
 import javax.swing.SwingUtilities;
 
-/*
-import co.edu.uptc.libros.eventos.ControladorAdmin;
-import co.edu.uptc.libros.gui.VentanaPrincipalAdmin;
-import co.edu.uptc.libros.interfaces.IAuditoria;
-import co.edu.uptc.libros.interfaces.IConsultaVentas;
-import co.edu.uptc.libros.interfaces.IGestionLibro;
-import co.edu.uptc.libros.interfaces.IGestionReporte;
-import co.edu.uptc.libros.interfaces.ILibroRepositorio;
-import co.edu.uptc.libros.interfaces.IValidadorLibro;
-import co.edu.uptc.libros.negocio.GestionLibro;
-import co.edu.uptc.libros.negocio.GestionReporte;
-import co.edu.uptc.libros.negocio.ValidadorLibro;
-import co.edu.uptc.libros.negocio.memoria.AuditoriaMemoria;
-import co.edu.uptc.libros.negocio.memoria.ConsultaVentasMemoria;
-import co.edu.uptc.libros.negocio.memoria.LibroRepositorioMemoria;
-*/
+import co.edu.uptc.gui.admin.VentanaPrincipalAdmin;
+import co.edu.uptc.gui.eventos.admin.ControladorAdmin;
+import co.edu.uptc.gui.interfaz.admin.IAuditoria;
+import co.edu.uptc.gui.interfaz.admin.IConsultaVentas;
+import co.edu.uptc.gui.interfaz.admin.IGestionLibro;
+import co.edu.uptc.gui.interfaz.admin.IGestionReporte;
+import co.edu.uptc.gui.interfaz.admin.ILibroRepositorio;
+import co.edu.uptc.gui.interfaz.admin.IValidadorLibro;
+import co.edu.uptc.negocio.admin.GestionLibro;
+import co.edu.uptc.negocio.admin.GestionReporte;
+import co.edu.uptc.negocio.admin.ValidadorLibro;
+import co.edu.uptc.negocio.admin.memoria.AuditoriaMemoria;
+import co.edu.uptc.negocio.admin.memoria.ConsultaVentasMemoria;
+import co.edu.uptc.negocio.admin.memoria.LibroRepositorioMemoria;
+
+
 /**
  * CLASE AppLibros  (paquete raíz)  -  PUNTO DE ENTRADA (main)
  * ---------------------------------------------------------------------------
