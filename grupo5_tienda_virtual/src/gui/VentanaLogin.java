@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 
 import negocio.Cliente;
 import negocio.ControladorCliente;
+import negocio.ControladorLibro;
 
 /**
  * Ventana "Iniciar Sesion" segun el prototipo.
@@ -29,13 +30,15 @@ public class VentanaLogin extends JFrame {
     private static final long serialVersionUID = 1L;
 
     private ControladorCliente controlador;
-
+    private ControladorLibro controladorLibro;
+    
     private JTextField txtCorreo;
     private JPasswordField txtContrasena;
 
-    public VentanaLogin(ControladorCliente controlador) {
+    public VentanaLogin(ControladorCliente controlador, ControladorLibro controladorLibro) {
         this.controlador = controlador;
-
+        this.controladorLibro = controladorLibro;
+        
         setTitle("Iniciar Sesi\u00f3n");
         setSize(420, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -46,7 +49,9 @@ public class VentanaLogin extends JFrame {
         add(crearBotones(), BorderLayout.SOUTH);
     }
 
-    private JPanel crearFormulario() {
+    
+
+	private JPanel crearFormulario() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 5, 15));
 
@@ -123,14 +128,18 @@ public class VentanaLogin extends JFrame {
         String contrasena = new String(txtContrasena.getPassword());
 
         if (correo.isEmpty() || contrasena.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Correo y contrase\u00f1a obligatorios.");
+            JOptionPane.showMessageDialog(this, "Correo y contraseña obligatorios.");
             return;
         }
 
         Cliente cliente = controlador.iniciarSesion(correo, contrasena);
         if (cliente != null) {
-            new VentanaMiCuenta(controlador, cliente, VentanaLogin.this).setVisible(true);
-            setVisible(false);
+        	new VentanaMiCuenta(
+        	        controlador,
+        	        controladorLibro,
+        	        cliente,
+        	        VentanaLogin.this
+        	).setVisible(true); 
         } else {
             JOptionPane.showMessageDialog(this, "Correo o contrase\u00f1a no v\u00e1lidos.");
         }
