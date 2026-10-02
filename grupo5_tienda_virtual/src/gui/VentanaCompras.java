@@ -12,10 +12,18 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.JOptionPane;
+
 import java.util.Map;
+
 import negocio.CarritoCompras;
 import negocio.Libro;
 import negocio.MetodoPago;
+import negocio.Cliente;
+import negocio.ControladorLibro;
+import negocio.Compra;
+import negocio.ItemCompra;
+
 
 public class VentanaCompras extends JFrame {
 
@@ -23,6 +31,10 @@ public class VentanaCompras extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	private CarritoCompras carrito;
+	
+	// CLIENTE ACTUAL Y CONTROLADOR DE LIBROS
+	private Cliente cliente;
+	private ControladorLibro controladorLibro;
 	
     // Campos de selección
     private JComboBox<Libro> cmbLibro;
@@ -48,10 +60,12 @@ public class VentanaCompras extends JFrame {
     private JButton btnVaciar;
     private JButton btnComprar;
 
-    public VentanaCompras() {
-    	
+ // RECIBIR EL CLIENTE Y EL CONTROLADOR DE LIBROS
+    public VentanaCompras(Cliente cliente, ControladorLibro controladorLibro) {
+
+        this.cliente = cliente;
+        this.controladorLibro = controladorLibro;
         carrito = new CarritoCompras();
-        
 
         setTitle("Gestion de Compras");
         setSize(850, 600);
@@ -62,9 +76,14 @@ public class VentanaCompras extends JFrame {
         add(crearPanelSuperior(), BorderLayout.NORTH);
         add(crearTablaCarrito(), BorderLayout.CENTER);
         add(crearPanelInferior(), BorderLayout.SOUTH);
+
         btnAgregar.addActionListener(e -> agregarAlCarrito());
-        
+        btnModificar.addActionListener(e -> modificarCantidad());
+        btnEliminar.addActionListener(e -> eliminarDelCarrito());
+        btnVaciar.addActionListener(e -> vaciarCarrito());
+        btnComprar.addActionListener(e -> finalizarCompra());
     }
+    
     
     private void agregarAlCarrito() {
 
@@ -87,6 +106,47 @@ public class VentanaCompras extends JFrame {
         }
 
         carrito.agregarLibro(libro, cantidad);
+
+        actualizarTabla();
+    }
+    
+    private void modificarCantidad() {
+
+        Libro libro = (Libro) cmbLibro.getSelectedItem();
+
+        if (libro == null) {
+            return;
+        }
+
+        int cantidad;
+
+        try {
+            cantidad = Integer.parseInt(txtCantidad.getText());
+        } catch (NumberFormatException e) {
+            return;
+        }
+
+        carrito.modificarCantidad(libro, cantidad);
+
+        actualizarTabla();
+    } 
+    
+    private void eliminarDelCarrito() {
+
+        Libro libro = (Libro) cmbLibro.getSelectedItem();
+
+        if (libro == null) {
+            return;
+        }
+
+        carrito.eliminarLibro(libro);
+
+        actualizarTabla();
+    }
+    
+    private void vaciarCarrito() {
+
+        carrito.vaciar();
 
         actualizarTabla();
     }
@@ -115,6 +175,108 @@ public class VentanaCompras extends JFrame {
         lblIva5.setText(String.valueOf(carrito.calcularIVA5()));
         lblTotal.setText(String.valueOf(carrito.calcularTotal()));
     }
+    
+ // FINALIZAR LA COMPRA
+    private void finalizarCompra() {
+
+        // VALIDAR QUE EXISTA UN CLIENTE
+        if (cliente == null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No hay una sesion iniciada."
+            );
+            return;
+        }
+
+        // VALIDAR QUE EL CARRITO NO ESTE VACIO
+        if (carrito.estaVacio()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "El carrito esta vacio."
+            );
+            return;
+        }
+
+        // OBTENER EL METODO DE PAGO SELECCIONADO
+        MetodoPago metodoPago =
+                (MetodoPago) cmbMetodoPago.getSelectedItem();
+
+        if (metodoPago == null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Seleccione un metodo de pago."
+            );
+            return;
+        }
+
+        // VALIDAR LA DISPONIBILIDAD DEL STOCK
+        for (Map.Entry<Libro, Integer> entrada :
+                carrito.getItems().entrySet()) {
+
+            Libro libro = entrada.getKey();
+            int cantidad = entrada.getValue();
+
+            if (!controladorLibro.validarDisponibilidad(
+                    libro.getIsbn(),
+                    cantidad)) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "No hay suficiente stock para: "
+                                + libro.getTitulo()
+                );
+                return;
+            }
+        }
+
+        // CREAR LA COMPRA
+        Compra compra = new Compra(metodoPago.getNombre());
+
+        // CREAR LOS ITEMS DE LA COMPRA
+        for (Map.Entry<Libro, Integer> entrada :
+                carrito.getItems().entrySet()) {
+
+            Libro libro = entrada.getKey();
+            int cantidad = entrada.getValue();
+
+            ItemCompra item = new ItemCompra(libro, cantidad);
+
+            compra.agregarItem(item);
+        }
+
+        // ACTUALIZAR EL INVENTARIO
+        for (Map.Entry<Libro, Integer> entrada :
+                carrito.getItems().entrySet()) {
+
+            Libro libro = entrada.getKey();
+            int cantidad = entrada.getValue();
+
+            controladorLibro.actualizarInventario(
+                    libro.getIsbn(),
+                    cantidad
+            );
+        }
+
+        // GUARDAR LA COMPRA EN EL CLIENTE
+        cliente.agregarCompra(compra);
+
+        // MOSTRAR RESUMEN DE LA COMPRA
+        JOptionPane.showMessageDialog(
+                this,
+                "COMPRA REALIZADA CORRECTAMENTE\n\n"
+                        + "Cliente: " + cliente.getNombreCompleto()
+                        + "\nMetodo de pago: " + metodoPago.getNombre()
+                        + "\nFecha: " + compra.getFecha()
+                        + "\nTotal: $" + compra.calcularTotal()
+        );
+
+        // VACIAR EL CARRITO
+        carrito.vaciar();
+
+        // ACTUALIZAR LA TABLA Y LOS TOTALES
+        actualizarTabla();
+    }
+    
 
     private JPanel crearPanelSuperior() {
 
@@ -192,9 +354,6 @@ public class VentanaCompras extends JFrame {
                         new MetodoPago("Tarjeta", "Pago con tarjeta"),
                         new MetodoPago("Transferencia", "Pago mediante transferencia")
                 });
-
-        panelPago.add(new JLabel("Método de pago:"));
-        panelPago.add(cmbMetodoPago);
 
         panelPago.add(new JLabel("Método de pago:"));
         panelPago.add(cmbMetodoPago);
