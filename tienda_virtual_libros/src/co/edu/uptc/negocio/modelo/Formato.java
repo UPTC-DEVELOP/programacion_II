@@ -1,43 +1,45 @@
 package co.edu.uptc.negocio.modelo;
 
-/**
- * Representa el formato físico del libro.
- * 
- * Importante para el cálculo de IVA según RF01:
- * - DIGITAL → IVA del 19%
- * - FISICO  → IVA del 5%
- * 
- * Esta decisión de negocio se encapsula aquí para no dispersarla
- * en múltiples clases (principio DRY).
- */
 
+/**
+ * ENUMERACIÓN Formato  (paquete: modelo.enums)
+ * ---------------------------------------------------------------------------
+ * Un libro puede ser FISICO o DIGITAL (RF01).
+ *
+ * El caso de estudio dice que el precio de venta incluye IVA y que los
+ * porcentajes posibles son 19 y 5. RF01 fija: "si el formato es DIGITAL el
+ * precio debe tener IVA del 19%".
+ *
+ * SUPUESTO (confirmar con el Product Owner/docente): para FISICO se usa 5%.
+ *
+ * Aplicamos POLIMORFISMO ligero: en vez de escribir "if (formato == DIGITAL)"
+ * por todo el código, cada constante conoce su propio porcentaje de IVA.
+ * Si mañana cambia la regla, solo se modifica este enum (principio OCP/SRP).
+ */
 public enum Formato {
 
-	FISICO("Físico", 0.05),   // 5% IVA para libros físicos
-    DIGITAL("Digital", 0.19); // 19% IVA para libros digitales
+    FISICO("Físico", 5),
+    DIGITAL("Digital", 19);
 
-    private final String nombreMostrar;
-    private final double tasaIVA; // Tasa de IVA asociada al formato
+    private final String etiqueta;
+    /** Porcentaje de IVA ya incluido en el precio de venta. */
+    private final int porcentajeIva;
 
-    Formato(String nombreMostrar, double tasaIVA) {
-        this.nombreMostrar = nombreMostrar;
-        this.tasaIVA = tasaIVA;
+    Formato(String etiqueta, int porcentajeIva) {
+        this.etiqueta = etiqueta;
+        this.porcentajeIva = porcentajeIva;
     }
 
-    public String getNombreMostrar() {
-        return nombreMostrar;
+    public String getEtiqueta() {
+        return etiqueta;
     }
 
-    /**
-     * Getter de la tasa de IVA.
-     * Permite calcular impuestos sin hardcodear valores en la lógica de negocio.
-     */
-    public double getTasaIVA() {
-        return tasaIVA;
+    public int getPorcentajeIva() {
+        return porcentajeIva;
     }
 
     @Override
     public String toString() {
-        return nombreMostrar;
+        return etiqueta;
     }
 }
