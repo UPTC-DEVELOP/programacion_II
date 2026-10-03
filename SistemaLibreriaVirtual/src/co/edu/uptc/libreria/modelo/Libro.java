@@ -1,4 +1,4 @@
-package co.edu.uptc.modelo;
+package co.edu.uptc.libreria.modelo;
 
 public class Libro {
 
@@ -10,6 +10,7 @@ public class Libro {
     private String genero;
     private String precio;
     private String stock;
+    private final double porcentajeIva = 0.19;
 
     public Libro() {
     }
@@ -91,4 +92,11 @@ public class Libro {
     public void setStock(String stock) {
         this.stock = stock;
     }
+    
+    
+    
+    public double calcularIva(double subtotal, double descuento) {
+    		double baseGravable = subtotal - descuento;
+    		return baseGravable * porcentajeIva;
+    	}
 }
