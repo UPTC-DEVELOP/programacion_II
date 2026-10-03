@@ -9,6 +9,7 @@
     "numeroPaginas": 471,
     "precioBase": 50000.0,
     "cantidadDisponible": 150,
+    "porcentajeDescuento": 0.0,
     "formato": "FISICO"
   },
   {
@@ -21,6 +22,7 @@
     "numeroPaginas": 1200,
     "precioBase": 45000.0,
     "cantidadDisponible": 85,
+    "porcentajeDescuento": 0.0,
     "formato": "FISICO"
   },
   {
@@ -33,6 +35,7 @@
     "numeroPaginas": 0,
     "precioBase": 110000.0,
     "cantidadDisponible": 45,
+    "porcentajeDescuento": 0.0,
     "formato": "DIGITAL"
   },
   {
@@ -45,6 +48,7 @@
     "numeroPaginas": 320,
     "precioBase": 35000.0,
     "cantidadDisponible": 210,
+    "porcentajeDescuento": 0.0,
     "formato": "FISICO"
   }
 ]
