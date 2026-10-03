@@ -25,10 +25,11 @@ public class MenuPrincipal extends JMenuBar {
         menuCatalogo.add(crearItem("Gestionar libros", Comandos.MENU_GESTIONAR_LIBROS));
 
         JMenu menuClientes = new JMenu("Clientes");
-        menuClientes.add(crearItem("Gestionar clientes (próximamente)", Comandos.MENU_PENDIENTE));
+        menuClientes.add(crearItem("Gestionar clientes / Iniciar sesión", Comandos.MENU_GESTIONAR_CLIENTES));
 
         JMenu menuVentas = new JMenu("Ventas");
-        menuVentas.add(crearItem("Registrar pedidos", Comandos.MENU_GESTIONAR_PEDIDOS));
+        menuVentas.add(crearItem("Tienda virtual / Carrito", Comandos.MENU_TIENDA));
+        menuVentas.add(crearItem("Registrar pedidos (modo legado)", Comandos.MENU_GESTIONAR_PEDIDOS));
 
         JMenu menuReportes = new JMenu("Reportes");
         menuReportes.add(crearItem("Bitácora y reportes (próximamente)", Comandos.MENU_PENDIENTE));

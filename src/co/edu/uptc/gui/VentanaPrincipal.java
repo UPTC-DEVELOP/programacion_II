@@ -40,7 +40,7 @@ public class VentanaPrincipal extends JFrame {
 
         JPanel panelEstado = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 4));
         panelEstado.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
-        lblEstado = new JLabel("Usuario: Admin UPTC | Conectado | Versión 1.0.0");
+        lblEstado = new JLabel("Usuario: Invitado | Sin sesión | Versión 3.0.0");
         panelEstado.add(lblEstado);
 
         add(escritorio, BorderLayout.CENTER);
@@ -49,6 +49,10 @@ public class VentanaPrincipal extends JFrame {
 
     public void agregarListenerMenu(ActionListener listener) {
         menuPrincipal.agregarListener(listener);
+    }
+
+    public void actualizarEstadoSesion(String texto) {
+        lblEstado.setText(texto);
     }
 
     public void mostrarVentanaInterna(JInternalFrame ventana) {
