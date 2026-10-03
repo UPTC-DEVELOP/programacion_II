@@ -41,7 +41,7 @@ public class ControladorLibro {
     //  LISTADO COMPLETO DE LIBROS (RF04) // 
     
     public List listar() {
-        return libros;
+        return new ArrayList(libros);
     }
 
     //   BUSCAR UN LIBRO POR SU CODIGO ISBN (RF09)  //
