@@ -22,6 +22,8 @@ import negocio.Libro;
 /// MÓDULO DE INTERFAZ GRÁFICA: VENTANA DE GESTIÓN DE LIBROS ///
 
 public class VentanaLibros extends JFrame {
+	private static final long serialVersionUID = 1L;
+    private static final String IVA_POR_DEFECTO = "19";
 
     //  ATRIBUTOS DE COMPONENTES INTERNOS DE LA INTERFAZ // 
 	
@@ -262,6 +264,7 @@ public class VentanaLibros extends JFrame {
             Libro libro = controladorLibro.buscar(isbn);
             if (libro != null) {
                 txtISBN.setText(libro.getIsbn());
+                txtISBN.setEditable(false);
                 txtTitulo.setText(libro.getTitulo());
                 txtAutor.setText(libro.getAutor());
                 txtAnio.setText(String.valueOf(libro.getAnioPublicacion()));
@@ -280,6 +283,7 @@ public class VentanaLibros extends JFrame {
     
     private void limpiarCampos() {
         txtISBN.setText("");
+        txtISBN.setEditable(true);
         txtTitulo.setText("");
         txtAutor.setText("");
         txtAnio.setText("");
@@ -287,7 +291,7 @@ public class VentanaLibros extends JFrame {
         txtEditorial.setText("");
         txtPaginas.setText("");
         txtPrecio.setText("");
-        txtIva.setText("19");
+        txtIva.setText(IVA_POR_DEFECTO);
         txtCantidad.setText("");
         tblLibros.clearSelection();
     }
