@@ -1,36 +1,62 @@
-package negocio; // Revisa que este package coincida con tu proyecto
+package negocio;
 
+/**
+ * Producto de la tienda. Guarda los datos basicos y calcula el precio final.
+ */
 public class Producto {
+
     private String nombre;
     private double precioBase;
     private int stock;
-    private double porcentajeDescuento;
-    private double impuestoIVA; // 1. Atributo IVA
+    private double impuestoIVA;
 
-    public Producto(String nombre, double precioBase, int stock, double porcentajeDescuento, double impuestoIVA) {
+    public Producto() {
+    }
+
+    public Producto(String nombre, double precioBase, int stock) {
         this.nombre = nombre;
         this.precioBase = precioBase;
         this.stock = stock;
-        this.porcentajeDescuento = porcentajeDescuento;
+    }
+
+    /**
+     * Calcula el precio final del producto incluyendo el IVA.
+     */
+    public double calcularPrecioFinal() {
+        return precioBase + (precioBase * impuestoIVA);
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public double getPrecioBase() {
+        return precioBase;
+    }
+
+    public void setPrecioBase(double precioBase) {
+        this.precioBase = precioBase;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    public double getImpuestoIVA() {
+        return impuestoIVA;
+    }
+
+    public void setImpuestoIVA(double impuestoIVA) {
         this.impuestoIVA = impuestoIVA;
     }
-
-    // 2. Método modificado considerando el IVA (y manteniendo estructura)
-    public double calcularPrecioFinal() {
-        double precioConDescuento = precioBase * (1 - (porcentajeDescuento / 100.0));
-        return precioConDescuento + (precioConDescuento * (impuestoIVA / 100.0));
-    }
-
-    // Getters y Setters
-    public String getNombre() { return nombre; }
-    public double getPrecioBase() { return precioBase; }
-    public int getStock() { return stock; }
-    public void setStock(int stock) { this.stock = stock; }
-    public double getPorcentajeDescuento() { return porcentajeDescuento; }
-    
-    // 3. Getter y Setter de impuestoIVA
-    public double getImpuestoIVA() { return impuestoIVA; }
-    public void setImpuestoIVA(double impuestoIVA) { this.impuestoIVA = impuestoIVA; }
 
     @Override
     public String toString() {
