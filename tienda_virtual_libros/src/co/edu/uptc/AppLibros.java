@@ -1,5 +1,13 @@
 package co.edu.uptc;
 
+import java.awt.CardLayout;
+import java.util.function.Consumer;
+
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
 import co.edu.uptc.gui.EventoLogin;
 import co.edu.uptc.gui.PanelLogin;
 import co.edu.uptc.gui.PanelRegistro;
@@ -18,6 +26,10 @@ import co.edu.uptc.negocio.admin.GestionLibro;
 import co.edu.uptc.negocio.admin.GestionReporte;
 import co.edu.uptc.negocio.admin.ValidadorLibro;
 import co.edu.uptc.negocio.cliente.GestionCliente;
+<<<<<<< HEAD
+import co.edu.uptc.negocio.cliente.memoria.ClienteRepositorioMemoria;
+
+=======
 import co.edu.uptc.persistencia.AuditoriaMemoria;
 import co.edu.uptc.persistencia.ConsultaVentasMemoria;
 import co.edu.uptc.persistencia.LibroRepositorioMemoria;
@@ -28,6 +40,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+>>>>>>> a146a6e3293540f40e7490f58bfc971fa048bbb9
 
 /**
  * CLASE AppLibros  (paquete raíz)  -  PUNTO DE ENTRADA (main)
@@ -39,21 +52,24 @@ import javax.swing.SwingUtilities;
  *
  * PERSISTENCIA: por indicación de la guía (unidad 2) todavía NO hay archivos ni
  * base de datos. Se usan implementaciones EN MEMORIA de las interfaces. Para
- * activar la persistencia más adelante basta cambiar estas líneas por
- * LibroRepositorioJson / ConsultaVentasJson / AuditoriaTxt / ClienteRepositorioJdbc...
+ * activar la persistencia más adelante basta cambiar estas 3 líneas por
+ * LibroRepositorioJson / ConsultaVentasJson / AuditoriaTxt.
  *
  * Orden de armado (de abajo hacia arriba, igual que las capas):
  *   datos en memoria -> negocio -> vista -> controlador -> conexión de eventos
  */
 
 public class AppLibros {
-
     // Clientes: se crean UNA vez y se comparten entre el módulo admin y el de cliente
     // (y entre sesiones), para que el CRUD no se pierda al cerrar sesión.
     private static final IClienteRepositorio persistenciaClientes = new LocalCliente();
     private static final IGestionCliente gestionCliente = new GestionCliente(persistenciaClientes);
 
+
+
     public static void main(String[] args) {
+        // Swing debe ejecutarse en el hilo de eventos (EDT).
+
         SwingUtilities.invokeLater(AppLibros::mostrarPantallaAcceso);
     }
 
@@ -81,6 +97,7 @@ public class AppLibros {
                 iniciarModoAdmin();
             } else {
                 iniciarModoCliente(panelLogin.getCorreo());
+
             }
         };
 
@@ -101,24 +118,30 @@ public class AppLibros {
         ILibroRepositorio repositorio = new LibroRepositorioMemoria();
         IConsultaVentas ventas = new ConsultaVentasMemoria();
         IAuditoria auditoria = new AuditoriaMemoria();
-
-        // 2) CAPA DE NEGOCIO
+        
+        // 2) CAPA DE NEGOCIO (recibe las dependencias por constructor)
         IValidadorLibro validador = new ValidadorLibro();
         IGestionLibro gestionLibro = new GestionLibro(repositorio, ventas, auditoria, validador);
         IGestionReporte gestionReporte = new GestionReporte(repositorio, ventas);
 
-        // 3) CAPA DE PRESENTACIÓN ADMIN
+        // 3) CAPA DE PRESENTACIÓN: la ventana y el controlador que la gobierna
+
+       
         VentanaPrincipalAdmin ventana = new VentanaPrincipalAdmin(gestionCliente);
+
         ControladorAdmin controlador = new ControladorAdmin(ventana, gestionLibro, gestionReporte);
 
-        // 4) CONEXIÓN Y ARRANQUE
+        // 4) Se cierra el ciclo: la ventana notifica sus eventos al controlador
+
         ventana.registrarEscuchador(controlador);
         controlador.iniciar();
         ventana.setVisible(true);
     }
 
+  
     /** Módulo de cliente: CRUD de clientes. "Cerrar sesión" vuelve al login. */
     private static void iniciarModoCliente(String usuario) {
         new VentanaPrincipalCliente(usuario, gestionCliente, AppLibros::mostrarPantallaAcceso).setVisible(true);
     }
+
 }
