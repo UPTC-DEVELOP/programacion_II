@@ -28,7 +28,7 @@ public class CatalogoService {
 
     public void registrarLibro(Libro libro) throws ValidacionException {
         validarLibro(libro);
-        
+       
         if (libroRepositorio.existe(libro.getIsbn())) {
             throw new ValidacionException(
                     "Ya existe un libro registrado con el ISBN " + libro.getIsbn() + ".");
@@ -39,6 +39,7 @@ public class CatalogoService {
 
     public void actualizarLibro(Libro libro) throws ValidacionException {
         validarLibro(libro);
+        
         if (!libroRepositorio.existe(libro.getIsbn())) {
             throw new ValidacionException(
                     "No existe ningún libro registrado con el ISBN " + libro.getIsbn() + ".");
@@ -54,6 +55,7 @@ public class CatalogoService {
         if (!libroRepositorio.existe(isbn)) {
             throw new ValidacionException("El libro con ISBN " + isbn + " no existe en el catálogo.");
         }
+       
         if (ventaRepositorio.existenVentasDelLibro(isbn)) {
             throw new ValidacionException(
                     "No se puede eliminar el libro " + isbn + " porque tiene ventas asociadas.");
@@ -67,6 +69,7 @@ public class CatalogoService {
     }
 
     public List<Libro> buscarLibros(String criterio) throws ValidacionException {
+        
         if (criterio == null || criterio.trim().isEmpty()) {
             return listarLibros();
         }
@@ -91,33 +94,36 @@ public class CatalogoService {
         if (libro == null) {
             throw new ValidacionException("No se recibió la información del libro.");
         }
-
+        
         validarTexto(libro.getIsbn(), "ISBN", 13);
         if (!PATRON_ISBN.matcher(libro.getIsbn()).matches()) {
             throw new ValidacionException("El ISBN debe tener exactamente 13 caracteres alfanuméricos.");
         }
-      
+        
         validarTexto(libro.getTitulo(), "Título", 200);
         validarTexto(libro.getAutor(), "Autor(es)", 150);
         validarTexto(libro.getCategoria(), "Categoría", 50);
         validarTexto(libro.getEditorial(), "Editorial", 100);
 
- 
         int anioActual = Year.now().getValue();
         if (libro.getAnioPublicacion() < ANIO_MINIMO || libro.getAnioPublicacion() > anioActual) {
             throw new ValidacionException(
                     "El año de publicación debe ser de 4 dígitos y no puede ser futuro (máximo "
                             + anioActual + ").");
         }
- 
+       
         if (libro.getPrecioBase() <= 0 || libro.getPrecioBase() > PRECIO_MAXIMO) {
             throw new ValidacionException("El precio base debe ser mayor a 0 y de máximo 10 dígitos.");
         }
-
+        
+        if (libro.getPorcentajeDescuento() < 0 || libro.getPorcentajeDescuento() > 100) {
+            throw new ValidacionException("El porcentaje de descuento debe estar entre 0 y 100.");
+        }
+       
         if (libro.getCantidadDisponible() < 0 || libro.getCantidadDisponible() > STOCK_MAXIMO) {
             throw new ValidacionException("La cantidad disponible debe estar entre 0 y " + STOCK_MAXIMO + ".");
         }
-
+        
         if (libro.getNumeroPaginas() < 0 || libro.getNumeroPaginas() > PAGINAS_MAXIMO) {
             throw new ValidacionException("El número de páginas debe ser mayor a 0 y de máximo 5 dígitos.");
         }
@@ -137,7 +143,7 @@ public class CatalogoService {
         return "ISBN=" + l.getIsbn() + ", titulo=" + l.getTitulo()
                 + ", formato=" + l.getFormato().getEtiqueta()
                 + ", precioBase=" + l.getPrecioBase()
+                + ", descuento=" + l.getPorcentajeDescuento() + "%"
                 + ", stock=" + l.getCantidadDisponible();
     }
 }
-
