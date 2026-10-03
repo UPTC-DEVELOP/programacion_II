@@ -30,18 +30,18 @@ public class VentanaLibros extends JFrame {
     private JTable tblLibros;
     private DefaultTableModel modeloTabla;
     private ControladorLibro controladorLibro;
+    private JFrame padre;
 
     //  CONFIGURACION DE LAYOUTS DE LA VENTANA //
     
-    public VentanaLibros() {
-        super("Gestión de Libros - Módulo Camilo");
+    public VentanaLibros(JFrame padre, ControladorLibro controladorLibro) {
+        super("Gestión de Libros");
+        this.padre = padre;
+        this.controladorLibro = controladorLibro;
+
         setSize(900, 650);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
-
-        //  INICIO DEL CONTROLADOR DE NEGOCIO // 
-        
-        controladorLibro = new ControladorLibro();
 
         setLayout(new BorderLayout(10, 10));
 
@@ -118,18 +118,20 @@ public class VentanaLibros extends JFrame {
         
         tblLibros.getSelectionModel().addListSelectionListener(e -> cargarSeleccionEnFormulario());
 
-        //  MENU DE BOTONES DE ACCION //
+//  MENU DE BOTONES DE ACCION //
         
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton btnRegistrar = new JButton("Registrar Libro");
         JButton btnActualizar = new JButton("Actualizar Libro");
         JButton btnEliminar = new JButton("Eliminar Libro");
         JButton btnLimpiar = new JButton("Limpiar Campos");
+        JButton btnAtras = new JButton("Atrás");
 
         panelBotones.add(btnRegistrar);
         panelBotones.add(btnActualizar);
         panelBotones.add(btnEliminar);
         panelBotones.add(btnLimpiar);
+        panelBotones.add(btnAtras);
 
         add(panelBotones, BorderLayout.SOUTH);
 
@@ -141,6 +143,12 @@ public class VentanaLibros extends JFrame {
         btnBuscar.addActionListener(e -> accionBuscar());
         btnLimpiarBusqueda.addActionListener(e -> actualizarTabla(controladorLibro.listar()));
         btnLimpiar.addActionListener(e -> limpiarCampos());
+        btnAtras.addActionListener(e -> {
+            this.dispose();
+            if (this.padre != null) {
+                this.padre.setVisible(true);
+            }
+        });
     }
 
     //  REGISTRO DE UN NUEVO LIBRO EN EL SISTEMA  //
@@ -287,7 +295,7 @@ public class VentanaLibros extends JFrame {
     // EJECUCION DIRECTA Y PRUEBAS // 
     
     public static void main(String[] args) {
-        VentanaLibros v = new VentanaLibros();
+        VentanaLibros v = new VentanaLibros(null, new ControladorLibro());
         v.setVisible(true);
     }
 }
