@@ -4,11 +4,13 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import co.edu.uptc.negocio.ItemCarrito;
+import co.edu.uptc.negocio.Libro;
 
 /**
  * Aplicación de GUI para Librería Virtual utilizando Swing y AWT.
@@ -31,49 +33,6 @@ public class LibreriaVirtualApp extends JFrame {
     private JPanel panelCatalogoLibros;
     private JLabel lblTotalCarrito;
     private JLabel lblUsuarioActual;
-
-    // Clase interna para modelo de datos de Libro
-    public static class Libro {
-        private int id;
-        private String titulo;
-        private String autor;
-        private double precio;
-        private int stock;
-        private String categoria;
-
-        public Libro(int id, String titulo, String autor, double precio, int stock, String categoria) {
-            this.id = id;
-            this.titulo = titulo;
-            this.autor = autor;
-            this.precio = precio;
-            this.stock = stock;
-            this.categoria = categoria;
-        }
-
-        public int getId() { return id; }
-        public String getTitulo() { return titulo; }
-        public String getAutor() { return autor; }
-        public double getPrecio() { return precio; }
-        public int getStock() { return stock; }
-        public void setStock(int stock) { this.stock = stock; }
-        public String getCategoria() { return categoria; }
-    }
-
-    // Clase interna para los elementos dentro del carrito
-    public static class ItemCarrito {
-        private Libro libro;
-        private int cantidad;
-
-        public ItemCarrito(Libro libro, int cantidad) {
-            this.libro = libro;
-            this.cantidad = cantidad;
-        }
-
-        public Libro getLibro() { return libro; }
-        public int getCantidad() { return cantidad; }
-        public void setCantidad(int cantidad) { this.cantidad = cantidad; }
-        public double getSubtotal() { return libro.getPrecio() * cantidad; }
-    }
 
     public LibreriaVirtualApp() {
         // Configuración de la ventana principal
