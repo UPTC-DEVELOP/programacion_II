@@ -28,7 +28,7 @@ public class VentanaLibros extends JFrame {
     //  ATRIBUTOS DE COMPONENTES INTERNOS DE LA INTERFAZ // 
 	
     private JTextField txtISBN, txtTitulo, txtAutor, txtAnio, txtCategoria, txtEditorial, txtPaginas, txtPrecio, txtIva, txtCantidad, txtBuscar;
-    private JComboBox cmbFormato;
+    private JComboBox<FormatoLibro> cmbFormato;
     private JTable tblLibros;
     private DefaultTableModel modeloTabla;
     private ControladorLibro controladorLibro;
@@ -212,9 +212,9 @@ public class VentanaLibros extends JFrame {
     // BUSQUEDA Y FILTRADO DE REGISTROS // 
     
     private void accionBuscar() {
-        String criterio = txtBuscar.getText().trim();
-        List resultados = controladorLibro.buscarPorCriterio(criterio);
-        actualizarTabla(resultados);
+    	String criterio = txtBuscar.getText().trim();
+    	List<Libro> resultados = controladorLibro.buscarPorCriterio(criterio);
+    	actualizarTabla(resultados);
     }
 
     //  EXTRAER  DATOS DEL FORMULARIO A UN OBJETO LIBRO //
@@ -237,11 +237,11 @@ public class VentanaLibros extends JFrame {
 
     //  DATOS DE LA LISTA EN EL JTABLE // 
     
-    private void actualizarTabla(List lista) {
+    private void actualizarTabla(List<Libro> lista) {
         modeloTabla.setRowCount(0);
         if (lista != null) {
-            for (Object obj : lista) {
-                Libro l = (Libro) obj;
+        	for (Libro l : lista) {
+                
                 Object[] fila = {
                     l.getIsbn(),
                     l.getTitulo(),

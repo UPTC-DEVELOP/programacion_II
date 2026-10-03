@@ -9,12 +9,12 @@ public class ControladorLibro {
 
     //  ATRIBUTO QUE ALMACENA LA COLECCION DE LIBROS EN MEMORIA  //
 	
-    private List libros;
+	private List<Libro> libros;
 
     //  INICIO DE LA LISTA DE LIBROS  //
     
     public ControladorLibro() {
-        this.libros = new ArrayList();
+    	this.libros = new ArrayList<Libro>();
     }
 
     //   REGISTRO DE UN NUEVO LIBRO (RF01)  //
@@ -40,33 +40,34 @@ public class ControladorLibro {
 
     //  LISTADO COMPLETO DE LIBROS (RF04) // 
     
-    public List listar() {
-        return new ArrayList(libros);
+    public List<Libro> listar() {
+    	return new ArrayList<Libro>(libros);
     }
-
+    
     //   BUSCAR UN LIBRO POR SU CODIGO ISBN (RF09)  //
     
     public Libro buscar(String isbn) {
         if (isbn == null) return null;
-        for (Object obj : libros) {
-            Libro libro = (Libro) obj;
+        for (Libro libro : libros) {
             if (isbn.equalsIgnoreCase(libro.getIsbn())) {
                 return libro;
             }
         }
         return null;
     }
-
     //  BUSCAR LIBROS POR  COINCIDENCIA EN ISBN, EL TITULO O AUTOR (RF09)  //
     
-    public List buscarPorCriterio(String criterio) {
-        if (criterio == null || criterio.trim().isEmpty()) {
-            return libros;
-        }
-        List resultados = new ArrayList();
+    public List<Libro> buscarPorCriterio(String criterio) {
+
+    	if (criterio == null || criterio.trim().isEmpty()) {
+
+    	return libros;
+
+    	}
+
+    	List<Libro> resultados = new ArrayList<Libro>();
         String filtro = criterio.toLowerCase();
-        for (Object obj : libros) {
-            Libro libro = (Libro) obj;
+        for (Libro libro : libros) {
             boolean coincideIsbn = libro.getIsbn() != null && libro.getIsbn().toLowerCase().contains(filtro);
             boolean coincideTitulo = libro.getTitulo() != null && libro.getTitulo().toLowerCase().contains(filtro);
             boolean coincideAutor = libro.getAutor() != null && libro.getAutor().toLowerCase().contains(filtro);
