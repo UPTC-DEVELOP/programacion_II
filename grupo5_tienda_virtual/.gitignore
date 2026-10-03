@@ -1,0 +1,45 @@
+# =========================================================
+# .gitignore - Tienda Virtual de Libros
+# =========================================================
+
+# --- Compilados de Java ---
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+
+# --- Carpetas de compilacion / salida ---
+bin/
+build/
+out/
+target/
+dist/
+classes/
+
+# --- Archivos de datos generados por el programa ---
+datos/
+*.log
+
+# --- IntelliJ IDEA ---
+.idea/
+*.iml
+
+# --- VS Code ---
+.vscode/
+
+# --- NetBeans ---
+nbproject/private/
+nbbuild/
+nbdist/
+
+# --- Sistema operativo ---
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# --- Backups y temporales ---
+*.bak
+*.tmp
+*.swp
+~$*
