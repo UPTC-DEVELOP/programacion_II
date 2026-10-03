@@ -53,4 +53,8 @@ public class PanelGestionCatalogo extends PanelBase {
   
   /// Obtiene el panel para la gestión de editoriales.
   public PanelEditoriales getPanelEditoriales() { return this.panelEditoriales; }
+  
+  public PanelAutores getPanelAutores() { return this.panelAutores; }
+  
 }
+
