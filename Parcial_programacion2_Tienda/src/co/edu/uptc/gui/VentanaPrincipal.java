@@ -16,10 +16,10 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
+import co.edu.uptc.eventos.ActualizarCamposListener;
+import co.edu.uptc.eventos.CancelarPedidoListener;
+import co.edu.uptc.eventos.RegistrarPedidoListener;
 import co.edu.uptc.negocio.Producto;
-import co.edu.uptc.negocio.eventos.ActualizarCamposListener;
-import co.edu.uptc.negocio.eventos.CancelarPedidoListener;
-import co.edu.uptc.negocio.eventos.RegistrarPedidoListener;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -110,16 +110,16 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private void cargarDatosPrueba() {
-        comboProductos.addItem(new Producto("Laptop Gamer", 3500000, 10, 5.0, 19.0));
-        comboProductos.addItem(new Producto("Mouse Inalámbrico", 85000, 50, 0.0, 19.0));
-        comboProductos.addItem(new Producto("Teclado Mecánico", 250000, 20, 10.0, 19.0));
+        // CORREGIDO: Agregamos .0 a los precios para que sean double
+        comboProductos.addItem(new Producto("1", "Laptop Gamer", 3500000.0, 10, 5.0, 19.0));
+        comboProductos.addItem(new Producto("2", "Mouse Inalámbrico", 85000.0, 50, 0.0, 19.0));
+        comboProductos.addItem(new Producto("3", "Teclado Mecánico", 250000.0, 20, 10.0, 19.0));
         
-        // Disparar manualmente la actualización para el primer elemento
         if (comboProductos.getItemCount() > 0) {
             comboProductos.setSelectedIndex(0);
         }
     }
-
+                               
     public static void main(String[] args) {
         // Ejecutar en el hilo de despacho de eventos de Swing
         SwingUtilities.invokeLater(() -> {
