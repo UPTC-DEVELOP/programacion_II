@@ -32,9 +32,6 @@ public class PanelRegistro extends JPanel {
     public static final String REGISTRAR = "REGISTRO_REGISTRAR";
     public static final String CANCELAR = "REGISTRO_CANCELAR";
 
-    /* Texto guía que se muestra en los campos vacíos */
-    private static final String PLACEHOLDER = "Input";
-
     /* COMPONENTES DEL FORMULARIO */
     private JTextField txtNombreUsuario;
     private JTextField txtCorreo;
@@ -68,14 +65,14 @@ public class PanelRegistro extends JPanel {
         titulo.setAlignmentX(CENTER_ALIGNMENT);
 
         // Campos de entrada
-        txtNombreUsuario = crearCampoTexto(PLACEHOLDER);
-        txtCorreo = crearCampoTexto(PLACEHOLDER);
-        txtCelular = crearCampoTexto(PLACEHOLDER);
-        txtIdentificacion = crearCampoTexto(PLACEHOLDER);
-        txtDireccion = crearCampoTexto(PLACEHOLDER);
+        txtNombreUsuario = crearCampoTexto("Input");
+        txtCorreo = crearCampoTexto("Input");
+        txtCelular = crearCampoTexto("Input");
+        txtIdentificacion = crearCampoTexto("Input");
+        txtDireccion = crearCampoTexto("Input");
         
         txtContrasenia = new JPasswordField();
-        configurarEstiloCampo(txtContrasenia, PLACEHOLDER);
+        configurarEstiloCampo(txtContrasenia, "Input");
         txtContrasenia.setEchoChar((char) 0);
 
         // Únicamente dos tipos de roles
@@ -203,33 +200,27 @@ public class PanelRegistro extends JPanel {
 
     /* GETTERS */
     public String getNombreUsuario() {
-        return textoIngresado(txtNombreUsuario);
+        return txtNombreUsuario.getText().trim();
     }
 
     public String getCorreo() {
-        return textoIngresado(txtCorreo);
+        return txtCorreo.getText().trim();
     }
 
     public String getCelular() {
-        return textoIngresado(txtCelular);
+        return txtCelular.getText().trim();
     }
 
     public String getIdentificacion() {
-        return textoIngresado(txtIdentificacion);
+        return txtIdentificacion.getText().trim();
     }
 
     public String getDireccion() {
-        return textoIngresado(txtDireccion);
+        return txtDireccion.getText().trim();
     }
 
     public String getContrasenia() {
-        return textoIngresado(txtContrasenia);
-    }
-
-    /** Devuelve "" si el campo solo muestra el texto guía. */
-    private String textoIngresado(JTextField campo) {
-        String texto = campo.getText();
-        return PLACEHOLDER.equals(texto) && Color.GRAY.equals(campo.getForeground()) ? "" : texto.trim();
+        return new String(txtContrasenia.getPassword());
     }
 
     public String getTipoUsuario() {
@@ -241,17 +232,17 @@ public class PanelRegistro extends JPanel {
     }
 
     public void limpiarCampos() {
-        txtNombreUsuario.setText(PLACEHOLDER);
+        txtNombreUsuario.setText("Input");
         txtNombreUsuario.setForeground(Color.GRAY);
-        txtCorreo.setText(PLACEHOLDER);
+        txtCorreo.setText("Input");
         txtCorreo.setForeground(Color.GRAY);
-        txtCelular.setText(PLACEHOLDER);
+        txtCelular.setText("Input");
         txtCelular.setForeground(Color.GRAY);
-        txtIdentificacion.setText(PLACEHOLDER);
+        txtIdentificacion.setText("Input");
         txtIdentificacion.setForeground(Color.GRAY);
-        txtDireccion.setText(PLACEHOLDER);
+        txtDireccion.setText("Input");
         txtDireccion.setForeground(Color.GRAY);
-        txtContrasenia.setText(PLACEHOLDER);
+        txtContrasenia.setText("Input");
         txtContrasenia.setForeground(Color.GRAY);
         txtContrasenia.setEchoChar((char) 0);
         lblEstado.setText(" ");

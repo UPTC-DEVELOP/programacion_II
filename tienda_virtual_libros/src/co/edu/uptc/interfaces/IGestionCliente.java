@@ -26,9 +26,6 @@ public interface IGestionCliente {
     /** @return el cliente o null si no existe. */
     Cliente buscarCliente(String identificacion);
 
-    /** @return el cliente o null si no existe. */
-    Cliente buscarClientePorCorreo(String correo);
-
     /** @return el cliente si correo y contraseña coinciden, null en otro caso. */
     Cliente autenticar(String correo, String contrasenia);
 }

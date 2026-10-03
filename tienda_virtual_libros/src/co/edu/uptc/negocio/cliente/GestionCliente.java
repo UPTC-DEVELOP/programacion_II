@@ -57,11 +57,6 @@ public class GestionCliente implements IGestionCliente {
 	    return persistencia.buscar(identificacion);
 	}
 
-	@Override
-	public Cliente buscarClientePorCorreo(String correo) {
-	    return persistencia.buscarPorCorreo(correo.trim());
-	}
-
 	/**
 	 * La identificación y el tipo de cliente no cambian; si la contraseña
 	 * viene vacía se conserva la anterior.

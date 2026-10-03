@@ -6,23 +6,18 @@ import co.edu.uptc.gui.PanelRegistro;
 import co.edu.uptc.gui.admin.VentanaPrincipalAdmin;
 import co.edu.uptc.gui.cliente.VentanaPrincipalCliente;
 import co.edu.uptc.gui.eventos.admin.ControladorAdmin;
-import co.edu.uptc.interfaces.IAdministradorRepositorio;
 import co.edu.uptc.interfaces.IAuditoria;
 import co.edu.uptc.interfaces.IClienteRepositorio;
 import co.edu.uptc.interfaces.IConsultaVentas;
-import co.edu.uptc.interfaces.IGestionAcceso;
 import co.edu.uptc.interfaces.IGestionCliente;
 import co.edu.uptc.interfaces.IGestionLibro;
 import co.edu.uptc.interfaces.IGestionReporte;
 import co.edu.uptc.interfaces.ILibroRepositorio;
 import co.edu.uptc.interfaces.IValidadorLibro;
-import co.edu.uptc.modelo.Rol;
-import co.edu.uptc.negocio.acceso.GestionAcceso;
 import co.edu.uptc.negocio.admin.GestionLibro;
 import co.edu.uptc.negocio.admin.GestionReporte;
 import co.edu.uptc.negocio.admin.ValidadorLibro;
 import co.edu.uptc.negocio.cliente.GestionCliente;
-import co.edu.uptc.persistencia.AdministradorRepositorioMemoria;
 import co.edu.uptc.persistencia.AuditoriaMemoria;
 import co.edu.uptc.persistencia.ConsultaVentasMemoria;
 import co.edu.uptc.persistencia.LibroRepositorioMemoria;
@@ -53,12 +48,10 @@ import javax.swing.SwingUtilities;
 
 public class AppLibros {
 
-    // Usuarios: se crean UNA vez y se comparten entre el login, el módulo admin y el
-    // de cliente (y entre sesiones), para que los registros no se pierdan al cerrar sesión.
+    // Clientes: se crean UNA vez y se comparten entre el módulo admin y el de cliente
+    // (y entre sesiones), para que el CRUD no se pierda al cerrar sesión.
     private static final IClienteRepositorio persistenciaClientes = new LocalCliente();
-    private static final IAdministradorRepositorio persistenciaAdministradores = new AdministradorRepositorioMemoria();
     private static final IGestionCliente gestionCliente = new GestionCliente(persistenciaClientes);
-    private static final IGestionAcceso gestionAcceso = new GestionAcceso(gestionCliente, persistenciaAdministradores);
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(AppLibros::mostrarPantallaAcceso);
@@ -81,10 +74,10 @@ public class AppLibros {
         panelContenedor.add(panelRegistro, "VISTA_REGISTRO");
 
         // Recibe el rol autorizado tras validar login
-        Consumer<Rol> alAutenticar = (Rol rol) -> {
+        Consumer<String> alAutenticar = (String rol) -> {
             dialogoAcceso.dispose();
 
-            if (rol == Rol.ADMINISTRADOR) {
+            if ("Administrador".equalsIgnoreCase(rol)) {
                 iniciarModoAdmin();
             } else {
                 iniciarModoCliente(panelLogin.getCorreo());
@@ -95,8 +88,7 @@ public class AppLibros {
             panelLogin, 
             panelRegistro, 
             cardLayout, 
-            panelContenedor,
-            gestionAcceso,
+            panelContenedor, 
             alAutenticar
         );
 
