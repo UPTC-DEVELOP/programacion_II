@@ -18,8 +18,8 @@ import co.edu.uptc.gui.eventos.admin.EventoAdmin;
 /**
  * CLASE PanelMenuLateral  (paquete: gui)  extends JPanel
  * ---------------------------------------------------------------------------
- * Menú izquierdo del prototipo con 4 botones, en este orden:
- *   Dashboard | Manage Books | Reportes | Registro libros
+ * Menú izquierdo del prototipo con 5 botones, en este orden:
+ *   Dashboard | Manage Books | Reportes | Registro libros | Clientes
  * Layout: BoxLayout vertical (apila los botones de arriba hacia abajo, cada uno
  * con la misma altura fija y separados por un espacio) dentro de un panel con
  * borde y relleno, como en el prototipo. Cada botón dispara un EventoAdmin.
@@ -42,7 +42,8 @@ class PanelMenuLateral extends JPanel {
             Estilos.boton("Dashboard",      EventoAdmin.IR_DASHBOARD.name(), null),
             Estilos.boton("Manage Books",   EventoAdmin.IR_GESTION_LIBROS.name(), null),
             Estilos.boton("Reportes",       EventoAdmin.IR_REPORTES.name(), null),
-            Estilos.boton("Registro libros", EventoAdmin.REGISTRAR_LIBRO.name(), null)
+            Estilos.boton("Registro libros", EventoAdmin.REGISTRAR_LIBRO.name(), null),
+            Estilos.boton("Clientes",       EventoAdmin.IR_CLIENTES.name(), null)
         };
         for (JButton b : botones) {
             b.setAlignmentX(Component.CENTER_ALIGNMENT);

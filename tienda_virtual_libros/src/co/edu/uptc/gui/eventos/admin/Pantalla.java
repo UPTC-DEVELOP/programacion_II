@@ -12,5 +12,6 @@ public enum Pantalla {
 
 	DASHBOARD,
     GESTION_LIBROS,
-    REPORTES
+    REPORTES,
+    CLIENTES
 }

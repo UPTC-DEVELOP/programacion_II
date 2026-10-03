@@ -9,10 +9,12 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import co.edu.uptc.gui.cliente.PanelCliente;
 import co.edu.uptc.gui.eventos.admin.Pantalla;
 import co.edu.uptc.gui.interfaz.admin.IVistaAdmin;
 import co.edu.uptc.negocio.admin.dto.LibroDto;
 import co.edu.uptc.negocio.admin.dto.VentaResumenDto;
+import co.edu.uptc.negocio.cliente.GestionCliente;
 
 
 
@@ -25,7 +27,7 @@ import co.edu.uptc.negocio.admin.dto.VentaResumenDto;
  *
  * Estructura (BorderLayout):
  *   WEST   -> PanelMenuLateral (4 botones)
- *   CENTER -> panel con CardLayout que alterna: Dashboard / Manage Books / Reportes
+ *   CENTER -> panel con CardLayout que alterna: Dashboard / Manage Books / Reportes / Clientes
  *
  * ¿Por qué implementa IVistaAdmin? Para que el controlador la maneje a través
  * de la interfaz (DIP). Esta clase solo DELEGA en sus paneles: no contiene
@@ -42,9 +44,11 @@ public class VentanaPrincipalAdmin extends JFrame implements IVistaAdmin {
     private final PanelDashboard dashboard = new PanelDashboard();
     private final PanelGestionLibros gestionLibros = new PanelGestionLibros();
     private final PanelReportes reportes = new PanelReportes();
+    private final PanelCliente clientes;
 
-    public VentanaPrincipalAdmin() {
+    public VentanaPrincipalAdmin(GestionCliente gestionCliente) {
         super("Admin Dashboard");
+        clientes = new PanelCliente(gestionCliente);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout(8, 0));
         getContentPane().setBackground(Estilos.GRIS_FONDO);
@@ -53,6 +57,7 @@ public class VentanaPrincipalAdmin extends JFrame implements IVistaAdmin {
         contenedor.add(dashboard, Pantalla.DASHBOARD.name());
         contenedor.add(gestionLibros, Pantalla.GESTION_LIBROS.name());
         contenedor.add(reportes, Pantalla.REPORTES.name());
+        contenedor.add(clientes, Pantalla.CLIENTES.name());
 
         add(menu, BorderLayout.WEST);
         add(contenedor, BorderLayout.CENTER);

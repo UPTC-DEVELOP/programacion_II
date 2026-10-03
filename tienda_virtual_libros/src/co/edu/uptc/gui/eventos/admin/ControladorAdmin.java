@@ -56,6 +56,7 @@ public class ControladorAdmin implements ActionListener {
             case IR_GESTION_LIBROS: irAGestionLibros(); break;
             case IR_REPORTES:       vista.mostrarPantalla(Pantalla.REPORTES); break;
             case REGISTRAR_LIBRO:   registrarLibro();   break;
+            case IR_CLIENTES:       vista.mostrarPantalla(Pantalla.CLIENTES); break;
             case BUSCAR_LIBRO:      buscarLibros();     break;
             case EDITAR_LIBRO:      editarLibro();      break;
             case ELIMINAR_LIBRO:    eliminarLibro();    break;

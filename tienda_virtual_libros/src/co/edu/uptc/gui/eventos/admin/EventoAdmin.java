@@ -15,11 +15,12 @@ package co.edu.uptc.gui.eventos.admin;
 
 
 public enum EventoAdmin {
-	 // Menú lateral (prototipo: Dashboard, Manage Books, Reportes, Registro libros)
+	 // Menú lateral (prototipo: Dashboard, Manage Books, Reportes, Registro libros, Clientes)
     IR_DASHBOARD,
     IR_GESTION_LIBROS,
     IR_REPORTES,
     REGISTRAR_LIBRO,
+    IR_CLIENTES,
 
     // Pantalla "Administración de Libros"
     BUSCAR_LIBRO,

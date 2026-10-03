@@ -1,18 +1,10 @@
 package co.edu.uptc;
 
-import java.awt.CardLayout;
-import java.util.function.Consumer;
-
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
 import co.edu.uptc.gui.EventoLogin;
 import co.edu.uptc.gui.PanelLogin;
 import co.edu.uptc.gui.PanelRegistro;
 import co.edu.uptc.gui.admin.VentanaPrincipalAdmin;
+import co.edu.uptc.gui.cliente.VentanaPrincipalCliente;
 import co.edu.uptc.gui.eventos.admin.ControladorAdmin;
 import co.edu.uptc.gui.interfaz.admin.IAuditoria;
 import co.edu.uptc.gui.interfaz.admin.IConsultaVentas;
@@ -20,12 +12,21 @@ import co.edu.uptc.gui.interfaz.admin.IGestionLibro;
 import co.edu.uptc.gui.interfaz.admin.IGestionReporte;
 import co.edu.uptc.gui.interfaz.admin.ILibroRepositorio;
 import co.edu.uptc.gui.interfaz.admin.IValidadorLibro;
+import co.edu.uptc.gui.interfaz.cliente.IGestionCliente;
 import co.edu.uptc.negocio.admin.GestionLibro;
 import co.edu.uptc.negocio.admin.GestionReporte;
 import co.edu.uptc.negocio.admin.ValidadorLibro;
 import co.edu.uptc.negocio.admin.memoria.AuditoriaMemoria;
 import co.edu.uptc.negocio.admin.memoria.ConsultaVentasMemoria;
 import co.edu.uptc.negocio.admin.memoria.LibroRepositorioMemoria;
+import co.edu.uptc.negocio.cliente.GestionCliente;
+import co.edu.uptc.negocio.cliente.memoria.ClienteRepositorioMemoria;
+import java.awt.CardLayout;
+import java.util.function.Consumer;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 /**
  * CLASE AppLibros  (paquete raíz)  -  PUNTO DE ENTRADA (main)
@@ -37,14 +38,19 @@ import co.edu.uptc.negocio.admin.memoria.LibroRepositorioMemoria;
  *
  * PERSISTENCIA: por indicación de la guía (unidad 2) todavía NO hay archivos ni
  * base de datos. Se usan implementaciones EN MEMORIA de las interfaces. Para
- * activar la persistencia más adelante basta cambiar estas 3 líneas por
- * LibroRepositorioJson / ConsultaVentasJson / AuditoriaTxt.
+ * activar la persistencia más adelante basta cambiar estas líneas por
+ * LibroRepositorioJson / ConsultaVentasJson / AuditoriaTxt / ClienteRepositorioJdbc...
  *
  * Orden de armado (de abajo hacia arriba, igual que las capas):
  *   datos en memoria -> negocio -> vista -> controlador -> conexión de eventos
  */
 
 public class AppLibros {
+
+    // Clientes: se crean UNA vez y se comparten entre el módulo admin y el de cliente
+    // (y entre sesiones), para que el CRUD no se pierda al cerrar sesión.
+    private static final IGestionCliente persistenciaClientes = new ClienteRepositorioMemoria();
+    private static final GestionCliente gestionCliente = new GestionCliente(persistenciaClientes);
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(AppLibros::mostrarPantallaAcceso);
@@ -73,7 +79,7 @@ public class AppLibros {
             if ("Administrador".equalsIgnoreCase(rol)) {
                 iniciarModoAdmin();
             } else {
-                iniciarModoCliente();
+                iniciarModoCliente(panelLogin.getCorreo());
             }
         };
 
@@ -101,7 +107,7 @@ public class AppLibros {
         IGestionReporte gestionReporte = new GestionReporte(repositorio, ventas);
 
         // 3) CAPA DE PRESENTACIÓN ADMIN
-        VentanaPrincipalAdmin ventana = new VentanaPrincipalAdmin();
+        VentanaPrincipalAdmin ventana = new VentanaPrincipalAdmin(gestionCliente);
         ControladorAdmin controlador = new ControladorAdmin(ventana, gestionLibro, gestionReporte);
 
         // 4) CONEXIÓN Y ARRANQUE
@@ -109,16 +115,9 @@ public class AppLibros {
         controlador.iniciar();
         ventana.setVisible(true);
     }
-//JOptionPane de prueba para el módulo de cliente, se puede reemplazar por la ventana principal del cliente cuando esté disponible.
-    private static void iniciarModoCliente() {
-        JOptionPane.showMessageDialog(
-            null, 
-            "Bienvenido al Módulo de Cliente.\nCargando catálogo de libros...", 
-            "Módulo Cliente", 
-            JOptionPane.INFORMATION_MESSAGE
-        );
-        // Descomentar al conectar la vista cliente
-        // VentanaPrincipalCliente ventanaCliente = new VentanaPrincipalCliente();
-        // ventanaCliente.setVisible(true);
+
+    /** Módulo de cliente: CRUD de clientes. "Cerrar sesión" vuelve al login. */
+    private static void iniciarModoCliente(String usuario) {
+        new VentanaPrincipalCliente(usuario, gestionCliente, AppLibros::mostrarPantallaAcceso).setVisible(true);
     }
 }
