@@ -120,16 +120,16 @@ public class LibroRepositorioJson implements LibroRepositorio {
     private void cargarDatosSemilla() {
         agregarSemilla(LibroFactory.crear(FormatoLibro.FISICO, "9789586600001",
                 "Cien años de soledad", "Gabriel García Márquez", 1967, "Novela",
-                "Editorial Sudamericana", 471, 50000, 150, 10));
+                "Editorial Sudamericana", 471, 50000, 150, 0));
         agregarSemilla(LibroFactory.crear(FormatoLibro.FISICO, "9788437604947",
                 "Don Quijote de la Mancha", "Miguel de Cervantes", 1605, "Clásico",
                 "Cátedra", 1200, 45000, 85, 0));
         agregarSemilla(LibroFactory.crear(FormatoLibro.DIGITAL, "9780132350884",
                 "Clean Code", "Robert C. Martin", 2008, "Tecnología",
-                "Prentice Hall", 0, 110000, 45, 15));
+                "Prentice Hall", 0, 110000, 45, 0));
         agregarSemilla(LibroFactory.crear(FormatoLibro.FISICO, "9789589585141",
                 "La María", "Jorge Isaacs", 1867, "Romántica",
-                "Editorial Norma", 320, 35000, 210, 5));
+                "Editorial Norma", 320, 35000, 210, 0));
     }
 
     private void agregarSemilla(Libro libro) {
