@@ -24,8 +24,11 @@ import co.edu.uptc.excepciones.ReglaNegocioException;
 /**
  * CRUD de clientes: Buscar (por identificación), Nuevo, Actualizar y Eliminar.
  * Actualizar y Eliminar trabajan sobre la fila seleccionada en la tabla.
+ * Todos los botones (del panel y del diálogo) los escucha EventoCliente, que
+ * llama a los métodos públicos de este panel. El panel usa la capa de negocio
+ * solo a través de la interfaz IGestionCliente.
  */
-public class PanelCliente extends JPanel implements EventoCliente {
+public class PanelCliente extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private static final int COLUMNA_IDENTIFICACION = 1;
@@ -40,11 +43,14 @@ public class PanelCliente extends JPanel implements EventoCliente {
 	private DefaultTableModel modeloTabla;
 	private final IGestionCliente gestionCliente;
 	private JTable tablaClientes;
+	private EventoCliente evento;
+	private DialogoCliente dialogoCliente;
 
 	//Constructor: la gestion de clientes llega desde AppLibros (inyeccion de dependencias)
     public PanelCliente(IGestionCliente gestionCliente) {
         setLayout(new BorderLayout());
         this.gestionCliente = gestionCliente;
+        this.evento = new EventoCliente(this);
 
         crearPanelSuperior();
         crearTabla();
@@ -75,15 +81,22 @@ public class PanelCliente extends JPanel implements EventoCliente {
 
 
 	    add(panelSuperior, BorderLayout.NORTH);
-	    btnBuscar.addActionListener(e -> buscarCliente());
-	    txtIdentificacion.addActionListener(e -> buscarCliente());   // Enter = buscar
-	    btnNuevo.addActionListener(e -> abrirDialogoCliente(null));
-	    btnActualizar.addActionListener(e -> actualizarCliente());
-	    btnEliminar.addActionListener(e -> eliminarCliente());
+
+	    btnBuscar.setActionCommand(EventoCliente.BUSCAR);
+	    txtIdentificacion.setActionCommand(EventoCliente.BUSCAR);   // Enter = buscar
+	    btnNuevo.setActionCommand(EventoCliente.CREAR);
+	    btnActualizar.setActionCommand(EventoCliente.ACTUALIZAR);
+	    btnEliminar.setActionCommand(EventoCliente.ELIMINAR);
+
+	    btnBuscar.addActionListener(evento);
+	    txtIdentificacion.addActionListener(evento);
+	    btnNuevo.addActionListener(evento);
+	    btnActualizar.addActionListener(evento);
+	    btnEliminar.addActionListener(evento);
 	}
 
 		//Busqueda vacia = mostrar todos
-		private void buscarCliente() {
+		public void buscarCliente() {
 			String identificacion = txtIdentificacion.getText().trim();
 			if (identificacion.isEmpty()) {
 				listarClientes();
@@ -98,14 +111,54 @@ public class PanelCliente extends JPanel implements EventoCliente {
 			mostrarEnTabla(Collections.singletonList(cliente));
 		}
 
-		private void actualizarCliente() {
+		//Boton Nuevo: formulario vacio
+		public void lanzarDialogoCliente() {
+			abrirDialogoCliente(null);
+		}
+
+		//Boton Actualizar: formulario con los datos de la fila seleccionada
+		public void actualizarClienteDialogo() {
 			Cliente cliente = clienteSeleccionado();
 			if (cliente != null) {
 				abrirDialogoCliente(cliente);
 			}
 		}
 
-		private void eliminarCliente() {
+		//Boton Guardar del dialogo en modo Nuevo
+		public void crearCliente() {
+			try {
+				gestionCliente.agregarCliente(dialogoCliente.getCliente());
+			} catch (ReglaNegocioException ex) {
+				//Se deja el formulario abierto para que el usuario corrija
+				dialogoCliente.mostrarError(ex.getMessage());
+				return;
+			}
+			cerrarDialogoCliente();
+			txtIdentificacion.setText("");
+			listarClientes();
+		}
+
+		//Boton Guardar del dialogo en modo Actualizar
+		public void actualizarCliente() {
+			try {
+				gestionCliente.actualizarCliente(dialogoCliente.getCliente());
+			} catch (ReglaNegocioException ex) {
+				dialogoCliente.mostrarError(ex.getMessage());
+				return;
+			}
+			cerrarDialogoCliente();
+			txtIdentificacion.setText("");
+			listarClientes();
+		}
+
+		public void cerrarDialogoCliente() {
+			if (dialogoCliente != null) {
+				dialogoCliente.dispose();
+				dialogoCliente = null;
+			}
+		}
+
+		public void eliminarCliente() {
 			Cliente cliente = clienteSeleccionado();
 			if (cliente == null) {
 				return;
@@ -170,8 +223,8 @@ public class PanelCliente extends JPanel implements EventoCliente {
 	    }
 
 	    private void abrirDialogoCliente(Cliente clienteEditar) {
-	        DialogoCliente dialogo = new DialogoCliente(gestionCliente, this, clienteEditar);
-	        dialogo.setVisible(true);
+	        dialogoCliente = new DialogoCliente(evento, clienteEditar);
+	        dialogoCliente.setVisible(true);
 	    }
 
 	    private void listarClientes() {
@@ -196,14 +249,5 @@ public class PanelCliente extends JPanel implements EventoCliente {
 	    		modeloTabla.addRow(fila);
 
 	    	}
-	    }
-
-	    @Override
-	    public void ejecutarEvento(String evento) {
-	        if ("GUARDAR".equals(evento)) {
-	        	txtIdentificacion.setText("");
-	        	listarClientes();
-
-	        }
 	    }
 }
