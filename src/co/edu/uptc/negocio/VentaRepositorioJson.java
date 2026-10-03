@@ -15,11 +15,22 @@ public class VentaRepositorioJson implements VentaRepositorio {
     }
 
     public boolean existenVentasDelLibro(String isbn) {
-        if (!Files.exists(archivo)) {
+        if (existeEnArchivo(archivo, isbn)) {
+            return true;
+        }
+        // Desde V3 las compras completas se almacenan en compras.json.
+        Path compras = archivo.getParent() == null
+                ? java.nio.file.Paths.get("compras.json")
+                : archivo.getParent().resolve("compras.json");
+        return existeEnArchivo(compras, isbn);
+    }
+
+    private boolean existeEnArchivo(Path ruta, String isbn) {
+        if (!Files.exists(ruta)) {
             return false;
         }
         try {
-            String contenido = new String(Files.readAllBytes(archivo), StandardCharsets.UTF_8);
+            String contenido = new String(Files.readAllBytes(ruta), StandardCharsets.UTF_8);
             for (Map<String, String> item : JsonUtil.desdeJson(contenido)) {
                 if (isbn.equals(item.get("isbn"))) {
                     return true;
@@ -27,7 +38,7 @@ public class VentaRepositorioJson implements VentaRepositorio {
             }
             return false;
         } catch (IOException | IllegalArgumentException e) {
-            throw new PersistenciaException("No se pudo leer el archivo de ventas.", e);
+            throw new PersistenciaException("No se pudo leer el archivo de ventas o compras.", e);
         }
     }
 }

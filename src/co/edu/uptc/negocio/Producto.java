@@ -25,8 +25,13 @@ public abstract class Producto {
         return redondear(precioBase * (porcentajeDescuento / 100.0));
     }
 
-    public double calcularPrecioFinal() {
+    public double calcularPrecioSinIva() {
         double precioConDescuento = precioBase * (1 - porcentajeDescuento / 100.0);
+        return redondear(precioConDescuento);
+    }
+
+    public double calcularPrecioFinal() {
+        double precioConDescuento = calcularPrecioSinIva();
         double precioConIva = precioConDescuento * (1 + impuestoIVA / 100.0);
         return redondear(precioConIva);
     }
