@@ -1,0 +1,50 @@
+[
+  {
+    "isbn": "9789586600001",
+    "titulo": "Cien años de soledad",
+    "autor": "Gabriel García Márquez",
+    "anioPublicacion": 1967,
+    "categoria": "Novela",
+    "editorial": "Editorial Sudamericana",
+    "numeroPaginas": 471,
+    "precioBase": 50000.0,
+    "cantidadDisponible": 150,
+    "formato": "FISICO"
+  },
+  {
+    "isbn": "9788437604947",
+    "titulo": "Don Quijote de la Mancha",
+    "autor": "Miguel de Cervantes",
+    "anioPublicacion": 1605,
+    "categoria": "Clásico",
+    "editorial": "Cátedra",
+    "numeroPaginas": 1200,
+    "precioBase": 45000.0,
+    "cantidadDisponible": 85,
+    "formato": "FISICO"
+  },
+  {
+    "isbn": "9780132350884",
+    "titulo": "Clean Code",
+    "autor": "Robert C. Martin",
+    "anioPublicacion": 2008,
+    "categoria": "Tecnología",
+    "editorial": "Prentice Hall",
+    "numeroPaginas": 0,
+    "precioBase": 110000.0,
+    "cantidadDisponible": 45,
+    "formato": "DIGITAL"
+  },
+  {
+    "isbn": "9789589585141",
+    "titulo": "La María",
+    "autor": "Jorge Isaacs",
+    "anioPublicacion": 1867,
+    "categoria": "Romántica",
+    "editorial": "Editorial Norma",
+    "numeroPaginas": 320,
+    "precioBase": 35000.0,
+    "cantidadDisponible": 210,
+    "formato": "FISICO"
+  }
+]
