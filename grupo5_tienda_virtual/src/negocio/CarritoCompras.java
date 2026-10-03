@@ -96,9 +96,16 @@ public class CarritoCompras {
         return total;
     }
 
+ // CALCULAR TOTAL APLICANDO DESCUENTO SOBRE EL SUBTOTAL
     public double calcularTotal(double descuento) {
-        double total = calcularTotal();
-        return total - total * descuento;
+
+        double subtotal = calcularSubtotal();
+
+        double valorDescuento = subtotal * descuento;
+
+        double impuestos = calcularIVA19() + calcularIVA5();
+
+        return subtotal - valorDescuento + impuestos;
     }
 
     public Map<Libro, Integer> getItems() {
