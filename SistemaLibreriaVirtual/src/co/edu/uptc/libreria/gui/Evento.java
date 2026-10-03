@@ -3,22 +3,28 @@ package co.edu.uptc.libreria.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import co.edu.uptc.libreria.gui.ventanaPrincipal;
+
 public class Evento implements ActionListener {
 
+	public final static String CANCELAR = "cancelar";
 	public final static String ELIMINAR_CLI = "Eliminar_CLI";
 	public final static String VER_CLI = "Ver_CLI";
 	public final static String ACTUALIZAR_CLI = "Actualizar_CLI";
 	public final static String CREAR_CLI = "Nuevo_CLI";
 	public final static String BUSCAR_CLI = "Buscar_CLI";
 	public final static String LIMPIAR_CLI = "Limpiar_CLI";
+	
+    public final static String GUARDAR = "Guardar";
+    public final static String EDITAR = "Editar";
 
 	public final static String GUARDAR_CLI = "Guardar_CLI";
 	public final static String EDITAR_CLI = "Editar_CLI";
 	public final static String CANCELAR_CLI = "Cancelar_CLI";
 
-	private VentanaPrincipal vent;
+	private ventanaPrincipal vent;
 
-	public Evento(VentanaPrincipal v) {
+	public Evento(ventanaPrincipal v) {
 		vent = v;
 	}
 

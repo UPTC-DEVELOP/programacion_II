@@ -6,8 +6,11 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import co.edu.uptc.tienda.modelo.Cliente;
-import co.edu.uptc.tienda.negocio.TiendaConfig;
+import co.edu.uptc.libreria.modelo.Cliente;
+import co.edu.uptc.libreria.negocio.TiendaConfig;
+import co.edu.uptc.libreria.clientes.gui.PanelClientes;
+import co.edu.uptc.libreria.clientes.gui.DialogoCliente;
+import co.edu.uptc.libreria.gui.ventanaPrincipal;
 
 public class ventanaPrincipal extends JFrame {
 
@@ -16,7 +19,7 @@ public class ventanaPrincipal extends JFrame {
 	private PanelClientes panClientes;
 	private DialogoCliente dialogoCliente;
 
-	public VentanaPrincipal() {
+	public ventanaPrincipal() {
 		setTitle("Tienda Virtual de Libros");
 		setSize(820, 480);
 		setLayout(new BorderLayout());
@@ -32,7 +35,7 @@ public class ventanaPrincipal extends JFrame {
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
-			VentanaPrincipal v = new VentanaPrincipal();
+			ventanaPrincipal v = new ventanaPrincipal();
 			v.setVisible(Boolean.TRUE);
 		});
 	}

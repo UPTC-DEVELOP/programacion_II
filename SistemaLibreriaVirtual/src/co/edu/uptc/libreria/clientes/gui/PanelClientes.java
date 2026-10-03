@@ -2,7 +2,8 @@ package co.edu.uptc.libreria.clientes.gui;
 
 import java.util.List;
 
-import co.edu.uptc.tienda.modelo.Cliente;
+import co.edu.uptc.libreria.modelo.Cliente;
+import co.edu.uptc.libreria.gui.Evento;
 
 public class PanelClientes extends PanelCentral {
 

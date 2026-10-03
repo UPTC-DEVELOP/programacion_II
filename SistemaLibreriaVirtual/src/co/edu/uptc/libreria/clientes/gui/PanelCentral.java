@@ -1,8 +1,10 @@
 package co.edu.uptc.libreria.clientes.gui;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.List;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -10,6 +12,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+
+import co.edu.uptc.libreria.gui.Evento;
 
 /**
  * Panel base con botones CRUD, buscador y tabla. Cada entidad (clientes,
@@ -80,7 +84,7 @@ public abstract class PanelCentral extends JPanel {
 		agregarIdentificadorComandoBoton();
 	}
 
-	/** Valor de la fila seleccionada en la columna indicada. */
+	//Valor de la fila seleccionada en la columna indicada
 	protected Object getValorSeleccionado(int columna) {
 		int fila = tblDatos.getSelectedRow();
 		if (fila < 0) {

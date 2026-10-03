@@ -5,26 +5,29 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import co.edu.uptc.tienda.modelo.Cliente;
-import co.edu.uptc.tienda.modelo.enums.TipoCliente;
+import co.edu.uptc.libreria.modelo.Cliente;
+import co.edu.uptc.libreria.modelo.enums.TipoCliente;
+import co.edu.uptc.libreria.gui.Evento;
 
 public class DialogoCliente extends JDialog {
 
-	private boolean isCrear;
-	private JTextField txNombre;
-	private JTextField txCorreo;
-	private JTextField txDireccion;
-	private JTextField txTelefono;
-	private JComboBox<TipoCliente> cbxTipo;
-	private JButton btnGuardar;
-	private JButton btnCancelar;
+	protected boolean isCrear;
+	protected JTextField txNombre;
+	protected JTextField txCorreo;
+	protected JTextField txDireccion;
+	protected JTextField txTelefono;
+	protected JComboBox<TipoCliente> cbxTipo;
+	protected JButton btnGuardar;
+	protected JButton btnCancelar;
 
 	public DialogoCliente(Frame propietario, Evento evento, String titulo, boolean isCrear) {
 		super(propietario, titulo, true);
@@ -32,7 +35,7 @@ public class DialogoCliente extends JDialog {
 		setSize(400, 280);
 		setLayout(new BorderLayout());
 
-		txNombre = new JTextField();
+		txNombre = new JFormattedTextField();
 		txCorreo = new JTextField();
 		txDireccion = new JTextField();
 		txTelefono = new JTextField();
@@ -51,8 +54,8 @@ public class DialogoCliente extends JDialog {
 		pCampos.add(new JLabel("Tipo de cliente"));
 		pCampos.add(cbxTipo);
 
-		btnGuardar = new JButton("Guardar");
-		btnCancelar = new JButton("Cancelar");
+		btnGuardar = new JButton(Evento.GUARDAR);
+		btnCancelar = new JButton(Evento.CANCELAR);
 		btnGuardar.addActionListener(evento);
 		btnCancelar.addActionListener(evento);
 		asignarComandoBotones();
@@ -75,7 +78,7 @@ public class DialogoCliente extends JDialog {
 		}
 	}
 
-	/** Arma un Cliente con lo digitado; las reglas de negocio se validan en GestionCliente. */
+	//Arma un Cliente con lo digitado; las reglas de negocio se validan en GestionCliente
 	public Cliente capturarDatos() {
 		Cliente nuevo = new Cliente();
 		nuevo.setNombreCompleto(txNombre.getText());
