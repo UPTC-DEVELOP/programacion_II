@@ -10,6 +10,7 @@ import javax.swing.JTextField;
 import excepciones.ExcepcionValidacion;
 import modelo.Libro;
 import modelo.RepositorioLibros;
+import modelo.RepositorioUsuarios;
 import vista.VistaCliente;
 import vista.VistaInicio;
 import vista.VistaLogin;
@@ -43,6 +44,11 @@ public class ControladorInicio implements ActionListener {
     }
     private void abrirGestionClientes() {
         VistaCliente vistaCliente = new VistaCliente();
+        RepositorioUsuarios repositorioUsuarios =
+                new RepositorioUsuarios();
+        new ControladorCliente(
+                vistaCliente,
+                repositorioUsuarios);
         vistaCliente.setVisible(true);
     }
     private void anadirLibro() {
@@ -52,7 +58,8 @@ public class ControladorInicio implements ActionListener {
                 new JComboBox<String>(
                         new String[] { "Físico", "Digital" });
         JTextField campoPrecio = new JTextField(20);
-        JPanel formulario = new JPanel(new GridLayout(4, 2, 8, 8));
+        JPanel formulario =
+                new JPanel(new GridLayout(4, 2, 8, 8));
         formulario.add(new JLabel("Título:"));
         formulario.add(campoTitulo);
         formulario.add(new JLabel("Autor:"));

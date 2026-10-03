@@ -53,4 +53,43 @@ public class VistaCliente extends JFrame {
         add(formulario, BorderLayout.CENTER);
         add(botones, BorderLayout.SOUTH);
     }
+    public JButton getBotonBuscar() {
+        return botonBuscar;
+    }
+    public JButton getBotonActualizar() {
+        return botonActualizar;
+    }
+    public JButton getBotonEliminar() {
+        return botonEliminar;
+    }
+    public JButton getBotonListar() {
+        return botonListar;
+    }
+    public String getNombre() {
+        return campoNombre.getText().trim();
+    }
+    public String getCorreo() {
+        return campoCorreo.getText().trim();
+    }
+    public String getDireccion() {
+        return campoDireccion.getText().trim();
+    }
+    public String getTelefono() {
+        return campoTelefono.getText().trim();
+    }
+    public String getTipoCliente() {
+        return comboTipoCliente.getSelectedItem().toString();
+    }
+    public void setNombre(String nombre) {
+        campoNombre.setText(nombre);
+    }
+    public void setDireccion(String direccion) {
+        campoDireccion.setText(direccion);
+    }
+    public void setTelefono(String telefono) {
+        campoTelefono.setText(telefono);
+    }
+    public void setTipoCliente(String tipoCliente) {
+        comboTipoCliente.setSelectedItem(tipoCliente);
+    }
 }
