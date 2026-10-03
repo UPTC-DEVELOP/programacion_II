@@ -6,14 +6,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-import co.edu.uptc.gui.interfaz.admin.IAuditoria;
-import co.edu.uptc.gui.interfaz.admin.IConsultaVentas;
-import co.edu.uptc.gui.interfaz.admin.IGestionLibro;
-import co.edu.uptc.gui.interfaz.admin.ILibroRepositorio;
-import co.edu.uptc.gui.interfaz.admin.IValidadorLibro;
-import co.edu.uptc.negocio.admin.dto.FiltroLibroDto;
-import co.edu.uptc.negocio.admin.dto.LibroDto;
-import co.edu.uptc.negocio.modelo.Libro;
+import co.edu.uptc.excepciones.ReglaNegocioException;
+import co.edu.uptc.interfaces.IAuditoria;
+import co.edu.uptc.interfaces.IConsultaVentas;
+import co.edu.uptc.interfaces.IGestionLibro;
+import co.edu.uptc.interfaces.ILibroRepositorio;
+import co.edu.uptc.interfaces.IValidadorLibro;
+import co.edu.uptc.modelo.dto.FiltroLibroDto;
+import co.edu.uptc.modelo.dto.LibroDto;
+import co.edu.uptc.modelo.Libro;
 
 
 /**

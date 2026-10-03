@@ -1,7 +1,7 @@
 package co.edu.uptc.negocio.validacion;
 
-import co.edu.uptc.negocio.modelo.Categoria;
-import co.edu.uptc.negocio.modelo.Formato;
+import co.edu.uptc.modelo.Categoria;
+import co.edu.uptc.modelo.Formato;
 import co.edu.uptc.negocio.validacion.ValidadorDatos;
 
 import java.time.Year;

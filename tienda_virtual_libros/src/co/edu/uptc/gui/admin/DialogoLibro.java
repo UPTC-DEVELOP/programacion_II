@@ -24,9 +24,9 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-import co.edu.uptc.negocio.admin.dto.LibroDto;
-import co.edu.uptc.negocio.modelo.Categoria;
-import co.edu.uptc.negocio.modelo.Formato;
+import co.edu.uptc.modelo.dto.LibroDto;
+import co.edu.uptc.modelo.Categoria;
+import co.edu.uptc.modelo.Formato;
 
 
 

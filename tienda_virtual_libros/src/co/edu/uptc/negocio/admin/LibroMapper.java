@@ -1,7 +1,7 @@
 package co.edu.uptc.negocio.admin;
 
-import co.edu.uptc.negocio.admin.dto.LibroDto;
-import co.edu.uptc.negocio.modelo.Libro;
+import co.edu.uptc.modelo.dto.LibroDto;
+import co.edu.uptc.modelo.Libro;
 
 
 

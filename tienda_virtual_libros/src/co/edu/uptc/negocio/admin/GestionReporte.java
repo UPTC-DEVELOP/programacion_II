@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import co.edu.uptc.gui.interfaz.admin.IConsultaVentas;
-import co.edu.uptc.gui.interfaz.admin.IGestionReporte;
-import co.edu.uptc.gui.interfaz.admin.ILibroRepositorio;
-import co.edu.uptc.negocio.admin.dto.VentaResumenDto;
+import co.edu.uptc.interfaces.IConsultaVentas;
+import co.edu.uptc.interfaces.IGestionReporte;
+import co.edu.uptc.interfaces.ILibroRepositorio;
+import co.edu.uptc.modelo.dto.VentaResumenDto;
 
 
 /**

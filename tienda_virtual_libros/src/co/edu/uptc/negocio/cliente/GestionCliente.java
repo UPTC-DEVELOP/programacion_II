@@ -4,18 +4,19 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import co.edu.uptc.gui.interfaz.cliente.IGestionCliente;
-import co.edu.uptc.negocio.admin.ReglaNegocioException;
-import co.edu.uptc.negocio.modelo.Cliente;
+import co.edu.uptc.interfaces.IClienteRepositorio;
+import co.edu.uptc.interfaces.IGestionCliente;
+import co.edu.uptc.excepciones.ReglaNegocioException;
+import co.edu.uptc.modelo.Cliente;
 
 /**
- * CLASE GestionCliente  (paquete: negocio.cliente)
+ * CLASE GestionCliente  (paquete: negocio.cliente)  implements IGestionCliente
  * ---------------------------------------------------------------------------
  * REGLAS DE NEGOCIO de clientes: validaciones, duplicados, autenticación.
- * Depende SOLO del contrato IGestionCliente (DIP): no sabe si los datos
+ * Depende SOLO del contrato IClienteRepositorio (DIP): no sabe si los datos
  * están en RAM, en un archivo o en una base de datos.
  */
-public class GestionCliente {
+public class GestionCliente implements IGestionCliente {
 
 	/*
 	 * Mismas reglas que el login:
@@ -25,13 +26,14 @@ public class GestionCliente {
 	private static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@gmail\\.com$";
 	private static final String PASSWORD_REGEX = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&._\\-#])[A-Za-z\\d@$!%*?&._\\-#]{8,}$";
 
-	private final IGestionCliente persistencia;
+	private final IClienteRepositorio persistencia;
 
 	//constructor: inyeccion de dependencias
-	public GestionCliente(IGestionCliente persistencia) {
+	public GestionCliente(IClienteRepositorio persistencia) {
 	    this.persistencia = persistencia;
 	}
 
+	@Override
 	public void agregarCliente(Cliente cliente) throws ReglaNegocioException {
 	    validarDatos(cliente, true);
 	    if (persistencia.buscar(cliente.getIdentificacion()) != null) {
@@ -45,18 +47,26 @@ public class GestionCliente {
 	    persistencia.guardar(cliente);
 	}
 
+	@Override
 	public List<Cliente> listarClientes() {
 	    return persistencia.listar();
 	}
 
+	@Override
 	public Cliente buscarCliente(String identificacion) {
 	    return persistencia.buscar(identificacion);
+	}
+
+	@Override
+	public Cliente buscarClientePorCorreo(String correo) {
+	    return persistencia.buscarPorCorreo(correo.trim());
 	}
 
 	/**
 	 * La identificación y el tipo de cliente no cambian; si la contraseña
 	 * viene vacía se conserva la anterior.
 	 */
+	@Override
 	public void actualizarCliente(Cliente cliente) throws ReglaNegocioException {
 	    Cliente existente = persistencia.buscar(cliente.getIdentificacion());
 	    if (existente == null) {
@@ -76,6 +86,7 @@ public class GestionCliente {
 	    persistencia.actualizar(cliente);
 	}
 
+	@Override
 	public void eliminarCliente(String identificacion) throws ReglaNegocioException {
 	    if (persistencia.buscar(identificacion) == null) {
 	        throw new ReglaNegocioException("El cliente ya no existe.");
@@ -87,6 +98,7 @@ public class GestionCliente {
 	 * Inicio de sesion del cliente.
 	 * @return el cliente si el correo y la contrasenia coinciden, null en otro caso.
 	 */
+	@Override
 	public Cliente autenticar(String correo, String contrasenia) {
 	    Cliente cliente = persistencia.buscarPorCorreo(correo.trim());
 	    if (cliente == null) {

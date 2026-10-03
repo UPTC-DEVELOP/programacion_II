@@ -15,10 +15,10 @@ import javax.swing.table.DefaultTableModel;
 import java.util.Collections;
 import java.util.List;
 
-import co.edu.uptc.negocio.modelo.Cliente;
+import co.edu.uptc.modelo.Cliente;
 import co.edu.uptc.gui.eventos.cliente.EventoCliente;
-import co.edu.uptc.negocio.cliente.GestionCliente;
-import co.edu.uptc.negocio.admin.ReglaNegocioException;
+import co.edu.uptc.interfaces.IGestionCliente;
+import co.edu.uptc.excepciones.ReglaNegocioException;
 
 
 /**
@@ -38,11 +38,11 @@ public class PanelCliente extends JPanel implements EventoCliente {
 	private JButton btnActualizar;
 	private JButton btnEliminar;
 	private DefaultTableModel modeloTabla;
-	private final GestionCliente gestionCliente;
+	private final IGestionCliente gestionCliente;
 	private JTable tablaClientes;
 
 	//Constructor: la gestion de clientes llega desde AppLibros (inyeccion de dependencias)
-    public PanelCliente(GestionCliente gestionCliente) {
+    public PanelCliente(IGestionCliente gestionCliente) {
         setLayout(new BorderLayout());
         this.gestionCliente = gestionCliente;
 

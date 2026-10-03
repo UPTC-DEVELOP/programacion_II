@@ -6,21 +6,27 @@ import co.edu.uptc.gui.PanelRegistro;
 import co.edu.uptc.gui.admin.VentanaPrincipalAdmin;
 import co.edu.uptc.gui.cliente.VentanaPrincipalCliente;
 import co.edu.uptc.gui.eventos.admin.ControladorAdmin;
-import co.edu.uptc.gui.interfaz.admin.IAuditoria;
-import co.edu.uptc.gui.interfaz.admin.IConsultaVentas;
-import co.edu.uptc.gui.interfaz.admin.IGestionLibro;
-import co.edu.uptc.gui.interfaz.admin.IGestionReporte;
-import co.edu.uptc.gui.interfaz.admin.ILibroRepositorio;
-import co.edu.uptc.gui.interfaz.admin.IValidadorLibro;
-import co.edu.uptc.gui.interfaz.cliente.IGestionCliente;
+import co.edu.uptc.interfaces.IAdministradorRepositorio;
+import co.edu.uptc.interfaces.IAuditoria;
+import co.edu.uptc.interfaces.IClienteRepositorio;
+import co.edu.uptc.interfaces.IConsultaVentas;
+import co.edu.uptc.interfaces.IGestionAcceso;
+import co.edu.uptc.interfaces.IGestionCliente;
+import co.edu.uptc.interfaces.IGestionLibro;
+import co.edu.uptc.interfaces.IGestionReporte;
+import co.edu.uptc.interfaces.ILibroRepositorio;
+import co.edu.uptc.interfaces.IValidadorLibro;
+import co.edu.uptc.modelo.Rol;
+import co.edu.uptc.negocio.acceso.GestionAcceso;
 import co.edu.uptc.negocio.admin.GestionLibro;
 import co.edu.uptc.negocio.admin.GestionReporte;
 import co.edu.uptc.negocio.admin.ValidadorLibro;
-import co.edu.uptc.negocio.admin.memoria.AuditoriaMemoria;
-import co.edu.uptc.negocio.admin.memoria.ConsultaVentasMemoria;
-import co.edu.uptc.negocio.admin.memoria.LibroRepositorioMemoria;
 import co.edu.uptc.negocio.cliente.GestionCliente;
-import co.edu.uptc.negocio.cliente.memoria.ClienteRepositorioMemoria;
+import co.edu.uptc.persistencia.AdministradorRepositorioMemoria;
+import co.edu.uptc.persistencia.AuditoriaMemoria;
+import co.edu.uptc.persistencia.ConsultaVentasMemoria;
+import co.edu.uptc.persistencia.LibroRepositorioMemoria;
+import co.edu.uptc.persistencia.LocalCliente;
 import java.awt.CardLayout;
 import java.util.function.Consumer;
 import javax.swing.JDialog;
@@ -47,10 +53,12 @@ import javax.swing.SwingUtilities;
 
 public class AppLibros {
 
-    // Clientes: se crean UNA vez y se comparten entre el módulo admin y el de cliente
-    // (y entre sesiones), para que el CRUD no se pierda al cerrar sesión.
-    private static final IGestionCliente persistenciaClientes = new ClienteRepositorioMemoria();
-    private static final GestionCliente gestionCliente = new GestionCliente(persistenciaClientes);
+    // Usuarios: se crean UNA vez y se comparten entre el login, el módulo admin y el
+    // de cliente (y entre sesiones), para que los registros no se pierdan al cerrar sesión.
+    private static final IClienteRepositorio persistenciaClientes = new LocalCliente();
+    private static final IAdministradorRepositorio persistenciaAdministradores = new AdministradorRepositorioMemoria();
+    private static final IGestionCliente gestionCliente = new GestionCliente(persistenciaClientes);
+    private static final IGestionAcceso gestionAcceso = new GestionAcceso(gestionCliente, persistenciaAdministradores);
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(AppLibros::mostrarPantallaAcceso);
@@ -73,10 +81,10 @@ public class AppLibros {
         panelContenedor.add(panelRegistro, "VISTA_REGISTRO");
 
         // Recibe el rol autorizado tras validar login
-        Consumer<String> alAutenticar = (String rol) -> {
+        Consumer<Rol> alAutenticar = (Rol rol) -> {
             dialogoAcceso.dispose();
 
-            if ("Administrador".equalsIgnoreCase(rol)) {
+            if (rol == Rol.ADMINISTRADOR) {
                 iniciarModoAdmin();
             } else {
                 iniciarModoCliente(panelLogin.getCorreo());
@@ -87,7 +95,8 @@ public class AppLibros {
             panelLogin, 
             panelRegistro, 
             cardLayout, 
-            panelContenedor, 
+            panelContenedor,
+            gestionAcceso,
             alAutenticar
         );
 

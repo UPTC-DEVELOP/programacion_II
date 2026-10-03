@@ -3,46 +3,52 @@ package co.edu.uptc.gui;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
 import java.util.function.Consumer;
-import java.util.regex.Pattern;
 
 import javax.swing.JPanel;
 
+import co.edu.uptc.excepciones.ReglaNegocioException;
+import co.edu.uptc.interfaces.IGestionAcceso;
+import co.edu.uptc.modelo.Administrador;
+import co.edu.uptc.modelo.Cliente;
+import co.edu.uptc.modelo.ClientePremium;
+import co.edu.uptc.modelo.ClienteRegular;
+import co.edu.uptc.modelo.Rol;
+import co.edu.uptc.modelo.TipoCliente;
+
 /**
- * Controlador de login y registro con restricción estricta de roles 
+ * Controlador de login y registro con restricción estricta de roles
  * (Cliente / Administrador).
- * 
+ *
+ * Solo traduce lo que hay en la vista y muestra el resultado: las reglas
+ * (credenciales, roles, duplicados, formatos) viven en la capa de negocio,
+ * a la que se accede por el contrato IGestionAcceso (SRP / DIP).
+ *
  * @author Brayan Javier Panqueva Pelayo
- * @version 1.0 - Septiembre 2026
+ * @version 1.1 - Octubre 2026
  */
 public class EventoLogin implements ActionListener {
+
+    private static final String TIPO_CLIENTE_VIP = "cliente VIP";
+    private static final String TIPO_ADMINISTRADOR = "Administrador";
+    private static final String TIPO_IDENTIFICACION_POR_DEFECTO = "CC";
 
     private final PanelLogin vistaLogin;
     private final PanelRegistro vistaRegistro;
     private final CardLayout cardLayout;
     private final JPanel panelContenedor;
-    private final Consumer<String> accionExito; // Devuelve "Administrador" o "Cliente"
-//constantes de expresiones regulares para validar correo y contraseña
-    private static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
-    private static final String PASSWORD_REGEX = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&._\\-#])[A-Za-z\\d@$!%*?&._\\-#]{8,}$";
+    private final IGestionAcceso gestionAcceso;
+    private final Consumer<Rol> accionExito;
 
-    // Guardado en memoria: Correo -> Rol ("Administrador" o "Cliente")
-    private final Map<String, String> usuariosRoles;
-
-    public EventoLogin(PanelLogin vistaLogin, PanelRegistro vistaRegistro, CardLayout cardLayout, JPanel panelContenedor, Consumer<String> accionExito) {
+    public EventoLogin(PanelLogin vistaLogin, PanelRegistro vistaRegistro, CardLayout cardLayout,
+            JPanel panelContenedor, IGestionAcceso gestionAcceso, Consumer<Rol> accionExito) {
         this.vistaLogin = vistaLogin;
         this.vistaRegistro = vistaRegistro;
         this.cardLayout = cardLayout;
         this.panelContenedor = panelContenedor;
+        this.gestionAcceso = gestionAcceso;
         this.accionExito = accionExito;
-
-        this.usuariosRoles = new HashMap<>();
-
-        // Usuarios predeterminados de prueba
-        this.usuariosRoles.put("admin@uptc.edu.co", "Administrador");
-        this.usuariosRoles.put("usuario@uptc.edu.co", "Cliente");
 
         this.vistaLogin.registrarEvento(this);
         this.vistaRegistro.registrarEvento(this);
@@ -59,7 +65,7 @@ public class EventoLogin implements ActionListener {
         } else if (PanelLogin.REGISTRARSE.equals(comando)) {
             vistaLogin.mostrarEstado("");
             cardLayout.show(panelContenedor, "VISTA_REGISTRO");
-        } 
+        }
         else if (PanelRegistro.REGISTRAR.equals(comando)) {
             procesarRegistro();
         } else if (PanelRegistro.CANCELAR.equals(comando)) {
@@ -69,84 +75,75 @@ public class EventoLogin implements ActionListener {
     }
 
     private void procesarAutenticacion() {
-        String correo = vistaLogin.getCorreo().toLowerCase();
-        String clave = vistaLogin.getClave();
-        boolean intentaEntrarComoAdmin = vistaLogin.esPerfilAdmin();
-
-        if (!validarCorreo(correo)) {
-            vistaLogin.mostrarEstado("Correo inválido revise el formato del correo e intentelo nuevamente.");
-            return;
-        }
-
-        if (!usuariosRoles.containsKey(correo)) {
-            vistaLogin.mostrarEstado("Acceso denegado: El usuario no está registrado.");
-            return;
-        }
-
-        if (!validarContrasenia(clave)) {
-            vistaLogin.mostrarEstado("Clave débil deve tener Mín. 8 caracteres, 1 mayúscula, 1 número y 1 especial.");
-            return;
-        }
-
-        String rolRegistrado = usuariosRoles.get(correo);
-
-        // CONTROL EXCLUSIVO DE ACCESO POR ROL:
-        if (intentaEntrarComoAdmin && !"Administrador".equalsIgnoreCase(rolRegistrado)) {
-            vistaLogin.mostrarEstado("Acceso denegado: No tiene permisos de Administrador.");
-            return;
-        }
-
-        if (!intentaEntrarComoAdmin && "Administrador".equalsIgnoreCase(rolRegistrado)) {
-            vistaLogin.mostrarEstado("Su cuenta es Administrador. Seleccione el perfil 'Admin'.");
-            return;
-        }
-
-        vistaLogin.mostrarEstado("Autenticación exitosa");
-        if (accionExito != null) {
-            accionExito.accept(rolRegistrado);
+        Rol perfil = vistaLogin.esPerfilAdmin() ? Rol.ADMINISTRADOR : Rol.CLIENTE;
+        try {
+            Rol rol = gestionAcceso.autenticar(vistaLogin.getCorreo(), vistaLogin.getClave(), perfil);
+            vistaLogin.mostrarEstado("Autenticación exitosa");
+            if (accionExito != null) {
+                accionExito.accept(rol);
+            }
+        } catch (ReglaNegocioException ex) {
+            vistaLogin.limpiarClave();
+            vistaLogin.mostrarEstado(ex.getMessage());
         }
     }
 
     private void procesarRegistro() {
-        String correo = vistaRegistro.getCorreo();
-        String contrasenia = vistaRegistro.getContrasenia();
-        String tipoUsuarioSeleccionado = vistaRegistro.getTipoUsuario();
-
-        if (!validarCorreo(correo)) {
-            vistaRegistro.mostrarEstado("Correo inválido. Ejemplo: usuario@dominio.com");
+        String tipoUsuario = vistaRegistro.getTipoUsuario();
+        try {
+            if (TIPO_ADMINISTRADOR.equals(tipoUsuario)) {
+                gestionAcceso.registrarAdministrador(crearAdministrador());
+            } else {
+                gestionAcceso.registrarCliente(crearCliente(TIPO_CLIENTE_VIP.equals(tipoUsuario)));
+            }
+        } catch (ReglaNegocioException ex) {
+            vistaRegistro.mostrarEstado(ex.getMessage());
             return;
         }
-
-        if (!validarContrasenia(contrasenia)) {
-            vistaRegistro.mostrarEstado("Clave requerida: 8 caracteres, 1 mayúscula, 1 número y 1 especial.");
-            return;
-        }
-
-        String correoBusqueda = correo.toLowerCase();
-        if (usuariosRoles.containsKey(correoBusqueda)) {
-            vistaRegistro.mostrarEstado("Este correo ya se encuentra registrado.");
-            return;
-        }
-
-        // Registrar correo con su respectivo rol
-        usuariosRoles.put(correoBusqueda, tipoUsuarioSeleccionado);
 
         vistaRegistro.limpiarCampos();
         cardLayout.show(panelContenedor, "VISTA_LOGIN");
-        vistaLogin.mostrarEstado("¡Registrado como " + tipoUsuarioSeleccionado + "! Puede ingresar.");
+        vistaLogin.mostrarEstado("¡Registrado como " + tipoUsuario + "! Puede ingresar.");
     }
 
-    public boolean validarCorreo(String correo) {
-        if (correo == null || correo.trim().isEmpty()) {
-            return false;
+    private Cliente crearCliente(boolean esVip) {
+        String[] nombre = separarNombre(vistaRegistro.getNombreUsuario());
+        if (esVip) {
+            return new ClientePremium(nombre[0], nombre[1], nombre[2], nombre[3],
+                    TIPO_IDENTIFICACION_POR_DEFECTO, vistaRegistro.getIdentificacion(), vistaRegistro.getCorreo(),
+                    vistaRegistro.getCelular(), vistaRegistro.getDireccion(), 0, TipoCliente.PREMIUM,
+                    vistaRegistro.getContrasenia(), null, 0);
         }
-        return Pattern.matches(EMAIL_REGEX, correo.trim());
+        return new ClienteRegular(nombre[0], nombre[1], nombre[2], nombre[3],
+                TIPO_IDENTIFICACION_POR_DEFECTO, vistaRegistro.getIdentificacion(), vistaRegistro.getCorreo(),
+                vistaRegistro.getCelular(), vistaRegistro.getDireccion(), 0, TipoCliente.REGULAR,
+                vistaRegistro.getContrasenia(), null, 0);
     }
 
-    public boolean validarContrasenia(String clave) {
-        if (clave == null || clave.isEmpty()) {
-            return false;
+    private Administrador crearAdministrador() {
+        String[] nombre = separarNombre(vistaRegistro.getNombreUsuario());
+        return new Administrador(nombre[0], nombre[1], nombre[2], nombre[3],
+                TIPO_IDENTIFICACION_POR_DEFECTO, vistaRegistro.getIdentificacion(), vistaRegistro.getCorreo(),
+                vistaRegistro.getCelular(), vistaRegistro.getDireccion(), vistaRegistro.getContrasenia());
+    }
+
+    /**
+     * El formulario tiene un solo campo de nombre. Se reparte así:
+     * "Ana Ruiz" -> nombre + apellido; "Ana Ruiz Gil" -> nombre + 2 apellidos;
+     * "Ana María Ruiz Gil" -> los dos últimos son apellidos y el resto nombres.
+     * @return {primerNombre, otrosNombres, primerApellido, otrosApellidos}
+     */
+    private static String[] separarNombre(String completo) {
+        String[] partes = completo.trim().isEmpty() ? new String[0] : completo.trim().split("\\s+");
+        switch (partes.length) {
+            case 0:  return new String[] { "", "", "", "" };
+            case 1:  return new String[] { partes[0], "", "", "" };
+            case 2:  return new String[] { partes[0], "", partes[1], "" };
+            case 3:  return new String[] { partes[0], "", partes[1], partes[2] };
+            default:
+                int n = partes.length;
+                String otrosNombres = String.join(" ", Arrays.copyOfRange(partes, 1, n - 2));
+                return new String[] { partes[0], otrosNombres, partes[n - 2], partes[n - 1] };
         }
-        return Pattern.matches(PASSWORD_REGEX, clave);
     }
 }

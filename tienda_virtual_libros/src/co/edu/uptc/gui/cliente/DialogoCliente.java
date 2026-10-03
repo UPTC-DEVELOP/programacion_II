@@ -14,12 +14,12 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import co.edu.uptc.gui.eventos.cliente.EventoCliente;
-import co.edu.uptc.negocio.cliente.GestionCliente;
-import co.edu.uptc.negocio.admin.ReglaNegocioException;
-import co.edu.uptc.negocio.modelo.Cliente;
-import co.edu.uptc.negocio.modelo.ClientePremium;
-import co.edu.uptc.negocio.modelo.ClienteRegular;
-import co.edu.uptc.negocio.modelo.TipoCliente;
+import co.edu.uptc.interfaces.IGestionCliente;
+import co.edu.uptc.excepciones.ReglaNegocioException;
+import co.edu.uptc.modelo.Cliente;
+import co.edu.uptc.modelo.ClientePremium;
+import co.edu.uptc.modelo.ClienteRegular;
+import co.edu.uptc.modelo.TipoCliente;
 
 /**
  * Formulario de cliente. Se usa para:
@@ -49,12 +49,12 @@ public class DialogoCliente extends JDialog {
     private JButton btnGuardar;
     private JButton btnCancelar;
 
-    private final GestionCliente gestionCliente;
+    private final IGestionCliente gestionCliente;
     private final EventoCliente evento;
     private final Cliente clienteEditar;
 
     //Constructor
-    public DialogoCliente(GestionCliente gestionCliente, EventoCliente evento, Cliente clienteEditar) {
+    public DialogoCliente(IGestionCliente gestionCliente, EventoCliente evento, Cliente clienteEditar) {
 
     	this.gestionCliente = gestionCliente;
     	this.evento = evento;

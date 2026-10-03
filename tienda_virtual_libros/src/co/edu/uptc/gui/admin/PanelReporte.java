@@ -17,7 +17,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import co.edu.uptc.gui.eventos.admin.EventoAdmin;
-import co.edu.uptc.negocio.admin.dto.VentaResumenDto;
+import co.edu.uptc.modelo.dto.VentaResumenDto;
 
 /**
  * CLASE PanelReportes  (paquete: gui)  extends JPanel

@@ -4,8 +4,9 @@ package co.edu.uptc.negocio.admin;
 import java.time.Year;
 import java.util.List;
 
-import co.edu.uptc.gui.interfaz.admin.IValidadorLibro;
-import co.edu.uptc.negocio.admin.dto.LibroDto;
+import co.edu.uptc.excepciones.ReglaNegocioException;
+import co.edu.uptc.interfaces.IValidadorLibro;
+import co.edu.uptc.modelo.dto.LibroDto;
 
 
 /**
