@@ -9,6 +9,7 @@ public class VentanaPrincipal extends JFrame {
 	private PanelCentral panelCentral;
 
 	
+	
 	public VentanaPrincipal() {
 	    setTitle("Tienda Virtual de Libros - Gestión de Clientes");
 	    setSize(950, 600);
