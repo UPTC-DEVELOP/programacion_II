@@ -178,11 +178,6 @@ public class VentanaMiCuenta extends JFrame {
 
         VentanaCompras ventanaCompras = new VentanaCompras(cliente, controladorLibro);
 
-        for (Object obj : controladorLibro.listar()) {
-            Libro libro = (Libro) obj;
-            ventanaCompras.getCmbLibro().addItem(libro);
-        }
-
         ventanaCompras.setVisible(true);
     }
 }
