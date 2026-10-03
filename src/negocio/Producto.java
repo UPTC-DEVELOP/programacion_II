@@ -8,6 +8,7 @@ public class Producto {
     private String nombre;
     private double precioBase;
     private int stock;
+    private double porcentajeDescuento;
 
     public Producto() {
     }
@@ -19,10 +20,10 @@ public class Producto {
     }
 
     /**
-     * Calcula el precio final del producto a partir del precio base.
+     * Calcula el precio final del producto aplicando el descuento.
      */
     public double calcularPrecioFinal() {
-        return precioBase;
+        return precioBase - (precioBase * porcentajeDescuento);
     }
 
     public String getNombre() {
@@ -47,6 +48,14 @@ public class Producto {
 
     public void setStock(int stock) {
         this.stock = stock;
+    }
+
+    public double getPorcentajeDescuento() {
+        return porcentajeDescuento;
+    }
+
+    public void setPorcentajeDescuento(double porcentajeDescuento) {
+        this.porcentajeDescuento = porcentajeDescuento;
     }
 
     @Override
