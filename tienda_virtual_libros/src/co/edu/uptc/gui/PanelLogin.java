@@ -1,13 +1,26 @@
 package co.edu.uptc.gui;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
 /**
- * Panel de Login para la aplicación.
- * 
- * Permite al usuario ingresar su correo, seleccionar un perfil (Usuario/Admin),
- * y proporcionar su contraseña. También ofrece opciones para recuperar la contraseña
- * o registrarse como nuevo usuario.
+ * Panel de inicio de sesión con selección de perfil (Usuario / Admin).
  * 
  * @author Brayan Javier Panqueva Pelayo
  * @version 1.0 - Septiembre 2026
@@ -15,7 +28,7 @@ import java.awt.*;
 @SuppressWarnings("serial")
 public class PanelLogin extends JPanel {
 
-    /* CONSTANTES Y ATRIBUTOS */
+    /* CONSTANTES */
     public static final String INGRESAR = "LOGIN_INGRESAR";
     public static final String OLVIDO = "LOGIN_OLVIDO";
     public static final String REGISTRARSE = "LOGIN_REGISTRARSE";
@@ -23,6 +36,7 @@ public class PanelLogin extends JPanel {
     public static final String PERFIL_USUARIO = "Usuario";
     public static final String PERFIL_ADMIN = "Admin";
 
+    /* TEXTOS Y BOTONES */
     private JTextField txtCorreo;
     private JComboBox<String> comboPerfil;
     private JPasswordField txtClave;
@@ -31,19 +45,17 @@ public class PanelLogin extends JPanel {
     private JButton btnCrearCuenta;
     private JLabel lblEstado;
 
-    /* CONSTRUCTOR */
     public PanelLogin() {
         setBackground(new Color(235, 235, 235));
         setLayout(new GridBagLayout());
-        
-        // ¡IMPORTANTE! Aquí se debe crear e instanciar btnIngresar, btnOlvido, etc.
         add(construirTarjeta(), new GridBagConstraints());
     }
-/*Metodo auxiliar para construir la tarjeta de login con todos sus componentes
- * */
+/**metodo para construir la tarjeta de login con los campos de correo, perfil y contraseña, así como los botones de ingresar, olvido de contraseña y registrarse.
+ *  */
     private JPanel construirTarjeta() {
         JPanel tarjeta = new JPanel();
         tarjeta.setLayout(new BoxLayout(tarjeta, BoxLayout.Y_AXIS));
+
         tarjeta.setBackground(Color.WHITE);
         tarjeta.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(150, 150, 150), 1),
@@ -56,9 +68,14 @@ public class PanelLogin extends JPanel {
         titulo.setAlignmentX(CENTER_ALIGNMENT);
 
         txtCorreo = new JTextField(18);
-        configurarCampoTexto(txtCorreo, "Usuario");
+        configurarCampoTexto(txtCorreo, "Usuario / Correo");
 
-        comboPerfil = new JComboBox<String>(new String[] {  PERFIL_USUARIO, PERFIL_ADMIN });
+        /*
+         * /*
+         *  DESPLEGABLE DE PERFILES:
+         *  PERMITE SELECCIONAR EXPLÍCITAMENTE ENTRE 'Usuario' Y 'Admin'.
+         * */
+        comboPerfil = new JComboBox<String>(new String[] { PERFIL_USUARIO, PERFIL_ADMIN });
         comboPerfil.setPreferredSize(new Dimension(200, 28));
         comboPerfil.setMaximumSize(new Dimension(200, 28));
         comboPerfil.setBackground(Color.WHITE);
@@ -69,7 +86,6 @@ public class PanelLogin extends JPanel {
         configurarCampoTexto(txtClave, "password");
         txtClave.setEchoChar((char) 0);
 
-        //  INSTANCIAS DE LOS BOTONES
         btnIngresar = crearBotonPrototipo("Ingresar", INGRESAR);
         btnOlvido = crearBotonPrototipo("olvido su contrasenia", OLVIDO);
         btnCrearCuenta = crearBotonPrototipo("Registrarse", REGISTRARSE);
@@ -98,18 +114,6 @@ public class PanelLogin extends JPanel {
         return tarjeta;
     }
 
-    /* Modificación de seguridad en registrarEvento */
-    public void registrarEvento(java.awt.event.ActionListener listener) {
-        if (btnIngresar != null) btnIngresar.addActionListener(listener);
-        if (btnOlvido != null) btnOlvido.addActionListener(listener);
-        if (btnCrearCuenta != null) btnCrearCuenta.addActionListener(listener);
-        if (txtClave != null) {
-            txtClave.addActionListener(listener);
-            txtClave.setActionCommand(INGRESAR);
-        }
-    }
-/*metodo auxiliar para configurar el estilo de los campos de texto con placeholder
- * */
     private void configurarCampoTexto(JTextField campo, String placeholder) {
         campo.setPreferredSize(new Dimension(200, 28));
         campo.setMaximumSize(new Dimension(200, 28));
@@ -142,8 +146,7 @@ public class PanelLogin extends JPanel {
             }
         });
     }
-/*METODO AUXILIAR PARA CREAR BOTONES CON ESTILO UNIFORME
- * */
+
     private JButton crearBotonPrototipo(String texto, String comando) {
         JButton boton = new JButton(texto);
         boton.setActionCommand(comando);
@@ -157,15 +160,25 @@ public class PanelLogin extends JPanel {
         ));
         return boton;
     }
-/*JPanel auxiliar para alinear botones en el centro con estilo uniforme
- * */
+
     private JPanel fila(JButton boton) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         panel.setBackground(Color.WHITE);
         panel.add(boton);
         return panel;
     }
-// GETTERS Y METODOS PUBLICOS PARA INTERACTUAR CON EL PANEL
+
+    public void registrarEvento(ActionListener listener) {
+        if (btnIngresar != null) btnIngresar.addActionListener(listener);
+        if (btnOlvido != null) btnOlvido.addActionListener(listener);
+        if (btnCrearCuenta != null) btnCrearCuenta.addActionListener(listener);
+        if (txtClave != null) {
+            txtClave.addActionListener(listener);
+            txtClave.setActionCommand(INGRESAR);
+        }
+    }
+/*getters and setters para obtener el correo, la clave y el perfil seleccionado en el panel de login.
+ * */
     public String getCorreo() {
         return txtCorreo.getText().trim();
     }
@@ -173,7 +186,12 @@ public class PanelLogin extends JPanel {
     public String getClave() {
         return new String(txtClave.getPassword());
     }
-//metodo para verificar si el perfil seleccionado es Admin
+
+  
+    public String getPerfil() {
+        return (String) comboPerfil.getSelectedItem();
+    }
+
     public boolean esPerfilAdmin() {
         return PERFIL_ADMIN.equals(comboPerfil.getSelectedItem());
     }
