@@ -2,29 +2,25 @@ package co.edu.uptc.negocio;
 
 public class LibroFisico extends Libro {
 
-    public static final double PORCENTAJE_IVA = 0.19;
+    /** IVA expresado en porcentaje. */
+    public static final double IVA_FISICO = 19.0;
 
     private int numeroPaginas;
 
     public LibroFisico(String isbn, String titulo, String autor, int anioPublicacion,
                        String categoria, String editorial, int numeroPaginas,
-                       double precioBase, int cantidadDisponible) {
+                       double precioBase, int cantidadDisponible, double porcentajeDescuento) {
         super(isbn, titulo, autor, anioPublicacion, categoria, editorial,
-              precioBase, cantidadDisponible);
+              precioBase, cantidadDisponible, porcentajeDescuento, IVA_FISICO);
         this.numeroPaginas = numeroPaginas;
     }
 
-   
+    @Override
     public FormatoLibro getFormato() {
         return FormatoLibro.FISICO;
     }
 
-    
-    public double getPorcentajeIva() {
-        return PORCENTAJE_IVA;
-    }
-
-  
+    @Override
     public int getNumeroPaginas() {
         return numeroPaginas;
     }
@@ -33,4 +29,3 @@ public class LibroFisico extends Libro {
         this.numeroPaginas = numeroPaginas;
     }
 }
-

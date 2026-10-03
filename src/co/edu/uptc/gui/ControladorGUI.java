@@ -196,7 +196,7 @@ public class ControladorGUI implements ActionListener, ListSelectionListener {
         return LibroFactory.crear(formato,
                 panelDetalle.getIsbn(), panelDetalle.getTitulo(), panelDetalle.getAutor(),
                 anio, panelDetalle.getCategoria(), panelDetalle.getEditorial(),
-                paginas, precio, cantidad);
+                paginas, precio, cantidad, 0.0);
     }
 
     private void validarObligatorios() throws ValidacionException {

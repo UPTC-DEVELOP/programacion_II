@@ -22,8 +22,8 @@ public class PanelCatalogo extends JPanel {
     private static final long serialVersionUID = 1L;
 
     private static final String[] COLUMNAS = {"ISBN", "Título", "Autor", "Año", "Categoría",
-            "Editorial", "Págs.", "Precio base", "Precio c/IVA", "Stock", "Formato"};
-    private static final int[] ANCHOS = {105, 190, 140, 45, 85, 110, 45, 85, 90, 45, 65};
+            "Editorial", "Págs.", "Precio base", "Desc.", "IVA", "Precio final", "Stock", "Formato"};
+    private static final int[] ANCHOS = {105, 190, 140, 45, 85, 110, 45, 85, 55, 50, 90, 45, 65};
 
     private JLabel lblBuscar;
     private JTextField txtBuscar;
@@ -41,7 +41,6 @@ public class PanelCatalogo extends JPanel {
         setLayout(new BorderLayout(0, 6));
         setBorder(BorderFactory.createTitledBorder("Catálogo de Libros"));
 
-        // ---- Barra de búsqueda (FlowLayout) ----
         JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 6));
         lblBuscar = new JLabel("Buscar (título, autor o categoría):");
         txtBuscar = new JTextField(20);
@@ -55,11 +54,10 @@ public class PanelCatalogo extends JPanel {
         panelBusqueda.add(btnBuscar);
         panelBusqueda.add(btnMostrarTodos);
 
-        // ---- Tabla de solo lectura ----
         modeloTabla = new DefaultTableModel(COLUMNAS, 0) {
             private static final long serialVersionUID = 1L;
 
-            @Override
+           
             public boolean isCellEditable(int fila, int columna) {
                 return false;
             }
@@ -127,7 +125,9 @@ public class PanelCatalogo extends JPanel {
                     l.getEditorial(),
                     l.getNumeroPaginas() > 0 ? String.valueOf(l.getNumeroPaginas()) : "-",
                     UtilidadesGUI.formatearMoneda(l.getPrecioBase()),
-                    UtilidadesGUI.formatearMoneda(l.getPrecioVenta()),
+                    UtilidadesGUI.formatearPorcentaje(l.getPorcentajeDescuento()),
+                    UtilidadesGUI.formatearPorcentaje(l.getImpuestoIVA()),
+                    UtilidadesGUI.formatearMoneda(l.calcularPrecioFinal()),
                     l.getCantidadDisponible(),
                     l.getFormato().getEtiqueta()
             });

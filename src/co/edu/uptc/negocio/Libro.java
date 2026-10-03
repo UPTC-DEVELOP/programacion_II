@@ -1,54 +1,38 @@
 package co.edu.uptc.negocio;
 
+public abstract class Libro extends Producto {
 
-public abstract class Libro {
-
-    private String isbn;
-    private String titulo;
     private String autor;
     private int anioPublicacion;
     private String categoria;
     private String editorial;
-    private double precioBase;
-    private int cantidadDisponible;
 
     protected Libro(String isbn, String titulo, String autor, int anioPublicacion,
                     String categoria, String editorial, double precioBase,
-                    int cantidadDisponible) {
-        this.isbn = isbn;
-        this.titulo = titulo;
+                    int cantidadDisponible, double porcentajeDescuento, double impuestoIVA) {
+        super(isbn, titulo, precioBase, cantidadDisponible, porcentajeDescuento, impuestoIVA);
         this.autor = autor;
         this.anioPublicacion = anioPublicacion;
         this.categoria = categoria;
         this.editorial = editorial;
-        this.precioBase = precioBase;
-        this.cantidadDisponible = cantidadDisponible;
     }
 
+    // ---- Métodos polimórficos ----
     public abstract FormatoLibro getFormato();
-
-    public abstract double getPorcentajeIva();
 
     public abstract int getNumeroPaginas();
 
-    public double getValorIva() {
-        return redondear(precioBase * getPorcentajeIva());
-    }
-    public double getPrecioVenta() {
-        return redondear(precioBase + getValorIva());
-    }
+    // ---- Alias con el vocabulario del DAD ----
+    public String getIsbn() { return getCodigo(); }
+    public void setIsbn(String isbn) { setCodigo(isbn); }
 
-    private static double redondear(double valor) {
-        return Math.round(valor * 100.0) / 100.0;
-    }
+    public String getTitulo() { return getNombre(); }
+    public void setTitulo(String titulo) { setNombre(titulo); }
 
-    // ---- Getters y setters ----
-    public String getIsbn() { return isbn; }
-    public void setIsbn(String isbn) { this.isbn = isbn; }
+    public int getCantidadDisponible() { return getStock(); }
+    public void setCantidadDisponible(int cantidadDisponible) { setStock(cantidadDisponible); }
 
-    public String getTitulo() { return titulo; }
-    public void setTitulo(String titulo) { this.titulo = titulo; }
-
+    // ---- Atributos propios del libro ----
     public String getAutor() { return autor; }
     public void setAutor(String autor) { this.autor = autor; }
 
@@ -61,13 +45,7 @@ public abstract class Libro {
     public String getEditorial() { return editorial; }
     public void setEditorial(String editorial) { this.editorial = editorial; }
 
-    public double getPrecioBase() { return precioBase; }
-    public void setPrecioBase(double precioBase) { this.precioBase = precioBase; }
-
-    public int getCantidadDisponible() { return cantidadDisponible; }
-    public void setCantidadDisponible(int cantidadDisponible) { this.cantidadDisponible = cantidadDisponible; }
-
     public String toString() {
-        return "Libro [isbn=" + isbn + ", titulo=" + titulo + ", formato=" + getFormato() + "]";
+        return "Libro [isbn=" + getIsbn() + ", titulo=" + getTitulo() + ", formato=" + getFormato() + "]";
     }
 }

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-
 public class LibroRepositorioJson implements LibroRepositorio {
 
     private final Path archivo;
@@ -33,6 +32,7 @@ public class LibroRepositorioJson implements LibroRepositorio {
         }
     }
 
+ 
     public List<Libro> obtenerTodos() {
         return new ArrayList<>(libros.values());
     }
@@ -41,7 +41,6 @@ public class LibroRepositorioJson implements LibroRepositorio {
         return Optional.ofNullable(libros.get(isbn));
     }
 
-   
     public boolean existe(String isbn) {
         return libros.containsKey(isbn);
     }
@@ -50,8 +49,6 @@ public class LibroRepositorioJson implements LibroRepositorio {
         libros.put(libro.getIsbn(), libro);
         persistir(); // Disponibilidad de datos: se actualiza en cada operación crítica
     }
-
- 
     public boolean eliminar(String isbn) {
         boolean eliminado = libros.remove(isbn) != null;
         if (eliminado) {
@@ -70,7 +67,7 @@ public class LibroRepositorioJson implements LibroRepositorio {
                 libros.put(libro.getIsbn(), libro);
             }
         } catch (RuntimeException e) {
-            // Confiabilidad: archivo corrupto se informa sin cerrar la app de forma abrupta
+       
             throw new PersistenciaException("El archivo libros.json tiene un formato inválido.", e);
         }
     }
@@ -98,7 +95,10 @@ public class LibroRepositorioJson implements LibroRepositorio {
                 m.get("editorial"),
                 Integer.parseInt(m.get("numeroPaginas")),
                 Double.parseDouble(m.get("precioBase")),
-                Integer.parseInt(m.get("cantidadDisponible")));
+                Integer.parseInt(m.get("cantidadDisponible")),
+               
+                m.containsKey("porcentajeDescuento")
+                        ? Double.parseDouble(m.get("porcentajeDescuento")) : 0.0);
     }
 
     private Map<String, Object> aMapa(Libro l) {
@@ -112,27 +112,27 @@ public class LibroRepositorioJson implements LibroRepositorio {
         m.put("numeroPaginas", l.getNumeroPaginas());
         m.put("precioBase", l.getPrecioBase());
         m.put("cantidadDisponible", l.getCantidadDisponible());
+        m.put("porcentajeDescuento", l.getPorcentajeDescuento());
         m.put("formato", l.getFormato().name());
         return m;
     }
-
+    
     private void cargarDatosSemilla() {
         agregarSemilla(LibroFactory.crear(FormatoLibro.FISICO, "9789586600001",
                 "Cien años de soledad", "Gabriel García Márquez", 1967, "Novela",
-                "Editorial Sudamericana", 471, 50000, 150));
+                "Editorial Sudamericana", 471, 50000, 150, 10));
         agregarSemilla(LibroFactory.crear(FormatoLibro.FISICO, "9788437604947",
                 "Don Quijote de la Mancha", "Miguel de Cervantes", 1605, "Clásico",
-                "Cátedra", 1200, 45000, 85));
+                "Cátedra", 1200, 45000, 85, 0));
         agregarSemilla(LibroFactory.crear(FormatoLibro.DIGITAL, "9780132350884",
                 "Clean Code", "Robert C. Martin", 2008, "Tecnología",
-                "Prentice Hall", 0, 110000, 45));
+                "Prentice Hall", 0, 110000, 45, 15));
         agregarSemilla(LibroFactory.crear(FormatoLibro.FISICO, "9789589585141",
                 "La María", "Jorge Isaacs", 1867, "Romántica",
-                "Editorial Norma", 320, 35000, 210));
+                "Editorial Norma", 320, 35000, 210, 5));
     }
 
     private void agregarSemilla(Libro libro) {
         libros.put(libro.getIsbn(), libro);
     }
 }
-
