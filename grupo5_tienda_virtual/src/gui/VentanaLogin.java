@@ -113,8 +113,8 @@ public class VentanaLogin extends JFrame {
         btnAdministrador.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(VentanaLogin.this,
-                        "Acceso de administrador (pendiente).");
+                new VentanaLibros(VentanaLogin.this, controladorLibro).setVisible(true);
+                setVisible(false);
             }
         });
 
