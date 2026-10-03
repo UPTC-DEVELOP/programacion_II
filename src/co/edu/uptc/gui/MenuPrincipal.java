@@ -28,7 +28,7 @@ public class MenuPrincipal extends JMenuBar {
         menuClientes.add(crearItem("Gestionar clientes (próximamente)", Comandos.MENU_PENDIENTE));
 
         JMenu menuVentas = new JMenu("Ventas");
-        menuVentas.add(crearItem("Carrito y compras (próximamente)", Comandos.MENU_PENDIENTE));
+        menuVentas.add(crearItem("Registrar pedidos", Comandos.MENU_GESTIONAR_PEDIDOS));
 
         JMenu menuReportes = new JMenu("Reportes");
         menuReportes.add(crearItem("Bitácora y reportes (próximamente)", Comandos.MENU_PENDIENTE));
@@ -57,4 +57,3 @@ public class MenuPrincipal extends JMenuBar {
         }
     }
 }
-

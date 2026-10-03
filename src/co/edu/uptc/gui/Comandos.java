@@ -17,10 +17,15 @@ public final class Comandos {
     public static final String BUSCAR = "BUSCAR";
     public static final String MOSTRAR_TODOS = "MOSTRAR_TODOS";
 
+    // Pedidos
+    public static final String SELECCION_PRODUCTO = "SELECCION_PRODUCTO";
+    public static final String REGISTRAR_PEDIDO = "REGISTRAR_PEDIDO";
+    public static final String CANCELAR_PEDIDO = "CANCELAR_PEDIDO";
+
     // Menú
+    public static final String MENU_GESTIONAR_PEDIDOS = "MENU_GESTIONAR_PEDIDOS";
     public static final String MENU_GESTIONAR_LIBROS = "MENU_GESTIONAR_LIBROS";
     public static final String MENU_PENDIENTE = "MENU_PENDIENTE";
     public static final String MENU_ACERCA = "MENU_ACERCA";
     public static final String MENU_SALIR = "MENU_SALIR";
 }
-
