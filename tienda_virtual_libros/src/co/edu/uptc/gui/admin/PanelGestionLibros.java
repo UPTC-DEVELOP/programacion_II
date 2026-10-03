@@ -19,7 +19,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import co.edu.uptc.gui.eventos.admin.EventoAdmin;
-import co.edu.uptc.negocio.admin.dto.LibroDto;
+import co.edu.uptc.modelo.dto.LibroDto;
 
 
 /**

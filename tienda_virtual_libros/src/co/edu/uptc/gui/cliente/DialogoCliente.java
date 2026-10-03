@@ -14,18 +14,18 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import co.edu.uptc.gui.eventos.cliente.EventoCliente;
-import co.edu.uptc.negocio.cliente.GestionCliente;
-import co.edu.uptc.negocio.admin.ReglaNegocioException;
-import co.edu.uptc.negocio.modelo.Cliente;
-import co.edu.uptc.negocio.modelo.ClientePremium;
-import co.edu.uptc.negocio.modelo.ClienteRegular;
-import co.edu.uptc.negocio.modelo.TipoCliente;
+import co.edu.uptc.modelo.Cliente;
+import co.edu.uptc.modelo.ClientePremium;
+import co.edu.uptc.modelo.ClienteRegular;
+import co.edu.uptc.modelo.TipoCliente;
 
 /**
  * Formulario de cliente. Se usa para:
  *  - Crear un cliente / registrarse desde el login (clienteEditar = null)
  *  - Actualizar un cliente existente (clienteEditar != null): la identificacion
  *    y el tipo de cliente quedan bloqueados y la contrasenia es opcional.
+ * Solo muestra y entrega los datos: los botones avisan a EventoCliente y
+ * PanelCliente es quien llama a la capa de negocio.
  */
 public class DialogoCliente extends JDialog {
 
@@ -49,14 +49,12 @@ public class DialogoCliente extends JDialog {
     private JButton btnGuardar;
     private JButton btnCancelar;
 
-    private final GestionCliente gestionCliente;
     private final EventoCliente evento;
     private final Cliente clienteEditar;
 
     //Constructor
-    public DialogoCliente(GestionCliente gestionCliente, EventoCliente evento, Cliente clienteEditar) {
+    public DialogoCliente(EventoCliente evento, Cliente clienteEditar) {
 
-    	this.gestionCliente = gestionCliente;
     	this.evento = evento;
     	this.clienteEditar = clienteEditar;
 
@@ -143,12 +141,12 @@ public class DialogoCliente extends JDialog {
 
         add(panelBotones, BorderLayout.SOUTH);
 
-        //Accion al click CANCELAR
-        btnCancelar.addActionListener(e -> dispose());
+        //Nuevo -> GUARDAR (crear); Actualizar -> EDITAR (guardar cambios)
+        btnGuardar.setActionCommand(clienteEditar == null ? EventoCliente.GUARDAR : EventoCliente.EDITAR);
+        btnGuardar.addActionListener(evento);
 
-        //ACCION AL CLIK GUARDAR
-
-        btnGuardar.addActionListener(e -> guardarCliente());
+        btnCancelar.setActionCommand(EventoCliente.CANCELAR);
+        btnCancelar.addActionListener(evento);
 
     }
 
@@ -169,7 +167,8 @@ public class DialogoCliente extends JDialog {
         comboTipoCliente.setEnabled(false);
     }
 
-	    private void guardarCliente() {
+	    //Arma el cliente con lo digitado (el negocio es quien lo valida)
+	    public Cliente getCliente() {
 
 	    	    String primerNombre = txtPrimerNombre.getText().trim();
 	    	    String otrosNombres = txtOtrosNombres.getText().trim();
@@ -196,21 +195,10 @@ public class DialogoCliente extends JDialog {
 	    	                0, tipoCliente,contrasenia, null,0);
 	    	    }
 
-	    	    try {
-	    	        //GUARDARlo (el negocio valida y lanza el error con el mensaje para el usuario)
-	    	        if (clienteEditar == null) {
-	    	            gestionCliente.agregarCliente(cliente);
-	    	        } else {
-	    	            gestionCliente.actualizarCliente(cliente);
-	    	        }
-	    	    } catch (ReglaNegocioException ex) {
-	    	        //Se deja el formulario abierto para que el usuario corrija
-	    	        JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-	    	        return;
-	    	    }
-
-	    	    evento.ejecutarEvento("GUARDAR");
-	    	    //cerrrar
-	    	    dispose();
+	    	    return cliente;
 	    	}
+
+	    public void mostrarError(String mensaje) {
+	        JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
 	    }
+	}

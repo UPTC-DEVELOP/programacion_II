@@ -4,7 +4,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 
-import co.edu.uptc.negocio.cliente.GestionCliente;
+import co.edu.uptc.interfaces.IGestionCliente;
 
 public class PanelCentral extends JPanel {
 
@@ -12,7 +12,7 @@ public class PanelCentral extends JPanel {
 
 	private PanelCliente panelCliente;
 
-	public PanelCentral(GestionCliente gestionCliente) {
+	public PanelCentral(IGestionCliente gestionCliente) {
 
         setLayout(new BorderLayout());
 

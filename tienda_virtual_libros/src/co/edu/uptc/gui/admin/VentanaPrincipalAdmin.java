@@ -11,10 +11,10 @@ import javax.swing.JPanel;
 
 import co.edu.uptc.gui.cliente.PanelCliente;
 import co.edu.uptc.gui.eventos.admin.Pantalla;
-import co.edu.uptc.gui.interfaz.admin.IVistaAdmin;
-import co.edu.uptc.negocio.admin.dto.LibroDto;
-import co.edu.uptc.negocio.admin.dto.VentaResumenDto;
-import co.edu.uptc.negocio.cliente.GestionCliente;
+import co.edu.uptc.gui.eventos.admin.IVistaAdmin;
+import co.edu.uptc.modelo.dto.LibroDto;
+import co.edu.uptc.modelo.dto.VentaResumenDto;
+import co.edu.uptc.interfaces.IGestionCliente;
 
 
 
@@ -46,7 +46,7 @@ public class VentanaPrincipalAdmin extends JFrame implements IVistaAdmin {
     private final PanelReportes reportes = new PanelReportes();
     private final PanelCliente clientes;
 
-    public VentanaPrincipalAdmin(GestionCliente gestionCliente) {
+    public VentanaPrincipalAdmin(IGestionCliente gestionCliente) {
         super("Admin Dashboard");
         clientes = new PanelCliente(gestionCliente);
         setDefaultCloseOperation(EXIT_ON_CLOSE);

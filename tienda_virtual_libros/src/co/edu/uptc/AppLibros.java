@@ -14,22 +14,33 @@ import co.edu.uptc.gui.PanelRegistro;
 import co.edu.uptc.gui.admin.VentanaPrincipalAdmin;
 import co.edu.uptc.gui.cliente.VentanaPrincipalCliente;
 import co.edu.uptc.gui.eventos.admin.ControladorAdmin;
-import co.edu.uptc.gui.interfaz.admin.IAuditoria;
-import co.edu.uptc.gui.interfaz.admin.IConsultaVentas;
-import co.edu.uptc.gui.interfaz.admin.IGestionLibro;
-import co.edu.uptc.gui.interfaz.admin.IGestionReporte;
-import co.edu.uptc.gui.interfaz.admin.ILibroRepositorio;
-import co.edu.uptc.gui.interfaz.admin.IValidadorLibro;
-import co.edu.uptc.gui.interfaz.cliente.IGestionCliente;
+import co.edu.uptc.interfaces.IAuditoria;
+import co.edu.uptc.interfaces.IClienteRepositorio;
+import co.edu.uptc.interfaces.IConsultaVentas;
+import co.edu.uptc.interfaces.IGestionCliente;
+import co.edu.uptc.interfaces.IGestionLibro;
+import co.edu.uptc.interfaces.IGestionReporte;
+import co.edu.uptc.interfaces.ILibroRepositorio;
+import co.edu.uptc.interfaces.IValidadorLibro;
 import co.edu.uptc.negocio.admin.GestionLibro;
 import co.edu.uptc.negocio.admin.GestionReporte;
 import co.edu.uptc.negocio.admin.ValidadorLibro;
-import co.edu.uptc.negocio.admin.memoria.AuditoriaMemoria;
-import co.edu.uptc.negocio.admin.memoria.ConsultaVentasMemoria;
-import co.edu.uptc.negocio.admin.memoria.LibroRepositorioMemoria;
 import co.edu.uptc.negocio.cliente.GestionCliente;
+<<<<<<< HEAD
 import co.edu.uptc.negocio.cliente.memoria.ClienteRepositorioMemoria;
 
+=======
+import co.edu.uptc.persistencia.AuditoriaMemoria;
+import co.edu.uptc.persistencia.ConsultaVentasMemoria;
+import co.edu.uptc.persistencia.LibroRepositorioMemoria;
+import co.edu.uptc.persistencia.LocalCliente;
+import java.awt.CardLayout;
+import java.util.function.Consumer;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+>>>>>>> a146a6e3293540f40e7490f58bfc971fa048bbb9
 
 /**
  * CLASE AppLibros  (paquete raíz)  -  PUNTO DE ENTRADA (main)
@@ -51,8 +62,8 @@ import co.edu.uptc.negocio.cliente.memoria.ClienteRepositorioMemoria;
 public class AppLibros {
     // Clientes: se crean UNA vez y se comparten entre el módulo admin y el de cliente
     // (y entre sesiones), para que el CRUD no se pierda al cerrar sesión.
-    private static final IGestionCliente persistenciaClientes = new ClienteRepositorioMemoria();
-    private static final GestionCliente gestionCliente = new GestionCliente(persistenciaClientes);
+    private static final IClienteRepositorio persistenciaClientes = new LocalCliente();
+    private static final IGestionCliente gestionCliente = new GestionCliente(persistenciaClientes);
 
 
 

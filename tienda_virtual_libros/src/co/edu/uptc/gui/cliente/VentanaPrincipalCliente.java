@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import co.edu.uptc.negocio.cliente.GestionCliente;
+import co.edu.uptc.interfaces.IGestionCliente;
 
 /**
  * Ventana que ve el CLIENTE despues de iniciar sesion:
@@ -22,7 +22,7 @@ public class VentanaPrincipalCliente extends JFrame {
 	private PanelCentral panelCentral;
 
 	//Constructor
-	public VentanaPrincipalCliente(String usuario, GestionCliente gestionCliente, Runnable alCerrarSesion) {
+	public VentanaPrincipalCliente(String usuario, IGestionCliente gestionCliente, Runnable alCerrarSesion) {
 
 
 	    setTitle("Sistema de Clientes");

@@ -6,13 +6,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
-import co.edu.uptc.gui.interfaz.admin.IGestionLibro;
-import co.edu.uptc.gui.interfaz.admin.IGestionReporte;
-import co.edu.uptc.gui.interfaz.admin.IVistaAdmin;
-import co.edu.uptc.negocio.admin.ReglaNegocioException;
-import co.edu.uptc.negocio.admin.dto.FiltroLibroDto;
-import co.edu.uptc.negocio.admin.dto.LibroDto;
-import co.edu.uptc.negocio.admin.dto.VentaResumenDto;
+import co.edu.uptc.interfaces.IGestionLibro;
+import co.edu.uptc.interfaces.IGestionReporte;
+import co.edu.uptc.excepciones.ReglaNegocioException;
+import co.edu.uptc.modelo.dto.FiltroLibroDto;
+import co.edu.uptc.modelo.dto.LibroDto;
+import co.edu.uptc.modelo.dto.VentaResumenDto;
 
 
 /**
