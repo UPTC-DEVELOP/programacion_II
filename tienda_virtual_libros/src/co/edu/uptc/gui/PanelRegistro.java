@@ -23,7 +23,7 @@ import javax.swing.SwingConstants;
  * Panel de registro de usuarios simplificado (Cliente / Administrador).
  * 
  * @author Brayan Javier Panqueva Pelayo
- * @version 1.3 - Septiembre 2026
+ * @version 1.0 - Septiembre 2026
  */
 @SuppressWarnings("serial")
 public class PanelRegistro extends JPanel {
