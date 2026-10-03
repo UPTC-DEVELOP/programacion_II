@@ -1,4 +1,4 @@
-package co.edu.uptc.tienda.gui;
+package co.edu.uptc.gui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -16,10 +16,10 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
-import co.edu.uptc.tienda.eventos.ActualizarCamposListener;
-import co.edu.uptc.tienda.eventos.CancelarPedidoListener;
-import co.edu.uptc.tienda.eventos.RegistrarPedidoListener;
-import co.edu.uptc.tienda.modelo.Producto;
+import co.edu.uptc.negocio.Producto;
+import co.edu.uptc.negocio.eventos.ActualizarCamposListener;
+import co.edu.uptc.negocio.eventos.CancelarPedidoListener;
+import co.edu.uptc.negocio.eventos.RegistrarPedidoListener;
 
 public class VentanaPrincipal extends JFrame {
 

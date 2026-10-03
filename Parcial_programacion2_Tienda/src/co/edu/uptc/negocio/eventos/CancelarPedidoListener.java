@@ -1,4 +1,4 @@
-package co.edu.uptc.tienda.eventos;
+package co.edu.uptc.negocio.eventos;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
