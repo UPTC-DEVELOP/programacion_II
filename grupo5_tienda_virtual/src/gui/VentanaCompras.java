@@ -36,6 +36,7 @@ public class VentanaCompras extends JFrame {
 	private Cliente cliente;
 	private ControladorLibro controladorLibro;
 	
+	
     // Campos de selección
     private JComboBox<Libro> cmbLibro;
     private JTextField txtCantidad;
@@ -48,6 +49,7 @@ public class VentanaCompras extends JFrame {
     private JLabel lblSubtotal;
     private JLabel lblIva19;
     private JLabel lblIva5;
+    private JLabel lblDescuentoPremium;
     private JLabel lblTotal;
 
     // Método de pago
@@ -74,14 +76,47 @@ public class VentanaCompras extends JFrame {
         setLayout(new BorderLayout(8, 8));
 
         add(crearPanelSuperior(), BorderLayout.NORTH);
+        
+     // CARGAR LOS LIBROS DISPONIBLES EN EL COMBOBOX
+        for (Object obj : controladorLibro.listar()) {
+            cmbLibro.addItem((Libro) obj);
+        }
+        
+        
+        add(crearPanelSuperior(), BorderLayout.NORTH);
+     // CARGAR LOS LIBROS DISPONIBLES EN EL COMBOBOX
+        for (Object obj : controladorLibro.listar()) {
+            cmbLibro.addItem((Libro) obj);
+        }
         add(crearTablaCarrito(), BorderLayout.CENTER);
         add(crearPanelInferior(), BorderLayout.SOUTH);
-
+        
         btnAgregar.addActionListener(e -> agregarAlCarrito());
         btnModificar.addActionListener(e -> modificarCantidad());
         btnEliminar.addActionListener(e -> eliminarDelCarrito());
         btnVaciar.addActionListener(e -> vaciarCarrito());
         btnComprar.addActionListener(e -> finalizarCompra());
+        
+     // CARGAR LOS DATOS DEL LIBRO SELECCIONADO EN LOS CAMPOS
+        tablaCarrito.getSelectionModel().addListSelectionListener(e -> {
+
+            if (!e.getValueIsAdjusting()) {
+
+                int filaSeleccionada = tablaCarrito.getSelectedRow();
+
+                if (filaSeleccionada >= 0) {
+
+                    Libro libro =
+                            (Libro) modeloTabla.getValueAt(filaSeleccionada, 0);
+
+                    int cantidad =
+                            (Integer) modeloTabla.getValueAt(filaSeleccionada, 1);
+
+                    cmbLibro.setSelectedItem(libro);
+                    txtCantidad.setText(String.valueOf(cantidad));
+                }
+            }
+        });
     }
     
     
@@ -90,6 +125,10 @@ public class VentanaCompras extends JFrame {
         Libro libro = (Libro) cmbLibro.getSelectedItem();
 
         if (libro == null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Seleccione un libro."
+            );
             return;
         }
 
@@ -98,10 +137,41 @@ public class VentanaCompras extends JFrame {
         try {
             cantidad = Integer.parseInt(txtCantidad.getText());
         } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "La cantidad debe ser un numero entero."
+            );
             return;
         }
 
         if (cantidad <= 0) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "La cantidad debe ser mayor que cero."
+            );
+            return;
+        }
+        
+     // VALIDAR STOCK ANTES DE AGREGAR AL CARRITO
+        Integer cantidadActual = carrito.getItems().get(libro);
+
+        if (cantidadActual == null) {
+            cantidadActual = 0;
+        }
+
+        int cantidadSolicitada = cantidadActual + cantidad;
+
+        if (cantidadSolicitada > libro.getCantidadDisponible()) {
+
+            int disponible = libro.getCantidadDisponible() - cantidadActual;
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No hay suficiente stock.\n"
+                            + "Unidades disponibles para agregar: "
+                            + disponible
+            );
+
             return;
         }
 
@@ -110,26 +180,55 @@ public class VentanaCompras extends JFrame {
         actualizarTabla();
     }
     
+ // MODIFICAR LA CANTIDAD DEL LIBRO SELECCIONADO
     private void modificarCantidad() {
 
-        Libro libro = (Libro) cmbLibro.getSelectedItem();
+        int filaSeleccionada = tablaCarrito.getSelectedRow();
 
-        if (libro == null) {
+        if (filaSeleccionada == -1) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Seleccione un libro de la tabla."
+            );
             return;
         }
+
+        Libro libro = (Libro) modeloTabla.getValueAt(filaSeleccionada, 0);
 
         int cantidad;
 
         try {
             cantidad = Integer.parseInt(txtCantidad.getText());
         } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "La cantidad debe ser un numero entero."
+            );
+            return;
+        }
+
+        if (cantidad < 0) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "La cantidad no puede ser negativa."
+            );
+            return;
+        }
+
+        if (cantidad > libro.getCantidadDisponible()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No hay suficiente stock.\n"
+                            + "Stock disponible: "
+                            + libro.getCantidadDisponible()
+            );
             return;
         }
 
         carrito.modificarCantidad(libro, cantidad);
 
         actualizarTabla();
-    } 
+    }
     
     private void eliminarDelCarrito() {
 
@@ -170,10 +269,34 @@ public class VentanaCompras extends JFrame {
             });
         }
 
-        lblSubtotal.setText(String.valueOf(carrito.calcularSubtotal()));
-        lblIva19.setText(String.valueOf(carrito.calcularIVA19()));
-        lblIva5.setText(String.valueOf(carrito.calcularIVA5()));
-        lblTotal.setText(String.valueOf(carrito.calcularTotal()));
+     // MOSTRAR TOTALES CON FORMATO MONETARIO
+        lblSubtotal.setText(
+                String.format("$%,.2f", carrito.calcularSubtotal())
+        );
+
+        lblIva19.setText(
+                String.format("$%,.2f", carrito.calcularIVA19())
+        );
+
+        lblIva5.setText(
+                String.format("$%,.2f", carrito.calcularIVA5())
+        );
+     
+        // MOSTRAR DESCUENTO PREMIUM
+        double valorDescuento =
+                carrito.calcularSubtotal() * cliente.calcularDescuento();
+
+        lblDescuentoPremium.setText(
+                String.format("$%,.2f", valorDescuento)
+        );
+        
+        // MOSTRAR TOTAL APLICANDO EL DESCUENTO DEL CLIENTE
+        lblTotal.setText(
+                String.format(
+                        "$%,.2f",
+                        carrito.calcularTotal(cliente.calcularDescuento())
+                )
+        );
     }
     
  // FINALIZAR LA COMPRA
@@ -259,15 +382,18 @@ public class VentanaCompras extends JFrame {
 
         // GUARDAR LA COMPRA EN EL CLIENTE
         cliente.agregarCompra(compra);
+        
+     // CALCULAR TOTAL FINAL CON DESCUENTO PREMIUM
+        double totalFinal = carrito.calcularTotal(cliente.calcularDescuento());
 
-        // MOSTRAR RESUMEN DE LA COMPRA
+     // MOSTRAR RESUMEN DE LA COMPRA
         JOptionPane.showMessageDialog(
                 this,
                 "COMPRA REALIZADA CORRECTAMENTE\n\n"
                         + "Cliente: " + cliente.getNombreCompleto()
                         + "\nMetodo de pago: " + metodoPago.getNombre()
                         + "\nFecha: " + compra.getFecha()
-                        + "\nTotal: $" + compra.calcularTotal()
+                        + "\nTotal: " + String.format("$%,.2f", totalFinal)
         );
 
         // VACIAR EL CARRITO
@@ -277,28 +403,38 @@ public class VentanaCompras extends JFrame {
         actualizarTabla();
     }
     
+    
+    	// CREAR PANEL SUPERIOR
+    	private JPanel crearPanelSuperior() {
 
-    private JPanel crearPanelSuperior() {
+    	    JPanel panelPrincipal = new JPanel(new BorderLayout(6, 6));
 
-        JPanel panel = new JPanel(new GridLayout(2, 4, 6, 6));
+    	    // FILA SUPERIOR: LIBRO Y CANTIDAD
+    	    JPanel panelDatos = new JPanel(new GridLayout(1, 4, 6, 6));
 
-        cmbLibro = new JComboBox<Libro>();
-        txtCantidad = new JTextField();
+    	    cmbLibro = new JComboBox<Libro>();
+    	    txtCantidad = new JTextField();
 
-        btnAgregar = new JButton("Agregar al carrito");
-        btnModificar = new JButton("Modificar cantidad");
+    	    panelDatos.add(new JLabel("Libro:"));
+    	    panelDatos.add(cmbLibro);
 
-        panel.add(new JLabel("Libro:"));
-        panel.add(cmbLibro);
+    	    panelDatos.add(new JLabel("Cantidad:"));
+    	    panelDatos.add(txtCantidad);
 
-        panel.add(new JLabel("Cantidad:"));
-        panel.add(txtCantidad);
+    	    // FILA INFERIOR: BOTONES
+    	    JPanel panelBotones = new JPanel(new GridLayout(1, 2, 6, 6));
 
-        panel.add(btnAgregar);
-        panel.add(btnModificar);
+    	    btnAgregar = new JButton("Agregar al carrito");
+    	    btnModificar = new JButton("Modificar cantidad");
 
-        return panel;
-    }
+    	    panelBotones.add(btnAgregar);
+    	    panelBotones.add(btnModificar);
+
+    	    panelPrincipal.add(panelDatos, BorderLayout.NORTH);
+    	    panelPrincipal.add(panelBotones, BorderLayout.SOUTH);
+
+    	    return panelPrincipal;
+    	}
 
     private JScrollPane crearTablaCarrito() {
 
@@ -327,11 +463,13 @@ public class VentanaCompras extends JFrame {
 
         JPanel panelPrincipal = new JPanel(new BorderLayout(6, 6));
 
-        JPanel panelTotales = new JPanel(new GridLayout(4, 2, 6, 6));
+     // CREAR PANEL DE TOTALES
+        JPanel panelTotales = new JPanel(new GridLayout(5, 2, 6, 6));
 
         lblSubtotal = new JLabel("$0.00");
         lblIva19 = new JLabel("$0.00");
         lblIva5 = new JLabel("$0.00");
+        lblDescuentoPremium = new JLabel("$0.00");
         lblTotal = new JLabel("$0.00");
 
         panelTotales.add(new JLabel("Subtotal:"));
@@ -342,10 +480,15 @@ public class VentanaCompras extends JFrame {
 
         panelTotales.add(new JLabel("IVA 5%:"));
         panelTotales.add(lblIva5);
+        
+     // MOSTRAR DESCUENTO PREMIUM
+        panelTotales.add(new JLabel("Descuento Premium:"));
+        panelTotales.add(lblDescuentoPremium);
 
         panelTotales.add(new JLabel("TOTAL:"));
         panelTotales.add(lblTotal);
-
+        
+        
         JPanel panelPago = new JPanel(new GridLayout(1, 2, 6, 6));
 
         cmbMetodoPago = new JComboBox<MetodoPago>(
@@ -405,6 +548,10 @@ public class VentanaCompras extends JFrame {
 
     public JLabel getLblIva5() {
         return lblIva5;
+    }
+    
+    public JLabel getLblDescuentoPremium() {
+        return lblDescuentoPremium;
     }
 
     public JLabel getLblTotal() {
