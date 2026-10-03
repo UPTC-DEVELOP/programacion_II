@@ -1,256 +1,143 @@
-package gui;
-
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
 
 public class VentanaPrincipal extends JFrame {
 
-    private JComboBox<Producto> comboProductos;
+    private final Producto[] productos = {
+        new Producto("Arroz", 5000, 20, 0.10, 0.19),
+        new Producto("Leche", 4200, 15, 0.05, 0.19),
+        new Producto("Pan", 3000, 30, 0.00, 0.05),
+        new Producto("Cafe", 18000, 10, 0.15, 0.19)
+    };
 
-    private JTextField txtPrecioBase;
-    private JTextField txtStock;
-    private JTextField txtDescuento;
-    private JTextField txtIVA;
-    private JTextField txtCantidad;
-    private JTextField txtTotal;
+    private final JComboBox<Producto> cmbProductos = new JComboBox<>(productos);
+    private final JTextField txtPrecioBase = campoSoloLectura();
+    private final JTextField txtStock = campoSoloLectura();
+    private final JTextField txtDescuento = campoSoloLectura();
+    private final JTextField txtIVA = campoSoloLectura();
+    private final JTextField txtPrecioFinal = campoSoloLectura();
+    private final JTextField txtCantidad = new JTextField();
+    private final JLabel lblTotal = new JLabel("Total pagado: $0.00");
+    private final JButton btnRegistrar = new JButton("Registrar Pedido");
+    private final JButton btnCancelar = new JButton("Cancelar Pedido Seleccionado");
 
-    private JButton btnRegistrar;
-
-    private final double IVA = 0.19;
+    private final DefaultTableModel modeloTabla = new DefaultTableModel(
+            new Object[]{"Producto", "Cantidad", "Precio unitario", "Total"}, 0) {
+        @Override
+        public boolean isCellEditable(int fila, int columna) { return false; }
+    };
+    private final JTable tablaHistorial = new JTable(modeloTabla);
 
     public VentanaPrincipal() {
-
-        setTitle("Sistema de Pedidos");
-        setSize(450, 450);
+        super("Inventario y Ventas");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(750, 520);
         setLocationRelativeTo(null);
+        setLayout(new BorderLayout(10, 10));
 
-        crearInterfaz();
-        cargarProductos();
-        configurarEventos();
-    }
+        JPanel panelDatos = new JPanel(new GridLayout(0, 2, 8, 6));
+        panelDatos.setBorder(BorderFactory.createTitledBorder("Producto"));
+        panelDatos.add(new JLabel("Producto:"));         panelDatos.add(cmbProductos);
+        panelDatos.add(new JLabel("Precio base:"));      panelDatos.add(txtPrecioBase);
+        panelDatos.add(new JLabel("Stock disponible:")); panelDatos.add(txtStock);
+        panelDatos.add(new JLabel("Descuento:"));        panelDatos.add(txtDescuento);
+        panelDatos.add(new JLabel("IVA:"));              panelDatos.add(txtIVA);
+        panelDatos.add(new JLabel("Precio final:"));     panelDatos.add(txtPrecioFinal);
+        panelDatos.add(new JLabel("Cantidad:"));         panelDatos.add(txtCantidad);
+        panelDatos.add(btnRegistrar);                    panelDatos.add(lblTotal);
 
-    private void crearInterfaz() {
+        tablaHistorial.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JPanel panelHistorial = new JPanel(new BorderLayout(5, 5));
+        panelHistorial.setBorder(BorderFactory.createTitledBorder("Historial de pedidos"));
+        panelHistorial.add(new JScrollPane(tablaHistorial), BorderLayout.CENTER);
+        panelHistorial.add(btnCancelar, BorderLayout.SOUTH);
 
-        JPanel panel = new JPanel(new GridLayout(8, 2, 10, 10));
+        add(panelDatos, BorderLayout.NORTH);
+        add(panelHistorial, BorderLayout.CENTER);
 
-        panel.setBorder(
-            BorderFactory.createEmptyBorder(20, 20, 20, 20)
-        );
-
-        panel.add(new JLabel("Producto:"));
-
-        comboProductos = new JComboBox<>();
-        panel.add(comboProductos);
-
-        panel.add(new JLabel("Precio Base:"));
-
-        txtPrecioBase = new JTextField();
-        txtPrecioBase.setEditable(false);
-        panel.add(txtPrecioBase);
-
-        panel.add(new JLabel("Stock Disponible:"));
-
-        txtStock = new JTextField();
-        txtStock.setEditable(false);
-        panel.add(txtStock);
-
-        panel.add(new JLabel("Descuento:"));
-
-        txtDescuento = new JTextField();
-        txtDescuento.setEditable(false);
-        panel.add(txtDescuento);
-
-        panel.add(new JLabel("IVA:"));
-
-        txtIVA = new JTextField();
-        txtIVA.setEditable(false);
-        panel.add(txtIVA);
-
-        panel.add(new JLabel("Cantidad:"));
-
-        txtCantidad = new JTextField();
-        panel.add(txtCantidad);
-
-        panel.add(new JLabel("Total a pagar:"));
-
-        txtTotal = new JTextField();
-        txtTotal.setEditable(false);
-        panel.add(txtTotal);
-
-        btnRegistrar = new JButton("Registrar Pedido");
-        panel.add(new JLabel());
-        panel.add(btnRegistrar);
-
-        add(panel);
-    }
-
-    private void cargarProductos() {
-
-        comboProductos.addItem(
-            new Producto("Laptop", 2500000, 10, 0.10)
-        );
-
-        comboProductos.addItem(
-            new Producto("Mouse", 80000, 20, 0.05)
-        );
-
-        comboProductos.addItem(
-            new Producto("Teclado", 150000, 15, 0.10)
-        );
-
-        comboProductos.addItem(
-            new Producto("Monitor", 900000, 8, 0.15)
-        );
-    }
-
-    private void configurarEventos() {
-
-        comboProductos.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                Producto producto =
-                    (Producto) comboProductos.getSelectedItem();
-
-                if (producto != null) {
-                    mostrarDatosProducto(producto);
-                }
+        cmbProductos.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                actualizarCampos();
             }
         });
 
-        btnRegistrar.addActionListener(new ActionListener() {
+        btnRegistrar.addActionListener(e -> registrarPedido());
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        btnCancelar.addActionListener(e -> cancelarPedido());
 
-                registrarPedido();
-            }
-        });
+        actualizarCampos();
     }
 
-    private void mostrarDatosProducto(Producto producto) {
-
-        txtPrecioBase.setText(
-            String.format("$ %.2f", producto.getPrecioBase())
-        );
-
-        txtStock.setText(
-            String.valueOf(producto.getStock())
-        );
-
-        txtDescuento.setText(
-            String.format(
-                "%.0f%%",
-                producto.getPorcentajeDescuento() * 100
-            )
-        );
-
-        txtIVA.setText(
-            String.format("%.0f%%", IVA * 100)
-        );
-
-        txtTotal.setText("");
+    private void actualizarCampos() {
+        Producto p = (Producto) cmbProductos.getSelectedItem();
+        if (p == null) return;
+        txtPrecioBase.setText(dinero(p.getPrecioBase()));
+        txtStock.setText(String.valueOf(p.getStock()));
+        txtDescuento.setText(porcentaje(p.getPorcentajeDescuento()));
+        txtIVA.setText(porcentaje(p.getImpuestoIVA()));
+        txtPrecioFinal.setText(dinero(p.calcularPrecioFinal()));
     }
 
     private void registrarPedido() {
-
+        Producto p = (Producto) cmbProductos.getSelectedItem();
         try {
+            int cantidad = Integer.parseInt(txtCantidad.getText().trim());
 
-            Producto producto =
-                (Producto) comboProductos.getSelectedItem();
+            p.descontarStock(cantidad);
 
-            if (producto == null) {
-                JOptionPane.showMessageDialog(
-                    this,
-                    "Debe seleccionar un producto.",
-                    "Advertencia",
-                    JOptionPane.WARNING_MESSAGE
-                );
-                return;
-            }
+            double precioUnitario = p.calcularPrecioFinal();
+            double total = precioUnitario * cantidad;
 
-            int cantidad =
-                Integer.parseInt(txtCantidad.getText().trim());
+            modeloTabla.addRow(new Object[]{p, cantidad, dinero(precioUnitario), dinero(total)});
 
-            if (cantidad <= 0) {
-                throw new IllegalArgumentException(
-                    "La cantidad debe ser mayor a 0."
-                );
-            }
-
-            if (cantidad > producto.getStock()) {
-                throw new IllegalArgumentException(
-                    "Stock insuficiente. Disponible: "
-                    + producto.getStock()
-                );
-            }
-
-            double precioConDescuento =
-                producto.calcularPrecioFinal();
-
-            double subtotal =
-                precioConDescuento * cantidad;
-
-            double valorIVA =
-                subtotal * IVA;
-
-            double total =
-                subtotal + valorIVA;
-
-            producto.descontarStock(cantidad);
-
-            txtTotal.setText(
-                String.format("$ %.2f", total)
-            );
-
-            txtStock.setText(
-                String.valueOf(producto.getStock())
-            );
-
-            JOptionPane.showMessageDialog(
-                this,
-                "Pedido registrado correctamente.\n"
-                + "Producto: " + producto.getNombre()
-                + "\nCantidad: " + cantidad
-                + "\nTotal: $ " + String.format("%.2f", total),
-                "Pedido registrado",
-                JOptionPane.INFORMATION_MESSAGE
-            );
-
+            lblTotal.setText("Total pagado: " + dinero(total));
             txtCantidad.setText("");
+            actualizarCampos();
 
         } catch (NumberFormatException ex) {
-
-            JOptionPane.showMessageDialog(
-                this,
-                "La cantidad debe ser un número entero.",
-                "Error",
-                JOptionPane.ERROR_MESSAGE
-            );
-
+            JOptionPane.showMessageDialog(this,
+                    "La cantidad debe ser un número entero.",
+                    "Entrada no válida", JOptionPane.ERROR_MESSAGE);
         } catch (IllegalArgumentException ex) {
-
-            JOptionPane.showMessageDialog(
-                this,
-                ex.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE
-            );
+            JOptionPane.showMessageDialog(this,
+                    ex.getMessage(),
+                    "No se pudo registrar", JOptionPane.WARNING_MESSAGE);
         }
     }
 
+    private void cancelarPedido() {
+        int fila = tablaHistorial.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Seleccione un pedido de la tabla.",
+                    "Sin selección", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        Producto p = (Producto) modeloTabla.getValueAt(fila, 0);
+        int cantidad = (Integer) modeloTabla.getValueAt(fila, 1);
+
+        p.reponerStock(cantidad);
+        modeloTabla.removeRow(fila);
+        cmbProductos.setSelectedItem(p);
+        actualizarCampos();
+
+        JOptionPane.showMessageDialog(this,
+                "Pedido cancelado. Se devolvieron " + cantidad + " unidades de " + p.getNombre() + ".");
+    }
+
+    private static JTextField campoSoloLectura() {
+        JTextField campo = new JTextField();
+        campo.setEditable(false);
+        return campo;
+    }
+
+    private static String dinero(double valor) { return String.format("$%,.2f", valor); }
+
+    private static String porcentaje(double valor) { return String.format("%.0f%%", valor * 100); }
+
     public static void main(String[] args) {
-
-        SwingUtilities.invokeLater(() -> {
-
-            VentanaPrincipal ventana =
-                new VentanaPrincipal();
-
-            ventana.setVisible(true);
-        });
+        SwingUtilities.invokeLater(() -> new VentanaPrincipal().setVisible(true));
     }
 }
