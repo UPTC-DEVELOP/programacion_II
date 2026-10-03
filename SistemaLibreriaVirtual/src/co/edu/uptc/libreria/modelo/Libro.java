@@ -10,7 +10,11 @@ public class Libro {
     private String genero;
     private String precio;
     private String stock;
+
     private final double porcentajeIva = 0.19;
+
+    private  final double porcentajeIva = 0.19; 
+
 
     public Libro() {
     }
@@ -93,10 +97,16 @@ public class Libro {
         this.stock = stock;
     }
     
+
     
     
     public double calcularIva(double subtotal, double descuento) {
     		double baseGravable = subtotal - descuento;
     		return baseGravable * porcentajeIva;
     	}
+
+    public double calcularTotalconIva(double subtotal, double descuento, double iva) {
+		return subtotal - descuento + iva;
+	}
+
 }

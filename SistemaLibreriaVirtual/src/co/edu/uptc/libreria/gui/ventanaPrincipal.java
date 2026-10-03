@@ -5,10 +5,15 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import co.edu.uptc.libreria.controladores.*;
 
 import co.edu.uptc.libreria.modelo.Cliente;
+import co.edu.uptc.libreria.negocio.GestionCarrito;
 import co.edu.uptc.libreria.negocio.TiendaConfig;
+import co.edu.uptc.libreria.persistencia.CarritoPersistencia;
+import co.edu.uptc.libreria.persistencia.LocalCarritoPersistencia;
 import co.edu.uptc.libreria.clientes.gui.PanelClientes;
+import co.edu.uptc.libreria.controladores.ControladorCarrito;
 import co.edu.uptc.libreria.clientes.gui.DialogoCliente;
 import co.edu.uptc.libreria.gui.ventanaPrincipal;
 
@@ -18,6 +23,10 @@ public class ventanaPrincipal extends JFrame {
 	private TiendaConfig config;
 	private PanelClientes panClientes;
 	private DialogoCliente dialogoCliente;
+	
+	
+	
+	
 
 	public ventanaPrincipal() {
 		setTitle("Tienda Virtual de Libros");
@@ -38,6 +47,13 @@ public class ventanaPrincipal extends JFrame {
 			ventanaPrincipal v = new ventanaPrincipal();
 			v.setVisible(Boolean.TRUE);
 		});
+		
+		ServicioAuditoria auditoria = new ServicioAuditoria();
+		CarritoPersistencia persistencia = new LocalCarritoPersistencia();
+		GestionCarrito gestionCarrito = new GestionCarrito(persistencia, auditoria);
+		ControladorCarrito controlador = new ControladorCarrito(gestionCarrito);
+		VistaCarrito panelVista = new VistaCarrito();
+		EventosGui eventos = new EventosGui(panelVista, controlador);
 	}
 
 	// ======================= CLIENTE =======================
