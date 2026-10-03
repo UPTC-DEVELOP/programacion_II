@@ -1,8 +1,6 @@
 package co.edu.uptc.modelo;
 
 import java.sql.Timestamp;
-import co.edu.uptc.modelo.Persona;
-import co.edu.uptc.modelo.TipoCliente;
 
 public abstract class Cliente extends Persona {
 	
@@ -79,11 +77,4 @@ public abstract class Cliente extends Persona {
 	//Descuento 
 	  public abstract double calcularDescuento(double subtotal);
 	  
-	  
-   // public int getIdCliente() { return idCliente; }
-    //public String getContrasenia() { return contrasenia; }
-    ///public TipoCliente getTipoCliente() { return tipoCliente; }
-    //public Timestamp getFechaRegistro() { return fechaRegistro; }
-    //public int getIntentosFallidos() { return intentosFallidos; }
-    ///public void setIntentosFallidos(int intentosFallidos) { this.intentosFallidos = intentosFallidos; }
 }

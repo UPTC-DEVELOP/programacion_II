@@ -6,12 +6,8 @@ import co.edu.uptc.excepciones.ReglaNegocioException;
 import co.edu.uptc.modelo.Cliente;
 
 /**
- * INTERFAZ IGestionCliente  (paquete: interfaces)
- * ---------------------------------------------------------------------------
- * CONTRATO de la capa de NEGOCIO para el CRUD de clientes. La GUI depende de
- * esta interfaz y no de la clase concreta GestionCliente (DIP), igual que
- * el módulo admin depende de IGestionLibro.
- * El almacenamiento va por otro contrato: IClienteRepositorio.
+ * Interfaz de negocio de los clientes.
+ * La GUI usa esta interfaz y no la clase GestionCliente directamente.
  */
 public interface IGestionCliente {
 
@@ -23,9 +19,5 @@ public interface IGestionCliente {
 
     List<Cliente> listarClientes();
 
-    /** @return el cliente o null si no existe. */
     Cliente buscarCliente(String identificacion);
-
-    /** @return el cliente si correo y contraseña coinciden, null en otro caso. */
-    Cliente autenticar(String correo, String contrasenia);
 }
