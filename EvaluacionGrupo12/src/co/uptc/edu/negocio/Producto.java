@@ -18,6 +18,12 @@ public class Producto {
     }
 
 
+   
+    public double calcularPrecioFinal() {
+        double precioConDescuento = precioBase * (1.0 - (porcentajeDescuento / 100.0));
+        return precioConDescuento * (1.0 + (impuestoIVA / 100.0));
+    }
+
     public String getId() { return id; }
     public String getNombre() { return nombre; }
     public double getPrecioBase() { return precioBase; }
