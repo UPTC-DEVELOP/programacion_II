@@ -13,8 +13,6 @@ public class Libro {
 
     private final double porcentajeIva = 0.19;
 
-    private  final double porcentajeIva = 0.19; 
-
 
     public Libro() {
     }
