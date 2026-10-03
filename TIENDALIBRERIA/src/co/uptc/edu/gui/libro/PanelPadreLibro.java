@@ -6,7 +6,6 @@ import javax.swing.table.DefaultTableModel;
 
 import co.uptc.edu.libro.modelo.Libro;
 
-
 public class PanelPadreLibro extends PanelCentral {
 
     public PanelPadreLibro(Evento evento) {
