@@ -15,7 +15,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-
 public class PanelDetalleLibro extends JPanel {
 
     private static final long serialVersionUID = 1L;
@@ -28,6 +27,7 @@ public class PanelDetalleLibro extends JPanel {
     private JTextField txtEditorial;
     private JTextField txtNumeroPaginas;
     private JTextField txtPrecioBase;
+    private JTextField txtDescuento;
     private JTextField txtCantidadDisponible;
     private JComboBox<FormatoLibro> cmbFormato;
     private PanelBotones panelBotones;
@@ -41,7 +41,7 @@ public class PanelDetalleLibro extends JPanel {
         setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder("Detalles del Libro"),
                 BorderFactory.createEmptyBorder(4, 8, 8, 8)));
-        setPreferredSize(new Dimension(360, 500));
+        setPreferredSize(new Dimension(360, 520));
 
         txtIsbn = new JTextField();
         txtTitulo = new JTextField();
@@ -51,6 +51,7 @@ public class PanelDetalleLibro extends JPanel {
         txtEditorial = new JTextField();
         txtNumeroPaginas = new JTextField();
         txtPrecioBase = new JTextField();
+        txtDescuento = new JTextField("0");
         txtCantidadDisponible = new JTextField();
         cmbFormato = new JComboBox<>(FormatoLibro.values());
         cmbFormato.setActionCommand(Comandos.FORMATO_CAMBIO);
@@ -65,6 +66,7 @@ public class PanelDetalleLibro extends JPanel {
         agregarCampo(panelCampos, "Formato:", cmbFormato);
         agregarCampo(panelCampos, "Número Páginas:", txtNumeroPaginas);
         agregarCampo(panelCampos, "Precio Base ($):", txtPrecioBase);
+        agregarCampo(panelCampos, "Descuento (%):", txtDescuento);
         agregarCampo(panelCampos, "Cantidad Disponible:", txtCantidadDisponible);
 
         panelBotones = new PanelBotones();
@@ -87,7 +89,7 @@ public class PanelDetalleLibro extends JPanel {
         panelBotones.agregarListener(listener);
     }
 
-    // ===================== Lectura de datos =====================
+    // ===================== Lectura de datos (solo texto, sin lógica) =====================
 
     public String getIsbn() { return txtIsbn.getText().trim(); }
     public String getTitulo() { return txtTitulo.getText().trim(); }
@@ -97,6 +99,7 @@ public class PanelDetalleLibro extends JPanel {
     public String getEditorial() { return txtEditorial.getText().trim(); }
     public String getNumeroPaginas() { return txtNumeroPaginas.getText().trim(); }
     public String getPrecioBase() { return txtPrecioBase.getText().trim(); }
+    public String getDescuento() { return txtDescuento.getText().trim(); }
     public String getCantidadDisponible() { return txtCantidadDisponible.getText().trim(); }
 
     public FormatoLibro getFormatoSeleccionado() {
@@ -118,6 +121,8 @@ public class PanelDetalleLibro extends JPanel {
                 ? String.valueOf(libro.getNumeroPaginas()) : "");
         txtPrecioBase.setText(BigDecimal.valueOf(libro.getPrecioBase())
                 .stripTrailingZeros().toPlainString());
+        txtDescuento.setText(BigDecimal.valueOf(libro.getPorcentajeDescuento())
+                .stripTrailingZeros().toPlainString());
         txtCantidadDisponible.setText(String.valueOf(libro.getCantidadDisponible()));
     }
 
@@ -130,19 +135,18 @@ public class PanelDetalleLibro extends JPanel {
         txtEditorial.setText("");
         txtNumeroPaginas.setText("");
         txtPrecioBase.setText("");
+        txtDescuento.setText("0");
         txtCantidadDisponible.setText("");
         cmbFormato.setSelectedIndex(0);
         actualizarCampoPaginas();
         setModoEdicion(false);
     }
 
- 
     public void setModoEdicion(boolean edicion) {
         txtIsbn.setEditable(!edicion);
         panelBotones.setModoEdicion(edicion);
     }
 
- 
     public void actualizarCampoPaginas() {
         boolean fisico = cmbFormato.getSelectedItem() == FormatoLibro.FISICO;
         txtNumeroPaginas.setEnabled(fisico);

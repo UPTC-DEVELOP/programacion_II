@@ -22,6 +22,9 @@ public class ControladorGUI implements ActionListener, ListSelectionListener {
     private final PanelCatalogo panelCatalogo;
     private final CatalogoService servicio;
 
+    
+    private Runnable alModificarCatalogo = () -> { };
+
     public ControladorGUI(VentanaPrincipal vista, VentanaLibro ventanaLibro,
                           CatalogoService servicio) {
         this.vista = vista;
@@ -39,6 +42,15 @@ public class ControladorGUI implements ActionListener, ListSelectionListener {
         panelCatalogo.agregarSeleccionListener(this);
     }
 
+    public void setAlModificarCatalogo(Runnable accion) {
+        this.alModificarCatalogo = accion;
+    }
+
+    public void refrescarCatalogo() {
+        cargarCatalogo();
+        limpiarFormulario();
+    }
+
     public void iniciar() {
         cargarCatalogo();
         vista.setVisible(true);
@@ -46,6 +58,7 @@ public class ControladorGUI implements ActionListener, ListSelectionListener {
     }
 
     // ===================== Manejo de eventos =====================
+
 
     public void actionPerformed(ActionEvent e) {
         try {
@@ -104,6 +117,7 @@ public class ControladorGUI implements ActionListener, ListSelectionListener {
         }
     }
 
+
     public void valueChanged(ListSelectionEvent e) {
         if (e.getValueIsAdjusting()) {
             return;
@@ -125,6 +139,7 @@ public class ControladorGUI implements ActionListener, ListSelectionListener {
         servicio.registrarLibro(libro);
         cargarCatalogo();
         limpiarFormulario();
+        alModificarCatalogo.run();
         UtilidadesGUI.mostrarInformacion(vista, "Libro registrado correctamente.");
     }
 
@@ -133,6 +148,7 @@ public class ControladorGUI implements ActionListener, ListSelectionListener {
         servicio.actualizarLibro(libro);
         cargarCatalogo();
         limpiarFormulario();
+        alModificarCatalogo.run();
         UtilidadesGUI.mostrarInformacion(vista, "Libro actualizado correctamente.");
     }
 
@@ -144,10 +160,11 @@ public class ControladorGUI implements ActionListener, ListSelectionListener {
         if (!UtilidadesGUI.confirmar(vista, "¿Desea eliminar el libro con ISBN " + isbn + "?")) {
             return;
         }
-        // El servicio impide eliminar libros con ventas asociadas
+        
         servicio.eliminarLibro(isbn);
         cargarCatalogo();
         limpiarFormulario();
+        alModificarCatalogo.run();
         UtilidadesGUI.mostrarInformacion(vista, "Libro eliminado correctamente.");
     }
 
@@ -155,14 +172,14 @@ public class ControladorGUI implements ActionListener, ListSelectionListener {
         String criterio = panelCatalogo.getCriterioBusqueda();
         List<Libro> resultado = servicio.buscarLibros(criterio);
         panelCatalogo.mostrarLibros(resultado);
-        // mensaje informativo si no hay coincidencias
+        
         if (resultado.isEmpty()) {
             UtilidadesGUI.mostrarInformacion(vista,
                     "No se encontraron libros que coincidan con \"" + criterio + "\".");
         }
     }
 
-    private void cargarCatalogo() {
+    public void cargarCatalogo() {
         panelCatalogo.mostrarLibros(servicio.listarLibros());
     }
 
@@ -178,12 +195,15 @@ public class ControladorGUI implements ActionListener, ListSelectionListener {
 
         FormatoLibro formato = panelDetalle.getFormatoSeleccionado();
 
-        // VALIDACIÓN de tipos: solo números enteros / decimales positivos
+        
         int anio = parseEntero(panelDetalle.getAnioPublicacion(), "Año de publicación");
         double precio = parseDecimal(panelDetalle.getPrecioBase(), "Precio base");
         int cantidad = parseEntero(panelDetalle.getCantidadDisponible(), "Cantidad disponible");
+        
+        double descuento = panelDetalle.getDescuento().isEmpty()
+                ? 0.0 : parseDecimal(panelDetalle.getDescuento(), "Descuento (%)");
 
-        // VALIDACIÓN: páginas opcionales, solo físico y mayor a 0 si se informan
+        
         int paginas = 0;
         String textoPaginas = panelDetalle.getNumeroPaginas();
         if (formato == FormatoLibro.FISICO && !textoPaginas.isEmpty()) {
@@ -196,11 +216,11 @@ public class ControladorGUI implements ActionListener, ListSelectionListener {
         return LibroFactory.crear(formato,
                 panelDetalle.getIsbn(), panelDetalle.getTitulo(), panelDetalle.getAutor(),
                 anio, panelDetalle.getCategoria(), panelDetalle.getEditorial(),
-                paginas, precio, cantidad, 0.0);
+                paginas, precio, cantidad, descuento);
     }
 
     private void validarObligatorios() throws ValidacionException {
-        // VALIDACIÓN: ningún campo obligatorio puede quedar vacío
+        
         List<String> faltantes = new ArrayList<>();
         if (panelDetalle.getIsbn().isEmpty()) faltantes.add("ISBN");
         if (panelDetalle.getTitulo().isEmpty()) faltantes.add("Título");
@@ -217,7 +237,7 @@ public class ControladorGUI implements ActionListener, ListSelectionListener {
     }
 
     private int parseEntero(String texto, String campo) throws ValidacionException {
-        // VALIDACIÓN de tipo: no se aceptan letras ni negativos
+        
         if (!texto.matches("\\d+")) {
             throw new ValidacionException(
                     "El campo \"" + campo + "\" solo admite números enteros positivos.");
@@ -229,7 +249,7 @@ public class ControladorGUI implements ActionListener, ListSelectionListener {
     }
 
     private double parseDecimal(String texto, String campo) throws ValidacionException {
-        // VALIDACIÓN de tipo: no se aceptan letras ni negativos
+        
         if (!texto.matches("\\d+(\\.\\d+)?")) {
             throw new ValidacionException("El campo \"" + campo
                     + "\" solo admite valores numéricos positivos (use punto como separador decimal).");
