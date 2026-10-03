@@ -13,7 +13,12 @@ public class Producto {
     
     // ATRIBUTOS PARA EL PARCIAL:
     // Estudiante A (Brayan): private double porcentajeDescuento;
+    //Natalia
+    private double impuestoIVA;
+	private double precioConDescuento;
     // Estudiante B : private double impuestoIVA;
+   
+   
 
     public Producto(String id, String nombre, double precioBase, int stock, double porcentajeDescuento) {
         this.id = id;
@@ -21,12 +26,16 @@ public class Producto {
         this.precioBase = precioBase;
         this.stock = stock;
         this.porcentajeDescuento = porcentajeDescuento;
+        this.impuestoIVA = 19.0; //Natalia
     }
 
 //METODO REALIZADO POR EL ESTUDIANTE A: BRAYAN
+    //MODIFICO NATALIA 
     public double calcularPrecioFinal() {
-  double descuento =precioBase * (porcentajeDescuento / 100.0);
-  return precioBase - descuento;
+    	double descuento =precioBase * (porcentajeDescuento / 100.0);
+    	double precioConDescuento = precioBase - descuento; 
+    	double iva = precioConDescuento * (impuestoIVA / 100.0); 
+  		return precioConDescuento + iva;
     }
 
     // Getters y Setters
