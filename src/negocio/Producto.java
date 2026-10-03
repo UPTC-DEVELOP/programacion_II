@@ -9,6 +9,7 @@ public class Producto {
     private double precioBase;
     private int stock;
     private double porcentajeDescuento;
+    private double impuestoIVA;
 
     public Producto() {
     }
@@ -20,10 +21,11 @@ public class Producto {
     }
 
     /**
-     * Calcula el precio final del producto aplicando el descuento.
+     * Calcula el precio final del producto aplicando el descuento y el IVA.
      */
     public double calcularPrecioFinal() {
-        return precioBase - (precioBase * porcentajeDescuento);
+        double precioConDescuento = precioBase - (precioBase * porcentajeDescuento);
+        return precioConDescuento + (precioConDescuento * impuestoIVA);
     }
 
     public String getNombre() {
@@ -56,6 +58,14 @@ public class Producto {
 
     public void setPorcentajeDescuento(double porcentajeDescuento) {
         this.porcentajeDescuento = porcentajeDescuento;
+    }
+
+    public double getImpuestoIVA() {
+        return impuestoIVA;
+    }
+
+    public void setImpuestoIVA(double impuestoIVA) {
+        this.impuestoIVA = impuestoIVA;
     }
 
     @Override
