@@ -20,8 +20,19 @@ public class ControladorLibro {
     //   REGISTRO DE UN NUEVO LIBRO (RF01)  //
     
     public boolean registrar(Libro libro) {
-           	
-        if (libro == null || libro.getIsbn() == null || buscar(libro.getIsbn()) != null) {
+        if (libro == null) {
+            return false;
+        }
+        if (libro.getIsbn() == null || libro.getIsbn().trim().isEmpty()) {
+            return false;
+        }
+        if (libro.getTitulo() == null || libro.getTitulo().trim().isEmpty()) {
+            return false;
+        }
+        if (libro.getPrecio() <= 0) {
+            return false;
+        }
+        if (buscar(libro.getIsbn()) != null) {
             return false;
         }
         return libros.add(libro);
