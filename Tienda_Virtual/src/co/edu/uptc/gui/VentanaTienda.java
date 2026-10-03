@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import co.edu.uptc.controller.TiendaController;
 
 public class VentanaTienda extends JFrame {
 
@@ -17,6 +18,8 @@ public class VentanaTienda extends JFrame {
     private JButton btnRegistrar, btnCancelarPedido;
     private JTable tablaHistorial;
     private DefaultTableModel modeloTabla;
+    private JButton btnVerCarrito;
+    private VentanaCarrito ventanaCarrito;
 
     public VentanaTienda() {
         setTitle("Sistema de Gestión - Tienda Virtual");
@@ -65,9 +68,11 @@ public class VentanaTienda extends JFrame {
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         btnRegistrar = new JButton("Registrar Pedido");
         btnCancelarPedido = new JButton("Cancelar Pedido Seleccionado");
+        btnVerCarrito = new JButton("Ver Carrito");
         
         panelBotones.add(btnRegistrar);
         panelBotones.add(btnCancelarPedido);
+        panelBotones.add(btnVerCarrito);
         add(panelBotones, BorderLayout.SOUTH);
 
         // Cargar datos y configurar eventos
@@ -117,6 +122,14 @@ public class VentanaTienda extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 cancelarPedido();
+            }
+        });
+
+        // 4. EVENTO VER CARRITO (abre la ventana del CRUD del carrito)
+        btnVerCarrito.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                abrirCarrito();
             }
         });
     }
@@ -182,6 +195,13 @@ public class VentanaTienda extends JFrame {
 
         actualizarCampos();
         JOptionPane.showMessageDialog(this, "Pedido cancelado. El stock ha sido restaurado.", "Pedido Cancelado", JOptionPane.INFORMATION_MESSAGE);
+    }
+    private void abrirCarrito() {
+        if (ventanaCarrito == null) {
+            ventanaCarrito = new VentanaCarrito(new TiendaController());
+        }
+        ventanaCarrito.refrescar();
+        ventanaCarrito.setVisible(true);
     }
 
     public static void main(String[] args) {

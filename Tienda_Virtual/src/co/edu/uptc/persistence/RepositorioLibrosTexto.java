@@ -16,33 +16,35 @@ public class RepositorioLibrosTexto implements IRepositorioLibros {
     private void cargarDatosIniciales() {
         // Libro 1 de prueba
         listaLibros.add(new Libro(
-            "978-0134685991",
-            "Effective Java",
-            "Joshua Bloch",
-            2018,
-            "Tecnología",
-            "Addison-Wesley",
-            412,
-            120000.0,
-            19.0,
-            15,
-            "Físico"
-        ));
+                "978-0134685991",
+                "Effective Java",
+                "Joshua Bloch",
+                2018,
+                "Tecnología",
+                "Addison-Wesley",
+                412,
+                120000.0,
+                19.0,
+                0.0,
+                15,
+                "Físico"
+            ));
 
         // Libro 2 de prueba
         listaLibros.add(new Libro(
-            "978-0307474728",
-            "Cien años de soledad",
-            "Gabriel García Márquez",
-            1967,
-            "Literatura",
-            "Editorial Sudamericana",
-            496,
-            50000.0,
-            19.0,
-            20,
-            "Físico"
-        ));
+                "978-0307474728",
+                "Cien años de soledad",
+                "Gabriel García Márquez",
+                1967,
+                "Literatura",
+                "Editorial Sudamericana",
+                496,
+                50000.0,
+                19.0,
+                0.0,
+                20,
+                "Físico"
+            ));
     }
 
     @Override
