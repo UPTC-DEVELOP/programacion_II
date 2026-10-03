@@ -13,6 +13,11 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import java.awt.GridLayout;
+
+import javax.swing.JFrame;
+
+
 import co.edu.uptc.libreria.gui.Evento;
 
 /**
@@ -31,6 +36,19 @@ public abstract class PanelCentral extends JPanel {
 	protected JTextField txBuscar;
 	protected JTable tblDatos;
 	protected DefaultTableModel modelo;
+	
+	private JButton botonRegistrarCliente;
+    private JButton botonActualizarCliente;
+    private JButton botonBuscarCliente;
+    private JButton botonEliminarCliente;
+
+    private JButton botonRegistrarLibro;
+    private JButton botonActualizarLibro;
+    private JButton botonBuscarLibro;
+    private JButton botonEliminarLibro;
+
+    private JButton botonSalir;
+
 
 	public PanelCentral(Evento evento) {
 		agregarTituloPanel();
@@ -108,4 +126,85 @@ public abstract class PanelCentral extends JPanel {
 	public abstract void agregarCabeceraTabla();
 
 	public abstract void poblarTabla(List<?> lista);
+	setTitle("Tienda Virtual de Libros");
+    setSize(550, 500);
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setLocationRelativeTo(null);
+    setResizable(false);
+
+    JPanel panelBotones = new JPanel(
+            new GridLayout(9, 1, 10, 10)
+    );
+
+    botonRegistrarCliente = new JButton("Registrar Cliente");
+    botonActualizarCliente = new JButton("Actualizar Cliente");
+    botonBuscarCliente = new JButton("Buscar Cliente");
+    botonEliminarCliente = new JButton("Eliminar Cliente");
+
+    botonRegistrarLibro = new JButton("Registrar Libro");
+    botonActualizarLibro = new JButton("Actualizar Libro");
+    botonBuscarLibro = new JButton("Buscar Libro");
+    botonEliminarLibro = new JButton("Eliminar Libro");
+
+    botonSalir = new JButton("Salir");
+
+    panelBotones.add(botonRegistrarCliente);
+    panelBotones.add(botonActualizarCliente);
+    panelBotones.add(botonBuscarCliente);
+    panelBotones.add(botonEliminarCliente);
+
+    panelBotones.add(botonRegistrarLibro);
+    panelBotones.add(botonActualizarLibro);
+    panelBotones.add(botonBuscarLibro);
+    panelBotones.add(botonEliminarLibro);
+
+    panelBotones.add(botonSalir);
+
+    add(panelBotones);
+
+    botonRegistrarCliente.addActionListener(e -> {
+        new PanelRegistrarCliente().setVisible(true);
+        dispose();
+    });
+
+    botonActualizarCliente.addActionListener(e -> {
+        new PanelActualizarCliente().setVisible(true);
+        dispose();
+    });
+
+    botonBuscarCliente.addActionListener(e -> {
+        new PanelBuscarCliente().setVisible(true);
+        dispose();
+    });
+
+    botonEliminarCliente.addActionListener(e -> {
+        new PanelEliminarCliente().setVisible(true);
+        dispose();
+    });
+
+    botonRegistrarLibro.addActionListener(e -> {
+        new PanelRegistrarLibro().setVisible(true);
+        dispose();
+    });
+
+    botonActualizarLibro.addActionListener(e -> {
+        new PanelActualizarLibro().setVisible(true);
+        dispose();
+    });
+
+    botonBuscarLibro.addActionListener(e -> {
+        new PanelBuscarLibro().setVisible(true);
+        dispose();
+    });
+
+    botonEliminarLibro.addActionListener(e -> {
+        new PanelEliminarLibro().setVisible(true);
+        dispose();
+    });
+
+    botonSalir.addActionListener(e -> {
+        System.exit(0);
+    });
 }
+
+        
