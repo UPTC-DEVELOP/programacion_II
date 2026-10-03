@@ -1,0 +1,2 @@
+[2026-09-26T09:38:43.263567600] - Registrado nuevo libro: Cien Años de Soledad (ISBN: 980-689758)
+[2026-09-26T09:39:03.381023600] - Eliminado libro con ISBN: 980-689758
