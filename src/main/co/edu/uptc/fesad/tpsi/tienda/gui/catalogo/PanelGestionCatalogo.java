@@ -56,5 +56,7 @@ public class PanelGestionCatalogo extends PanelBase {
   
   public PanelAutores getPanelAutores() { return this.panelAutores; }
   
+  public PanelCategorias getPanelCategorias() { return this.panelCategorias; }
+  
 }
 

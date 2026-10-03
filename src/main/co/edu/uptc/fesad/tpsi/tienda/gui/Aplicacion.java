@@ -1,15 +1,19 @@
 //
 package main.co.edu.uptc.fesad.tpsi.tienda.gui;
 
+import main.co.edu.uptc.fesad.tpsi.tienda.categoria.ControladorCategoria;
 import main.co.edu.uptc.fesad.tpsi.tienda.gui.autor.ControladorAutor;
 import main.co.edu.uptc.fesad.tpsi.tienda.gui.editorial.ControladorEditorial;
 import main.co.edu.uptc.fesad.tpsi.tienda.gui.eventos.EnrutadorEventos;
 import main.co.edu.uptc.fesad.tpsi.tienda.interfaces.IControlador;
 import main.co.edu.uptc.fesad.tpsi.tienda.interfaces.IRepositorioAutor;
+import main.co.edu.uptc.fesad.tpsi.tienda.interfaces.IRepositorioCategoria;
 import main.co.edu.uptc.fesad.tpsi.tienda.interfaces.IRepositorioEditorial;
 import main.co.edu.uptc.fesad.tpsi.tienda.negocio.GestionAutor;
+import main.co.edu.uptc.fesad.tpsi.tienda.negocio.GestionCategoria;
 import main.co.edu.uptc.fesad.tpsi.tienda.negocio.GestionEditorial;
 import main.co.edu.uptc.fesad.tpsi.tienda.persistencia.RepositorioAutorenMemoria;
+import main.co.edu.uptc.fesad.tpsi.tienda.persistencia.RepositorioCategoriaEnMemoria;
 import main.co.edu.uptc.fesad.tpsi.tienda.persistencia.RepositorioEditorialEnMemoria;
 
 /// Representa la aplicación.
@@ -49,11 +53,13 @@ public class Aplicacion {
     // repositorio: en este caso, un repositorio en la memoria RAM.
     IRepositorioEditorial repositorioEditorial = new RepositorioEditorialEnMemoria();
     IRepositorioAutor repositorioAutor = new RepositorioAutorenMemoria();
+    IRepositorioCategoria repositorioCategoria = new RepositorioCategoriaEnMemoria();
     
 
     // crear los gestores de lógica del negocio
     GestionEditorial gestorEditorial = new GestionEditorial(repositorioEditorial);
     GestionAutor gestorAutor = new GestionAutor(repositorioAutor);
+    GestionCategoria gestorCategoria = new GestionCategoria(repositorioCategoria);
     
     // crear los controladores que intermedian entre la interfaz gráfica y la capa de lógica
     
@@ -69,6 +75,12 @@ public class Aplicacion {
         contenidoPrincipal.getPanelGestionCatalogo()
           .getPanelAutores(),
         gestorAutor
+      ),
+      
+      new ControladorCategoria(
+        contenidoPrincipal.getPanelGestionCatalogo()
+          .getPanelCategorias(),
+        gestorCategoria
       )
     };
     
