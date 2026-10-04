@@ -14,7 +14,7 @@ public class LocalCarritoPersistencia implements CarritoPersistencia{
 	
 	private final String rutaArchivo = "data/carrito.txt";
 
-	private ControladorCatalogo controladorCatalogo;
+	//private ControladorCatalogo controladorCatalogo;
 
 	private GestionLibro gestionLibro;
 
@@ -57,7 +57,7 @@ public class LocalCarritoPersistencia implements CarritoPersistencia{
 			while ((linea = br.readLine()) != null) {
 				String[] datos = linea.split(";");
 				if (datos.length >= 2) {
-					String isbn = datos[0];
+					String codigo = datos[0];
 					int cantidad = Integer.parseInt(datos[1]);
 					
 					Libro libroEntrante = null;

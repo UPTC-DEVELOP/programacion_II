@@ -46,21 +46,21 @@ public class GestionCarrito {
 				item.setCantidad(item.getCantidad() + cantidad);
 				persistencia.guardar(items);
 				
-				auditoria.registrarAccion(usuarioActual, "Actualizar Cantidad", "Aumento Cantidad ISBN" + libro.getIsbn() + "a" + item.getCantidad());
+				auditoria.registrarOperacion(usuarioActual, "Actualizar Cantidad", "Aumento Cantidad ISBN" + libro.getCodigo() + "a" + item.getCantidad());
 				return;
 			}
 		}
 		items.add(new ItemCarrito(libro, cantidad, Double.parseDouble(libro.getPrecio())));
 		persistencia.guardar(items);
 		
-		auditoria.registrarAccion(usuarioActual, "Agregar Libro", "Agregar al carrito el libro" + libro.getTitulo());
+		auditoria.registrarOperacion(usuarioActual, "Agregar Libro", "Agregar al carrito el libro" + libro.getTitulo());
 	}
 	
 	public List<ItemCarrito> obtenerItems() {
 		return new ArrayList<>(items);
 	}
 	
-	public boolean actualizarCantidad(String , int nuevaCantidad) {
+	public boolean actualizarCantidad(String codigo , int nuevaCantidad) {
 		for (ItemCarrito item : items) {
 			if (item.getLibro().getCodigo().equals(codigo)) {
 				if (nuevaCantidad <= 0) {
@@ -74,12 +74,12 @@ public class GestionCarrito {
 		return false;
 	}
 	
-	public boolean eliminarLibro(String isbn) {
+	public boolean eliminarLibro(String codigo) {
 		boolean eliminado = items.removeIf(item -> item.getLibro().getCodigo().equals(codigo));
 		if (eliminado) {
 			persistencia.guardar(items);
 			
-			auditoria.registrarAccion(usuarioActual, "Elimanr Libro", "Elimino del carrito el ISBN: " + isbn);
+			auditoria.registrarOperacion(usuarioActual, "Elimanr Libro", "Elimino del carrito el ISBN: " + codigo);
 		}
 		return eliminado;
 	}
@@ -103,7 +103,7 @@ public class GestionCarrito {
 	public void vaciarCarrito() {
 		items.clear();
 		persistencia.guardar(items);
-		auditoria.registrarAccion(usuarioActual, "Vaciar Carrito", "Se realizo el checkout y se vacio el carrito");
+		auditoria.registrarOperacion(usuarioActual, "Vaciar Carrito", "Se realizo el checkout y se vacio el carrito");
 		
 	}
 	
