@@ -1,0 +1,6 @@
+[2026-10-04T17:05:12.983167] Carrito guardado en carrito_letsread.json
+[2026-10-04T17:05:12.988236200] Añadido al carrito de Let's Read: Frankenstein
+[2026-10-04T17:05:16.520053100] Carrito guardado en carrito_letsread.json
+[2026-10-04T17:05:16.522143800] Cantidad actualizada en carrito: Frankenstein
+[2026-10-04T17:05:22.831521500] Compra realizada con éxito por Cristtopher Moreno
+[2026-10-04T17:05:22.834520800] Carrito guardado en carrito_letsread.json
