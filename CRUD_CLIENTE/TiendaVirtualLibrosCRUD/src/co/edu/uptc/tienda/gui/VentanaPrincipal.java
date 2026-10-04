@@ -1,6 +1,8 @@
 package co.edu.uptc.tienda.gui;
 
-import javax.swing.JFrame;
+import java.awt.BorderLayout;
+
+import javax.swing.*;
 
 /**
  * Ventana principal de la aplicación Tienda Virtual de Libros (Módulo
@@ -16,16 +18,30 @@ public class VentanaPrincipal extends JFrame {
 	 */
 	public VentanaPrincipal() {
 		setTitle("Tienda Virtual de Libros - Gestión de Clientes");
-		setSize(1100, 500);
+		setSize(1100, 600);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null); // Centrar en pantalla
 
+		// Relaciones o AsociacionesF
 		panelCentral = new PanelCentral();
-		add(panelCentral);
+
+		// Panel de Pestañas
+		setLayout(new BorderLayout());
+
+		JTabbedPane pestanas = new JTabbedPane();
+		JPanel panelCliente = new JPanel();
+		JPanel panelLibro = new JPanel();
+
+		panelCliente.add(panelCentral);
+
+		pestanas.addTab("Cliente", panelCliente);
+		pestanas.addTab("Libro", panelLibro);
+
+		add(pestanas, BorderLayout.CENTER);
+
 	}
 
 	public static void main(String[] args) {
-		// Iniciar la interfaz en el hilo de despacho de eventos de Swing
 		javax.swing.SwingUtilities.invokeLater(() -> {
 			VentanaPrincipal ventana = new VentanaPrincipal();
 			ventana.setVisible(true);
