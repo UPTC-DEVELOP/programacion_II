@@ -10,7 +10,7 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# Package Files #
+# Package Files
 *.jar
 *.war
 *.nar
@@ -19,7 +19,27 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Virtual machine crash logs
 hs_err_pid*
 replay_pid*
-/.metadata/
+
+# Development environment metadata
+# Archivos generados automáticamente por herramientas de desarrollo
+# No deben versionarse por contener configuración local
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+*.swp
+*.swo
+
+# Build output
+bin/
+out/
+target/
+build/
+
+# IDE workspace
+.metadata/
