@@ -1,10 +1,6 @@
 package co.edu.uptc.negocio;
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 549203d0a10279e80b04605eb5fa96096f6d4122
 public class Pedido {
     private String idPedido;
     private Producto producto;
@@ -18,12 +14,11 @@ public class Pedido {
         this.totalPagar = totalPagar;
     }
 //getters and setters
-    public String getIdPedido() { return idPedido; }
+    public String getIdPedido() {
+    	return idPedido; }
     public Producto getProducto() { return producto; }
     public int getCantidad() { return cantidad; }
     public double getTotalPagar() { return totalPagar; }
-<<<<<<< HEAD
+    
 }
-=======
-}
->>>>>>> 549203d0a10279e80b04605eb5fa96096f6d4122
+

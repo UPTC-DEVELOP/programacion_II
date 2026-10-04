@@ -26,21 +26,12 @@ import co.edu.uptc.negocio.admin.GestionLibro;
 import co.edu.uptc.negocio.admin.GestionReporte;
 import co.edu.uptc.negocio.admin.ValidadorLibro;
 import co.edu.uptc.negocio.cliente.GestionCliente;
-<<<<<<< HEAD
-import co.edu.uptc.negocio.cliente.memoria.ClienteRepositorioMemoria;
-
-=======
 import co.edu.uptc.persistencia.AuditoriaMemoria;
 import co.edu.uptc.persistencia.ConsultaVentasMemoria;
 import co.edu.uptc.persistencia.LibroRepositorioMemoria;
 import co.edu.uptc.persistencia.LocalCliente;
-import java.awt.CardLayout;
-import java.util.function.Consumer;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
->>>>>>> a146a6e3293540f40e7490f58bfc971fa048bbb9
+
+//>>>>>>> a146a6e3293540f40e7490f58bfc971fa048bbb9
 
 /**
  * CLASE AppLibros  (paquete raíz)  -  PUNTO DE ENTRADA (main)
