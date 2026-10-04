@@ -2,35 +2,35 @@ package co.edu.uptc.tienda.negocio;
 
 import java.util.List;
 
-import co.edu.uptc.tienda.interfaces.IGestionCliente;
+import co.edu.uptc.tienda.interfaces.IGestionable;
 import co.edu.uptc.tienda.modelo.Cliente;
 
 public class GestionCliente {
 
-	private IGestionCliente gestionCliente;
-	
-	//constructorinyeccion de dependencias
-	public GestionCliente(IGestionCliente gestionCliente) {
-	    this.gestionCliente = gestionCliente;
+	private IGestionable<Cliente> gestionCliente;
+
+	// constructorinyeccion de dependencias
+	public GestionCliente(IGestionable<Cliente> gestionCliente) {
+		this.gestionCliente = gestionCliente;
 	}
-	
+
 	public void agregarCliente(Cliente cliente) {
-	    gestionCliente.agregarCliente(cliente);
+		gestionCliente.agregar(cliente);
 	}
-	
+
 	public List<Cliente> listarClientes() {
-	    return gestionCliente.listarClientes();
+		return gestionCliente.listar();
 	}
-	
+
 	public Cliente buscarCliente(String identificacion) {
-	    return gestionCliente.buscarCliente(identificacion);
+		return gestionCliente.buscar(identificacion);
 	}
-	
+
 	public boolean actualizarCliente(Cliente clienteActualizado) {
-	    return gestionCliente.actualizarCliente(clienteActualizado);
+		return gestionCliente.actualizar(clienteActualizado);
 	}
-	
+
 	public boolean eliminarCliente(String identificacion) {
-	    return gestionCliente.eliminarCliente(identificacion);
+		return gestionCliente.eliminar(identificacion);
 	}
 }
