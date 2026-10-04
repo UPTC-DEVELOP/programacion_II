@@ -25,6 +25,8 @@ public class EventosGui implements ActionListener {
 	private VistaCarrito vista;
 	private ControladorCarrito controlador;
 	
+	private Runnable alSeguirComprando;
+	
 	
 	public EventosGui(VistaCarrito vista, ControladorCarrito controlador) {
 		this.vista = vista;
@@ -79,8 +81,14 @@ public class EventosGui implements ActionListener {
 		
 	}
 	
+	public void setAlSeguirComprando(Runnable alSeguirComprando) {
+	    this.alSeguirComprando = alSeguirComprando;
+	}
 	
-	
-	
+	public void refrescarVista() {
+	    vista.actualizarTabla(controlador.listarCarrito());
+	    vista.mostrarTotales(controlador.obtenerSubtotal(), controlador.obtenerDescuento(),
+	            controlador.obtenerIva(), controlador.obtenerTotal());
+	}
 
 }
