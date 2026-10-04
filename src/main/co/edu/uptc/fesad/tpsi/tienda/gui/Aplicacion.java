@@ -1,8 +1,8 @@
 //
 package main.co.edu.uptc.fesad.tpsi.tienda.gui;
 
-import main.co.edu.uptc.fesad.tpsi.tienda.categoria.ControladorCategoria;
 import main.co.edu.uptc.fesad.tpsi.tienda.gui.autor.ControladorAutor;
+import main.co.edu.uptc.fesad.tpsi.tienda.gui.categoria.ControladorCategoria;
 import main.co.edu.uptc.fesad.tpsi.tienda.gui.editorial.ControladorEditorial;
 import main.co.edu.uptc.fesad.tpsi.tienda.gui.eventos.EnrutadorEventos;
 import main.co.edu.uptc.fesad.tpsi.tienda.interfaces.IControlador;

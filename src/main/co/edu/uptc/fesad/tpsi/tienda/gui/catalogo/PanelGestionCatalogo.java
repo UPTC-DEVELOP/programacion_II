@@ -6,8 +6,8 @@ import java.awt.BorderLayout;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 
-import main.co.edu.uptc.fesad.tpsi.tienda.categoria.PanelCategorias;
 import main.co.edu.uptc.fesad.tpsi.tienda.gui.autor.PanelAutores;
+import main.co.edu.uptc.fesad.tpsi.tienda.gui.categoria.PanelCategorias;
 import main.co.edu.uptc.fesad.tpsi.tienda.gui.componentes.PanelBase;
 import main.co.edu.uptc.fesad.tpsi.tienda.gui.editorial.PanelEditoriales;
 import main.co.edu.uptc.fesad.tpsi.tienda.gui.eventos.Evento;

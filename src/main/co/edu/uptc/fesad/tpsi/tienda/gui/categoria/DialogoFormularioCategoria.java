@@ -1,4 +1,4 @@
-package main.co.edu.uptc.fesad.tpsi.tienda.categoria;
+package main.co.edu.uptc.fesad.tpsi.tienda.gui.categoria;
 
 import java.awt.Window;
 
