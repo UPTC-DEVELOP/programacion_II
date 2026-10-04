@@ -1,5 +1,5 @@
 
-package co.edu.uptc.modelo;
+package co.edu.uptc.modelo.enums;
 
 /**
  * ENUMERACIÓN Categoria  (paquete: modelo)

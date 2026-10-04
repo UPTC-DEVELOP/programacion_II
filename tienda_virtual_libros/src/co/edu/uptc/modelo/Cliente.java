@@ -2,23 +2,24 @@ package co.edu.uptc.modelo;
 
 import java.sql.Timestamp;
 
-public abstract class Cliente extends Persona {
-	
+import co.edu.uptc.modelo.enums.Rol;
+import co.edu.uptc.modelo.enums.TipoCliente;
 
-    private int idCliente;
-    private TipoCliente tipoCliente;
-    private String contrasenia;
-    private Timestamp fechaRegistro;
-    private int intentosFallidos;
-    
-  //SUPER 
-    
-    
-    public Cliente(String primerNombre, String otrosNombres, String primerApellido, String otrosApellidos,
-			String tipoIdentificacion, String identificacion, String correoElectronico, String celular,
-			String direccion, int idCliente, TipoCliente tipoCliente, String contrasenia, Timestamp fechaRegistro,
-			int intentosFallidos) {
-    	//agrega datos a la clase persona
+public abstract class Cliente extends Persona {
+
+	private int idCliente;
+	private TipoCliente tipoCliente;
+	private String contrasenia;
+	private Timestamp fechaRegistro;
+	private int intentosFallidos;
+	private Rol rol;
+
+	// Constructor completo (se usa en las subclases y en el mapper)
+	public Cliente(String primerNombre, String otrosNombres, String primerApellido, String otrosApellidos,
+				   String tipoIdentificacion, String identificacion, String correoElectronico, String celular,
+				   String direccion, int idCliente, TipoCliente tipoCliente, String contrasenia,
+				   Timestamp fechaRegistro, int intentosFallidos, Rol rol) {
+		//agrega datos a la clase persona
 		super(primerNombre, otrosNombres, primerApellido, otrosApellidos, tipoIdentificacion, identificacion,
 				correoElectronico, celular, direccion);
 		this.idCliente = idCliente;
@@ -26,10 +27,10 @@ public abstract class Cliente extends Persona {
 		this.contrasenia = contrasenia;
 		this.fechaRegistro = fechaRegistro;
 		this.intentosFallidos = intentosFallidos;
+		this.rol = (rol == null) ? Rol.CLIENTE : rol;
 	}
 
-    //set y gett
- 
+	//set y get
 
 	public int getIdCliente() {
 		return idCliente;
@@ -69,12 +70,28 @@ public abstract class Cliente extends Persona {
 
 	public void setIntentosFallidos(int intentosFallidos) {
 		this.intentosFallidos = intentosFallidos;
-		
-	
 	}
 
-	
-	//Descuento 
-	  public abstract double calcularDescuento(double subtotal);
-	  
+	public Rol getRol() {
+		return rol;
+	}
+
+	public void setRol(Rol rol) {
+		this.rol = rol;
+	}
+
+	/**
+	 * Compara la contraseña ingresada con la guardada.
+	 * Si la contraseña guardada está vacía no permite el acceso.
+	 */
+	public boolean validarContrasena(String contrasenaIngresada) {
+		if (contrasenia == null || contrasenia.isEmpty() || contrasenaIngresada == null) {
+			return false;
+		}
+		return contrasenia.equals(contrasenaIngresada);
+	}
+
+	//Descuento
+	public abstract double calcularDescuento(double subtotal);
+
 }

@@ -1,37 +1,31 @@
 package co.edu.uptc.interfaces;
 
-import java.util.List;
-
 import co.edu.uptc.excepciones.ReglaNegocioException;
 import co.edu.uptc.modelo.dto.FiltroLibroDto;
 import co.edu.uptc.modelo.dto.LibroDto;
-
+import java.util.List;
 
 /**
  * INTERFAZ IGestionLibro  (paquete: interfaces)
  * ---------------------------------------------------------------------------
- * CONTRATO de la capa de negocio para el CRUD de libros (RF01-RF04).
- * Equivale a IGestionEmpleadoFijo del proyecto del profesor.
- *
- * SOLID aplicado:
- *  - DIP: el controlador depende de ESTA interfaz, no de la clase concreta.
- *  - ISP: solo contiene operaciones de libros (los reportes van en otra).
- *  - LSP/OCP: se puede cambiar la implementación sin tocar la GUI.
+ * Contrato para la gestión (CRUD) de libros.
+ * La capa de Negocio implementa esto, y la capa GUI depende de esta abstracción
+ * (principio DIP: la GUI nunca conoce la clase concreta GestionLibro).
  */
 public interface IGestionLibro {
 
-    /** RF01 - Registrar un libro nuevo. */
-    void registrar(LibroDto libro) throws ReglaNegocioException;
+    /** CREATE: registra un libro nuevo validando las reglas de negocio. */
+    void guardarLibro(LibroDto libroDto) throws ReglaNegocioException;
 
-    /** RF02 - Actualizar un libro existente (el ISBN no se modifica). */
-    void actualizar(LibroDto libro) throws ReglaNegocioException;
+    /** UPDATE: actualiza un libro existente. */
+    void actualizarLibro(LibroDto libroDto) throws ReglaNegocioException;
 
-    /** RF03 - Eliminar un libro (solo si no tiene ventas asociadas). */
-    void eliminar(String isbn) throws ReglaNegocioException;
+    /** DELETE: elimina un libro por su ISBN. */
+    void eliminarLibro(String isbn) throws ReglaNegocioException;
 
-    /** RF04 - Listar el catálogo con filtros opcionales, ordenado por título. */
+    /** READ: lista los libros, aplicando el filtro cuando no es nulo. */
     List<LibroDto> listar(FiltroLibroDto filtro);
 
-    /** Busca un libro por ISBN; devuelve null si no existe. */
-    LibroDto buscarPorIsbn(String isbn);
+    /** READ: consulta un libro por ISBN; devuelve null si no existe. */
+    LibroDto consultarPorIsbn(String isbn);
 }

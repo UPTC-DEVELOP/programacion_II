@@ -1,33 +1,56 @@
 package co.edu.uptc.persistencia;
 
-import co.edu.uptc.interfaces.IClienteRepositorio;
-import co.edu.uptc.modelo.Cliente;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import co.edu.uptc.interfaces.IClienteRepositorio;
+import co.edu.uptc.modelo.Cliente;
+import co.edu.uptc.modelo.ClientePremium;
+import co.edu.uptc.modelo.ClienteRegular;
+import co.edu.uptc.modelo.enums.Rol;
+import co.edu.uptc.modelo.enums.TipoCliente;
+
 /**
- * CLASE LocalCliente  (paquete: persistencia)  implements IClienteRepositorio
- * ---------------------------------------------------------------------------
- * Almacenamiento TEMPORAL de clientes en una lista en RAM. Solo guarda y
- * recupera: no valida nada (eso es responsabilidad de la capa de negocio).
- * Al cerrar la aplicación los datos se pierden.
+ * IMPLEMENTACIÓN EN MEMORIA del repositorio de clientes.
+ * Implementa IClienteRepositorio: la capa de negocio solo ve la interfaz.
+ * Carga datos de ejemplo (semillas) para poder probar la aplicación sin base
+ * de datos.
  */
 public class LocalCliente implements IClienteRepositorio {
 
 	private final List<Cliente> clientes = new ArrayList<>();
-	private int siguienteId = 1;
+	private int nextId = 1;
+
+	public LocalCliente() {
+		cargarDatosDeEjemplo();
+	}
+
+	// ------------------------- IClienteRepositorio -------------------------
 
 	@Override
 	public void guardar(Cliente cliente) {
-		cliente.setIdCliente(siguienteId++);     // id autoincremental, como lo haría una BD
+		if (cliente == null) {
+			return;
+		}
+		if (cliente.getIdCliente() == 0) {
+			cliente.setIdCliente(nextId++);
+		} else {
+			asesurarId(cliente.getIdCliente());
+		}
 		clientes.add(cliente);
 	}
 
 	@Override
-	public void actualizar(Cliente cliente) {
+	public void actualizar(Cliente clienteActualizado) {
+		if (clienteActualizado == null) {
+			return;
+		}
 		for (int i = 0; i < clientes.size(); i++) {
-			if (clientes.get(i).getIdentificacion().equals(cliente.getIdentificacion())) {
-				clientes.set(i, cliente);
+			Cliente actual = clientes.get(i);
+			if (actual.getIdCliente() == clienteActualizado.getIdCliente()
+					|| actual.getIdentificacion().equals(clienteActualizado.getIdentificacion())) {
+				clientes.set(i, clienteActualizado);
 				return;
 			}
 		}
@@ -39,28 +62,79 @@ public class LocalCliente implements IClienteRepositorio {
 	}
 
 	@Override
+	public void eliminarPorId(int idCliente) {
+		clientes.removeIf(c -> c.getIdCliente() == idCliente);
+	}
+
+	@Override
 	public List<Cliente> listar() {
-		return new ArrayList<>(clientes);        // copia: nadie altera la lista interna
+		return new ArrayList<>(clientes);
 	}
 
 	@Override
 	public Cliente buscar(String identificacion) {
-		for (Cliente c : clientes) {
-			if (c.getIdentificacion().equals(identificacion)) {
-				return c;
-			}
-		}
-		return null;
+		if (identificacion == null) return null;
+		return clientes.stream()
+				.filter(c -> identificacion.equals(c.getIdentificacion()))
+				.findFirst().orElse(null);
 	}
 
-	//El correo no distingue mayusculas/minusculas
 	@Override
 	public Cliente buscarPorCorreo(String correo) {
-		for (Cliente c : clientes) {
-			if (c.getCorreoElectronico().equalsIgnoreCase(correo)) {
-				return c;
-			}
+		if (correo == null) return null;
+		return clientes.stream()
+				.filter(c -> correo.equalsIgnoreCase(c.getCorreoElectronico()))
+				.findFirst().orElse(null);
+	}
+
+	@Override
+	public Cliente buscarPorId(int idCliente) {
+		return clientes.stream()
+				.filter(c -> c.getIdCliente() == idCliente)
+				.findFirst().orElse(null);
+	}
+
+	// ------------------------- Métodos de apoyo ---------------------------
+
+	public Cliente buscarPorIdentificacion(String identificacion) {
+		return buscar(identificacion);
+	}
+
+	public List<Cliente> listarTodos() {
+		return listar();
+	}
+
+	private void asesurarId(int id) {
+		while (nextId <= id) {
+			nextId++;
 		}
-		return null;
+	}
+
+	// ------------------------- Datos de ejemplo ---------------------------
+
+	private void cargarDatosDeEjemplo() {
+		Timestamp ahora = new Timestamp(System.currentTimeMillis());
+
+		Cliente admin = new ClientePremium(
+				"Ana", "Maria", "Gomez", "Restrepo", "CC", "1000000001",
+				"admin@libros.com", "3001112233", "Calle 1 # 2-3",
+				0, TipoCliente.PREMIUM, "admin123", ahora, 0, Rol.ADMIN);
+		admin.setFechaRegistro(ahora);
+
+		Cliente clienteUno = new ClienteRegular(
+				"Luis", "Andres", "Martinez", "Diaz", "CC", "1000000002",
+				"cliente@libros.com", "3004445566", "Carrera 5 # 6-7",
+				0, TipoCliente.REGULAR, "cliente123", ahora, 0, Rol.CLIENTE);
+		clienteUno.setFechaRegistro(ahora);
+
+		Cliente clienteDos = new ClientePremium(
+				"Maria", "Elena", "Sanchez", "Ortiz", "CC", "1000000003",
+				"maria@libros.com", "3007778899", "Avenida 8 # 9-10",
+				0, TipoCliente.PREMIUM, "maria123", ahora, 0, Rol.CLIENTE);
+		clienteDos.setFechaRegistro(ahora);
+
+		guardar(admin);
+		guardar(clienteUno);
+		guardar(clienteDos);
 	}
 }

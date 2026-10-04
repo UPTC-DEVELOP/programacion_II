@@ -1,4 +1,4 @@
-package co.edu.uptc.modelo;
+package co.edu.uptc.modelo.enums;
 
 /**
  * Tipo de cliente. Determina los descuentos aplicables (RF06).

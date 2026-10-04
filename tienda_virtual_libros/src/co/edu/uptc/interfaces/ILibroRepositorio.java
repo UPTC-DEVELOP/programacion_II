@@ -1,29 +1,24 @@
 package co.edu.uptc.interfaces;
 
-
-import java.util.List;
-
 import co.edu.uptc.modelo.Libro;
-
+import co.edu.uptc.modelo.dto.FiltroLibroDto;
+import java.util.List;
 
 /**
  * INTERFAZ ILibroRepositorio  (paquete: interfaces)
  * ---------------------------------------------------------------------------
- * CONTRATO de almacenamiento de libros. La capa de negocio solo conoce esta
- * interfaz, nunca sabe si los datos están en memoria (HOY), en JSON o en una
- * base de datos con JDBC (MÁS ADELANTE). Cuando se pida persistencia se crea una
- * nueva clase que implemente esta misma interfaz y NO se toca el negocio (DIP + OCP).
+ * CONTRATO de PERSISTENCIA de libros. La capa de negocio (GestionLibro) solo
+ * conoce esta interfaz, nunca la clase concreta que guarda los datos.
+ * Hoy la implementa LocalLibro (lista en RAM); para usar archivos o JDBC basta
+ * crear otra clase que la implemente y cambiar UNA línea en AppLibros (OCP / DIP).
  */
 public interface ILibroRepositorio {
 
+    void guardar(Libro libro);
+    void actualizar(Libro libro);          // reemplaza el que tenga el mismo ISBN
+    void eliminar(String isbn);
+    boolean existePorIsbn(String isbn);
+    Libro consultarPorIsbn(String isbn);
     List<Libro> listarTodos();
-
-    /** @return el libro o null si no existe. */
-    Libro buscarPorIsbn(String isbn);
-
-    void guardar(Libro libro);        // inserta uno nuevo
-
-    void actualizar(Libro libro);     // reemplaza el que tenga el mismo ISBN
-
-    void eliminar(String isbn);       // remoción física del registro de la colección
+    List<Libro> listarConFiltro(FiltroLibroDto filtro);
 }

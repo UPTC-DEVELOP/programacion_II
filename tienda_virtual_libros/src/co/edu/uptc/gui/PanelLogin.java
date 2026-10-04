@@ -1,206 +1,110 @@
 package co.edu.uptc.gui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import co.edu.uptc.modelo.dto.CredencialDto;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-
 /**
- * Panel de inicio de sesión con selección de perfil (Usuario / Admin).
- * 
- * @author Brayan Javier Panqueva Pelayo
- * @version 1.0 - Septiembre 2026
+ * Pantalla de LOGIN de la tienda virtual.
+ * Solo captura el correo y la contraseña y notifica a la capa de eventos.
  */
-@SuppressWarnings("serial")
 public class PanelLogin extends JPanel {
 
-    /* CONSTANTES */
-    public static final String INGRESAR = "LOGIN_INGRESAR";
-    public static final String OLVIDO = "LOGIN_OLVIDO";
-    public static final String REGISTRARSE = "LOGIN_REGISTRARSE";
+    private static final long serialVersionUID = 1L;
 
-    public static final String PERFIL_USUARIO = "Usuario";
-    public static final String PERFIL_ADMIN = "Admin";
-
-    /* TEXTOS Y BOTONES */
     private JTextField txtCorreo;
-    private JComboBox<String> comboPerfil;
-    private JPasswordField txtClave;
+    private JPasswordField txtContrasena;
     private JButton btnIngresar;
-    private JButton btnOlvido;
-    private JButton btnCrearCuenta;
-    private JLabel lblEstado;
+    private JButton btnRegistrarse;
 
-    public PanelLogin() {
-        setBackground(new Color(235, 235, 235));
+    public static final String CMD_INGRESAR = "INICIAR_SESION";
+    public static final String CMD_REGISTRARSE = "REGISTRAR_CLIENTE";
+
+    public PanelLogin(ActionListener manejadorEventos) {
+        inicializarComponentes();
+        configurarLayout();
+        registrarEventos(manejadorEventos);
+    }
+
+    private void inicializarComponentes() {
+        txtCorreo = new CampoConHint("ejemplo@correo.com", 22);
+        txtContrasena = new JPasswordField(22);
+
+        btnIngresar = new JButton("Ingresar");
+        btnRegistrarse = new JButton("Registrarse");
+    }
+
+    private void registrarEventos(ActionListener manejadorEventos) {
+        btnIngresar.setActionCommand(CMD_INGRESAR);
+        btnIngresar.addActionListener(manejadorEventos);
+
+        btnRegistrarse.setActionCommand(CMD_REGISTRARSE);
+        btnRegistrarse.addActionListener(manejadorEventos);
+
+        // Enter en el campo de contraseña también dispara el login
+        txtContrasena.addActionListener(ev -> manejadorEventos.actionPerformed(
+                new java.awt.event.ActionEvent(btnIngresar, java.awt.event.ActionEvent.ACTION_PERFORMED, CMD_INGRESAR)));
+    }
+
+    private void configurarLayout() {
         setLayout(new GridBagLayout());
-        add(construirTarjeta(), new GridBagConstraints());
-    }
-/**metodo para construir la tarjeta de login con los campos de correo, perfil y contraseña, así como los botones de ingresar, olvido de contraseña y registrarse.
- *  */
-    private JPanel construirTarjeta() {
-        JPanel tarjeta = new JPanel();
-        tarjeta.setLayout(new BoxLayout(tarjeta, BoxLayout.Y_AXIS));
+        setBackground(Color.WHITE);
 
-        tarjeta.setBackground(Color.WHITE);
-        tarjeta.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(150, 150, 150), 1),
-                BorderFactory.createEmptyBorder(25, 35, 25, 35)
-        ));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 10, 8, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel titulo = new JLabel("Login");
-        titulo.setFont(new Font("SansSerif", Font.BOLD, 16));
-        titulo.setForeground(Color.BLACK);
-        titulo.setAlignmentX(CENTER_ALIGNMENT);
+        JLabel titulo = new JLabel("TIENDA VIRTUAL DE LIBROS", SwingConstants.CENTER);
+        titulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        titulo.setForeground(new Color(44, 62, 80));
 
-        txtCorreo = new JTextField(18);
-        configurarCampoTexto(txtCorreo, "Usuario / Correo");
+        JLabel subtitulo = new JLabel("Inicio de sesión", SwingConstants.CENTER);
+        subtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        subtitulo.setForeground(new Color(100, 100, 100));
 
-        /*
-         * /*
-         *  DESPLEGABLE DE PERFILES:
-         *  PERMITE SELECCIONAR EXPLÍCITAMENTE ENTRE 'Usuario' Y 'Admin'.
-         * */
-        comboPerfil = new JComboBox<String>(new String[] { PERFIL_USUARIO, PERFIL_ADMIN });
-        comboPerfil.setPreferredSize(new Dimension(200, 28));
-        comboPerfil.setMaximumSize(new Dimension(200, 28));
-        comboPerfil.setBackground(Color.WHITE);
-        comboPerfil.setFont(new Font("SansSerif", Font.PLAIN, 12));
-        comboPerfil.setAlignmentX(CENTER_ALIGNMENT);
+        gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
+        add(titulo, gbc);
 
-        txtClave = new JPasswordField(18);
-        configurarCampoTexto(txtClave, "password");
-        txtClave.setEchoChar((char) 0);
+        gbc.gridy = 1;
+        add(subtitulo, gbc);
 
-        btnIngresar = crearBotonPrototipo("Ingresar", INGRESAR);
-        btnOlvido = crearBotonPrototipo("olvido su contrasenia", OLVIDO);
-        btnCrearCuenta = crearBotonPrototipo("Registrarse", REGISTRARSE);
+        gbc.gridwidth = 1;
+        gbc.gridy = 2; gbc.gridx = 0;
+        add(new JLabel("Correo Electrónico:"), gbc);
 
-        lblEstado = new JLabel(" ", SwingConstants.CENTER);
-        lblEstado.setFont(new Font("SansSerif", Font.PLAIN, 11));
-        lblEstado.setForeground(new Color(180, 40, 40));
-        lblEstado.setAlignmentX(CENTER_ALIGNMENT);
+        gbc.gridx = 1;
+        add(txtCorreo, gbc);
 
-        tarjeta.add(titulo);
-        tarjeta.add(Box.createVerticalStrut(15));
-        tarjeta.add(txtCorreo);
-        tarjeta.add(Box.createVerticalStrut(10));
-        tarjeta.add(comboPerfil);
-        tarjeta.add(Box.createVerticalStrut(10));
-        tarjeta.add(txtClave);
-        tarjeta.add(Box.createVerticalStrut(20));
-        tarjeta.add(fila(btnIngresar));
-        tarjeta.add(Box.createVerticalStrut(6));
-        tarjeta.add(fila(btnOlvido));
-        tarjeta.add(Box.createVerticalStrut(6));
-        tarjeta.add(fila(btnCrearCuenta));
-        tarjeta.add(Box.createVerticalStrut(10));
-        tarjeta.add(lblEstado);
+        gbc.gridx = 0; gbc.gridy = 3;
+        add(new JLabel("Contraseña:"), gbc);
 
-        return tarjeta;
+        gbc.gridx = 1;
+        add(txtContrasena, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        add(btnIngresar, gbc);
+
+        gbc.gridy = 5;
+        add(btnRegistrarse, gbc);
+
+        gbc.gridy = 6;
+        add(new JLabel("Admin: admin@libros.com / admin123"), gbc);
     }
 
-    private void configurarCampoTexto(JTextField campo, String placeholder) {
-        campo.setPreferredSize(new Dimension(200, 28));
-        campo.setMaximumSize(new Dimension(200, 28));
-        campo.setFont(new Font("SansSerif", Font.PLAIN, 12));
-        campo.setText(placeholder);
-        campo.setForeground(Color.GRAY);
-        campo.setBorder(BorderFactory.createLineBorder(new Color(100, 100, 100), 1));
-        campo.setAlignmentX(CENTER_ALIGNMENT);
-
-        campo.addFocusListener(new java.awt.event.FocusAdapter() {
-            @Override
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                if (campo.getText().equals(placeholder)) {
-                    campo.setText("");
-                    campo.setForeground(Color.BLACK);
-                    if (campo instanceof JPasswordField) {
-                        ((JPasswordField) campo).setEchoChar('•');
-                    }
-                }
-            }
-            @Override
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                if (campo.getText().isEmpty()) {
-                    campo.setText(placeholder);
-                    campo.setForeground(Color.GRAY);
-                    if (campo instanceof JPasswordField) {
-                        ((JPasswordField) campo).setEchoChar((char) 0);
-                    }
-                }
-            }
-        });
+    /**
+     * Método requerido por VentanaPrincipal para obtener los datos del login.
+     */
+    public CredencialDto getCredencial() {
+        String correo = txtCorreo.getText().trim();
+        String contrasena = new String(txtContrasena.getPassword());
+        return new CredencialDto(correo, contrasena);
     }
 
-    private JButton crearBotonPrototipo(String texto, String comando) {
-        JButton boton = new JButton(texto);
-        boton.setActionCommand(comando);
-        boton.setBackground(new Color(215, 215, 215));
-        boton.setForeground(Color.BLACK);
-        boton.setFont(new Font("SansSerif", Font.PLAIN, 12));
-        boton.setFocusPainted(false);
-        boton.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(120, 120, 120), 1),
-                BorderFactory.createEmptyBorder(4, 12, 4, 12)
-        ));
-        return boton;
-    }
-
-    private JPanel fila(JButton boton) {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        panel.setBackground(Color.WHITE);
-        panel.add(boton);
-        return panel;
-    }
-
-    public void registrarEvento(ActionListener listener) {
-        if (btnIngresar != null) btnIngresar.addActionListener(listener);
-        if (btnOlvido != null) btnOlvido.addActionListener(listener);
-        if (btnCrearCuenta != null) btnCrearCuenta.addActionListener(listener);
-        if (txtClave != null) {
-            txtClave.addActionListener(listener);
-            txtClave.setActionCommand(INGRESAR);
-        }
-    }
-/*getters and setters para obtener el correo, la clave y el perfil seleccionado en el panel de login.
- * */
-    public String getCorreo() {
-        return txtCorreo.getText().trim();
-    }
-
-    public String getClave() {
-        return new String(txtClave.getPassword());
-    }
-
-  
-    public String getPerfil() {
-        return (String) comboPerfil.getSelectedItem();
-    }
-
-    public boolean esPerfilAdmin() {
-        return PERFIL_ADMIN.equals(comboPerfil.getSelectedItem());
-    }
-
-    public void mostrarEstado(String mensaje) {
-        lblEstado.setText(mensaje == null ? " " : mensaje);
-    }
-
-    public void limpiarClave() {
-        txtClave.setText("");
+    /** Limpia los campos después de cerrar sesión. */
+    public void limpiar() {
+        txtCorreo.setText("");
+        txtContrasena.setText("");
     }
 }

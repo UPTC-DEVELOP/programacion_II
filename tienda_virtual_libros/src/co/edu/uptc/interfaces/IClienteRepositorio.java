@@ -14,11 +14,12 @@ import java.util.List;
  */
 public interface IClienteRepositorio {
 
-	void guardar(Cliente cliente);
-	void actualizar(Cliente cliente);          // reemplaza el que tenga la misma identificación
-	void eliminar(String identificacion);
-	List<Cliente> listar();
-	Cliente buscar(String identificacion);
-	Cliente buscarPorCorreo(String correo);
-
+    void guardar(Cliente cliente);
+    void actualizar(Cliente cliente);          // reemplaza el que tenga el mismo ID
+    void eliminar(String identificacion);
+    void eliminarPorId(int idCliente);
+    List<Cliente> listar();
+    Cliente buscar(String identificacion);
+    Cliente buscarPorCorreo(String correo);
+    Cliente buscarPorId(int idCliente);
 }

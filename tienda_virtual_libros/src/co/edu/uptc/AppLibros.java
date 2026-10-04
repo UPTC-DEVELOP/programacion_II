@@ -1,138 +1,40 @@
 package co.edu.uptc;
 
-import java.awt.CardLayout;
-import java.util.function.Consumer;
-
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
-import co.edu.uptc.gui.EventoLogin;
-import co.edu.uptc.gui.PanelLogin;
-import co.edu.uptc.gui.PanelRegistro;
-import co.edu.uptc.gui.admin.VentanaPrincipalAdmin;
-import co.edu.uptc.gui.cliente.VentanaPrincipalCliente;
-import co.edu.uptc.gui.eventos.admin.ControladorAdmin;
-import co.edu.uptc.interfaces.IAuditoria;
-import co.edu.uptc.interfaces.IClienteRepositorio;
-import co.edu.uptc.interfaces.IConsultaVentas;
-import co.edu.uptc.interfaces.IGestionCliente;
-import co.edu.uptc.interfaces.IGestionLibro;
-import co.edu.uptc.interfaces.IGestionReporte;
-import co.edu.uptc.interfaces.ILibroRepositorio;
-import co.edu.uptc.interfaces.IValidadorLibro;
-import co.edu.uptc.negocio.admin.GestionLibro;
-import co.edu.uptc.negocio.admin.GestionReporte;
-import co.edu.uptc.negocio.admin.ValidadorLibro;
-import co.edu.uptc.negocio.cliente.GestionCliente;
-import co.edu.uptc.persistencia.AuditoriaMemoria;
-import co.edu.uptc.persistencia.ConsultaVentasMemoria;
-import co.edu.uptc.persistencia.LibroRepositorioMemoria;
+import co.edu.uptc.gui.VentanaPrincipal;
+import co.edu.uptc.negocio.GestionCliente;
+import co.edu.uptc.negocio.GestionLibro;
+import co.edu.uptc.negocio.GestionSeguridad;
+import co.edu.uptc.negocio.ValidadorDatos;
 import co.edu.uptc.persistencia.LocalCliente;
-
-//>>>>>>> a146a6e3293540f40e7490f58bfc971fa048bbb9
+import co.edu.uptc.persistencia.LocalLibro;
 
 /**
- * CLASE AppLibros  (paquete raíz)  -  PUNTO DE ENTRADA (main)
- * ---------------------------------------------------------------------------
- * Es la "RAÍZ DE COMPOSICIÓN": el ÚNICO lugar donde se hacen los "new" de las
- * clases concretas y se conectan las capas entre sí (inyección de dependencias).
- * Todo lo demás depende de interfaces. Si mañana se cambia JSON por JDBC, solo
- * se modifica UNA línea de esta clase (principio OCP/DIP).
+ * Punto de entrada de la Tienda Virtual de Libros.
+ * Arquitectura multicapa con inyección de dependencias:
  *
- * PERSISTENCIA: por indicación de la guía (unidad 2) todavía NO hay archivos ni
- * base de datos. Se usan implementaciones EN MEMORIA de las interfaces. Para
- * activar la persistencia más adelante basta cambiar estas 3 líneas por
- * LibroRepositorioJson / ConsultaVentasJson / AuditoriaTxt.
- *
- * Orden de armado (de abajo hacia arriba, igual que las capas):
- *   datos en memoria -> negocio -> vista -> controlador -> conexión de eventos
+ *   Persistencia  -> LocalCliente / LocalLibro (detrás de sus interfaces)
+ *   Validación    -> ValidadorDatos
+ *   Negocio       -> GestionSeguridad / GestionCliente / GestionLibro
+ *   Presentación  -> VentanaPrincipal (Swing)
  */
-
 public class AppLibros {
-    // Clientes: se crean UNA vez y se comparten entre el módulo admin y el de cliente
-    // (y entre sesiones), para que el CRUD no se pierda al cerrar sesión.
-    private static final IClienteRepositorio persistenciaClientes = new LocalCliente();
-    private static final IGestionCliente gestionCliente = new GestionCliente(persistenciaClientes);
-
-
-
     public static void main(String[] args) {
-        // Swing debe ejecutarse en el hilo de eventos (EDT).
+        // 1. Capa de Persistencia (se inyecta en la capa de negocio)
+        LocalLibro repositorioLibro = new LocalLibro();
+        LocalCliente repositorioCliente = new LocalCliente();
 
-        SwingUtilities.invokeLater(AppLibros::mostrarPantallaAcceso);
+        // 2. Capa de Validación
+        ValidadorDatos validador = new ValidadorDatos();
+
+        // 3. Capa de Negocio (Inyección de Dependencias)
+        GestionSeguridad gestionSeguridad = new GestionSeguridad(repositorioCliente);
+        GestionLibro gestionLibro = new GestionLibro(repositorioLibro, validador);
+        GestionCliente gestionCliente = new GestionCliente(repositorioCliente, validador);
+
+        // 4. Capa de Presentación (GUI)
+        java.awt.EventQueue.invokeLater(() -> {
+            VentanaPrincipal ventana = new VentanaPrincipal(gestionSeguridad, gestionCliente, gestionLibro);
+            ventana.setVisible(true);
+        });
     }
-
-    private static void mostrarPantallaAcceso() {
-        final JDialog dialogoAcceso = new JDialog((JFrame) null, "Acceso al Sistema - Tienda de Libros", true);
-        dialogoAcceso.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        dialogoAcceso.setSize(520, 520);
-        dialogoAcceso.setLocationRelativeTo(null);
-        dialogoAcceso.setResizable(false);
-
-        CardLayout cardLayout = new CardLayout();
-        JPanel panelContenedor = new JPanel(cardLayout);
-
-        PanelLogin panelLogin = new PanelLogin();
-        PanelRegistro panelRegistro = new PanelRegistro();
-
-        panelContenedor.add(panelLogin, "VISTA_LOGIN");
-        panelContenedor.add(panelRegistro, "VISTA_REGISTRO");
-
-        // Recibe el rol autorizado tras validar login
-        Consumer<String> alAutenticar = (String rol) -> {
-            dialogoAcceso.dispose();
-
-            if ("Administrador".equalsIgnoreCase(rol)) {
-                iniciarModoAdmin();
-            } else {
-                iniciarModoCliente(panelLogin.getCorreo());
-
-            }
-        };
-
-        new EventoLogin(
-            panelLogin, 
-            panelRegistro, 
-            cardLayout, 
-            panelContenedor, 
-            alAutenticar
-        );
-
-        dialogoAcceso.setContentPane(panelContenedor);
-        dialogoAcceso.setVisible(true);
-    }
-
-    private static void iniciarModoAdmin() {
-        // 1) ALMACENAMIENTO TEMPORAL EN MEMORIA
-        ILibroRepositorio repositorio = new LibroRepositorioMemoria();
-        IConsultaVentas ventas = new ConsultaVentasMemoria();
-        IAuditoria auditoria = new AuditoriaMemoria();
-        
-        // 2) CAPA DE NEGOCIO (recibe las dependencias por constructor)
-        IValidadorLibro validador = new ValidadorLibro();
-        IGestionLibro gestionLibro = new GestionLibro(repositorio, ventas, auditoria, validador);
-        IGestionReporte gestionReporte = new GestionReporte(repositorio, ventas);
-
-        // 3) CAPA DE PRESENTACIÓN: la ventana y el controlador que la gobierna
-
-       
-        VentanaPrincipalAdmin ventana = new VentanaPrincipalAdmin(gestionCliente);
-
-        ControladorAdmin controlador = new ControladorAdmin(ventana, gestionLibro, gestionReporte);
-
-        // 4) Se cierra el ciclo: la ventana notifica sus eventos al controlador
-
-        ventana.registrarEscuchador(controlador);
-        controlador.iniciar();
-        ventana.setVisible(true);
-    }
-
-  
-    /** Módulo de cliente: CRUD de clientes. "Cerrar sesión" vuelve al login. */
-    private static void iniciarModoCliente(String usuario) {
-        new VentanaPrincipalCliente(usuario, gestionCliente, AppLibros::mostrarPantallaAcceso).setVisible(true);
-    }
-
 }
