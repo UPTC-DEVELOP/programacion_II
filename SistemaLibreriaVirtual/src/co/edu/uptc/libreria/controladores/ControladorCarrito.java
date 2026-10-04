@@ -2,16 +2,23 @@ package co.edu.uptc.libreria.controladores;
 
 import co.edu.uptc.libreria.modelo.ItemCarrito;
 import co.edu.uptc.libreria.negocio.GestionCarrito;
+
 import co.edu.uptc.libreria.modelo.Libro;
+
+import co.edu.uptc.libreria.persistencia.ServicioAuditoria;
+import co.edu.uptc.libreria.modelo.*;
+
 
 import java.util.List;
 
 public class ControladorCarrito {
 	
 	private GestionCarrito gestionCarrito;
+	private ServicioAuditoria auditoria;
 
-	public ControladorCarrito(GestionCarrito gestionCarrito) {
+	public ControladorCarrito(GestionCarrito gestionCarrito, ServicioAuditoria auditoria) {
 		this.gestionCarrito = gestionCarrito;
+		this.auditoria = auditoria;
 	}
 	
 	public void agregarAlCarrito(Libro libro, double precio, int cantidad) {
@@ -22,12 +29,17 @@ public class ControladorCarrito {
 		return gestionCarrito.obtenerItems();
 	}
 	
-	public void modificarCantidad(String isbn, int nuevaCantidad) {
-		gestionCarrito.actualizarCantidad(isbn, nuevaCantidad);
+	public void modificarCantidad(String codigo, int nuevaCantidad) {
+		gestionCarrito.actualizarCantidad(codigo, nuevaCantidad);
 	}
 	
-	public void eliminarElemento(String isbn) {
-		gestionCarrito.eliminarLibro(isbn);
+	public void finalizarCompra(String usuarioActual) {
+		auditoria.registrarCompra(usuarioActual, listarCarrito(), obtenerTotal());
+		gestionCarrito.vaciarCarrito();
+	}
+	
+	public void eliminarElemento(String codigo) {
+		gestionCarrito.eliminarLibro(codigo);
 	}
 	
 	public double obtenerSubtotal() {
@@ -46,8 +58,16 @@ public class ControladorCarrito {
 		return gestionCarrito.calcularTotal();
 	}
 	
+	public void setClienteActual(Cliente cliente) {
+		gestionCarrito.setUsuarioActual(cliente);
+	}
+	
 	public void vaciarCarrito() {
 		gestionCarrito.vaciarCarrito();
+	}
+	
+	public String getUsuarioActual() {
+		return gestionCarrito.getUsuarioActual();
 	}
 
 }

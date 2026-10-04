@@ -36,9 +36,10 @@ public class EventosGui implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		String evento = e.getActionCommand();
+		
 		if (evento.equals(ELIMINAR)) {
 			
-			String isbn = vista.obtenerIsbnSeleccionado();
+			String isbn = vista.obtenerCodigoSeleccionado();
 			
 			if (isbn != null && !isbn.isEmpty()) {
 				controlador.eliminarElemento(isbn);
@@ -49,7 +50,7 @@ public class EventosGui implements ActionListener {
 			}
 			
 		} else if (evento.equals(ACTUALIZAR)) {
-			String isbn = vista.obtenerIsbnSeleccionado();
+			String isbn = vista.obtenerCodigoSeleccionado();
 			int nuevaCantidad = vista.obtenerNuevaCantidad();
 			
 			if (isbn != null && nuevaCantidad > 0) {
@@ -64,6 +65,8 @@ public class EventosGui implements ActionListener {
 			}
 			
 			//double total = controlador.obtenerTotal();
+			String usuario = controlador.getUsuarioActual();
+			controlador.finalizarCompra(usuario);
 			
 			controlador.vaciarCarrito();
 			vista.actualizarTabla(controlador.listarCarrito());

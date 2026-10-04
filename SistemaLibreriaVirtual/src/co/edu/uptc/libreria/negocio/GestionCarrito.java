@@ -3,6 +3,7 @@ package co.edu.uptc.libreria.negocio;
 import co.edu.uptc.libreria.modelo.*;
 import co.edu.uptc.libreria.persistencia.*;
 import co.edu.uptc.libreria.negocio.*;
+import co.edu.uptc.libreria.modelo.enums.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,9 @@ public class GestionCarrito {
 	private CarritoPersistencia persistencia;
 	private ServicioAuditoria auditoria;
 	private CalculadoraCarrito calculadora;
+	private String usuarioActual = "";
+	private boolean esPremium = false;
+	private TipoCliente tipoCliente;
 	
 	
 	public GestionCarrito(CarritoPersistencia persistencia, ServicioAuditoria auditoria) {
@@ -22,9 +26,23 @@ public class GestionCarrito {
 		this.items = persistencia.cargar();
 	}
 	
+	public void setUsuarioActual(Cliente clienteLogueado) {
+		if (clienteLogueado != null) {
+			this.usuarioActual = clienteLogueado.getNombreCompleto();
+			if (clienteLogueado.getTipo() == TipoCliente.PREMIUM) {
+				this.esPremium = true;
+			} else {
+				this.esPremium = false;
+			}
+		} else {
+			this.usuarioActual = "";
+			this.esPremium = false;
+		}
+	}
+	
 	public void agregarLibro(Libro libro, double precio, int cantidad) {
 		for (ItemCarrito item : items) {
-			if (item.getLibro().getIsbn().equals(libro.getIsbn())) {
+			if (item.getLibro().getCodigo().equals(libro.getCodigo())) {
 				item.setCantidad(item.getCantidad() + cantidad);
 				persistencia.guardar(items);
 				
@@ -32,7 +50,7 @@ public class GestionCarrito {
 				return;
 			}
 		}
-		items.add(new ItemCarrito(libro, cantidad, libro.getPrecio()));
+		items.add(new ItemCarrito(libro, cantidad, Double.parseDouble(libro.getPrecio())));
 		persistencia.guardar(items);
 		
 		auditoria.registrarAccion(usuarioActual, "Agregar Libro", "Agregar al carrito el libro" + libro.getTitulo());
@@ -42,11 +60,11 @@ public class GestionCarrito {
 		return new ArrayList<>(items);
 	}
 	
-	public boolean actualizarCantidad(String isbn, int nuevaCantidad) {
+	public boolean actualizarCantidad(String , int nuevaCantidad) {
 		for (ItemCarrito item : items) {
-			if (item.getLibro().getIsbn().equals(isbn)) {
+			if (item.getLibro().getCodigo().equals(codigo)) {
 				if (nuevaCantidad <= 0) {
-					return eliminarLibro(isbn);
+					return eliminarLibro(codigo);
 				}
 				item.setCantidad(nuevaCantidad);
 				persistencia.guardar(items);
@@ -57,7 +75,7 @@ public class GestionCarrito {
 	}
 	
 	public boolean eliminarLibro(String isbn) {
-		boolean eliminado = items.removeIf(item -> item.getLibro().getIsbn().equals(isbn));
+		boolean eliminado = items.removeIf(item -> item.getLibro().getCodigo().equals(codigo));
 		if (eliminado) {
 			persistencia.guardar(items);
 			
@@ -87,6 +105,10 @@ public class GestionCarrito {
 		persistencia.guardar(items);
 		auditoria.registrarAccion(usuarioActual, "Vaciar Carrito", "Se realizo el checkout y se vacio el carrito");
 		
+	}
+	
+	public String getUsuarioActual() {
+		return this.usuarioActual;
 	}
 
 }

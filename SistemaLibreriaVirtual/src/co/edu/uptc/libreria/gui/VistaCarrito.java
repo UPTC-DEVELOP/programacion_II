@@ -147,7 +147,7 @@ public class VistaCarrito extends JPanel{
 		btnFinalizarCompra.addActionListener(eventos);
 	}
 	
-	public String obtenerIsbnSeleccionado() {
+	public String obtenerCodigoSeleccionado() {
 		int filaSeleccionada = tablaCarrito.getSelectedRow();
 		if (filaSeleccionada != -1) {
 			return modeloTabla.getValueAt(filaSeleccionada, 0).toString();
@@ -169,7 +169,7 @@ public class VistaCarrito extends JPanel{
 		
 		for (ItemCarrito item : items) {
 			Object[] fila = new Object[] {
-					item.getLibro().getIsbn(), item.getLibro().getTitulo(), item.getPrecioUnitario(), item.getCantidad(), item.getSubtotal()
+					item.getLibro().getCodigo(), item.getLibro().getTitulo(), item.getPrecioUnitario(), item.getCantidad(), item.getSubtotal()
 			};
 			modeloTabla.addRow(fila);
 		}
