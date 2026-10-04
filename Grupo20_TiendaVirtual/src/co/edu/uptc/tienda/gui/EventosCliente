@@ -1,0 +1,74 @@
+package gui;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import modelo.Cliente;
+import negocio.ClienteConfig;
+
+public class EventosCliente implements ActionListener {
+
+    private PanelCliente panelCliente;
+    private ClienteConfig clienteConfig;
+
+    public EventosCliente(PanelCliente panelCliente) {
+        this.panelCliente = panelCliente;
+        clienteConfig = new ClienteConfig();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        if (e.getActionCommand().equals("Guardar")) {
+
+            Cliente cliente = new Cliente(
+                    panelCliente.getId(),
+                    panelCliente.getNombre(),
+                    panelCliente.getCorreo(),
+                    panelCliente.getDireccion(),
+                    panelCliente.getCelular(),
+                    panelCliente.getTipoCliente()
+            );
+
+            clienteConfig.guardar(cliente);
+
+            System.out.println("Cliente guardado");
+        }
+
+        if (e.getActionCommand().equals("Buscar")) {
+
+            Cliente cliente = clienteConfig.buscarPorId(panelCliente.getId());
+
+            if (cliente != null) {
+                System.out.println("Cliente encontrado");
+                System.out.println("Nombre: " + cliente.getNombreCompleto());
+                System.out.println("Correo: " + cliente.getCorreoElectronico());
+            } else {
+                System.out.println("Cliente no encontrado");
+            }
+        }
+
+        if (e.getActionCommand().equals("Actualizar")) {
+
+            Cliente cliente = new Cliente(
+                    panelCliente.getId(),
+                    panelCliente.getNombre(),
+                    panelCliente.getCorreo(),
+                    panelCliente.getDireccion(),
+                    panelCliente.getCelular(),
+                    panelCliente.getTipoCliente()
+            );
+
+            clienteConfig.actualizar(cliente);
+
+            System.out.println("Cliente actualizado");
+        }
+
+        if (e.getActionCommand().equals("Eliminar")) {
+
+            clienteConfig.eliminar(panelCliente.getId());
+
+            System.out.println("Cliente eliminado");
+        }
+    }
+}

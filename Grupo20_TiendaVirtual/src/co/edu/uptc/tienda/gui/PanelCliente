@@ -1,0 +1,98 @@
+package gui;
+
+import java.awt.GridLayout;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+public class PanelCliente extends JPanel {
+
+    private JTextField campoId;
+    private JTextField campoNombre;
+    private JTextField campoCorreo;
+    private JTextField campoDireccion;
+    private JTextField campoCelular;
+    private JTextField campoTipoCliente;
+
+    private JButton botonGuardar;
+    private JButton botonBuscar;
+    private JButton botonActualizar;
+    private JButton botonEliminar;
+
+    private EventosCliente eventos;
+
+    public PanelCliente(EventosCliente eventos) {
+
+        this.eventos = eventos;
+
+        campoId = new JTextField(15);
+        campoNombre = new JTextField(15);
+        campoCorreo = new JTextField(15);
+        campoDireccion = new JTextField(15);
+        campoCelular = new JTextField(15);
+        campoTipoCliente = new JTextField(15);
+
+        botonGuardar = new JButton("Guardar");
+        botonBuscar = new JButton("Buscar");
+        botonActualizar = new JButton("Actualizar");
+        botonEliminar = new JButton("Eliminar");
+
+        setLayout(new GridLayout(6, 2));
+
+        add(new JLabel("ID:"));
+        add(campoId);
+
+        add(new JLabel("Nombre completo:"));
+        add(campoNombre);
+
+        add(new JLabel("Correo:"));
+        add(campoCorreo);
+
+        add(new JLabel("Dirección:"));
+        add(campoDireccion);
+
+        add(new JLabel("Celular:"));
+        add(campoCelular);
+
+        add(new JLabel("Tipo de cliente:"));
+        add(campoTipoCliente);
+
+        add(botonGuardar);
+        add(botonBuscar);
+        add(botonActualizar);
+        add(botonEliminar);
+    }
+
+    public String getId() {
+        return campoId.getText();
+    }
+
+    public String getNombre() {
+        return campoNombre.getText();
+    }
+
+    public String getCorreo() {
+        return campoCorreo.getText();
+    }
+
+    public String getDireccion() {
+        return campoDireccion.getText();
+    }
+
+    public String getCelular() {
+        return campoCelular.getText();
+    }
+
+    public String getTipoCliente() {
+        return campoTipoCliente.getText();
+    }
+    public void setEventos(EventosCliente eventos) {
+        this.eventos = eventos;
+        botonGuardar.addActionListener(eventos);
+        botonBuscar.addActionListener(eventos);
+        botonActualizar.addActionListener(eventos);
+        botonEliminar.addActionListener(eventos);
+    }
+}

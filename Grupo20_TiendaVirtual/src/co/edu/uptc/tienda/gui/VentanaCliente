@@ -1,0 +1,27 @@
+package gui;
+
+import javax.swing.JFrame;
+
+public class VentanaCliente extends JFrame {
+
+    public VentanaCliente() {
+
+        setTitle("Gestion de Clientes");
+        setSize(500, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        PanelCliente panelCliente = new PanelCliente(null);
+        EventosCliente eventos = new EventosCliente(panelCliente);
+
+        panelCliente.setEventos(eventos);
+
+        add(panelCliente);
+    }
+
+    public static void main(String[] args) {
+
+        VentanaCliente ventana = new VentanaCliente();
+        ventana.setVisible(true);
+
+    }
+}

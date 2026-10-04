@@ -1,0 +1,40 @@
+package negocio;
+
+import java.util.ArrayList;
+
+import modelo.Cliente;
+import persistencia.LocalCliente;
+
+public class GestionCliente implements IGestionCliente {
+
+    private LocalCliente localCliente;
+
+    public GestionCliente() {
+        localCliente = new LocalCliente();
+    }
+
+    @Override
+    public void guardar(Cliente cliente) {
+        localCliente.guardar(cliente);
+    }
+
+    @Override
+    public ArrayList<Cliente> listar() {
+        return localCliente.listar();
+    }
+
+    @Override
+    public Cliente buscarPorId(String id) {
+        return localCliente.buscarPorId(id);
+    }
+
+    @Override
+    public void actualizar(Cliente cliente) {
+        localCliente.actualizar(cliente);
+    }
+
+    @Override
+    public void eliminar(String id) {
+        localCliente.eliminar(id);
+    }
+}
