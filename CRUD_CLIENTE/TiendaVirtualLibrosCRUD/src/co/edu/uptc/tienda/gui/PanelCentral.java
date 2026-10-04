@@ -5,21 +5,21 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import co.edu.uptc.tienda.libros.gui.DialogoLibro;
 import co.edu.uptc.tienda.personas.gui.PanelCliente;
 
 public class PanelCentral extends JPanel {
 
 	private PanelCliente panelCliente;
-	// private PanelLibro panelLibro
+	private DialogoLibro prueba;
 
 	public PanelCentral() {
 
-		
 		setLayout(new BorderLayout());
 
 		// Asociaciones o Relaciones
 		panelCliente = new PanelCliente();
-		// panelLibro = new PanelLibro();
+		prueba = new DialogoLibro();
 
 		// Paneles
 		JTabbedPane pPestana = new JTabbedPane();
@@ -27,6 +27,7 @@ public class PanelCentral extends JPanel {
 		JPanel pLibro = new JPanel();
 
 		pCliente.add(panelCliente);
+		pLibro.add(prueba);
 
 		pPestana.addTab("Cliente", pCliente);
 		pPestana.addTab("Libro", pLibro);

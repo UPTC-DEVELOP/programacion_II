@@ -75,6 +75,6 @@ public abstract class Cliente extends Persona {
 	}
 
 	
-	//Descuento 
+	//Descuento
 	  public abstract double calcularDescuento(double subtotal);
 }

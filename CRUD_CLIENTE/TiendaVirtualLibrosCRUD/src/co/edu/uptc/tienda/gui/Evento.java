@@ -8,21 +8,24 @@ public class Evento implements ActionListener {
 	public static final String CANCELAR = "Cancelar";
 	public static final String LOGIN = "Login";
 
-	public static final String ELIMINAR_CLIENTE = "Eliminar";
-	public static final String VER_CLIENTES = "Ver";
-	public static final String ACTUALIZAR_CLIENTE = "Actualizar";
-	public static final String CREAR_CLIENTE = "Nuevo";
-	public static final String BUSCAR_CLIENTE = "Buscar";
-	public static final String GUARDAR_CLIENTE = "Guardar";
-	public static final String EDITAR_CLIENTE = "Editar";
+	public static final String ELIMINAR_CLIENTE = "Eliminar Cliente";
+	public static final String VER_CLIENTES = "Ver Clientes";
+	public static final String ACTUALIZAR_CLIENTE = "Actualizar Clientes";
+	public static final String CREAR_CLIENTE = "Nuevo Cliente";
+	public static final String BUSCAR_CLIENTE = "Buscar Cliente";
+	public static final String GUARDAR_CLIENTE = "Guardar Cliente";
+	public static final String EDITAR_CLIENTE = "Editar Cliente";
 
 	public static final String LIMPIAR = "Limpiar";
 
-	public static final String ELIMINAR_LIBRO = "Eliminar";
-	public static final String VER_LIBROS = "Ver";
-	public static final String ACTUALIZAR_LIBRO = "Actualizar";
-	public static final String CREAR_LIBRO = "Nuevo";
-	public static final String BUSCAR_LIBRO = "Buscar";
+	public static final String ELIMINAR_LIBRO = "Eliminar Libro";
+	public static final String VER_LIBROS = "Ver Libros";
+	public static final String ACTUALIZAR_LIBRO = "Actualizar Libro";
+	public static final String CREAR_LIBRO = "Nuevo Libro";
+	public static final String BUSCAR_LIBRO = "Buscar Libro";
+	public static final String REGISTRAR_AUTOR_LIBRO = "Registrar Autor Libro";
+	public static final String GUARDAR_LIBRO = "Guardar Libro";
+	public static final String CANCELAR_REGISTRO_LIBRO = "Cancelar Registro Libro";
 
 	public static final String ACTUALIZAR_TABLA = "ACTUALIZAR_TABLA";
 
