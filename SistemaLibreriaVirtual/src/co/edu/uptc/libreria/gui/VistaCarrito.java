@@ -100,12 +100,12 @@ public class VistaCarrito extends JPanel{
 		btnEliminarLibro = new JButton("Eliminar");
 		btnActualizarCantidad = new JButton("Actualizar Cantidad");
 		
-		btnEliminarLibro.setActionCommand(EventosGui.ELIMINAR);
-		btnActualizarCantidad.setActionCommand(EventosGui.ACTUALIZAR);
-		btnFinalizarCompra.setActionCommand(EventosGui.FINALIZAR_COMPRA);
-		
 		btnEliminarLibro.setBounds(30, 315, 100, 30);
 		btnActualizarCantidad.setBounds(140, 315, 160, 30);
+	
+		btnEliminarLibro.setActionCommand(EventosGui.ELIMINAR);
+		btnActualizarCantidad.setActionCommand(EventosGui.ACTUALIZAR);
+		
 		
 		this.add(btnEliminarLibro);
 		this.add(btnActualizarCantidad);
@@ -131,6 +131,7 @@ public class VistaCarrito extends JPanel{
 		
 		btnSeguirComprando.setBounds(30, 400, 180, 35);
 		btnFinalizarCompra.setBounds(510, 400, 160, 35);
+		btnFinalizarCompra.setActionCommand(EventosGui.FINALIZAR_COMPRA);
 		
 		this.add(btnSeguirComprando);
 		this.add(btnFinalizarCompra);
