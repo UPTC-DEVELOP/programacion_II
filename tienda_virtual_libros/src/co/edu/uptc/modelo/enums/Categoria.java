@@ -11,8 +11,8 @@ package co.edu.uptc.modelo.enums;
  *  - Es imposible guardar una categoría inválida (el compilador lo impide).
  *  - La validación "categoría válida" del RF01 queda resuelta por diseño.
  *
- * Cada constante guarda una "etiqueta" legible para mostrarla en el JComboBox
- * (la GUI muestra "Ciencia ficción", no "CIENCIA_FICCION").
+ * Cada constante guarda una etiqueta legible para mostrarla en el JComboBox
+ * (la GUI muestra Ciencia ficción, no CIENCIA_FICCION).
  */
 public enum Categoria {
 

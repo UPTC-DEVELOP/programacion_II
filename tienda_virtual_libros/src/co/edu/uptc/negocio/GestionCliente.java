@@ -21,7 +21,7 @@ public class GestionCliente implements IGestionCliente {
 	private final IClienteRepositorio persistencia;
 	private final ValidadorDatos validador;
 
-	// constructor: inyección de dependencias
+	// constructor
 	public GestionCliente(IClienteRepositorio persistencia, ValidadorDatos validador) {
 		this.persistencia = persistencia;
 		this.validador = validador;

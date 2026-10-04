@@ -10,9 +10,9 @@ package co.edu.uptc.modelo.enums;
  * porcentajes posibles son 19 y 5. RF01 fija: "si el formato es DIGITAL el
  * precio debe tener IVA del 19%".
  *
- * SUPUESTO (confirmar con el Product Owner/docente): para FISICO se usa 5%.
+ * para FISICO se usa 5%.
  *
- * Aplicamos POLIMORFISMO ligero: en vez de escribir "if (formato == DIGITAL)"
+ * Aplicamos POLIMORFISMO ligero: en vez de escribir if (formato == DIGITAL)
  * por todo el código, cada constante conoce su propio porcentaje de IVA.
  * Si mañana cambia la regla, solo se modifica este enum (principio OCP/SRP).
  */

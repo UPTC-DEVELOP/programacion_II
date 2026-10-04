@@ -17,7 +17,7 @@ public class LibroDto {
     private Formato formato;
     private Categoria categoria;
 
-    // CONSTRUCTOR VACÍO (para que funcione con setters como en tu Eclipse)
+    // CONSTRUCTOR VACÍO 
     public LibroDto() {
         this.autores = new ArrayList<>();
     }

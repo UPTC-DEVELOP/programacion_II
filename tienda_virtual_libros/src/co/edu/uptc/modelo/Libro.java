@@ -14,7 +14,7 @@ public class Libro {
     private double precioVenta;
     private int stock;
     private Formato formato;
-    private Categoria categoria; // DEBE SER ENUM, NO STRING
+    private Categoria categoria; // Debe ser ENUM, NO STRING
 
     public Libro(String isbn, String titulo, List<String> autores, int anioPublicacion,
                  String editorial, int numPaginas, double precioVenta, int stock,
@@ -31,7 +31,7 @@ public class Libro {
         this.categoria = categoria;
     }
 
-    // GENERA TODOS LOS GETTERS Y SETTERS
+    //  GETTERS Y SETTERS
     public String getIsbn() { return isbn; }
     public void setIsbn(String isbn) { this.isbn = isbn; }
     public String getTitulo() { return titulo; }

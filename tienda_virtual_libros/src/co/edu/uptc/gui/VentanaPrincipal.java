@@ -22,7 +22,7 @@ public class VentanaPrincipal extends JFrame {
 
     private static final long serialVersionUID = 1L;
 
-    // Nombres de las "tarjetas" del CardLayout
+    // Nombres de las tarjetas del CardLayout
     public static final String PANEL_LOGIN = "LOGIN";
     public static final String PANEL_ADMIN = "DASHBOARD";
     public static final String PANEL_LIBROS = "GESTION_LIBROS";
