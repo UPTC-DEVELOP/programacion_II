@@ -19,4 +19,4 @@ public class PanelCentral extends JPanel {
         //Panel cliente CENTRADO
         add(panelCliente, BorderLayout.CENTER);
 	}
-}
+}

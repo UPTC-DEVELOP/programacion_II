@@ -291,4 +291,4 @@ public class DialogoCliente extends JDialog {
     public boolean isGuardadoExitoso() {
         return guardadoExitoso;
     }
-}
+}

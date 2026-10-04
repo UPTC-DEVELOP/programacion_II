@@ -286,4 +286,4 @@ public class PanelCliente extends JPanel implements Evento {
             cargarClientesEnTabla(gestionCliente.listarClientes());
         }
     }
-}
+}

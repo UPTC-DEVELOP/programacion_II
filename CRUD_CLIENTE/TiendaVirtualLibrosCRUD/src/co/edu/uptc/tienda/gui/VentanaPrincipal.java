@@ -30,4 +30,6 @@ public class VentanaPrincipal extends JFrame {
             ventana.setVisible(true);
         });
     }
-}
+}
+
+
