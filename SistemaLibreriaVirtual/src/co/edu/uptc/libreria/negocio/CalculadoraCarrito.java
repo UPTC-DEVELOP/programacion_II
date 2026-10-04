@@ -16,7 +16,7 @@ public class CalculadoraCarrito {
 		return subtotal;
 	}
 	
-	public double calcularDescuento(double subtotal, booelan esPremium) {
+	public double calcularDescuento(double subtotal, boolean esPremium) {
 		if (esPremium) {
 			return subtotal * porcentajeDescuento;
 		}

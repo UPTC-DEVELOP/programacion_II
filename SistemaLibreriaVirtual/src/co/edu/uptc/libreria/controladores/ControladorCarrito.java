@@ -2,6 +2,7 @@ package co.edu.uptc.libreria.controladores;
 
 import co.edu.uptc.libreria.modelo.ItemCarrito;
 import co.edu.uptc.libreria.negocio.GestionCarrito;
+import co.edu.uptc.libreria.modelo.Libro;
 
 import java.util.List;
 

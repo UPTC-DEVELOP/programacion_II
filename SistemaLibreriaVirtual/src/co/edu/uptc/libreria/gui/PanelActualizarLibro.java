@@ -1,4 +1,4 @@
-package co.edu.uptc.gui;
+package co.edu.uptc.libreria.gui;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -12,9 +12,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import co.edu.uptc.modelo.Libro;
-import co.edu.uptc.negocio.GestionLibro;
-import co.edu.uptc.negocio.LibroConfig;
+import co.edu.uptc.libreria.modelo.Libro;
+import co.edu.uptc.libreria.negocio.GestionLibro;
+import co.edu.uptc.libreria.negocio.LibroConfig;
 
 public class PanelActualizarLibro extends JFrame {
 

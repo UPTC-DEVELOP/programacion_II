@@ -1,8 +1,8 @@
-package co.edu.uptc.interfaces;
+package co.edu.uptc.libreria.interfaces;
 
 import java.util.List;
 
-import co.edu.uptc.modelo.Libro;
+import co.edu.uptc.libreria.modelo.Libro;
 
 public interface IGestionLibro {
 

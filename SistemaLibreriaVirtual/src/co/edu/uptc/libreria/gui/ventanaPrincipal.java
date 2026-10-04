@@ -1,11 +1,13 @@
 package co.edu.uptc.libreria.gui;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.JComboBox;
 import javax.swing.table.DefaultTableModel;
@@ -21,6 +23,7 @@ import co.edu.uptc.libreria.clientes.gui.PanelClientes;
 import co.edu.uptc.libreria.controladores.ControladorCarrito;
 import co.edu.uptc.libreria.clientes.gui.DialogoCliente;
 import co.edu.uptc.libreria.gui.ventanaPrincipal;
+import co.edu.uptc.libreria.modelo.Libro;
 
 public class ventanaPrincipal extends JFrame {
 
@@ -254,14 +257,14 @@ public class ventanaPrincipal extends JFrame {
 
 	private void configurarEventos() {
 		// Evento 1: Cambiar selector de productos (Módulo B.1)
-		cbProductos.addActionListener(e -> actualizarCamposProducto());
+		cbLibros.addActionListener(e -> actualizarCamposLibro());
 
 		// Evento 2: Registrar Pedido (Módulo B.2, B.3 y C.1, C.2)
 		btnRegistrar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Libro prodSeleccionado = (Libro) cbLibros.getSelectedItem();
-				if (LibSeleccionado == null) return;
+				Libro libSeleccionado = (Libro) cbLibros.getSelectedItem();
+				if (libSeleccionado == null) return;
 
 				try {
 					int cantidad = Integer.parseInt(txtCantidad.getText().trim());
@@ -273,25 +276,25 @@ public class ventanaPrincipal extends JFrame {
 						return;
 					}
 
-					if (cantidad > prodSeleccionado.getStock()) {
+					if (cantidad > libSeleccionado.getStock()) {
 						JOptionPane.showMessageDialog(ventanaPrincipal.this, 
-								"Stock insuficiente. Stock actual: " + prodSeleccionado.getStock(), 
+								"Stock insuficiente. Stock actual: " + libSeleccionado.getStock(), 
 								"Error de Stock", JOptionPane.ERROR_MESSAGE);
 						return;
 					}
 
 					// Decrementar stock
-					prodSeleccionado.setStock(prodSeleccionado.getStock() - cantidad);
+					libSeleccionado.setStock(libSeleccionado.getStock() - cantidad);
 
 					// Calcular total
-					double total = prodSeleccionado.calcularPrecioFinal() * cantidad;
+					double total = libSeleccionado.calcularPrecioFinal() * cantidad;
 
 					// Agregar a la tabla de historial
-					modeloTabla.addRow(new Object[]{prodSeleccionado, prodSeleccionado.getNombre(), cantidad, String.format("$%.2f", total)});
+					modeloTabla.addRow(new Object[]{libSeleccionado, libSeleccionado.getNombre(), cantidad, String.format("$%.2f", total)});
 
 					// Limpiar y actualizar UI
 					txtCantidad.setText("");
-					actualizarCamposProducto();
+					actualizarCamposLibro();
 					JOptionPane.showMessageDialog(ventanaPrincipal.this, "Pedido registrado con éxito.");
 
 				} catch (NumberFormatException ex) {
@@ -306,7 +309,7 @@ public class ventanaPrincipal extends JFrame {
 		btnCancelarPedido.addActionListener(e -> {
 			int filaSeleccionada = tablaHistorial.getSelectedRow();
 			if (filaSeleccionada == -1) {
-				JOptionPane.showMessageDialog(VentanaPrincipal.this, 
+				JOptionPane.showMessageDialog(ventanaPrincipal.this, 
 						"Seleccione una transacción de la tabla para cancelar.", 
 						"Aviso", JOptionPane.INFORMATION_MESSAGE);
 				return;

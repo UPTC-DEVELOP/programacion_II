@@ -1,10 +1,10 @@
-package co.edu.uptc.persistencia;
+package co.edu.uptc.libreria.persistencia;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import co.edu.uptc.interfaces.IGestionLibro;
-import co.edu.uptc.modelo.Libro;
+import co.edu.uptc.libreria.interfaces.IGestionLibro;
+import co.edu.uptc.libreria.modelo.Libro;
 
 public class LocalLibro implements IGestionLibro {
 

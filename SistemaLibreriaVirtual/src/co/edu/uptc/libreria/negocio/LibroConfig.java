@@ -1,7 +1,7 @@
-package co.edu.uptc.negocio;
+package co.edu.uptc.libreria.negocio;
 
-import co.edu.uptc.interfaces.IGestionLibro;
-import co.edu.uptc.persistencia.LocalLibro;
+import co.edu.uptc.libreria.interfaces.IGestionLibro;
+import co.edu.uptc.libreria.persistencia.LocalLibro;
 
 public class LibroConfig {
 

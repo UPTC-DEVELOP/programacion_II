@@ -1,6 +1,8 @@
 package co.edu.uptc.libreria.persistencia;
 
 import co.edu.uptc.libreria.modelo.ItemCarrito;
+import co.edu.uptc.libreria.modelo.Libro;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +10,7 @@ import java.util.List;
 public class LocalCarritoPersistencia implements CarritoPersistencia{
 	
 	private final String rutaArchivo = "data/carrito.txt";
-	private ControloadorCatalogo controladorCatalogo;
+	private ControladorCatalogo controladorCatalogo;
 	
 	public LocalCarritoPersistencia(ControladorCatalogo controladorCatalogo) {
 		this.controladorCatalogo = controladorCatalogo;
