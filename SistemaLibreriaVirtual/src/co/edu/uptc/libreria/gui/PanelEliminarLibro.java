@@ -93,7 +93,7 @@ public class PanelEliminarLibro extends JFrame {
         botonCancelar.addActionListener(e -> limpiar());
 
         botonVolver.addActionListener(e -> {
-            new PanelCentral().setVisible(true);
+            new ventanaPrincipal().setVisible(true);
             dispose();
         });
     }

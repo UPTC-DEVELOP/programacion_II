@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import co.edu.uptc.libreria.clientes.gui.PanelCentral;
 import co.edu.uptc.libreria.modelo.Libro;
 import co.edu.uptc.libreria.negocio.GestionLibro;
 import co.edu.uptc.libreria.negocio.LibroConfig;
@@ -132,7 +133,7 @@ public class PanelActualizarLibro extends JFrame {
         botonCancelar.addActionListener(e -> limpiarCampos());
 
         botonVolver.addActionListener(e -> {
-            new PanelCentral().setVisible(true);
+            new ventanaPrincipal().setVisible(true);
             dispose();
         });
 

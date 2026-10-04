@@ -13,7 +13,7 @@ import javax.swing.JTextField;
 import co.edu.uptc.libreria.modelo.Libro;
 import co.edu.uptc.libreria.negocio.GestionLibro;
 import co.edu.uptc.libreria.negocio.LibroConfig;
-import co.edu.uptc.libreria.clientes.PanelCentral;
+import co.edu.uptc.libreria.clientes.gui.PanelCentral;
 
 public class PanelRegistrarLibro extends JFrame {
 
@@ -102,7 +102,7 @@ public class PanelRegistrarLibro extends JFrame {
         botonLimpiar.addActionListener(e -> limpiar());
 
         botonVolver.addActionListener(e -> {
-            new PanelCentral().setVisible(true);
+            new ventanaPrincipal().setVisible(true);
             dispose();
         });
     }

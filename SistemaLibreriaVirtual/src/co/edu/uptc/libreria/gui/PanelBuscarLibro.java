@@ -82,7 +82,7 @@ public class PanelBuscarLibro extends JFrame {
         botonBuscar.addActionListener(e -> buscarLibro());
 
         botonVolver.addActionListener(e -> {
-            new PanelCentral().setVisible(true);
+            new ventanaPrincipal().setVisible(true);
             dispose();
         });
     }
