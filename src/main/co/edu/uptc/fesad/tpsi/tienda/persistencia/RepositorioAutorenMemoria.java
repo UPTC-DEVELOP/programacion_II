@@ -15,7 +15,7 @@ public class RepositorioAutorenMemoria implements IRepositorioAutor {
   /// Truco para generar Ids consecutivos
   private final AtomicLong contador;
   
-  /// Crea un nuevo objeto [RepositorioEditorialEnMemoria][RepositorioEditorialEnMemoria].
+  /// Crea un nuevo objeto [RepositorioAutorEnMemoria][RepositorioAutorEnMemoria].
   public RepositorioAutorenMemoria() {
     this.autores = new ArrayList<Autor>();
     // el contador se inicia en 10
@@ -35,26 +35,26 @@ public class RepositorioAutorenMemoria implements IRepositorioAutor {
       return null;
     }
     
-    // obtener la editorial que se quiere guardar
+    // obtener el autor que se quiere guardar
     Autor autor = elemento;
     
     // todo depende del id
-    // si el id es nulo, la editorial no se ha guardado en la base de datos
+    // si el id es nulo, el autor no se ha guardado en la base de datos
     if (autor.getId() == null) {
       // usar el truco para generar un id único
       Long idNuevo = this.contador.incrementAndGet();
       autor.setId(idNuevo);
-      // agregar la editorial a la base de datos
+      // agregar el autor a la base de datos
       this.autores.add(autor);
       return autor;
     }
-    // el id no es nulo, luego toca reemplazar la editorial en la base de datos
+    // el id no es nulo, luego toca reemplazar el autor en la base de datos
     else {
       for (int i = 0; i < this.autores.size(); i++) {
         if (this.autores.get(i)
           .getId()
           .equals(autor.getId())) {
-          // reemplazar el objeto editoria
+          // reemplazar el objeto autor
           this.autores.set(i, autor);
           return autor;
         }
@@ -74,19 +74,19 @@ public class RepositorioAutorenMemoria implements IRepositorioAutor {
       return false;
     }
     
-    // Eliminar la editorial con el ID dado, pero esta vez usando la técnica de iterador
+    // Eliminar el autor con el ID dado, pero esta vez usando la técnica de iterador
     Iterator<Autor> iterador = this.autores.iterator();
     while (iterador.hasNext()) {
       Autor autor = iterador.next();
       if (autor.getId()
         .equals(id)) {
         iterador.remove();
-        // eliminar la editorial fue una operación exitosa, terminar
+        // eliminar el autor fue una operación exitosa, terminar
         return true;
       }
     }
     
-    // no encontró la editorial con ese ID y no se pudo eliminar
+    // no encontró el autor con ese ID y no se pudo eliminar
     return false;
   }
   
@@ -100,7 +100,7 @@ public class RepositorioAutorenMemoria implements IRepositorioAutor {
       return resultados;
     }
     
-    // buscar la editorial que concida con el id
+    // buscarel autor que concida con el id
     for (Autor autorActual : this.autores) {
       if (autorActual.getId()
         .equals(id)) {
@@ -116,7 +116,7 @@ public class RepositorioAutorenMemoria implements IRepositorioAutor {
   @Override
   public List<Autor> listar() {
     // TODO: Investigar cómo hacer que esta lista que se retorna quede "congelada" para evitar
-    // que le agreguen más editoriales sin pasar primero por el método guardar
+    // que le agreguen más autores sin pasar primero por el método guardar
     // por ahora, devolver una copia de la lista
     return new ArrayList<Autor>(this.autores);
   }

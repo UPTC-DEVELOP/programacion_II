@@ -18,7 +18,7 @@ public class FormularioAutor extends FormularioElementoBase {
   private JTextField txtNombre;
   private JTextField txtApellidos;
   
-  /// Crea un nuevo objeto [FormularioEditorial][FormularioEditorial].
+  /// Crea un nuevo objeto [FormularioAutor][FormularioAutor].
   public FormularioAutor(Evento evento) {
     super(evento);
   }
@@ -59,14 +59,14 @@ public class FormularioAutor extends FormularioElementoBase {
     Autor autor = (Autor) elemento;
     // evitar el error de objeto nulo
     if (elemento == null) {
-      // entonces el formulario mostrará una editorial nueva con valores predeterminados
+      // entonces el formulario mostrará un autor nuevo con valores predeterminados
       autor = new Autor();
     }
     
     // el formulario manejará internamente este id
     setIDElemento(autor.getId());
     
-    // mostrar en el formulario los datos de la editorial
+    // mostrar en el formulario los datos del autor
     this.txtNombre.setText(autor.getNombre());
     this.txtApellidos.setText(autor.getApellidos());
     
@@ -74,7 +74,7 @@ public class FormularioAutor extends FormularioElementoBase {
   
   @Override
   public Object capturarDatos() {
-    // crear un objeto editorial con los datos del formulario
+    // crear un objeto autor con los datos del formulario
     Autor autor = new Autor(getIDElemento(), this.txtNombre.getText(), this.txtApellidos.getText());
     return autor;
   }

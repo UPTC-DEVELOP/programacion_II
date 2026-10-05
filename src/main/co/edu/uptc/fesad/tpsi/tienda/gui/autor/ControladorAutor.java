@@ -29,27 +29,27 @@ public class ControladorAutor implements IControlador {
     this.gestorAutor = gestor;
   }
   
-  /// Muestra el panel de editoriales.
+  /// Muestra el panel de autores.
   public void mostrarInicio() {
     listar();
   }
   
-  /// Carga la lista de editoriales y las visualiza en la tabla visual de datos de usuario.
+  /// Carga la lista de autores y las visualiza en la tabla visual de datos de usuario.
   public void listar() {
-    // cargar la lista de editoriales
+    // cargar la lista de autores
     List<Autor> autores = this.gestorAutor.listar();
     
-    // convertir la lista de editoriales en un array de objetos para el modelo de datos de la
+    // convertir la lista de autores en un array de objetos para el modelo de datos de la
     // tabla.
     
-    int cantidadAtributos = 3; // la editorial tiene id y nombre
+    int cantidadAtributos = 3; // el autor tiene id , nombre , apellidos
     
     // array contenedor de dos dimensiones:
     // - dimensión 0: los índices de las filas
     // - dimensión 1: un array de los atributos
     Object[][] filas = new Object[autores.size()][cantidadAtributos];
     
-    // recorrer la lista de editoriales y crear un array Object que contenga los atributos, y
+    // recorrer la lista de autores y crear un array Object que contenga los atributos, y
     // asignar el array Object a una posición del array contenedor
     for (int i = 0; i < autores.size(); i++) {
       Autor autor = autores.get(i);
@@ -58,18 +58,18 @@ public class ControladorAutor implements IControlador {
       
     }
     
-    // pedirle al panel de editoriales que actualice la lista de editoriales.
+    // pedirle al panel de autores que actualice la lista de autores.
     this.panelAutores.listar(filas);
   }
   
   public void nuevo() {
-    // mostrar un objeto editorial predeterminado
+    // mostrar un objeto autor predeterminado
     this.panelAutores.mostrarFormulario(new Autor());
   }
   
-  /// Busca la editorial con el ID dado y prepara el formulario para editarlo.
+  /// Busca el autor con el ID dado y prepara el formulario para editarlo.
   /// 
-  /// @param id ID de la editorial que se quiere editar.
+  /// @param id ID del autor que se quiere editar.
   public void editar(Object id) {
     // si el ID es nulo, no se puede editar nada
     if (id == null) {
@@ -81,18 +81,18 @@ public class ControladorAutor implements IControlador {
       return;
     }
     
-    // convertir el id de la editorial
+    // convertir el id del autor
     Long idAutor = (Long) id;
     
-    // se busca editoriales con ese ID. Se supone que el ID es único
+    // se busca autores con ese ID. Se supone que el ID es único
     List<Autor> autores = this.gestorAutor.buscarPorId(idAutor);
     
-    // si se encontró la editorial, mostrarla
+    // si se encontró el autor, mostrarla
     if (autores.size() > 0) {
       this.panelAutores.mostrarFormulario(autores.get(0));
       
     } else {
-      // si no se encontró la editorial, avisarle al usuario
+      // si no se encontró el autor, avisarle al usuario
       this.panelAutores.mostrarError("El autor ya no existe en el repositorio de datos.");
       listar();
       return;
@@ -105,12 +105,12 @@ public class ControladorAutor implements IControlador {
       return;
     }
     
-    // únicamente se espera un elemento tipo Editorial
+    // únicamente se espera un elemento tipo Autor
     if (!(elemento instanceof Autor)) {
       return;
     }
     
-    // obtener la editorial
+    // obtener el autor
     Autor autor = (Autor) elemento;
     
     try {
@@ -127,9 +127,9 @@ public class ControladorAutor implements IControlador {
     listar();
   }
   
-  /// Elimina una editorial con el id dado.
+  /// Elimina el autor con el id dado.
   /// 
-  /// @param elemento ID de la editorial que se quiere eliminar. Es de tipo Long.
+  /// @param elemento ID del autor que se quiere eliminar. Es de tipo Long.
   public void eliminar(Object id) {
     // si el ID es nulo, no se puede eliminar nada
     if (id == null) {
@@ -141,12 +141,12 @@ public class ControladorAutor implements IControlador {
       return;
     }
     
-    // convertir el id de la editorial
+    // convertir el id del autor
     Long idAutor = (Long) id;
     
     boolean eliminado = this.gestorAutor.eliminar(idAutor);
     
-    // Si no se pudo eliminar la editorial, avisar al usuario
+    // Si no se pudo eliminar el autor, avisar al usuario
     if (!eliminado) {
       this.panelAutores.mostrarError("No se pudo eliminar el autor.");
     }
@@ -161,7 +161,7 @@ public class ControladorAutor implements IControlador {
   /// @see main.co.edu.uptc.fesad.tpsi.tienda.interfaces.IControlador#registrarEventos(main.co.edu.uptc.fesad.tpsi.tienda.gui.eventos.EnrutadorEventos)
   @Override
   public void registrarEventos(EnrutadorEventos enrutador) {
-    // asociar el evento cuando se abre el panel de editoriales.
+    // asociar el evento cuando se abre el panel de autores.
     enrutador.registrarEvento(
       ControladorAutor.AUTOR_INICIO,
       (elemento) -> mostrarInicio()
@@ -175,14 +175,14 @@ public class ControladorAutor implements IControlador {
     enrutador
       .registrarEvento(ControladorAutor.AUTOR_NUEVO, (elemento) -> nuevo());
     
-    // elemento es el ID de la editorial que se quiere mostrar para editar
+    // elemento es el ID del autor que se quiere mostrar para editar
     enrutador
       .registrarEvento(ControladorAutor.AUTOR_EDITAR, (elemento) -> editar(elemento));
     
     enrutador
       .registrarEvento(ControladorAutor.AUTOR_GUARDAR, (autor) -> guardar(autor));
     
-    // elemento es el ID de la editorial que se quiere eliminar
+    // elemento es el ID del autor que se quiere eliminar
     enrutador
       .registrarEvento(ControladorAutor.AUTOR_ELIMINAR, (elemento) -> eliminar(elemento));
     

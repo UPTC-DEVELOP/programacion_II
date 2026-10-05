@@ -6,26 +6,26 @@ import main.co.edu.uptc.fesad.tpsi.tienda.modelo.Autor;
 
 public interface IRepositorioAutor {
   
-  /// Guarda una editorial en el repositorio.
+  /// Guarda un autor en el repositorio.
   /// 
-  /// @return La editorial con su ID generado en el repositorio.
+  /// @return el autor con su ID generado en el repositorio.
   Autor guardar(Autor autorl);
   
-  /// Elimina una editorial del repositorio.
+  /// Elimina el autor del repositorio.
   /// 
-  /// @param id ID de la editorial que se quiere eliminar.
-  /// @return true si la editorial se eliminó. false si la editorial no se encontró.
+  /// @param id ID del autor que se quiere eliminar.
+  /// @return true si el autor se eliminó. false si el autor no se encontró.
   boolean eliminar(Long id);
   
-  /// Busca una editorial por su ID.
+  /// Busca el autor por su ID.
   /// 
-  /// @param id ID de la editorial que se quiere buscar.
-  /// @return Una lista de las editoriales que coinciden con el ID.
+  /// @param id ID del autor que se quiere buscar.
+  /// @return Una lista de los autores que coinciden con el ID.
   List<Autor> buscarPorId(Long id);
   
-  /// Obtiene la lista de editoriales en el repositorio.
+  /// Obtiene la lista de autores en el repositorio.
   /// 
-  /// @return Lista de editoriales en el repositorio.
+  /// @return Lista de autores en el repositorio.
   List<Autor> listar();
   
 }

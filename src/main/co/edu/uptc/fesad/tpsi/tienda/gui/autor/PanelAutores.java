@@ -33,7 +33,7 @@ public class PanelAutores extends PanelBase {
   
   DialogoBase dialogo;
   
-  /// Crea un nuevo objeto [PanelEditoriales][PanelEditoriales].
+  /// Crea un nuevo objeto [PanelAutores][PanelAutores].
   /// 
   public PanelAutores(Evento evento) {
     super(evento);
@@ -47,7 +47,7 @@ public class PanelAutores extends PanelBase {
     JPanel barraAcciones = new JPanel();
     barraAcciones.setLayout(new FlowLayout(FlowLayout.LEFT, 4, 8));
     
-    // crear y configurar el botón crear y su evento para crear una editorial
+    // crear y configurar el botón crear y su evento para crear un autor
     this.btnCrear = new JButton("Crear Nuevo");
     this.btnCrear.setActionCommand(ControladorAutor.AUTOR_NUEVO);
     this.btnCrear.addActionListener(getEvento());
@@ -102,9 +102,9 @@ public class PanelAutores extends PanelBase {
     
   }
   
-  /// Envía un evento solicitando que se edite la fila Editorial seleccionada.
+  /// Envía un evento solicitando que se edite la fila Autor seleccionada.
   public void solicitarEdicion() {
-    // obtener el id de la editorial. Se supone que en el modelo de datos es la columna 0
+    // obtener el id del autor. Se supone que en el modelo de datos es la columna 0
     Object id = this.panelLista.getValorCeldaSeleccionada(PanelAutores.COLUMNA_ID);
     // si se obtuvo un ID no nulo, pedir que se maneje el evento de editar con ese ID
     if (id != null) {
@@ -112,7 +112,7 @@ public class PanelAutores extends PanelBase {
     }
   }
   
-  /// Actualiza la tabla de editoriales.
+  /// Actualiza la tabla de autores.
   /// 
   /// @param datos Datos que se quieren visualizar en la tabla.
   public void listar(Object[][] datos) {
@@ -122,14 +122,14 @@ public class PanelAutores extends PanelBase {
   /// Muestra el formulario.
   public void mostrarFormulario(Autor autor) {
     // mostrar el título del diálogo
-    // ID = null: se pide crear una nueva editorial para que el repositorio la guarde después
-    // ID != null: se pide editar una editorial ya existente en el repositorio
+    // ID = null: se pide crear un nuevo autorl para que el repositorio la guarde después
+    // ID != null: se pide editar un autor ya existente en el repositorio
     String titulo = autor.getId() == null ? "Crear Autor" : "Editar Autor";
     
     // obtener el componente o ventana padre para el diálogo
     Window propietario = SwingUtilities.getWindowAncestor(this);
     
-    // crear el diálogo que contendrá el formulario para crear o editar la editorial
+    // crear el diálogo que contendrá el formulario para crear o editar el autor
     this.dialogo = new DialogoFormularioAutor(propietario, titulo, autor, getEvento()).construir();
     this.dialogo.mostrar();
     
@@ -160,7 +160,7 @@ public class PanelAutores extends PanelBase {
     // // panel. Esto reemplaza un getVentanaPrincipal()
     // Window propietario = SwingUtilities.getWindowAncestor(this);
     // // pasando el objeto propietario el diálogo sabe cuál ventana JFrame es su padre
-    // this.dialogo = new DialogoFormularioEditorial(propietario, titulo, elemento,
+    // this.dialogo = new DialogoFormularioAutor(propietario, titulo, elemento,
     // getEvento()).construir();
     // this.dialogo.mostrar();
     
