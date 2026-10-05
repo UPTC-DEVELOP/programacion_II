@@ -85,7 +85,6 @@ public class PanelLibro extends JPanel {
 
 	}
 
-	// TODO - Pendiente
 	public void cargarLibrosEnTabla(List<Libro> libros) {
 		modeloTabla.setRowCount(0);
 
@@ -199,5 +198,4 @@ public class PanelLibro extends JPanel {
 			cargarLibrosEnTabla(gestionLibro.listarLibros());
 		}
 	}
-
 }

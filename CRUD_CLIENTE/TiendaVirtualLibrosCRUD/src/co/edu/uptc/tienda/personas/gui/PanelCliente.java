@@ -15,7 +15,6 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-import co.edu.uptc.tienda.gui.Evento;
 import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.negocio.Configuracion;
 import co.edu.uptc.tienda.negocio.GestionCliente;

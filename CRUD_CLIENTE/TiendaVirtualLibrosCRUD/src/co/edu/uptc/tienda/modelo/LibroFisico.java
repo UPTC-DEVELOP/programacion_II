@@ -1,6 +1,5 @@
 package co.edu.uptc.tienda.modelo;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import co.edu.uptc.tienda.modelo.enums.TipoLibro;
