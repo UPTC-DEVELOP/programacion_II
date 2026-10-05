@@ -12,7 +12,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.text.NumberFormat;
 
-/** Catálogo de libros disponibles para el cliente. */
+
 public class PantallaCatalogo extends JPanel implements Refrescable {
 
     private final Tienda tienda;
@@ -63,14 +63,14 @@ public class PantallaCatalogo extends JPanel implements Refrescable {
                 new EmptyBorder(10, 10, 10, 10)
         ));
 
-        JLabel lblTitulo = new JLabel("<html><b>" + libro.getTitulo() + "</b></html>");
+        JLabel lblTitulo = new JLabel("<html><b>" + libro.getTituloLibro() + "</b></html>");
         lblTitulo.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
-        JLabel lblInfo = new JLabel("<html>Autor: " + libro.getAutor() + "<br>Categoría: " + libro.getCategoria()
+        JLabel lblInfo = new JLabel("<html>Autor: " + libro.getAutorLibro() + "<br>Categoría: " + libro.getCategoria()
                 + "<br>Stock: " + libro.getStock() + " un.</html>");
         lblInfo.setForeground(EstiloUI.TEXTO_INFO);
 
-        JLabel lblPrecio = new JLabel(formatter.format(libro.getPrecio()));
+        JLabel lblPrecio = new JLabel(formatter.format(libro.getPrecioVenta()));
         lblPrecio.setFont(new Font("SansSerif", Font.BOLD, 15));
         lblPrecio.setForeground(EstiloUI.PRECIO);
 
@@ -92,13 +92,13 @@ public class PantallaCatalogo extends JPanel implements Refrescable {
     private void agregarAlCarrito(Libro libro) {
         switch (tienda.agregarAlCarrito(libro)) {
             case CANTIDAD_INCREMENTADA:
-                JOptionPane.showMessageDialog(this, "Se incrementó la cantidad de '" + libro.getTitulo() + "' en el carrito.");
+                JOptionPane.showMessageDialog(this, "Se incrementó la cantidad de '" + libro.getTituloLibro() + "' en el carrito.");
                 break;
             case SIN_STOCK:
                 JOptionPane.showMessageDialog(this, "No hay suficiente stock disponible.", "Límite superado", JOptionPane.WARNING_MESSAGE);
                 break;
             default:
-                JOptionPane.showMessageDialog(this, "Libro '" + libro.getTitulo() + "' añadido al carrito.");
+                JOptionPane.showMessageDialog(this, "Libro '" + libro.getTituloLibro() + "' añadido al carrito.");
         }
     }
 }

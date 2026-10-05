@@ -13,5 +13,5 @@ public class ItemCarrito {
     public Libro getLibro() { return libro; }
     public int getCantidad() { return cantidad; }
     public void setCantidad(int cantidad) { this.cantidad = cantidad; }
-    public double getSubtotal() { return libro.getPrecio() * cantidad; }
+    public double getSubtotal() { return libro.getPrecioVenta() * cantidad; }
 }

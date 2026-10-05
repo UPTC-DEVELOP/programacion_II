@@ -18,13 +18,17 @@ public class PantallaInventario extends JPanel implements Refrescable {
     private final Tienda tienda;
     private final DefaultTableModel tablaModel;
 
-    private final JTextField txtId = new JTextField();
+    private final JTextField txtIsbn = new JTextField();
     private final JTextField txtTitulo = new JTextField();
     private final JTextField txtAutor = new JTextField();
+    private final JTextField txtAnio = new JTextField();
+    private final JTextField txtCategoria = new JTextField();
+    private final JTextField txtEditorial = new JTextField();
+    private final JTextField txtPaginas = new JTextField();
     private final JTextField txtPrecio = new JTextField();
     private final JTextField txtStock = new JTextField();
-    private final JTextField txtCategoria = new JTextField();
-
+    private final JTextField txtFormato = new JTextField();
+    
     public PantallaInventario(Tienda tienda, Navegador nav) {
         super(new BorderLayout());
         this.tienda = tienda;
@@ -43,7 +47,7 @@ public class PantallaInventario extends JPanel implements Refrescable {
         for (String etiqueta : new String[]{"ID:", "Título:", "Autor:", "Precio:", "Stock:", "Categoría:"}) {
             formPanel.add(new JLabel(etiqueta));
         }
-        formPanel.add(txtId);
+        formPanel.add( txtIsbn);
         formPanel.add(txtTitulo);
         formPanel.add(txtAutor);
         formPanel.add(txtPrecio);
@@ -71,10 +75,10 @@ public class PantallaInventario extends JPanel implements Refrescable {
 
         for (Libro libro : tienda.getInventario()) {
             tablaModel.addRow(new Object[]{
-                    libro.getId(),
-                    libro.getTitulo(),
-                    libro.getAutor(),
-                    formatter.format(libro.getPrecio()),
+                    libro.getIsbn(),
+                    libro.getTituloLibro(),
+                    libro.getAutorLibro(),
+                    formatter.format(libro.getPrecioVenta()),
                     libro.getStock(),
                     libro.getCategoria()
             });
@@ -83,11 +87,19 @@ public class PantallaInventario extends JPanel implements Refrescable {
 
     private void guardarLibro() {
         try {
-            int id = Integer.parseInt(txtId.getText().trim());
-            double precio = Double.parseDouble(txtPrecio.getText().trim());
+            String isbn = txtIsbn.getText().trim();
+            String tituloLibro = txtTitulo.getText();
+            String autorLibro = txtAutor.getText();
+            String anioPublicacion = txtAnio.getText().trim();
+            String categoria = txtCategoria.getText();
+            String editorial = txtEditorial.getText();
+            int numPaginas = Integer.parseInt(txtPaginas.getText().trim());
+            double precioVenta = Double.parseDouble(txtPrecio.getText().trim());
             int stock = Integer.parseInt(txtStock.getText().trim());
+            String tipoFormato = txtFormato.getText();
 
-            tienda.agregarLibro(new Libro(id, txtTitulo.getText(), txtAutor.getText(), precio, stock, txtCategoria.getText()));
+            tienda.agregarLibro(new Libro(isbn, tituloLibro, autorLibro, anioPublicacion, categoria,
+                    editorial, numPaginas, precioVenta, stock, tipoFormato));
             refrescar();
             limpiarFormulario();
 
@@ -100,7 +112,7 @@ public class PantallaInventario extends JPanel implements Refrescable {
     }
 
     private void limpiarFormulario() {
-        txtId.setText("");
+        txtIsbn.setText("");
         txtTitulo.setText("");
         txtAutor.setText("");
         txtPrecio.setText("");

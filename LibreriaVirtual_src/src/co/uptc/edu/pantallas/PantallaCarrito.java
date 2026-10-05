@@ -72,9 +72,9 @@ public class PantallaCarrito extends JPanel implements Refrescable {
 
         for (ItemCarrito item : tienda.getCarrito()) {
             tablaModel.addRow(new Object[]{
-                    item.getLibro().getId(),
-                    item.getLibro().getTitulo(),
-                    formatter.format(item.getLibro().getPrecio()),
+                    item.getLibro().getIsbn(),
+                    item.getLibro().getTituloLibro(),
+                    formatter.format(item.getLibro().getPrecioVenta()),
                     item.getCantidad(),
                     formatter.format(item.getSubtotal())
             });

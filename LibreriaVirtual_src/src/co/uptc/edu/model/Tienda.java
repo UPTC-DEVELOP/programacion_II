@@ -34,12 +34,12 @@ public class Tienda {
     public void cargarDatosSimulados() {
         inventario.clear();
         carrito.clear();
-        inventario.add(new Libro(101, "Cien Años de Soledad", "Gabriel García Márquez", 45000, 15, "Novela"));
-        inventario.add(new Libro(102, "El Código Da Vinci", "Dan Brown", 38000, 8, "Misterio"));
-        inventario.add(new Libro(103, "Clean Code in Java", "Robert C. Martin", 120000, 5, "Tecnología"));
-        inventario.add(new Libro(104, "Hábitos Atómicos", "James Clear", 52000, 20, "Superación"));
-        inventario.add(new Libro(105, "El Principito", "Antoine de Saint-Exupéry", 25000, 12, "Fábula"));
-        inventario.add(new Libro(106, "Don Quijote de la Mancha", "Miguel de Cervantes", 60000, 7, "Clásico"));
+        inventario.add(new Libro("9780000000101", "Cien Años de Soledad", "Gabriel García Márquez","1967", "Novela", "Editorial Sudamericana", 417, 45000, 15, "Físico"));
+        inventario.add(new Libro("9780000000102", "El Código Da Vinci", "Dan Brown","2003", "Misterio", "Doubleday", 489, 38000, 8, "Físico"));
+        inventario.add(new Libro("9780000000103", "Clean Code in Java", "Robert C. Martin","2008", "Tecnología", "Prentice Hall", 464, 120000, 5, "Digital"));
+        inventario.add(new Libro("9780000000104", "Hábitos Atómicos", "James Clear","2018", "Superación", "Avery", 320, 52000, 20, "Físico"));
+        inventario.add(new Libro("9780000000105", "El Principito", "Antoine de Saint-Exupéry","1943", "Fábula", "Reynal & Hitchcock", 96, 25000, 12, "Físico"));
+        inventario.add(new Libro("9780000000106", "Don Quijote de la Mancha", "Miguel de Cervantes","1605", "Clásico", "Francisco de Robles", 863, 60000, 7, "Digital"));
     }
 
     // ---------- Carrito ----------
@@ -47,7 +47,7 @@ public class Tienda {
 
     public ResultadoCarrito agregarAlCarrito(Libro libro) {
         for (ItemCarrito item : carrito) {
-            if (item.getLibro().getId() == libro.getId()) {
+            if (item.getLibro().getIsbn() == libro.getIsbn()) {
                 if (item.getCantidad() < libro.getStock()) {
                     item.setCantidad(item.getCantidad() + 1);
                     return ResultadoCarrito.CANTIDAD_INCREMENTADA;
@@ -69,7 +69,7 @@ public class Tienda {
         return total;
     }
 
-    /** Descuenta el stock de cada libro comprado y vacía el carrito. */
+
     public void finalizarCompra() {
         for (ItemCarrito item : carrito) {
             Libro l = item.getLibro();
