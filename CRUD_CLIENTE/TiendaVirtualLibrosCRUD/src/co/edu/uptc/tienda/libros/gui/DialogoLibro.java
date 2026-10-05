@@ -217,9 +217,8 @@ public class DialogoLibro extends JDialog {
 		TipoLibro tipoLibro = (TipoLibro) comboTipoLibro.getSelectedItem();
 
 		// Validaciones de ISBN
-		if (isbn.trim().isEmpty() && !(isbn.length() >= 8 && isbn.length() <= 12)) {
-			JOptionPane.showMessageDialog(this,
-					"Campo ISBN vacío o longitud incorrecta (Debe contener de 8 a 12 caracteres)");
+		if (!(isbn.length() >= 8 && isbn.length() <= 12)) {
+			JOptionPane.showMessageDialog(this, "Longitud incorrecta (Debe contener de 8 a 12 caracteres)");
 			return;
 		}
 
