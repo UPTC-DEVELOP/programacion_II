@@ -26,16 +26,19 @@ public class PantallaUsuario extends JPanel implements Refrescable {
         lblUsuarioActual.setFont(new Font("SansSerif", Font.ITALIC, 14));
         header.add(lblUsuarioActual, BorderLayout.EAST);
 
-        JPanel menuGrid = new JPanel(new GridLayout(1, 2, 20, 20));
+        JPanel menuGrid = new JPanel(new GridLayout(1, 3, 20, 20));
         menuGrid.setBorder(new EmptyBorder(50, 50, 50, 50));
         menuGrid.setBackground(EstiloUI.FONDO_MENU);
 
         JButton btnCatalogo = EstiloUI.crearCardBoton("Explora el Catálogo", "Examina y compra libros disponibles", EstiloUI.PRIMARIO);
         JButton btnCarrito = EstiloUI.crearCardBoton("Carrito de Compras", "Revisa tus productos y finaliza la compra", EstiloUI.PRIMARIO);
+        JButton btnPerfil = EstiloUI.crearCardBoton("Mi Perfil", "Actualiza tus datos personales y contraseña", EstiloUI.PRIMARIO);
         btnCatalogo.addActionListener(e -> nav.irA(Vista.CATALOGO));
         btnCarrito.addActionListener(e -> nav.irA(Vista.CARRITO));
+        btnPerfil.addActionListener(e -> nav.irA(Vista.PERFIL));
         menuGrid.add(btnCatalogo);
         menuGrid.add(btnCarrito);
+        menuGrid.add(btnPerfil);
 
         JPanel footer = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton btnLogout = new JButton("Cerrar Sesión");

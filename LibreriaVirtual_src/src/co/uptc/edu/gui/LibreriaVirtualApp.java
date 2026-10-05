@@ -33,6 +33,9 @@ public class LibreriaVirtualApp extends JFrame implements Navegador {
         registrar(Vista.CARRITO, new PantallaCarrito(tienda, this));
         registrar(Vista.ADMIN_HOME, new PantallaAdmin(this));
         registrar(Vista.INVENTARIO, new PantallaInventario(tienda, this));
+        registrar(Vista.REGISTRO, new PantallaRegistro(tienda, this));
+        registrar(Vista.PERFIL, new PantallaPerfil(tienda, this));
+        registrar(Vista.GESTION_USUARIOS, new PantallaGestionUsuarios(tienda, this));
 
         add(mainPanel);
         irA(Vista.PRESENTACION);

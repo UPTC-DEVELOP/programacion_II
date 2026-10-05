@@ -14,17 +14,26 @@ public class Tienda {
 
     private final List<Libro> inventario = new ArrayList<>();
     private final List<ItemCarrito> carrito = new ArrayList<>();
-    private String usuarioActual = "";
-    private Rol rolActual = Rol.INVITADO;
+    private final GestionUsuarios gestionUsuarios = new GestionUsuarios();
+    private Usuario usuarioSesion;
 
-    // ---------- Sesión ----------
-    public void iniciarSesion(String usuario, Rol rol) {
-        this.usuarioActual = (usuario == null || usuario.trim().isEmpty()) ? "Usuario Demo" : usuario.trim();
-        this.rolActual = rol;
+    // ---------- Sesión y usuarios ----------
+    public GestionUsuarios getGestionUsuarios() { return gestionUsuarios; }
+
+    /** Inicia sesión con correo y contraseña (RF-01). Devuelve false si las credenciales no son válidas. */
+    public boolean iniciarSesion(String correo, String contrasena) {
+        Usuario u = gestionUsuarios.autenticar(correo, contrasena);
+        usuarioSesion = u;
+        return u != null;
     }
 
-    public String getUsuarioActual() { return usuarioActual; }
-    public Rol getRolActual() { return rolActual; }
+    public void cerrarSesion() {
+        usuarioSesion = null;
+    }
+
+    public Usuario getUsuarioSesion() { return usuarioSesion; }
+    public String getUsuarioActual() { return usuarioSesion == null ? "" : usuarioSesion.getNombreCompleto(); }
+    public Rol getRolActual() { return usuarioSesion == null ? Rol.INVITADO : usuarioSesion.getTipoUsuario(); }
 
     // ---------- Inventario ----------
     public List<Libro> getInventario() { return Collections.unmodifiableList(inventario); }
@@ -34,6 +43,8 @@ public class Tienda {
     public void cargarDatosSimulados() {
         inventario.clear();
         carrito.clear();
+        usuarioSesion = null;
+        gestionUsuarios.cargarDatosSimulados();
         inventario.add(new Libro("9780000000101", "Cien Años de Soledad", "Gabriel García Márquez","1967", "Novela", "Editorial Sudamericana", 417, 45000, 15, "Físico"));
         inventario.add(new Libro("9780000000102", "El Código Da Vinci", "Dan Brown","2003", "Misterio", "Doubleday", 489, 38000, 8, "Físico"));
         inventario.add(new Libro("9780000000103", "Clean Code in Java", "Robert C. Martin","2008", "Tecnología", "Prentice Hall", 464, 120000, 5, "Digital"));

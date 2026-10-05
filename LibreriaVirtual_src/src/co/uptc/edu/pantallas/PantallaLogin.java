@@ -2,6 +2,7 @@ package co.uptc.edu.pantallas;
 
 import co.uptc.edu.gui.EstiloUI;
 import co.uptc.edu.gui.Navegador;
+import co.uptc.edu.gui.Refrescable;
 import co.uptc.edu.gui.Vista;
 import co.uptc.edu.model.Rol;
 import co.uptc.edu.model.Tienda;
@@ -10,11 +11,16 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-/** Pantalla de inicio de sesión (simulada). */
-public class PantallaLogin extends JPanel {
+/** Pantalla de inicio de sesión con correo y contraseña (RF-01). */
+public class PantallaLogin extends JPanel implements Refrescable {
+
+    private final Tienda tienda;
+    private final JTextField txtCorreo = new JTextField();
+    private final JPasswordField txtPass = new JPasswordField();
 
     public PantallaLogin(Tienda tienda, Navegador nav) {
         super(new GridBagLayout());
+        this.tienda = tienda;
         setBackground(EstiloUI.FONDO_LOGIN);
 
         JPanel card = new JPanel(new GridLayout(6, 1, 10, 10));
@@ -28,14 +34,15 @@ public class PantallaLogin extends JPanel {
         lblTitle.setFont(new Font("SansSerif", Font.BOLD, 22));
         lblTitle.setForeground(EstiloUI.PRIMARIO);
 
-        JTextField txtUser = new JTextField();
-        txtUser.setBorder(BorderFactory.createTitledBorder("Usuario"));
-
-        JPasswordField txtPass = new JPasswordField();
+        txtCorreo.setBorder(BorderFactory.createTitledBorder("Correo electrónico"));
         txtPass.setBorder(BorderFactory.createTitledBorder("Contraseña"));
 
-        JComboBox<String> comboRol = new JComboBox<>(new String[]{"Cliente", "Administrador"});
-        comboRol.setBorder(BorderFactory.createTitledBorder("Rol de Acceso"));
+        JLabel lblTip = new JLabel("<html><center>Demo: cliente@bibliotech.com / Cliente123<br>"
+                + "admin@bibliotech.com / Admin123</center></html>", SwingConstants.CENTER);
+        lblTip.setForeground(EstiloUI.TEXTO_INFO);
+
+        JButton btnRegistro = new JButton("¿No tienes cuenta? Regístrate");
+        btnRegistro.setFocusPainted(false);
 
         JButton btnLogin = EstiloUI.crearBotonEstilizado("Entrar", EstiloUI.PRIMARIO);
         JButton btnVolver = new JButton("Volver");
@@ -47,19 +54,35 @@ public class PantallaLogin extends JPanel {
         panelBotones.add(btnLogin);
 
         card.add(lblTitle);
-        card.add(txtUser);
+        card.add(txtCorreo);
         card.add(txtPass);
-        card.add(comboRol);
-        card.add(new JLabel("*(Tip: Puedes presionar entrar sin datos para simular)", SwingConstants.CENTER));
+        card.add(lblTip);
+        card.add(btnRegistro);
         card.add(panelBotones);
 
         btnVolver.addActionListener(e -> nav.irA(Vista.PRESENTACION));
-        btnLogin.addActionListener(e -> {
-            boolean esAdmin = "Administrador".equals(comboRol.getSelectedItem());
-            tienda.iniciarSesion(txtUser.getText(), esAdmin ? Rol.ADMIN : Rol.CLIENTE);
-            nav.irA(esAdmin ? Vista.ADMIN_HOME : Vista.USUARIO_HOME);
-        });
+        btnRegistro.addActionListener(e -> nav.irA(Vista.REGISTRO));
+        java.awt.event.ActionListener entrar = e -> {
+            String contrasena = new String(txtPass.getPassword());
+            if (tienda.iniciarSesion(txtCorreo.getText(), contrasena)) {
+                txtPass.setText("");
+                nav.irA(tienda.getRolActual() == Rol.ADMIN ? Vista.ADMIN_HOME : Vista.USUARIO_HOME);
+            } else {
+                JOptionPane.showMessageDialog(this, "Correo o contraseña incorrectos.",
+                        "No se pudo iniciar sesión", JOptionPane.ERROR_MESSAGE);
+            }
+        };
+        btnLogin.addActionListener(entrar);
+        txtPass.addActionListener(entrar);
 
         add(card);
+    }
+
+    /** Cada vez que se muestra el login se cierra la sesión anterior y se limpian los campos. */
+    @Override
+    public void refrescar() {
+        tienda.cerrarSesion();
+        txtCorreo.setText("");
+        txtPass.setText("");
     }
 }
