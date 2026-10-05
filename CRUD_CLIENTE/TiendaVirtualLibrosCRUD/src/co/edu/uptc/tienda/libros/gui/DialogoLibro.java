@@ -231,6 +231,7 @@ public class DialogoLibro extends JDialog {
 			}
 
 		}
+	
 
 		// Validación de Paginas
 		if (!campoNumeroPaginas.getText().trim().isEmpty()) {
