@@ -6,12 +6,13 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import co.edu.uptc.tienda.libros.gui.DialogoLibro;
+import co.edu.uptc.tienda.libros.gui.PanelLibro;
 import co.edu.uptc.tienda.personas.gui.PanelCliente;
 
 public class PanelCentral extends JPanel {
 
 	private PanelCliente panelCliente;
-	private DialogoLibro prueba;
+	private PanelLibro panelLibro;
 
 	public PanelCentral() {
 
@@ -19,7 +20,7 @@ public class PanelCentral extends JPanel {
 
 		// Asociaciones o Relaciones
 		panelCliente = new PanelCliente();
-		prueba = new DialogoLibro();
+		panelLibro = new PanelLibro();
 
 		// Paneles
 		JTabbedPane pPestana = new JTabbedPane();
@@ -27,7 +28,7 @@ public class PanelCentral extends JPanel {
 		JPanel pLibro = new JPanel();
 
 		pCliente.add(panelCliente);
-		pLibro.add(prueba);
+		pLibro.add(panelLibro);
 
 		pPestana.addTab("Cliente", pCliente);
 		pPestana.addTab("Libro", pLibro);
@@ -35,12 +36,3 @@ public class PanelCentral extends JPanel {
 		add(pPestana);
 	}
 }
-
-//setLayout(new BorderLayout());
-//JTabbedPane pestanas = new JTabbedPane();
-//JPanel panelCliente = new JPanel();
-//JPanel panelLibro = new JPanel();
-//panelCliente.add(panelCentral);
-//pestanas.addTab("Cliente", panelCliente);
-//pestanas.addTab("Libro", panelLibro);
-//add(pestanas, BorderLayout.CENTER);

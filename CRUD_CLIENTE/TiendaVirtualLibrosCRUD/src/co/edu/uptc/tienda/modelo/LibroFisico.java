@@ -9,12 +9,12 @@ public class LibroFisico extends Libro {
 
 	private String tiempoMaximoEntrega;
 
-	public LibroFisico(Long idLibro, String isbn, String titulo, List<String> autores, LocalDate fechaPublicacion,
+	public LibroFisico(Long idLibro, String isbn, String titulo, List<String> autores, String fechaPublicacion,
 			String genero, String editorial, int numeroPaginas, double precioBase, int stockDisponible,
-			TipoLibro tipoLibro, double IVA, String tiempoMaximoEntrega) {
+			TipoLibro tipoLibro) {
 		super(idLibro, isbn, titulo, autores, fechaPublicacion, genero, editorial, numeroPaginas, precioBase,
-				stockDisponible, tipoLibro, IVA);
-		this.tiempoMaximoEntrega = tiempoMaximoEntrega;
+				stockDisponible, tipoLibro);
+		this.tiempoMaximoEntrega = "72 Horas";
 	}
 
 	public String getTiempoMaximoEntrega() {
@@ -26,7 +26,10 @@ public class LibroFisico extends Libro {
 	}
 
 	public double calcularPrecioFinal() {
-		return super.getPrecioBase() + (super.getPrecioBase() * super.getIVA());
+		double valorFinal = super.getPrecioBase() + (super.getPrecioBase() * super.getIVA());
+		setPrecioFinal(valorFinal);
+
+		return Math.round(valorFinal * 100.0) / 100.0;
 	}
 
 }

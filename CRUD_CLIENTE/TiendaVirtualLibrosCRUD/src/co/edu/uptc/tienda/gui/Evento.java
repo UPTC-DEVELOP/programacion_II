@@ -23,9 +23,9 @@ public class Evento implements ActionListener {
 	public static final String ACTUALIZAR_LIBRO = "Actualizar Libro";
 	public static final String CREAR_LIBRO = "Nuevo Libro";
 	public static final String BUSCAR_LIBRO = "Buscar Libro";
-	public static final String REGISTRAR_AUTOR_LIBRO = "Registrar Autor Libro";
-	public static final String GUARDAR_LIBRO = "Guardar Libro";
-	public static final String CANCELAR_REGISTRO_LIBRO = "Cancelar Registro Libro";
+	public static final String REGISTRAR_AUTOR_LIBRO = "Registrar Autor";
+	public static final String GUARDAR_LIBRO = "Registrar Libro";
+	public static final String CANCELAR_REGISTRO_LIBRO = "Cancelar Registro";
 
 	public static final String ACTUALIZAR_TABLA = "ACTUALIZAR_TABLA";
 

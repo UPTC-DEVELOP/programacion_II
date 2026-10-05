@@ -1,6 +1,7 @@
 package co.edu.uptc.tienda.gui;
 
 import javax.swing.*;
+import javax.swing.UIManager;
 
 /**
  * Ventana principal de la aplicación Tienda Virtual de Libros (Módulo
@@ -33,6 +34,12 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	public static void main(String[] args) {
+		try {
+			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		javax.swing.SwingUtilities.invokeLater(() -> {
 			VentanaPrincipal ventana = new VentanaPrincipal();
 			ventana.setVisible(Boolean.TRUE);
@@ -56,7 +63,7 @@ public class VentanaPrincipal extends JFrame {
 
 		this.panelLogin.setVisible(Boolean.FALSE);
 		add(this.panelCentral);
-		setSize(1100, 570);
+		setSize(850, 570);
 		setLocationRelativeTo(null);
 		this.panelCentral.setVisible(Boolean.TRUE);
 

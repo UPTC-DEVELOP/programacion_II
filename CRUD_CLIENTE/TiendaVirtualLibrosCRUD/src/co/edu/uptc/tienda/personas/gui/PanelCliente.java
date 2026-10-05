@@ -225,7 +225,6 @@ public class PanelCliente extends JPanel {
 					"Seleccionar Cliente", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
-
 		int confirmacion = JOptionPane.showConfirmDialog(this,
 				"¿Está seguro de que desea eliminar al cliente " + clienteAEliminar.getPrimerNombre() + " "
 						+ clienteAEliminar.getPrimerApellido() + " (" + clienteAEliminar.getIdentificacion() + ")?",

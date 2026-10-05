@@ -11,18 +11,18 @@ public abstract class Libro {
 	private String isbn;
 	private String titulo;
 	private List<String> autores;
-	private LocalDate fechaPublicacion;
+	private String fechaPublicacion;
 	private String genero;
 	private String editorial;
 	private int numeroPaginas;
 	private double precioBase;
 	private int stockDisponible;
 	private TipoLibro tipoLibro;
-	private final double IVA;
+	private final double IVA = 0.15;
+	private double precioFinal;
 
-	public Libro(Long idLibro, String isbn, String titulo, List<String> autores, LocalDate fechaPublicacion,
-			String genero, String editorial, int numeroPaginas, double precioBase, int stockDisponible,
-			TipoLibro tipoLibro, double IVA) {
+	public Libro(Long idLibro, String isbn, String titulo, List<String> autores, String fechaPublicacion, String genero,
+			String editorial, int numeroPaginas, double precioBase, int stockDisponible, TipoLibro tipoLibro) {
 		this.idLibro = idLibro;
 		this.isbn = isbn;
 		this.titulo = titulo;
@@ -34,15 +34,15 @@ public abstract class Libro {
 		this.precioBase = precioBase;
 		this.stockDisponible = stockDisponible;
 		this.tipoLibro = tipoLibro;
-		this.IVA = IVA;
+		this.precioFinal = calcularPrecioFinal();
 	}
 
 	public Long getIdLibro() {
 		return idLibro;
 	}
 
-	public void setIdLibro(Long idLibro) {
-		this.idLibro = idLibro;
+	public void setIdLibro(long siguienteIdLibro) {
+		this.idLibro = siguienteIdLibro;
 	}
 
 	public String getIsbn() {
@@ -69,11 +69,11 @@ public abstract class Libro {
 		this.autores = autores;
 	}
 
-	public LocalDate getFechaPublicacion() {
+	public String getFechaPublicacion() {
 		return fechaPublicacion;
 	}
 
-	public void setFechaPublicacion(LocalDate fechaPublicacion) {
+	public void setFechaPublicacion(String fechaPublicacion) {
 		this.fechaPublicacion = fechaPublicacion;
 	}
 
@@ -127,6 +127,14 @@ public abstract class Libro {
 
 	public double getIVA() {
 		return IVA;
+	}
+
+	public double getPrecioFinal() {
+		return precioFinal;
+	}
+
+	public void setPrecioFinal(double precioFinal) {
+		this.precioFinal = precioFinal;
 	}
 
 	public abstract double calcularPrecioFinal();
