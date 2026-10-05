@@ -16,11 +16,9 @@ public class DialogoEditarLibro extends DialogoCentralLibro {
 
         @Override
         public void asignarComandoBotones() {
-            btnGuardar.setActionCommand(Evento.ACTUALIZAR_LIBRO);
-            btnCerrar.setActionCommand(Evento.CANCELAR_LIBRO);
             btnGuardar.setActionCommand(Evento.GUARDAR_ACTUALIZACION);
             btnCerrar.setActionCommand(Evento.CANCELAR_LIBRO);
-            }
+        }
         
 
         // Método para precargar los datos actuales del libro en las casillas

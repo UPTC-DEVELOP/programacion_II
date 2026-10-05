@@ -23,6 +23,7 @@ public abstract class PanelCentral extends JPanel {
         setLayout(new BorderLayout());
 
         // Panel título
+        agregarTituloPanel();
         JPanel pTitulo = new JPanel();
         pTitulo.add(new JLabel(tituloPanel));
 

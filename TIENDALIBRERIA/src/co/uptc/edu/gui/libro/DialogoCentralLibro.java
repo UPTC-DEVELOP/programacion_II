@@ -67,14 +67,14 @@ public abstract class DialogoCentralLibro extends JDialog {
         cbxFormato = new JComboBox<>(Formato.values());
 
         pLibro.add(new JLabel("ISBN:")); pLibro.add(txIsbn);
-        pLibro.add(new JLabel("Título:")); pLibro.add(txTitulo);
+        pLibro.add(new JLabel("Titulo:")); pLibro.add(txTitulo);
         pLibro.add(new JLabel("Autor:")); pLibro.add(txAutor);
         pLibro.add(new JLabel("Año Publicación:")); pLibro.add(txFecha);
         pLibro.add(new JLabel("Editorial:")); pLibro.add(txEditorial);
-        pLibro.add(new JLabel("Páginas:")); pLibro.add(txPaginas);
+        pLibro.add(new JLabel("Paginas:")); pLibro.add(txPaginas);
         pLibro.add(new JLabel("Precio Venta:")); pLibro.add(txPrecio);
         pLibro.add(new JLabel("Cantidad Disponible:")); pLibro.add(txCantidad);
-        pLibro.add(new JLabel("Categoría:")); pLibro.add(cbxCategoria);
+        pLibro.add(new JLabel("Categoria:")); pLibro.add(cbxCategoria);
         pLibro.add(new JLabel("Formato:")); pLibro.add(cbxFormato);
 
         // Botones

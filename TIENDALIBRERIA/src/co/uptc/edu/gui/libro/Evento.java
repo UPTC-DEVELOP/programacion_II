@@ -24,6 +24,20 @@ public class Evento implements ActionListener {
     public static final String CANCELAR_CREACION_LIBRO = "Cancelar_Creacion_Libro";
 	public static final String CANCELAR_LIBRO = "Cancelar_Libro";
 	public static final String GUARDAR_ACTUALIZACION = "Guardar_Actualizacion";
+
+    // Constantes CRUD para Clientes
+    public static final String CREAR_CLIENTE = "Crear_Cliente";
+    public static final String ACTUALIZAR_CLIENTE = "Actualizar_Cliente";
+    public static final String ELIMINAR_CLIENTE = "Eliminar_Cliente";
+    public static final String VER_CLIENTE = "Ver_Cliente";
+    public static final String BUSCAR_CLIENTE = "Buscar_Cliente";
+    public static final String LIMPIAR_CLIENTE = "Limpiar_Cliente";
+
+    // Constantes para guardar/editar clientes desde dialogos
+    public static final String GUARDAR_CLIENTE = "Guardar_Cliente";
+    public static final String CANCELAR_CREACION_CLIENTE = "Cancelar_Creacion_Cliente";
+    public static final String GUARDAR_ACTUALIZACION_CLIENTE = "Guardar_Actualizacion_Cliente";
+    public static final String CANCELAR_CLIENTE = "Cancelar_Cliente";
 	
     private final VentanaPrincipal ventana;
 
@@ -50,6 +64,7 @@ public class Evento implements ActionListener {
                 ventana.lanzarDialogoLibro();
                 break;
             case CANCELAR_CREACION_LIBRO:
+            case CANCELAR_LIBRO:
                 ventana.cerrarDialogoLibro();
                 break;
             case GUARDAR_LIBRO:
@@ -72,6 +87,34 @@ public class Evento implements ActionListener {
                 break;
             case GUARDAR_ACTUALIZACION:
                 ventana.guardarActualizacionLibro();
+                break;
+            case CREAR_CLIENTE:
+                ventana.lanzarDialogoCliente();
+                break;
+            case CANCELAR_CREACION_CLIENTE:
+            case CANCELAR_CLIENTE:
+                ventana.cerrarDialogoCliente();
+                break;
+            case GUARDAR_CLIENTE:
+                ventana.crearCliente();
+                break;
+            case ACTUALIZAR_CLIENTE:
+                ventana.actualizarCliente();
+                break;
+            case GUARDAR_ACTUALIZACION_CLIENTE:
+                ventana.guardarActualizacionCliente();
+                break;
+            case ELIMINAR_CLIENTE:
+                ventana.eliminarCliente();
+                break;
+            case VER_CLIENTE:
+                ventana.verCliente();
+                break;
+            case BUSCAR_CLIENTE:
+                ventana.buscarCliente();
+                break;
+            case LIMPIAR_CLIENTE:
+                ventana.limpiarTablaClientes();
                 break;
             default:
                 // Comando no reconocido

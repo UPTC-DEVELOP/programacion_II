@@ -4,22 +4,34 @@ import java.awt.CardLayout;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
+import co.edu.uptc.gui.DialogoCentralCliente;
+import co.edu.uptc.gui.DialogoCrearCliente;
+import co.edu.uptc.gui.DialogoEditarCliente;
+import co.edu.uptc.gui.PanelPadreCliente;
+import co.edu.uptc.modelo.Cliente;
+import co.edu.uptc.negocio.ClienteConfig;
+import co.edu.uptc.negocio.GestionCliente;
 import co.uptc.edu.libro.modelo.Libro;
 import co.uptc.edu.libro.negocio.Libreria;
+import co.uptc.edu.libro.negocio.LibreriaException;
 
 public class VentanaPrincipal extends JFrame {
 	
 private PanelLogin pLogin;
 private PanelPadreLibro pCentral;
 private DialogoCentralLibro dialogoLibro;
+private DialogoCentralCliente dialogoCliente;
 private Evento evento;
 private Libreria libreria;
+private PanelPadreCliente pClientes;
+private GestionCliente gestionCliente;
 
 public VentanaPrincipal() {
     setSize(800, 600);
-    setTitle("Tienda Librería");
+    setTitle("Tienda Libreria");
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     setLocationRelativeTo(null);
     setLayout(new CardLayout()); // Usar CardLayout es más limpio para cambiar vistas
@@ -30,8 +42,16 @@ public VentanaPrincipal() {
     pLogin = new PanelLogin(evento);
     pCentral = new PanelPadreLibro(evento);
 
+    gestionCliente = ClienteConfig.getInstancia().getGestionCliente();
+    pClientes = new PanelPadreCliente(evento);
+
+    JTabbedPane pestanias = new JTabbedPane();
+    pestanias.addTab("Libros", pCentral);
+    pestanias.addTab("Clientes", pClientes);
+
     add(pLogin, "LOGIN");
-    add(pCentral, "CENTRAL");
+    add(pestanias, "CENTRAL");
+
 }
 
 public void loguear() {
@@ -43,8 +63,9 @@ public void loguear() {
         CardLayout cl = (CardLayout) getContentPane().getLayout();
         cl.show(getContentPane(), "CENTRAL");
         refrescarTabla();
+        refrescarTablaClientes();
     } else {
-        JOptionPane.showMessageDialog(this, "Usuario o contraseña inválidos");
+        JOptionPane.showMessageDialog(this, "Usuario o contraseña invalidos");
     }
 }
 
@@ -67,8 +88,10 @@ public void crearLibro() {
             libreria.agregarLibro(crear.capturarDatos());
             cerrarDialogoLibro();
             refrescarTabla();
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Error al crear el libro: Verifique los datos numéricos.");
+        } catch (IllegalArgumentException | LibreriaException e) {
+            JOptionPane.showMessageDialog(this, "Error al crear el libro: " + e.getMessage());
         }
     }
 }
@@ -94,14 +117,14 @@ public void actualizarLibro() {
             editarDialogo.cargarDatosLibro(libroEncontrado);
             
             dialogoLibro = editarDialogo;
-            dialogoLibro.setVisible(true); // Se abre el diálogo de forma modal
+            dialogoLibro.setVisible(true); // Se abre el dialogo de forma modal
         } else {
-            JOptionPane.showMessageDialog(this, "No se encontró ningún libro con el ISBN: " + isbn);
+            JOptionPane.showMessageDialog(this, "No se encontró ningun libro con el ISBN: " + isbn);
         }
     }
 }
 
-// 2. Método exclusivo que se ejecuta al hacer clic en el botón "Actualizar" de adentro del diálogo
+// 2. Método exclusivo que se ejecuta al hacer clic en el boton "Actualizar" de adentro del diálogo
 public void guardarActualizacionLibro() {
     if (dialogoLibro instanceof DialogoEditarLibro) {
         DialogoEditarLibro editarDialogo = (DialogoEditarLibro) dialogoLibro;
@@ -109,14 +132,16 @@ public void guardarActualizacionLibro() {
      
             Libro libroActualizado = editarDialogo.capturarDatos();
             
-            // Realiza la actualización en la capa de negocio usando el ISBN
+            // Realiza la actualizacion en la capa de negocio usando el ISBN
             libreria.actualizarLibro(libroActualizado.getIsbn(), libroActualizado);
             
             cerrarDialogoLibro();
             refrescarTabla();
             JOptionPane.showMessageDialog(this, "¡Libro actualizado exitosamente!");
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Error al actualizar: Verifique que los campos numéricos sean correctos.");
+        } catch (IllegalArgumentException | LibreriaException e) {
+            JOptionPane.showMessageDialog(this, "Error al actualizar: " + e.getMessage());
         }
     }
 }
@@ -136,7 +161,7 @@ public void verLibro() {
 public void buscarLibro() {
     String isbn = JOptionPane.showInputDialog(this, "Ingrese ISBN a buscar:");
     if (isbn != null && !isbn.trim().isEmpty()) {
-        var libro = libreria.buscarLibro(isbn);
+        var libro = libreria.buscarLibro(isbn.trim());
         if (libro != null) {
             JOptionPane.showMessageDialog(this, libro.toString());
         } else {
@@ -151,6 +176,117 @@ public void limpiarTablaLibros() {
 
 public void refrescarTabla() {
     pCentral.poblarTabla(libreria.getListaLibros());
+}
+
+// ---------- CRUD de clientes (comandos recibidos desde Evento) ----------
+public void lanzarDialogoCliente() {
+    dialogoCliente = new DialogoCrearCliente(evento, "Crear Cliente", true);
+    dialogoCliente.setVisible(true);
+}
+
+public void cerrarDialogoCliente() {
+    if (dialogoCliente != null) {
+        dialogoCliente.dispose();
+        dialogoCliente = null;
+    }
+}
+
+public void crearCliente() {
+    if (dialogoCliente instanceof DialogoCrearCliente) {
+        try {
+            gestionCliente.guardarCliente(dialogoCliente.capturarDatos());
+            cerrarDialogoCliente();
+            refrescarTablaClientes();
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, "Error al crear el cliente: " + e.getMessage());
+        }
+    }
+}
+
+public void actualizarCliente() {
+    String correo = pClientes.getClienteSeleccionadoCorreo();
+    if (correo == null) {
+        correo = JOptionPane.showInputDialog(this, "Ingrese el correo o la cédula del cliente que desea actualizar:");
+    }
+
+    if (correo != null && !correo.trim().isEmpty()) {
+        Cliente clienteEncontrado = gestionCliente.buscarCliente(correo);
+
+        if (clienteEncontrado != null) {
+            DialogoEditarCliente editarDialogo = new DialogoEditarCliente(evento, "Actualizar Cliente", false);
+            editarDialogo.cargarDatosCliente(clienteEncontrado);
+
+            dialogoCliente = editarDialogo;
+            dialogoCliente.setVisible(true); // Se abre el dialogo de forma modal
+        } else {
+            JOptionPane.showMessageDialog(this, "No se encontró ningún cliente con: " + correo);
+        }
+    }
+}
+
+public void guardarActualizacionCliente() {
+    if (dialogoCliente instanceof DialogoEditarCliente) {
+        try {
+            gestionCliente.actualizarCliente(dialogoCliente.capturarDatos());
+            cerrarDialogoCliente();
+            refrescarTablaClientes();
+            JOptionPane.showMessageDialog(this, "¡Cliente actualizado exitosamente!");
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, "Error al actualizar: " + e.getMessage());
+        }
+    }
+}
+
+public void eliminarCliente() {
+    String correo = pClientes.getClienteSeleccionadoCorreo();
+    if (correo == null) {
+        JOptionPane.showMessageDialog(this, "Seleccione un cliente para eliminar");
+        return;
+    }
+
+    int respuesta = JOptionPane.showConfirmDialog(this,
+            "¿Desea eliminar al cliente con correo " + correo + "?",
+            "Eliminar cliente", JOptionPane.YES_NO_OPTION);
+
+    if (respuesta == JOptionPane.YES_OPTION) {
+        gestionCliente.eliminarCliente(correo);
+        refrescarTablaClientes();
+    }
+}
+
+public void verCliente() {
+    String correo = pClientes.getClienteSeleccionadoCorreo();
+    if (correo == null) {
+        JOptionPane.showMessageDialog(this, "Seleccione un cliente para ver");
+        return;
+    }
+
+    Cliente cliente = gestionCliente.buscarCliente(correo);
+    if (cliente != null) {
+        JOptionPane.showMessageDialog(this, cliente.toString());
+    }
+}
+
+public void buscarCliente() {
+    String criterio = JOptionPane.showInputDialog(this, "Ingrese el correo o la cédula a buscar:");
+    if (criterio != null && !criterio.trim().isEmpty()) {
+        Cliente cliente = gestionCliente.buscarCliente(criterio);
+        if (cliente != null) {
+            pClientes.seleccionarClientePorCorreo(cliente.getCorreo());
+            JOptionPane.showMessageDialog(this, cliente.toString());
+        } else {
+            JOptionPane.showMessageDialog(this, "Cliente no encontrado.");
+        }
+    }
+}
+
+// Restablece la tabla: quita la seleccion y vuelve a cargar los clientes
+public void limpiarTablaClientes() {
+    refrescarTablaClientes();
+}
+
+public void refrescarTablaClientes() {
+    pClientes.poblarTabla(gestionCliente.listarClientes());
 }
 
 public PanelPadreLibro getPanellibros() { return pCentral; }
