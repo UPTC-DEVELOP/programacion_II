@@ -13,7 +13,7 @@ public class Tienda {
     public enum ResultadoCarrito { AGREGADO, CANTIDAD_INCREMENTADA, SIN_STOCK }
 
     private final List<Libro> inventario = new ArrayList<>();
-    private final List<ItemCarrito> carrito = new ArrayList<>();
+    private final CarritoDeCompras carrito = new CarritoDeCompras();
     private final GestionUsuarios gestionUsuarios = new GestionUsuarios();
     private Usuario usuarioSesion;
 
@@ -42,7 +42,7 @@ public class Tienda {
 
     public void cargarDatosSimulados() {
         inventario.clear();
-        carrito.clear();
+        carrito.vaciarCarrito();
         usuarioSesion = null;
         gestionUsuarios.cargarDatosSimulados();
         inventario.add(new Libro("9780000000101", "Cien Años de Soledad", "Gabriel García Márquez","1967", "Novela", "Editorial Sudamericana", 417, 45000, 15, "Físico"));
@@ -53,39 +53,35 @@ public class Tienda {
         inventario.add(new Libro("9780000000106", "Don Quijote de la Mancha", "Miguel de Cervantes","1605", "Clásico", "Francisco de Robles", 863, 60000, 7, "Digital"));
     }
 
-    // ---------- Carrito ----------
-    public List<ItemCarrito> getCarrito() { return Collections.unmodifiableList(carrito); }
+    // ---------- Carrito (RF-05) ----------
+    public CarritoDeCompras getCarritoDeCompras() { return carrito; }
 
-    public ResultadoCarrito agregarAlCarrito(Libro libro) {
-        for (ItemCarrito item : carrito) {
-            if (item.getLibro().getIsbn() == libro.getIsbn()) {
-                if (item.getCantidad() < libro.getStock()) {
-                    item.setCantidad(item.getCantidad() + 1);
-                    return ResultadoCarrito.CANTIDAD_INCREMENTADA;
-                }
-                return ResultadoCarrito.SIN_STOCK;
-            }
-        }
-        carrito.add(new ItemCarrito(libro, 1));
-        return ResultadoCarrito.AGREGADO;
-    }
+    public List<ItemCarrito> getCarrito() { return carrito.getItems(); }
 
-    public void vaciarCarrito() { carrito.clear(); }
+    public ResultadoCarrito agregarAlCarrito(Libro libro) { return carrito.agregarLibro(libro); }
 
-    public double getTotalCarrito() {
-        double total = 0;
-        for (ItemCarrito item : carrito) {
-            total += item.getSubtotal();
-        }
-        return total;
-    }
+    public void ajustarCantidadCarrito(String isbn, int cantidad) { carrito.ajustarCantidad(isbn, cantidad); }
 
+    public void incrementarCantidadCarrito(String isbn) { carrito.incrementarCantidad(isbn); }
+
+    public void decrementarCantidadCarrito(String isbn) { carrito.decrementarCantidad(isbn); }
+
+    public void eliminarDelCarrito(String isbn) { carrito.eliminarLibro(isbn); }
+
+    public void vaciarCarrito() { carrito.vaciarCarrito(); }
+
+    public double getSubtotalCarrito() { return carrito.calcularSubtotal(); }
+
+    public double getIvaCarrito() { return carrito.calcularImpuestoTotal(); }
+
+    /** Total a pagar: subtotal + IVA. */
+    public double getTotalCarrito() { return carrito.calcularTotalPagar(); }
 
     public void finalizarCompra() {
-        for (ItemCarrito item : carrito) {
+        for (ItemCarrito item : carrito.getItems()) {
             Libro l = item.getLibro();
             l.setStock(l.getStock() - item.getCantidad());
         }
-        carrito.clear();
+        carrito.vaciarCarrito();
     }
 }
