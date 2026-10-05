@@ -1,4 +1,4 @@
-package co.uptc.edu.gui.pantallas;
+package co.uptc.edu.pantallas;
 
 import co.uptc.edu.gui.EstiloUI;
 import co.uptc.edu.gui.Navegador;

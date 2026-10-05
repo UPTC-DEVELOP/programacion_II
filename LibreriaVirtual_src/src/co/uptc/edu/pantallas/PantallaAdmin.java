@@ -1,4 +1,4 @@
-package co.uptc.edu.gui.pantallas;
+package co.uptc.edu.pantallas;
 
 import co.uptc.edu.gui.EstiloUI;
 import co.uptc.edu.gui.Navegador;
@@ -8,7 +8,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-/** Panel principal del administrador. */
+
 public class PantallaAdmin extends JPanel {
 
     public PantallaAdmin(Navegador nav) {

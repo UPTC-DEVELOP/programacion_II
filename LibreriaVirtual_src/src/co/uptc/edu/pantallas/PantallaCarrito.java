@@ -1,4 +1,4 @@
-package co.uptc.edu.gui.pantallas;
+package co.uptc.edu.pantallas;
 
 import co.uptc.edu.gui.EstiloUI;
 import co.uptc.edu.gui.Navegador;
@@ -13,7 +13,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.text.NumberFormat;
 
-/** Carrito de compras con simulación de pago. */
+
 public class PantallaCarrito extends JPanel implements Refrescable {
 
     private final Tienda tienda;

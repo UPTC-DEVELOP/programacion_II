@@ -1,17 +1,15 @@
 package co.uptc.edu.gui;
 
-import co.uptc.edu.gui.pantallas.*;
+import co.uptc.edu.pantallas.*;
 import co.uptc.edu.model.Tienda;
+import co.uptc.edu.pantallas.PantallaInventario;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.EnumMap;
 import java.util.Map;
 
-/**
- * Ventana principal de la Librería Virtual (Swing/AWT).
- * Solo se encarga de crear las pantallas y de la navegación entre ellas.
- */
+
 public class LibreriaVirtualApp extends JFrame implements Navegador {
 
     private final CardLayout cardLayout = new CardLayout();
