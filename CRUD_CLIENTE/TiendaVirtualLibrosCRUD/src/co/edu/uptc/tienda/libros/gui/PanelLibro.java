@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
+import co.edu.uptc.tienda.gui.TablaFactory;
 import co.edu.uptc.tienda.modelo.Libro;
 import co.edu.uptc.tienda.negocio.ConfiguracionLibro;
 import co.edu.uptc.tienda.negocio.GestionLibro;
@@ -63,22 +64,20 @@ public class PanelLibro extends JPanel {
 		panelSuperior.add(btnActualizar);
 		panelSuperior.add(btnEliminar);
 
-		String[] columnas = { "ID", "ISBN", "Titulo", "Autores", "Fecha Publicacion", "Genero", "Editorial", "Paginas",
+		String[] columnas = { "ID", "ISBN", "Título", "Autores", "Fecha Publicacion", "Genero", "Editorial", "Paginas",
 				"Formato", "Stock", "Precio" };
 
-		modeloTabla = new DefaultTableModel(columnas, 0) {
+		// 1. Inicializamos la tabla del panel para que deje de ser null
+		tablaLibros = new JTable();
 
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return false;
-			}
-		};
+		// 2. Creamos el contenedor para capturar el modelo
+		DefaultTableModel[] contenedorModelo = new DefaultTableModel[1];
 
-		tablaLibros = new JTable(modeloTabla);
-		tablaLibros.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		tablaLibros.getTableHeader().setReorderingAllowed(false);
+		// 3. Invocamos la fábrica compartida
+		JScrollPane scrollPane = TablaFactory.configurarTabla(columnas, tablaLibros, contenedorModelo);
 
-		JScrollPane scrollPane = new JScrollPane(tablaLibros);
+		// 4. Asignamos el modelo a la variable de tu clase de libros
+		this.modeloTabla = contenedorModelo[0];
 
 		add(panelSuperior, BorderLayout.NORTH);
 		add(scrollPane, BorderLayout.CENTER);

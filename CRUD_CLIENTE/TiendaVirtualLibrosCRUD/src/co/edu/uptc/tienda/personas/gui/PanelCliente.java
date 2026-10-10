@@ -18,6 +18,7 @@ import javax.swing.table.DefaultTableModel;
 import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.negocio.Configuracion;
 import co.edu.uptc.tienda.negocio.GestionCliente;
+import co.edu.uptc.tienda.gui.TablaFactory;
 
 /**
  * Panel de presentación para la administración completa (CRUD) de clientes.
@@ -107,21 +108,14 @@ public class PanelCliente extends JPanel {
 		String[] columnas = { "ID", "Identificación", "Tipo Doc.", "Nombres", "Apellidos", "Correo Electrónico",
 				"Celular", "Dirección", "Tipo Cliente" };
 
-		// Modelo no editable directamente desde las celdas
-		modeloTabla = new DefaultTableModel(columnas, 0) {
-			private static final long serialVersionUID = 1L;
+		tablaClientes = new JTable();
 
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return false;
-			}
-		};
+		DefaultTableModel[] contenedorModelo = new DefaultTableModel[1];
 
-		tablaClientes = new JTable(modeloTabla);
-		tablaClientes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		tablaClientes.getTableHeader().setReorderingAllowed(false);
+		JScrollPane scrollPane = TablaFactory.configurarTabla(columnas, tablaClientes, contenedorModelo);
 
-		JScrollPane scrollPane = new JScrollPane(tablaClientes);
+		this.modeloTabla = contenedorModelo[0];
+
 		add(scrollPane, BorderLayout.CENTER);
 	}
 
