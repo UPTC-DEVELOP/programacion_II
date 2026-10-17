@@ -136,4 +136,24 @@ public abstract class Persona {
 	public void setDireccion(String direccion) {
 		this.direccion = direccion;
 	}
+
+	/**
+	 * Devuelve el nombre completo de la persona concatenando los
+	 * nombres y apellidos disponibles, ignorando los nulos o vacíos.
+	 *
+	 * ¿POR QUÉ SE AGREGA AQUÍ Y NO A Cliente?
+	 *  - Herencia: Persona es la superclase de Cliente; al definirlo aquí,
+	 *    TODAS las personas (clientes, y en el futuro empleados, etc.)
+	 *    pueden reutilizarlo sin duplicar código (DRY).
+	 *  - Encapsulamiento: el método arma el string a partir de los getters
+	 *    protegidos, sin exponer los atributos directamente.
+	 */
+	public String getNombreCompleto() {
+		StringBuilder sb = new StringBuilder();
+		if (primerNombre != null && !primerNombre.isEmpty()) sb.append(primerNombre).append(" ");
+		if (otrosNombres != null && !otrosNombres.isEmpty()) sb.append(otrosNombres).append(" ");
+		if (primerApellido != null && !primerApellido.isEmpty()) sb.append(primerApellido).append(" ");
+		if (otrosApellidos != null && !otrosApellidos.isEmpty()) sb.append(otrosApellidos);
+		return sb.toString().trim();
+	}
 }
