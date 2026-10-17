@@ -1,28 +1,36 @@
 package co.edu.uptc.gui;
 
+import java.awt.CardLayout;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import co.edu.uptc.interfaces.ICarritoService;
 import co.edu.uptc.modelo.dto.ClienteDto;
 import co.edu.uptc.modelo.dto.CredencialDto;
 import co.edu.uptc.modelo.dto.LibroDto;
 import co.edu.uptc.negocio.GestionCliente;
+import co.edu.uptc.negocio.GestionDashboard;
 import co.edu.uptc.negocio.GestionLibro;
+import co.edu.uptc.negocio.GestionReporte;
 import co.edu.uptc.negocio.GestionSeguridad;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * Ventana principal de la tienda virtual de libros.
  * Utiliza CardLayout para alternar entre:
  *  - LOGIN        : pantalla de autenticación
- *  - DASHBOARD    : panel del administrador (CRUD libros y clientes)
+ *  - DASHBOARD    : panel del administrador (CRUD libros, clientes y carritos)
  *  - GESTION_LIBROS / GESTION_CLIENTES : CRUD del administrador
- *  - PANEL_CLIENTE : panel del cliente (catálogo y gestión de su perfil)
+ *  - PANEL_CLIENTE : panel del cliente (catálogo, carrito y gestión de su perfil)
+ *
+ * FASE 4: se agregan las dependencias ICarritoService y GestionReporte,
+ * inyectadas por constructor al controlador Evento (DIP).
  */
 public class VentanaPrincipal extends JFrame {
 
     private static final long serialVersionUID = 1L;
 
-    // Nombres de las tarjetas del CardLayout
+    // Nombres de las "tarjetas" del CardLayout
     public static final String PANEL_LOGIN = "LOGIN";
     public static final String PANEL_ADMIN = "DASHBOARD";
     public static final String PANEL_LIBROS = "GESTION_LIBROS";
@@ -38,19 +46,26 @@ public class VentanaPrincipal extends JFrame {
     private PanelGestionClientes panelGestionClientes;
     private PanelCliente panelCliente;
 
+    /**
+     * FASE 4: constructor ampliado con ICarritoService (RF10-RF13) y
+     * GestionReporte (reportes del admin). Inyección de dependencias (DIP).
+     */
     public VentanaPrincipal(GestionSeguridad gestionSeguridad, GestionCliente gestionCliente,
-                            GestionLibro gestionLibro) {
-        inicializarComponentes(gestionSeguridad, gestionCliente, gestionLibro);
+                            GestionLibro gestionLibro, GestionDashboard gestionDashboard,
+                            ICarritoService carritoService, GestionReporte gestionReporte) {
+        inicializarComponentes(gestionSeguridad, gestionCliente, gestionLibro, gestionDashboard,
+                carritoService, gestionReporte);
         configurarVentana();
     }
 
-    private void inicializarComponentes(GestionSeguridad seguridad, GestionCliente gc, GestionLibro gl) {
+    private void inicializarComponentes(GestionSeguridad seguridad, GestionCliente gc, GestionLibro gl,
+                                        GestionDashboard gd, ICarritoService cs, GestionReporte gr) {
         cardLayout = new CardLayout();
         panelContenedor = new JPanel(cardLayout);
 
         // El controlador solo necesita la ventana: los paneles se crean después
         // y se leen a través de los getters en el momento de cada evento.
-        Evento evento = new Evento(this, seguridad, gc, gl);
+        Evento evento = new Evento(this, seguridad, gc, gl, gd, cs, gr);
 
         panelLogin = new PanelLogin(evento);
         panelDashboard = new PanelDashboard(evento);
