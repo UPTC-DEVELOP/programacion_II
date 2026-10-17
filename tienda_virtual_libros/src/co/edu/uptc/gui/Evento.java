@@ -31,10 +31,10 @@ import co.edu.uptc.negocio.GestionSeguridad;
  * - DIP: Depende de las ABSTRACCIONES de negocio (GestionSeguridad,
  *   GestionCliente, GestionLibro, GestionDashboard, GestionReporte e
  *   ICarritoService), nunca de la persistencia concreta.
- * - OCP (FASE 4): para manejar un nuevo comando basta con agregar un case
+ * - OCP: para manejar un nuevo comando basta con agregar un case
  *   en el switch + un método privado, sin modificar los comandos existentes.
  *
- * FASE 4: se agregan las dependencias ICarritoService (RF10-RF13) y
+ * se agregan las dependencias ICarritoService (RF10-RF13) y
  * GestionReporte (reportes del administrador), y los comandos asociados.
  *
  * @author Grupo 7
@@ -70,7 +70,7 @@ public class Evento implements ActionListener {
     // FASE 4: vista de gestión de carritos del admin
     public static final String CMD_VISTA_CARRITOS = "VISTA_CARRITOS";
 
-    // --- FASE 4: comandos del CARRITO del cliente (RF10-RF13) ---
+    // --- comandos del CARRITO del cliente (RF10-RF13) ---
     public static final String CMD_AGREGAR_CARRITO = "CARRITO_AGREGAR";
     public static final String CMD_IR_CARRITO = "CARRITO_IR";
     public static final String CMD_AUMENTAR_CARRITO = "CARRITO_AUMENTAR";
@@ -79,7 +79,7 @@ public class Evento implements ActionListener {
     public static final String CMD_VACIAR_CARRITO = "CARRITO_VACIAR";
     public static final String CMD_ACTUALIZAR_TOTALES = "CARRITO_ACTUALIZAR";
 
-    // --- FASE 4: comandos de gestión de carritos del ADMIN ---
+    // --- comandos de gestión de carritos del ADMIN ---
     public static final String CMD_ADMIN_ELIMINAR_CARRITO = "ADMIN_ELIMINAR_CARRITO";
     public static final String CMD_ADMIN_ACTUALIZAR_CARRITOS = "ADMIN_ACTUALIZAR_CARRITOS";
 
@@ -88,7 +88,7 @@ public class Evento implements ActionListener {
     private final GestionCliente gestionCliente;
     private final GestionLibro gestionLibro;
     private final GestionDashboard gestionDashboard;
-    // FASE 4: nuevas dependencias (DIP: interfaz para el carrito, clase para reportes)
+    // nuevas dependencias (DIP: interfaz para el carrito, clase para reportes)
     private final co.edu.uptc.interfaces.ICarritoService carritoService;
     private final GestionReporte gestionReporte;
 
@@ -194,7 +194,7 @@ public class Evento implements ActionListener {
                 refrescarCarritoCliente();
                 break;
 
-            // ---------------- FASE 4: gestión de carritos del ADMIN ----------------
+            // ---------------- gestión de carritos del ADMIN ----------------
             case CMD_ADMIN_ELIMINAR_CARRITO:
                 manejarAdminEliminarCarrito();
                 break;
@@ -217,7 +217,7 @@ public class Evento implements ActionListener {
                 break;
             case VentanaPrincipal.PANEL_CLIENTE:
                 refrescarCatalogoCliente();
-                refrescarCarritoCliente(); // FASE 4: refresca el carrito al entrar al panel
+                refrescarCarritoCliente(); // refresca el carrito al entrar al panel
                 ventanaPrincipal.cambiarPanel(VentanaPrincipal.PANEL_CLIENTE);
                 break;
 
@@ -227,7 +227,7 @@ public class Evento implements ActionListener {
                 ventanaPrincipal.getPanelDashboard().mostrarVista(
                         ventanaPrincipal.getPanelDashboard().getCardDashboard());
                 break;
-            // FASE 4: vista de gestión de carritos
+            // vista de gestión de carritos
             case CMD_VISTA_CARRITOS:
                 refrescarGestionCarritos();
                 ventanaPrincipal.getPanelDashboard().mostrarVista(
@@ -273,7 +273,7 @@ public class Evento implements ActionListener {
         } else {
             ventanaPrincipal.getPanelCliente().setCliente(usuario);
             refrescarCatalogoCliente();
-            refrescarCarritoCliente(); // FASE 4: carga el carrito del cliente recién logueado
+            refrescarCarritoCliente(); // carga el carrito del cliente recién logueado
             ventanaPrincipal.cambiarPanel(VentanaPrincipal.PANEL_CLIENTE);
         }
     }
@@ -281,7 +281,7 @@ public class Evento implements ActionListener {
     private void manejarLogout() {
         gestionSeguridad.cerrarSesion();
         ventanaPrincipal.getPanelCliente().setCliente(null);
-        ventanaPrincipal.getPanelCliente().getPanelCarrito().limpiar(); // FASE 4
+        ventanaPrincipal.getPanelCliente().getPanelCarrito().limpiar(); 
         ventanaPrincipal.getPanelLogin().limpiar();
         ventanaPrincipal.mostrarPanelLogin();
     }
@@ -496,7 +496,7 @@ public class Evento implements ActionListener {
         }
     }
 
-    // =========================== FASE 4: CARRITO DEL CLIENTE (RF10-RF13) ===========================
+    // =========================== CARRITO DEL CLIENTE (RF10-RF13) ===========================
 
     /**
      * RF10 - Agrega el libro SELECCIONADO en el catálogo al carrito del
@@ -654,7 +654,7 @@ public class Evento implements ActionListener {
 
     // =========================== FASE 4: GESTIÓN DE CARRITOS DEL ADMIN ===========================
 
-    /** FASE 4 - Elimina el carrito del cliente SELECCIONADO en la tabla del admin. */
+    /** Elimina el carrito del cliente SELECCIONADO en la tabla del admin. */
     private void manejarAdminEliminarCarrito() {
         PanelGestionCarritos panel = ventanaPrincipal.getPanelDashboard().getPanelGestionCarritos();
         Integer idCliente = panel.getClienteSeleccionado();
@@ -713,7 +713,7 @@ public class Evento implements ActionListener {
     }
 
     /**
-     * FASE 4: Refresca la tabla de ítems y el panel de totales (RF13) del
+     * Refresca la tabla de ítems y el panel de totales (RF13) del
      * carrito del cliente autenticado.
      */
     private void refrescarCarritoCliente() {
@@ -733,7 +733,7 @@ public class Evento implements ActionListener {
     }
 
     /**
-     * FASE 4: Refresca la tabla resumen de gestión de carritos del admin
+     * Refresca la tabla resumen de gestión de carritos del admin
      * con los datos del reporte de ingresos por cliente (que lista todos
      * los carritos activos).
      */
@@ -743,7 +743,7 @@ public class Evento implements ActionListener {
     }
 
     /**
-     * FASE 4: Refresca las 3 pestañas del panel de reportes:
+     * Refresca las 3 pestañas del panel de reportes:
      *  1. Ventas (GestionDashboard)
      *  2. Libros en carritos (GestionReporte)
      *  3. Ingresos por cliente (GestionReporte)

@@ -23,7 +23,7 @@ import co.edu.uptc.negocio.GestionSeguridad;
  *  - GESTION_LIBROS / GESTION_CLIENTES : CRUD del administrador
  *  - PANEL_CLIENTE : panel del cliente (catálogo, carrito y gestión de su perfil)
  *
- * FASE 4: se agregan las dependencias ICarritoService y GestionReporte,
+ * se agregan las dependencias ICarritoService y GestionReporte,
  * inyectadas por constructor al controlador Evento (DIP).
  */
 public class VentanaPrincipal extends JFrame {
@@ -47,7 +47,7 @@ public class VentanaPrincipal extends JFrame {
     private PanelCliente panelCliente;
 
     /**
-     * FASE 4: constructor ampliado con ICarritoService (RF10-RF13) y
+     * constructor ampliado con ICarritoService (RF10-RF13) y
      * GestionReporte (reportes del admin). Inyección de dependencias (DIP).
      */
     public VentanaPrincipal(GestionSeguridad gestionSeguridad, GestionCliente gestionCliente,

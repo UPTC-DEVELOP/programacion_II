@@ -25,7 +25,7 @@ import co.edu.uptc.persistencia.LocalVenta;
  *                    GestionReporte
  *   Presentación  -> VentanaPrincipal (Swing)
  *
- * FASE 4: se agregan CarritoServiceImpl (RF10-RF13) y GestionReporte
+ *  se agregan CarritoServiceImpl (RF10-RF13) y GestionReporte
  * (reportes del administrador), inyectados por constructor en la GUI.
  */
 public class AppLibros {
@@ -46,13 +46,13 @@ public class AppLibros {
         // GestionDashboard inyecta DOS repositorios: libros (stock) y ventas (KPIs)
         GestionDashboard gestionDashboard = new GestionDashboard(repositorioLibro, repositorioVenta);
 
-        // FASE 4: Servicio del carrito (RF10-RF13). Inyecta 3 abstracciones:
+        // Servicio del carrito (RF10-RF13). Inyecta 3 abstracciones:
         // ICarritoRepository (persistencia), IGestionLibro (catálogo) e
         // IGestionCliente (validación de sesión + tipo de cliente para descuento).
         ICarritoService carritoService = new CarritoServiceImpl(
                 repositorioCarrito, gestionLibro, gestionCliente);
 
-        // FASE 4: Servicio de reportes del administrador. Inyecta 3 abstracciones:
+        // Servicio de reportes del administrador. Inyecta 3 abstracciones:
         // ICarritoRepository (carritos activos), IGestionLibro (títulos/precios)
         // e IClienteRepositorio (nombres de clientes).
         GestionReporte gestionReporte = new GestionReporte(
