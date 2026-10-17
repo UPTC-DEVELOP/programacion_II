@@ -11,19 +11,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * PANEL DEL CLIENTE (CRUD del cliente sobre su propia información).
+ * PANEL DEL CLIENTE (CRUD del cliente sobre su propia información + catálogo + carrito).
  *
  * CREATE : desde la pantalla de login ("Registrarse").
- * READ   : pestaña "Mis datos" y catálogo de libros.
+ * READ   : pestaña "Mis datos", catálogo de libros y pestaña "Mi carrito".
  * UPDATE : botón "Editar mis datos" (abre DialogoCliente).
  * DELETE : botón "Eliminar mi cuenta" (regresa al login).
+ * CARRITO: pestaña "Mi carrito" (RF10-RF13) + botones "Agregar al carrito"
+ *          e "Ir al carrito" en la pestaña Catálogo (según el mockup).
  *
  * PRINCIPIO SOLID:
  * - SRP: Solo muestra la interfaz y notifica eventos.
  * - DIP: Depende de ActionListener, no de la capa de negocio.
+ * - OCP: para agregar una nueva pestaña basta con pestanias.addTab(...),
+ *   sin modificar las pestañas existentes.
+ * - Composición: PanelCarrito se inyecta como pestaña dentro de este
+ *   panel (no hay herencia), cumpliendo "favorecer composición sobre herencia".
  *
  * @author Grupo 7 - UPTC
- * @version 1.0
+ * @version 2.0 (carrito integrado)
  */
 public class PanelCliente extends JPanel {
 
@@ -34,6 +40,9 @@ public class PanelCliente extends JPanel {
     public static final String CMD_ELIMINAR_CUENTA = "ELIMINAR_MI_CUENTA";
     public static final String CMD_CERRAR_SESION = "CERRAR_SESION";
     public static final String CMD_BUSCAR_CATALOGO = "BUSCAR_CATALOGO";
+    // comandos del carrito (RF10 y navegación al carrito)
+    public static final String CMD_AGREGAR_CARRITO = "CARRITO_AGREGAR";
+    public static final String CMD_IR_CARRITO = "CARRITO_IR";
 
     private JLabel lblBienvenida;
     private JTextArea areaDatos;
@@ -44,6 +53,13 @@ public class PanelCliente extends JPanel {
     private JButton btnEliminarCuenta;
     private JButton btnCerrarSesion;
     private JButton btnBuscarCatalogo;
+    // botones del carrito en la pestaña Catálogo
+    private JButton btnAgregarCarrito;
+    private JButton btnIrCarrito;
+    private JSpinner spinnerCantidad;
+
+    //panel del carrito inyectado como pestaña (composición)
+    private final PanelCarrito panelCarrito;
 
     private List<LibroDto> librosMostrados = new ArrayList<>();
     private ClienteDto clienteActual;
@@ -52,6 +68,8 @@ public class PanelCliente extends JPanel {
 
     public PanelCliente(ActionListener manejadorEventos) {
         this.manejadorEventos = manejadorEventos;
+        //se crea el panel del carrito UNA sola vez y se inyecta como pestaña.
+        this.panelCarrito = new PanelCarrito(manejadorEventos);
         inicializarComponentes();
         configurarLayout();
         registrarEventos();
@@ -62,7 +80,7 @@ public class PanelCliente extends JPanel {
         lblBienvenida.setFont(new Font("Segoe UI", Font.BOLD, 20));
         lblBienvenida.setForeground(new Color(44, 62, 80));
 
-        txtBusqueda = new CampoConHint("Buscar por título o autor", 22);
+        txtBusqueda = new CampoConHint("Escribe título, autor o ISBN", 22);
 
         String[] columnas = {"ISBN", "Título", "Autor", "Año", "Categoría", "Precio", "Stock"};
         modeloTabla = new DefaultTableModel(columnas, 0) {
@@ -80,6 +98,11 @@ public class PanelCliente extends JPanel {
         areaDatos.setLineWrap(true);
         areaDatos.setWrapStyleWord(true);
         areaDatos.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+
+        //controles para agregar al carrito (RF10)
+        spinnerCantidad = new JSpinner(new SpinnerNumberModel(1, 1, 999, 1));
+        btnAgregarCarrito = boton("Agregar al carrito", CMD_AGREGAR_CARRITO);
+        btnIrCarrito = boton("Ir al carrito", CMD_IR_CARRITO);
     }
 
     private void configurarLayout() {
@@ -104,9 +127,10 @@ public class PanelCliente extends JPanel {
 
         add(panelSuperior, BorderLayout.NORTH);
 
-        // --- Centro: pestañas ---
+        // --- Centro: pestañas (Catálogo + Mi carrito + Mis datos) ---
         JTabbedPane pestanias = new JTabbedPane();
 
+        // Pestaña 1: Catálogo con botones del carrito (RF10)
         JPanel panelCatalogo = new JPanel(new BorderLayout(8, 8));
         JPanel barraBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT));
         barraBusqueda.add(new JLabel("Catálogo:"));
@@ -116,12 +140,52 @@ public class PanelCliente extends JPanel {
         panelCatalogo.add(barraBusqueda, BorderLayout.NORTH);
         panelCatalogo.add(new JScrollPane(tablaCatalogo), BorderLayout.CENTER);
 
+        // Sur del catálogo: agregar al carrito (con cantidad) + ir al carrito
+        JPanel panelAccionesCarrito = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 8));
+        panelAccionesCarrito.setBorder(BorderFactory.createTitledBorder("Acciones del carrito (RF10)"));
+        panelAccionesCarrito.add(new JLabel("Cantidad:"));
+        panelAccionesCarrito.add(spinnerCantidad);
+        panelAccionesCarrito.add(btnAgregarCarrito);
+        panelAccionesCarrito.add(Box.createHorizontalStrut(15));
+        panelAccionesCarrito.add(btnIrCarrito);
+        panelCatalogo.add(panelAccionesCarrito, BorderLayout.SOUTH);
+
+        // Pestaña 2: Mi carrito (RF10-RF13) — PanelCarrito inyectado por composición
+        JScrollPane scrollCarrito = new JScrollPane(panelCarrito);
+        scrollCarrito.setBorder(BorderFactory.createEmptyBorder());
+
+        // Pestaña 3: Mis datos
         JScrollPane scrollDatos = new JScrollPane(areaDatos);
         scrollDatos.setBorder(BorderFactory.createEmptyBorder());
 
         pestanias.addTab("Catálogo de libros", panelCatalogo);
+        pestanias.addTab("Mi carrito", panelCarrito); // pestaña nueva
         pestanias.addTab("Mis datos", scrollDatos);
         add(pestanias, BorderLayout.CENTER);
+
+        // Se guarda la referencia para poder cambiar de pestaña programáticamente
+        // (por ejemplo, al pulsar "Ir al carrito").
+        this.pestanias = pestanias;
+    }
+
+    /** Referencia a las pestañas para navegar programáticamente (ej. "Ir al carrito"). */
+    private JTabbedPane pestanias;
+
+    /** Cambia a la pestaña del carrito (llamado por Evento al recibir CMD_IR_CARRITO). */
+    public void mostrarPestaniaCarrito() {
+        if (pestanias != null) {
+            pestanias.setSelectedIndex(1); // 0=Catálogo, 1=Mi carrito, 2=Mis datos
+        }
+    }
+
+    /** Devuelve la cantidad capturada en el spinner del catálogo (RF10). */
+    public int getCantidadSolicitada() {
+        return (Integer) spinnerCantidad.getValue();
+    }
+
+    /** Devuelve el panel del carrito para que Evento lo refresque. */
+    public PanelCarrito getPanelCarrito() {
+        return panelCarrito;
     }
 
     private JButton boton(String texto, String comando) {
@@ -137,17 +201,23 @@ public class PanelCliente extends JPanel {
         btnEliminarCuenta.addActionListener(manejadorEventos);
         btnCerrarSesion.addActionListener(manejadorEventos);
         btnBuscarCatalogo.addActionListener(manejadorEventos);
+        // registrar los nuevos botones del carrito
+        btnAgregarCarrito.addActionListener(manejadorEventos);
+        btnIrCarrito.addActionListener(manejadorEventos);
     }
 
     // ------------------------- Datos del cliente -------------------------
 
-    /** Asigna el cliente autenticado y refresca la pestaña "Mis datos". */
+    /** Asigna el cliente autenticado y refresca la pestaña "Mis datos" + el carrito. */
     public void setCliente(ClienteDto cliente) {
         this.clienteActual = cliente;
         lblBienvenida.setText(cliente == null
                 ? "Bienvenido"
-                : "Bienvenido, " + cliente.getNombreCompleto());
+                : "Bienvenido(a): " + cliente.getNombreCompleto()
+                    + " (Cliente " + (cliente.getTipoCliente() != null ? cliente.getTipoCliente().getNombreMostrar() : "-") + ")");
         pintarDatos();
+        //se propaga el cliente al panel del carrito para el contexto RF13
+        panelCarrito.setCliente(cliente);
     }
 
     public ClienteDto getCliente() {
