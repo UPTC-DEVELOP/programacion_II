@@ -55,7 +55,7 @@ public class PanelDashboard extends JPanel {
     // --- Comandos de acción (deben coincidir con los de Evento.java) ---
     public static final String CMD_VISTA_DASHBOARD = "VISTA_DASHBOARD";
     public static final String CMD_GESTIONAR_LIBROS = "GESTION_LIBROS";
-    // FASE 4: botón para la gestión de carritos del admin
+    // botón para la gestión de carritos del admin
     public static final String CMD_GESTIONAR_CARRITOS = "VISTA_CARRITOS";
     public static final String CMD_REPORTES = "VISTA_REPORTES";
     public static final String CMD_REGISTRAR_LIBRO = "NUEVO_LIBRO";
@@ -63,7 +63,7 @@ public class PanelDashboard extends JPanel {
 
     // --- Nombres de las tarjetas del CardLayout del área de contenido ---
     private static final String CARD_DASHBOARD = "CARD_DASHBOARD";
-    // FASE 4: tarjeta para la vista de gestión de carritos
+    // tarjeta para la vista de gestión de carritos
     private static final String CARD_CARTOS = "CARD_CARTOS";
     private static final String CARD_REPORTES = "CARD_REPORTES";
 
@@ -117,7 +117,7 @@ public class PanelDashboard extends JPanel {
         sidebar.add(lblTituloSidebar);
         sidebar.add(Box.createVerticalStrut(30)); // Espaciador
 
-        // Botones de navegación (FASE 4: se agrega "Manage Carts")
+        // Botones de navegación (se agrega "Manage Carts")
         sidebar.add(botonSidebar("Dashboard", CMD_VISTA_DASHBOARD, manejadorEventos));
         sidebar.add(Box.createVerticalStrut(12));
         sidebar.add(botonSidebar("Manage Books", CMD_GESTIONAR_LIBROS, manejadorEventos));
@@ -168,7 +168,7 @@ public class PanelDashboard extends JPanel {
         JPanel vistaDashboard = construirVistaDashboard();
         contenidoCentral.add(vistaDashboard, CARD_DASHBOARD);
 
-        // Vista 2: Gestión de carritos (FASE 4)
+        // Vista 2: Gestión de carritos 
         contenidoCentral.add(panelGestionCarritos, CARD_CARTOS);
 
         // Vista 3: Reportes (panel dedicado)
@@ -318,7 +318,7 @@ public class PanelDashboard extends JPanel {
         return panelReportes;
     }
 
-    /** FASE 4: Expone el panel de gestión de carritos para que Evento pueda refrescarlo. */
+    /**Expone el panel de gestión de carritos para que Evento pueda refrescarlo. */
     public PanelGestionCarritos getPanelGestionCarritos() {
         return panelGestionCarritos;
     }
@@ -328,7 +328,7 @@ public class PanelDashboard extends JPanel {
         return CARD_DASHBOARD;
     }
 
-    /** FASE 4: Devuelve el nombre de la tarjeta de gestión de carritos. */
+    /**Devuelve el nombre de la tarjeta de gestión de carritos. */
     public String getCardCarritos() {
         return CARD_CARTOS;
     }
