@@ -20,7 +20,7 @@ import co.edu.uptc.modelo.CarritoCompras;
  *  - guardarCarrito: crea o reemplaza el carrito del cliente (upsert).
  *  - obtenerCarritoPorCliente: retorna el carrito o null si no existe.
  *  - eliminarCarrito: borra el carrito del cliente (se usará al confirmar venta).
- *  - listarTodos: retorna TODOS los carritos activos (FASE 4: lo necesitan los
+ *  - listarTodos: retorna TODOS los carritos activos (lo necesitan los
  *    reportes del administrador "Libros más vendidos en carritos" e "Ingresos
  *    estimados por cliente", y el panel de gestión de carritos del admin).
  */
@@ -36,7 +36,7 @@ public interface ICarritoRepository {
     void eliminarCarrito(int idCliente);
 
     /**
-     * FASE 4: Retorna TODOS los carritos actualmente persistidos.
+     * Retorna TODOS los carritos actualmente persistidos.
      * Lo consumen los reportes del administrador (que necesitan recorrer todos
      * los carritos para agregar ventas por ISBN e ingresos por cliente) y el
      * panel de gestión de carritos (que lista quién tiene qué en su carrito).

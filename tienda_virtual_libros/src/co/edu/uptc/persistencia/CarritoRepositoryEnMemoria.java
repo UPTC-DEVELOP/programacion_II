@@ -57,7 +57,7 @@ public class CarritoRepositoryEnMemoria implements ICarritoRepository {
     }
 
     /**
-     * FASE 4: Retorna TODOS los carritos activos.
+     * Retorna TODOS los carritos activos.
      * Se retorna una COPIA (new ArrayList<>) por ENCAPSULAMIENTO: el consumidor
      * (servicio de reportes / gestión de carritos) no debe poder modificar la
      * colección interna del repositorio directamente (evita efectos secundarios).
