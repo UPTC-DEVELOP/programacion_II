@@ -10,8 +10,8 @@ package co.edu.uptc.excepciones;
  * pueda ofrecer un mensaje rico ("Solo quedan 3 unidades") sin tener que
  * volver a consultar el catálogo.
  *
- * ¿POR QUÉ EXTIENDE ReglaNegocioException? Ver comentario en
- * LibroNoEncontradoException: misma jerarquía y misma justificación (checked).
+ *
+ * 
  */
 public class StockInsuficienteException extends ReglaNegocioException {
 

@@ -6,7 +6,7 @@ package co.edu.uptc.excepciones;
  * Se lanza cuando el ISBN pedido por el cliente NO existe en el catálogo
  * (validación del RF10: "ISBN existe en catálogo").
  *
- * ¿POR QUÉ EXTIENDE ReglaNegocioException?
+ * ReglaNegocioException
  *  - Consistencia con la convención YA establecida en el proyecto: toda
  *    violación de regla de negocio es una excepción CHECKED que obliga a la
  *    capa que llama (controlador/GUI) a manejarla.

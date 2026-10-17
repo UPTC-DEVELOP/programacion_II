@@ -41,7 +41,7 @@ import co.edu.uptc.modelo.dto.VentaResumenDto;
  *  - OCP: para agregar una nueva vista al sidebar basta con agregar un
  *    botón + una tarjeta en el CardLayout, sin modificar las existentes.
  *
- * ¿POR QUÉ CardLayout EN EL ÁREA DE CONTENIDO?
+ * ¿Por que CardLayout en el area de  CONTENIDO?
  *  - Permite alternar entre "vista dashboard", "vista gestión de carritos" y
  *    "vista reportes" SIN recargar toda la ventana: es el mismo patrón que
  *    usa VentanaPrincipal.

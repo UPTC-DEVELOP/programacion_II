@@ -23,7 +23,7 @@ import co.edu.uptc.modelo.dto.VentaResumenDto;
 /**
  * PANEL DE REPORTES  (paquete: gui)
  * ---------------------------------------------------------------------------
- * Muestra 3 reportes del administrador en pestañas (FASE 4):
+ * Muestra 3 reportes del administrador en pestañas
  *  1. "Ventas"            : reporte COMPLETO de ventas (LocalVenta).
  *  2. "Libros en carritos": libros más vendidos ACUMULADOS en los carritos
  *                            activos (ICarritoRepository + ILibroRepositorio).
@@ -90,11 +90,11 @@ public class PanelReportes extends JPanel {
         modeloVentas = crearModelo(new String[]{"ID", "Fecha", "Cliente", "Libros", "Total", "Estado"});
         pestanias.addTab("Ventas", new JScrollPane(crearTabla(modeloVentas)));
 
-        // Pestaña 2: Libros más vendidos en carritos activos (FASE 4)
+        // Pestaña 2: Libros más vendidos en carritos activos 
         modeloLibrosCarritos = crearModelo(new String[]{"ISBN", "Título", "Cantidad en carritos", "Ingreso potencial"});
         pestanias.addTab("Libros en carritos", new JScrollPane(crearTabla(modeloLibrosCarritos)));
 
-        // Pestaña 3: Ingresos estimados por cliente (FASE 4)
+        // Pestaña 3: Ingresos estimados por cliente 
         modeloIngresosClientes = crearModelo(new String[]{"ID Cliente", "Cliente", "Tipo", "Items", "Subtotal", "Total Estimado"});
         pestanias.addTab("Ingresos por cliente", new JScrollPane(crearTabla(modeloIngresosClientes)));
 
@@ -148,7 +148,7 @@ public class PanelReportes extends JPanel {
     }
 
     /**
-     * FASE 4: Actualiza la pestaña "Libros en carritos" con el reporte de
+     * Actualiza la pestaña "Libros en carritos" con el reporte de
      * libros más acumulados en los carritos activos (IGestionReporte).
      */
     public void actualizarLibrosCarritos(List<LibroVendidoDto> libros) {
@@ -167,7 +167,7 @@ public class PanelReportes extends JPanel {
     }
 
     /**
-     * FASE 4: Actualiza la pestaña "Ingresos por cliente" con el reporte de
+     *  Actualiza la pestaña "Ingresos por cliente" con el reporte de
      * ingresos estimados por cada cliente con carrito activo (IGestionReporte).
      */
     public void actualizarIngresosClientes(List<IngresoClienteDto> ingresos) {

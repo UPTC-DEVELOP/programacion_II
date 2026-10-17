@@ -51,7 +51,7 @@ import co.edu.uptc.modelo.dto.TotalesCarritoDto;
  *  - OCP: para agregar una nueva acción al carrito basta con un botón nuevo
  *    + un comando, sin modificar los existentes.
  *
- * ¿POR QUÉ ESTE PANEL ES SEPARADO DE PanelCliente?
+ * ¿Por que esta separado de PanelCliente?
  *  - SRP: PanelCliente se encarga del catálogo y del perfil; el carrito tiene
  *    su propio ciclo de vida y sus propias reglas (RF10-RF13). Mezclarlos en
  *    una sola clase haría el código difícil de mantener.

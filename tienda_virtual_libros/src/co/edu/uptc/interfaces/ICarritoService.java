@@ -14,8 +14,8 @@ import co.edu.uptc.modelo.dto.TotalesCarritoDto;
  * concreta CarritoServiceImpl.
  *
  * ¿POR QUÉ SE LLAMA ICarritoService (y no IGestionCarrito)?
- *  - Se sigue la nomenclatura solicitada en la consigna de la Fase 2. Las
- *    interfaces de negocio ya existentes usan el patrón IGestionXxx
+ *  
+ *  las interfaces de negocio ya existentes usan el patrón IGestionXxx
  *    (IGestionLibro, IGestionCliente); al ser un servicio nuevo y autónomo se
  *    usa el sufijo Service para distinguirlo del CRUD de gestión.
  *

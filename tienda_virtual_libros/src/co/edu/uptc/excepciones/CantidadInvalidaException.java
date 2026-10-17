@@ -7,7 +7,7 @@ package co.edu.uptc.excepciones;
  * (validación del RF10: "cantidad > 0"). Es el guardia de entrada de toda
  * operación que agregue o modifique cantidades en el carrito (RF10 y RF11).
  *
- * ¿POR QUÉ EXTIENDE ReglaNegocioException? Ver comentario en
+ * 
  * LibroNoEncontradoException: misma jerarquía y misma justificación (checked).
  */
 public class CantidadInvalidaException extends ReglaNegocioException {
