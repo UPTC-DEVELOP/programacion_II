@@ -1,17 +1,16 @@
 package co.edu.uptc.tienda.interfaces;
 
 import java.util.List;
-
+import co.edu.uptc.tienda.modelo.Libro;
 public interface IGestionable<T> {
 
-	void agregar(T objeto);
+	void agregar(Libro libro);
 
-	List<T> listar();
+    List<Libro> listar();
 
-	T buscar(String identificacion);
+    Libro buscar(String titulo);
 
-	boolean actualizar(T objeto);
+    boolean actualizar(Libro libro);
 
-	boolean eliminar(String identificacion);
-
+    boolean eliminar(String titulo);
 }
