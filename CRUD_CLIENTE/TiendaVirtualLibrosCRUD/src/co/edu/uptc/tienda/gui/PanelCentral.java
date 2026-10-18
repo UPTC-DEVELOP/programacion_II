@@ -5,7 +5,6 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import co.edu.uptc.tienda.libros.gui.DialogoLibro;
 import co.edu.uptc.tienda.libros.gui.PanelLibro;
 import co.edu.uptc.tienda.personas.gui.PanelCliente;
 
