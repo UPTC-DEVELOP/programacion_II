@@ -1,3 +1,4 @@
+
 package co.edu.uptc.tienda.negocio;
 
 import co.edu.uptc.tienda.persistencia.LocalCliente;
@@ -13,5 +14,4 @@ public class Configuracion {
     public static GestionCliente getGestionCliente() {
         return gestionCliente;
     }
-
 }

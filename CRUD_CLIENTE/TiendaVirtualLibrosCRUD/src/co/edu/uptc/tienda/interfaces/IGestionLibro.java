@@ -2,9 +2,10 @@ package co.edu.uptc.tienda.interfaces;
 
 import java.util.List;
 import co.edu.uptc.tienda.modelo.Libro;
-public interface IGestionable<T> {
 
-	void agregar(Libro libro);
+public interface IGestionLibro {
+
+    void agregar(Libro libro);
 
     List<Libro> listar();
 

@@ -3,15 +3,15 @@ package co.edu.uptc.tienda.persistencia;
 import java.sql.Timestamp;
 import java.util.List;
 
-import co.edu.uptc.tienda.interfaces.IGestionable;
+import co.edu.uptc.tienda.interfaces.IGestionCliente;
+import co.edu.uptc.tienda.interfaces.IGestionLibro;
 import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.modelo.Clientes;
-
 /**
  * Implementación de persistencia local en memoria para la gestión de clientes.
  * Asigna identificadores autoincrementables y estampas de tiempo de creación.
  */
-public class LocalCliente implements IGestionable<Cliente> {
+public class LocalCliente implements IGestionCliente {
 
 	private Clientes clientes;
 	private int siguienteId;

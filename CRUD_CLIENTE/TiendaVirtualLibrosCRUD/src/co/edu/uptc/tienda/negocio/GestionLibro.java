@@ -2,16 +2,16 @@ package co.edu.uptc.tienda.negocio;
 
 import java.util.List;
 
-import co.edu.uptc.tienda.interfaces.IGestionable;
+import co.edu.uptc.tienda.interfaces.IGestionLibro;
 import co.edu.uptc.tienda.modelo.Libro;
 
 public class GestionLibro {
 
-	private IGestionable<Libro> gestionLibro;
+	private IGestionLibro gestionLibro;
 
-	public GestionLibro(IGestionable<Libro> gestionLibro) {
-		this.gestionLibro = gestionLibro;
-	}
+	  public GestionLibro(IGestionLibro gestionLibro) {
+	        this.gestionLibro = gestionLibro;
+	    }
 
 	public void agregarLibro(Libro libro) {
 		gestionLibro.agregar(libro);
