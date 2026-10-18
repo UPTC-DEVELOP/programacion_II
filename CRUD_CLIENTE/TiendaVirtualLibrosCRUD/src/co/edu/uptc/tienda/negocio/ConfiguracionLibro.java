@@ -4,7 +4,7 @@ import co.edu.uptc.tienda.persistencia.LocalLibro;
 
 public class ConfiguracionLibro {
 
-	private static GestionLibro gestionLibro;
+	private static GestionLibro gestionLibro;  
 
 	static {
 		gestionLibro = new GestionLibro(new LocalLibro());
