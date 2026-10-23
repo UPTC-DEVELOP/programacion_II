@@ -23,6 +23,7 @@ import javax.swing.SwingUtilities;
 import co.edu.uptc.libreria.clientes.gui.DialogoCliente;
 import co.edu.uptc.libreria.clientes.gui.PanelClientes;
 import co.edu.uptc.libreria.controladores.ControladorCarrito;
+import co.edu.uptc.libreria.interfaces.ICarritoPersistencia;
 import co.edu.uptc.libreria.modelo.Cliente;
 import co.edu.uptc.libreria.modelo.ItemCarrito;
 import co.edu.uptc.libreria.modelo.Libro;
@@ -32,7 +33,6 @@ import co.edu.uptc.libreria.negocio.GestionCarrito;
 import co.edu.uptc.libreria.negocio.GestionLibro;
 import co.edu.uptc.libreria.negocio.LibroConfig;
 import co.edu.uptc.libreria.negocio.TiendaConfig;
-import co.edu.uptc.libreria.persistencia.CarritoPersistencia;
 import co.edu.uptc.libreria.persistencia.LocalCarritoPersistencia;
 import co.edu.uptc.libreria.persistencia.ServicioAuditoria;
 
@@ -110,7 +110,7 @@ public class ventanaPrincipal extends JFrame {
 	/** Arma las capas del carrito (persistencia, negocio, controlador y vista). */
 	private void construirCarrito() {
 		ServicioAuditoria auditoria = new ServicioAuditoria();
-		CarritoPersistencia persistencia = new LocalCarritoPersistencia(gestionLibro);
+		ICarritoPersistencia persistencia = new LocalCarritoPersistencia(gestionLibro);
 		GestionCarrito gestionCarrito = new GestionCarrito(persistencia, auditoria);
 		controlador = new ControladorCarrito(gestionCarrito, auditoria);
 

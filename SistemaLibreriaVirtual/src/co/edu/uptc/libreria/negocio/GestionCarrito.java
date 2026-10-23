@@ -1,5 +1,6 @@
 package co.edu.uptc.libreria.negocio;
 
+import co.edu.uptc.libreria.interfaces.ICarritoPersistencia;
 import co.edu.uptc.libreria.modelo.*;
 import co.edu.uptc.libreria.persistencia.*;
 import co.edu.uptc.libreria.negocio.*;
@@ -11,7 +12,7 @@ import java.util.List;
 public class GestionCarrito {
 	
 	private List<ItemCarrito> items;
-	private CarritoPersistencia persistencia;
+	private ICarritoPersistencia persistencia;
 	private ServicioAuditoria auditoria;
 	private CalculadoraCarrito calculadora;
 	private String usuarioActual = "";
@@ -19,7 +20,7 @@ public class GestionCarrito {
 	private TipoCliente tipoCliente;
 	
 	
-	public GestionCarrito(CarritoPersistencia persistencia, ServicioAuditoria auditoria) {
+	public GestionCarrito(ICarritoPersistencia persistencia, ServicioAuditoria auditoria) {
 		this.persistencia = persistencia;
 		this.auditoria = auditoria;
 		this.calculadora = new CalculadoraCarrito();

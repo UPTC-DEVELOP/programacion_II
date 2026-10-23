@@ -1,5 +1,7 @@
 package co.edu.uptc.libreria.persistencia;
 
+import co.edu.uptc.libreria.interfaces.ICarritoPersistencia;
+import co.edu.uptc.libreria.interfaces.IGestionLibro;
 import co.edu.uptc.libreria.modelo.ItemCarrito;
 import co.edu.uptc.libreria.modelo.Libro;
 
@@ -10,17 +12,17 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocalCarritoPersistencia implements CarritoPersistencia{
+public class LocalCarritoPersistencia implements ICarritoPersistencia{
 	
 	private final String rutaArchivo = "data/carrito.txt";
 
 	//private ControladorCatalogo controladorCatalogo;
 
-	private GestionLibro gestionLibro;
+	private IGestionLibro persistenciaLibro;
 
 	
-	public LocalCarritoPersistencia(GestionLibro gestionLibro) {
-		this.gestionLibro = gestionLibro;
+	public LocalCarritoPersistencia(IGestionLibro persistenciaLibro) {
+		this.persistenciaLibro = persistenciaLibro;
 		File carpeta = new File("data");
 		
 		if (!carpeta.exists()) {
@@ -62,7 +64,7 @@ public class LocalCarritoPersistencia implements CarritoPersistencia{
 					
 					Libro libroEntrante = null;
 					
-					for(Libro l : gestionLibro.listarLibros()) {
+					for(Libro l : persistenciaLibro.listar()) {
 						if(l.getCodigo().equals(codigo)) {
 							libroEntrante = l;
 							break;
