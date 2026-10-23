@@ -110,7 +110,7 @@ public class ventanaPrincipal extends JFrame {
 	/** Arma las capas del carrito (persistencia, negocio, controlador y vista). */
 	private void construirCarrito() {
 		ServicioAuditoria auditoria = new ServicioAuditoria();
-		ICarritoPersistencia persistencia = new LocalCarritoPersistencia(gestionLibro);
+		ICarritoPersistencia persistencia = new LocalCarritoPersistencia(LibroConfig.getInstancia().getiLibro());
 		GestionCarrito gestionCarrito = new GestionCarrito(persistencia, auditoria);
 		controlador = new ControladorCarrito(gestionCarrito, auditoria);
 
