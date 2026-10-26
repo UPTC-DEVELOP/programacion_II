@@ -13,6 +13,7 @@ public class PanelCentral extends JFrame {
     private JButton botonBuscar;
     private JButton botonEliminar;
     private JButton botonSalir;
+    private JButton botonCarrito;
 
   public PanelCentral() {
 
@@ -23,7 +24,8 @@ public class PanelCentral extends JFrame {
    setResizable(false);
 
    JPanel panelBotones = new JPanel(
-             new GridLayout(5, 1, 10, 10)
+             new GridLayout(6, 1, 10, 10)
+            
   );
 
    botonRegistrar = new JButton("Registrar Cliente");
@@ -31,12 +33,14 @@ public class PanelCentral extends JFrame {
    botonBuscar = new JButton("Buscar Cliente");
    botonEliminar = new JButton("Eliminar Cliente");
    botonSalir = new JButton("Salir");
+   botonCarrito = new JButton("Carrito de compras");
 
    panelBotones.add(botonRegistrar);
    panelBotones.add(botonActualizar);
    panelBotones.add(botonBuscar);
    panelBotones.add(botonEliminar);
    panelBotones.add(botonSalir);
+   panelBotones.add(botonCarrito);
 
     add(panelBotones);
 
@@ -63,5 +67,8 @@ public class PanelCentral extends JFrame {
    botonSalir.addActionListener(e -> {
            System.exit(0);
        });
+   botonCarrito.addActionListener(e-> {
+	   new PanelCarrito().setVisible(true);
+   });
     }
 }

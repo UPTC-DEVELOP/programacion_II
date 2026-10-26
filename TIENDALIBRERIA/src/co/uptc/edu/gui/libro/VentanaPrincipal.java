@@ -10,7 +10,9 @@ import javax.swing.SwingUtilities;
 import co.edu.uptc.gui.DialogoCentralCliente;
 import co.edu.uptc.gui.DialogoCrearCliente;
 import co.edu.uptc.gui.DialogoEditarCliente;
+import co.edu.uptc.gui.PanelCarrito;
 import co.edu.uptc.gui.PanelPadreCliente;
+import co.edu.uptc.gui.PanelPedido;
 import co.edu.uptc.modelo.Cliente;
 import co.edu.uptc.negocio.ClienteConfig;
 import co.edu.uptc.negocio.GestionCliente;
@@ -28,6 +30,8 @@ private Evento evento;
 private Libreria libreria;
 private PanelPadreCliente pClientes;
 private GestionCliente gestionCliente;
+private PanelCarrito panelCarrito;
+private PanelPedido panelPedido;
 
 public VentanaPrincipal() {
     setSize(800, 600);
@@ -44,10 +48,16 @@ public VentanaPrincipal() {
 
     gestionCliente = ClienteConfig.getInstancia().getGestionCliente();
     pClientes = new PanelPadreCliente(evento);
+    
+    panelCarrito = new PanelCarrito();
+    panelPedido = new PanelPedido();
+    panelCarrito.setPanelPedido(panelPedido);
 
     JTabbedPane pestanias = new JTabbedPane();
     pestanias.addTab("Libros", pCentral);
     pestanias.addTab("Clientes", pClientes);
+    pestanias.addTab("Carrito", panelCarrito);
+    pestanias.addTab("Pedidos", panelPedido);
 
     add(pLogin, "LOGIN");
     add(pestanias, "CENTRAL");
@@ -281,6 +291,7 @@ public void buscarCliente() {
 }
 
 // Restablece la tabla: quita la seleccion y vuelve a cargar los clientes
+
 public void limpiarTablaClientes() {
     refrescarTablaClientes();
 }

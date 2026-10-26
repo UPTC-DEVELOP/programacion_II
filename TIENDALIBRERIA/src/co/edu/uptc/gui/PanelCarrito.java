@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
 import co.edu.uptc.negocio.Carrito;
 import co.uptc.edu.libro.modelo.Libro;
 
@@ -37,26 +38,26 @@ public class PanelCarrito extends JPanel {
         carrito.getItems().add(libroPrueba);
         // ---------------------------------
 
-        // Configuración de la tabla
+        // Configuración de la tabla del carrito
         String[] columnas = {"ISBN", "Título", "Autor", "Precio Venta", "Formato"};
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false;
+                return false; // Evita la edición directa en las celdas
             }
         };
         
         tablaCarrito = new JTable(modeloTabla);
         add(new JScrollPane(tablaCarrito), BorderLayout.CENTER);
 
-        // Panel superior para opciones (cliente premium)
+        // Panel superior para opciones de cliente
         JPanel panelNorte = new JPanel(new FlowLayout(FlowLayout.LEFT));
         chkEsPremium = new JCheckBox("¿Cliente Premium? (10% de descuento)");
         chkEsPremium.addActionListener(e -> actualizarTabla());
         panelNorte.add(chkEsPremium);
         add(panelNorte, BorderLayout.NORTH);
 
-        // Panel inferior para totales y botones de acción
+        // Panel inferior para totales y acciones
         JPanel panelSur = new JPanel(new GridLayout(2, 1));
 
         // Subpanel de totales
@@ -75,22 +76,26 @@ public class PanelCarrito extends JPanel {
         panelTotales.add(labelTotal);
         panelSur.add(panelTotales);
 
-        // Subpanel de botones
+        // Subpanel de botones de acción
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         btnEliminar = new JButton("Eliminar del Carrito");
         btnVaciar = new JButton("Vaciar Carrito");
         btnComprar = new JButton("Realizar Compra");
+        btnVolver = new JButton("Volver");
 
+        // Asignación de Listeners
         btnEliminar.addActionListener(e -> eliminarLibroSeleccionado());
         btnVaciar.addActionListener(e -> {
             carrito.vaciarCarrito();
             actualizarTabla();
         });
         btnComprar.addActionListener(e -> realizarCompra());
+        btnVolver.addActionListener(e -> volverAlMenu());
 
         panelBotones.add(btnEliminar);
         panelBotones.add(btnVaciar);
         panelBotones.add(btnComprar);
+        panelBotones.add(btnVolver);
         panelSur.add(panelBotones);
 
         add(panelSur, BorderLayout.SOUTH);
@@ -98,12 +103,12 @@ public class PanelCarrito extends JPanel {
         actualizarTabla();
     }
 
-    // Método para conectar el panel de pedidos
+    // Permite comunicar la compra con el módulo de pedidos
     public void setPanelPedido(PanelPedido panelPedido) {
         this.panelPedido = panelPedido;
     }
 
-    // Método clave para recibir libros desde el catálogo o panel de libros
+    // Permite recibir libros seleccionados desde la vista del catálogo
     public void agregarLibro(Libro libro) {
         carrito.getItems().add(libro);
         actualizarTabla();
@@ -125,12 +130,10 @@ public class PanelCarrito extends JPanel {
             return;
         }
 
-        // Generamos los datos del pedido
         String idPedido = "P-" + (int)(Math.random() * 1000);
-        String fechaActual = "2026-10-09"; 
+        String fechaActual = "2026-10-24"; 
         String totalPagar = labelTotal.getText().replace("TOTAL A PAGAR: ", "");
 
-        // Enviamos el pedido al panel de pedidos si está conectado
         if (panelPedido != null) {
             panelPedido.agregarPedido(idPedido, "Cliente General", fechaActual, totalPagar, "Pendiente");
         }
@@ -139,6 +142,11 @@ public class PanelCarrito extends JPanel {
         
         carrito.vaciarCarrito();
         actualizarTabla();
+    }
+
+    private void volverAlMenu() {
+        // Cierra la ventana actual o conmuta de vista
+        javax.swing.SwingUtilities.getWindowAncestor(this).dispose();
     }
 
     public void actualizarTabla() {
