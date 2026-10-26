@@ -8,6 +8,7 @@ import com.letsread.model.Libro;
 import com.letsread.service.TiendaService;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -40,6 +41,8 @@ public class VentanaPrincipal extends JFrame {
     private JSpinner spinnerCantidad;
     private JLabel lblSubtotal, lblImpuestos, lblDescuento, lblTotal;
     private JTextArea txtRecibo;
+    private final java.util.Map<String, Cliente> clientesRegistrados = new java.util.HashMap<>();
+    private final java.util.Map<String, String> clavesRegistradas = new java.util.HashMap<>();
 
     public VentanaPrincipal() {
         service = new TiendaService();
@@ -75,25 +78,67 @@ public class VentanaPrincipal extends JFrame {
         panel.add(new JLabel("Teléfono:")); panel.add(txtTelefono);
         panel.add(new JLabel("Tipo de Cliente:")); panel.add(comboTipoCliente);
 
-        JButton btnLogin = new JButton("Iniciar Sesión / Registrar");
-        btnLogin.addActionListener(e -> {
-            if (txtNombre.getText().isEmpty() || txtCorreo.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Complete los campos obligatorios.");
+        // NUEVO: desde aquí reemplaza el botón anterior
+        JButton btnIniciarSesion = new JButton("Iniciar Sesión");
+        JButton btnRegistrar = new JButton("Registrarse");
+
+        btnIniciarSesion.addActionListener(e -> {
+            String correo = txtCorreo.getText().trim().toLowerCase();
+            String clave = new String(txtClave.getPassword());
+
+            if (correo.isEmpty() || clave.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Ingrese correo y contraseña.");
+                return;
+            }
+
+            Cliente cliente = clientesRegistrados.get(correo);
+            if (cliente == null || !clave.equals(clavesRegistradas.get(correo))) {
+                JOptionPane.showMessageDialog(this, "Correo o contraseña incorrectos, o el usuario no está registrado.");
+                return;
+            }
+
+            String tipo = (cliente instanceof ClientePremium) ? "Premium" : "Regular";
+            service.setClienteActual(cliente);
+            JOptionPane.showMessageDialog(this, "¡Bienvenido/a de nuevo, " + cliente.getNombreCompleto() + " (" + tipo + ")!");
+            actualizarTablaCarrito();
+        });
+
+        btnRegistrar.addActionListener(e -> {
+            String correo = txtCorreo.getText().trim().toLowerCase();
+            String clave = new String(txtClave.getPassword());
+
+            if (txtNombre.getText().trim().isEmpty() || correo.isEmpty() || clave.isEmpty()
+                    || txtDireccion.getText().trim().isEmpty() || txtTelefono.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Complete todos los campos para registrarse.");
+                return;
+            }
+
+            if (clientesRegistrados.containsKey(correo)) {
+                JOptionPane.showMessageDialog(this, "Ese correo ya está registrado. Use \"Iniciar Sesión\".");
                 return;
             }
 
             String tipo = (String) comboTipoCliente.getSelectedItem();
             Cliente cliente = tipo.equals("Premium") ?
-                    new ClientePremium(txtNombre.getText(), txtCorreo.getText(), txtDireccion.getText(), txtTelefono.getText(), new String(txtClave.getPassword())) :
-                    new ClienteRegular(txtNombre.getText(), txtCorreo.getText(), txtDireccion.getText(), txtTelefono.getText(), new String(txtClave.getPassword()));
+                    new ClientePremium(txtNombre.getText(), correo, txtDireccion.getText(), txtTelefono.getText(), clave) :
+                    new ClienteRegular(txtNombre.getText(), correo, txtDireccion.getText(), txtTelefono.getText(), clave);
+
+            clientesRegistrados.put(correo, cliente);
+            clavesRegistradas.put(correo, clave);
 
             service.setClienteActual(cliente);
-            JOptionPane.showMessageDialog(this, "¡Bienvenido/a a Let's Read, " + cliente.getNombreCompleto() + " (" + tipo + ")!");
+            JOptionPane.showMessageDialog(this, "¡Registro exitoso! Bienvenido/a a Let's Read, " + cliente.getNombreCompleto() + " (" + tipo + ")");
             actualizarTablaCarrito();
         });
 
-        panel.add(btnLogin);
+        JPanel panelBotones = new JPanel(new FlowLayout());
+        panelBotones.add(btnIniciarSesion);
+        panelBotones.add(btnRegistrar);
+
+        panel.add(new JLabel(""));     
+        panel.add(panelBotones);
         return panel;
+    
     }
 
     private JPanel crearPanelCatalogo() {
