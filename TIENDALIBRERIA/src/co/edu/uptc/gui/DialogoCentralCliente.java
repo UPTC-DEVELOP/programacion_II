@@ -12,8 +12,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import co.edu.uptc.modelo.Cliente;
-import co.uptc.edu.gui.libro.Evento;
+import co.edu.uptc.model.Cliente;
+import java.awt.event.ActionListener;
+
+import co.edu.uptc.util.Comandos;
 
 public abstract class DialogoCentralCliente extends JDialog {
 
@@ -33,7 +35,7 @@ public abstract class DialogoCentralCliente extends JDialog {
     protected JButton btnGuardar;
     protected JButton btnCerrar;
 
-    public DialogoCentralCliente(Evento evento, String tituloDialogo, boolean isCrear) {
+    public DialogoCentralCliente(ActionListener evento, String tituloDialogo, boolean isCrear) {
         this.isCrear = isCrear;
         this.tituloDialogo = tituloDialogo;
 
@@ -47,7 +49,7 @@ public abstract class DialogoCentralCliente extends JDialog {
         inicializarComponentes(evento);
     }
 
-    private void inicializarComponentes(Evento evento) {
+    private void inicializarComponentes(ActionListener evento) {
         JPanel pCliente = new JPanel(new GridLayout(7, 2, 8, 8));
         pCliente.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 

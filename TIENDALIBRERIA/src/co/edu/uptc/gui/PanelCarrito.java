@@ -12,9 +12,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+<<<<<<< HEAD
 
 import co.edu.uptc.negocio.Carrito;
 import co.uptc.edu.libro.modelo.Libro;
+=======
+import co.edu.uptc.model.Carrito;
+import co.edu.uptc.model.Libro;
+>>>>>>> 83e788452caffc8bf709ef6c08534ac89bd0f2c7
 
 public class PanelCarrito extends JPanel {
 

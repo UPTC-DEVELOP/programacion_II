@@ -1,16 +1,18 @@
 package co.edu.uptc.gui;
 
-import co.uptc.edu.gui.libro.Evento;
+import java.awt.event.ActionListener;
+
+import co.edu.uptc.util.Comandos;
 
 public class DialogoCrearCliente extends DialogoCentralCliente {
 
-    public DialogoCrearCliente(Evento evento, String tituloDialogo, boolean isCrear) {
+    public DialogoCrearCliente(ActionListener evento, String tituloDialogo, boolean isCrear) {
         super(evento, tituloDialogo, isCrear);
     }
 
     @Override
     public void asignarComandoBotones() {
-        btnGuardar.setActionCommand(Evento.GUARDAR_CLIENTE);
-        btnCerrar.setActionCommand(Evento.CANCELAR_CREACION_CLIENTE);
+        btnGuardar.setActionCommand(Comandos.GUARDAR_CLIENTE);
+        btnCerrar.setActionCommand(Comandos.CANCELAR_CREACION_CLIENTE);
     }
 }

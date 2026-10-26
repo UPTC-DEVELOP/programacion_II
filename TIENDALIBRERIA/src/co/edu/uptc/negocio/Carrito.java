@@ -1,8 +1,8 @@
-package co.edu.uptc.negocio;
+package co.edu.uptc.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import co.uptc.edu.libro.modelo.Libro;
+import co.edu.uptc.model.Libro;
 public class Carrito {
     private List<Libro> items;
     private boolean esPremium;

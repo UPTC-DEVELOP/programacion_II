@@ -1,11 +1,13 @@
 package co.edu.uptc.gui;
 
-import co.edu.uptc.modelo.Cliente;
-import co.uptc.edu.gui.libro.Evento;
+import co.edu.uptc.model.Cliente;
+import java.awt.event.ActionListener;
+
+import co.edu.uptc.util.Comandos;
 
 public class DialogoEditarCliente extends DialogoCentralCliente {
 
-    public DialogoEditarCliente(Evento evento, String tituloDialogo, boolean isCrear) {
+    public DialogoEditarCliente(ActionListener evento, String tituloDialogo, boolean isCrear) {
         super(evento, tituloDialogo, isCrear);
         // El correo es la llave del cliente: no se puede modificar
         txCorreo.setEnabled(false);
@@ -13,8 +15,8 @@ public class DialogoEditarCliente extends DialogoCentralCliente {
 
     @Override
     public void asignarComandoBotones() {
-        btnGuardar.setActionCommand(Evento.GUARDAR_ACTUALIZACION_CLIENTE);
-        btnCerrar.setActionCommand(Evento.CANCELAR_CLIENTE);
+        btnGuardar.setActionCommand(Comandos.GUARDAR_ACTUALIZACION_CLIENTE);
+        btnCerrar.setActionCommand(Comandos.CANCELAR_CLIENTE);
     }
 
     // Precarga los datos actuales del cliente en las casillas

@@ -4,12 +4,14 @@ import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
-import co.edu.uptc.modelo.Cliente;
-import co.uptc.edu.gui.libro.Evento;
+import co.edu.uptc.model.Cliente;
+import java.awt.event.ActionListener;
 
-public class PanelPadreCliente extends co.uptc.edu.gui.libro.PanelCentral {
+import co.edu.uptc.util.Comandos;
 
-    public PanelPadreCliente(Evento evento) {
+public class PanelPadreCliente extends PanelCentral<Cliente> {
+
+    public PanelPadreCliente(ActionListener evento) {
         super(evento);
     }
 
@@ -21,19 +23,19 @@ public class PanelPadreCliente extends co.uptc.edu.gui.libro.PanelCentral {
     @Override
     public void agregarIdentificadorComandoBoton() {
         // Se reutilizan los botones CRUD de PanelCentral con los comandos de clientes
-        btnEliminar.setText(Evento.ELIMINAR_CLIENTE);
-        btnActualizar.setText(Evento.ACTUALIZAR_CLIENTE);
-        btnCrear.setText(Evento.CREAR_CLIENTE);
-        btnVer.setText(Evento.VER_CLIENTE);
-        btnLimpiar.setText(Evento.LIMPIAR_CLIENTE);
-        btnBuscar.setText(Evento.BUSCAR_CLIENTE);
+        btnEliminar.setText(Comandos.ELIMINAR_CLIENTE);
+        btnActualizar.setText(Comandos.ACTUALIZAR_CLIENTE);
+        btnCrear.setText(Comandos.CREAR_CLIENTE);
+        btnVer.setText(Comandos.VER_CLIENTE);
+        btnLimpiar.setText(Comandos.LIMPIAR_CLIENTE);
+        btnBuscar.setText(Comandos.BUSCAR_CLIENTE);
 
-        btnEliminar.setActionCommand(Evento.ELIMINAR_CLIENTE);
-        btnActualizar.setActionCommand(Evento.ACTUALIZAR_CLIENTE);
-        btnCrear.setActionCommand(Evento.CREAR_CLIENTE);
-        btnVer.setActionCommand(Evento.VER_CLIENTE);
-        btnLimpiar.setActionCommand(Evento.LIMPIAR_CLIENTE);
-        btnBuscar.setActionCommand(Evento.BUSCAR_CLIENTE);
+        btnEliminar.setActionCommand(Comandos.ELIMINAR_CLIENTE);
+        btnActualizar.setActionCommand(Comandos.ACTUALIZAR_CLIENTE);
+        btnCrear.setActionCommand(Comandos.CREAR_CLIENTE);
+        btnVer.setActionCommand(Comandos.VER_CLIENTE);
+        btnLimpiar.setActionCommand(Comandos.LIMPIAR_CLIENTE);
+        btnBuscar.setActionCommand(Comandos.BUSCAR_CLIENTE);
     }
 
     @Override
@@ -45,33 +47,39 @@ public class PanelPadreCliente extends co.uptc.edu.gui.libro.PanelCentral {
         modelo.addColumn("Correo");
         modelo.addColumn("Dirección");
         modelo.addColumn("Tipo de cliente");
-        tablaLibros.setModel(modelo);
+        tabla.setModel(modelo);
     }
 
     @Override
-    public void poblarTabla(List<?> listaClientes) {
+    public void poblarTabla(List<Cliente> listaClientes) {
         modelo.setRowCount(0);
-        for (Object elemento : listaClientes) {
-            if (elemento instanceof Cliente) {
-                Cliente c = (Cliente) elemento;
-                modelo.addRow(new Object[] {
-                    c.getCedula(),
-                    c.getNombre(),
-                    c.getApellido(),
-                    c.getTelefono(),
-                    c.getCorreo(),
-                    c.getDireccion(),
-                    c.getTipoCliente()
-                });
-            }
+        for (Cliente c : listaClientes) {
+            modelo.addRow(new Object[] {
+                c.getCedula(),
+                c.getNombre(),
+                c.getApellido(),
+                c.getTelefono(),
+                c.getCorreo(),
+                c.getDireccion(),
+                c.getTipoCliente()
+            });
         }
     }
 
     // Devuelve el correo (llave del cliente) de la fila seleccionada
     public String getClienteSeleccionadoCorreo() {
-        int fila = tablaLibros.getSelectedRow();
+        int fila = tabla.getSelectedRow();
         if (fila != -1) {
-            return tablaLibros.getModel().getValueAt(fila, 4).toString();
+            return tabla.getModel().getValueAt(fila, 4).toString();
+        }
+        return null;
+    }
+
+    // Devuelve la cédula del cliente de la fila seleccionada
+    public String getClienteSeleccionadoCedula() {
+        int fila = tabla.getSelectedRow();
+        if (fila != -1) {
+            return tabla.getModel().getValueAt(fila, 0).toString();
         }
         return null;
     }
@@ -80,7 +88,7 @@ public class PanelPadreCliente extends co.uptc.edu.gui.libro.PanelCentral {
     public void seleccionarClientePorCorreo(String correo) {
         for (int fila = 0; fila < modelo.getRowCount(); fila++) {
             if (correo.equals(modelo.getValueAt(fila, 4))) {
-                tablaLibros.setRowSelectionInterval(fila, fila);
+                tabla.setRowSelectionInterval(fila, fila);
                 return;
             }
         }
