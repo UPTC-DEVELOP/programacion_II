@@ -4,3 +4,9 @@
 [2026-10-04T17:05:16.522143800] Cantidad actualizada en carrito: Frankenstein
 [2026-10-04T17:05:22.831521500] Compra realizada con éxito por Cristtopher Moreno
 [2026-10-04T17:05:22.834520800] Carrito guardado en carrito_letsread.json
+[2026-10-26T21:46:59.365634300] Carrito guardado en carrito_letsread.json
+[2026-10-26T21:46:59.370611] Añadido al carrito de Let's Read: La Odisea
+[2026-10-26T21:47:04.131171900] Carrito guardado en carrito_letsread.json
+[2026-10-26T21:47:04.133174700] Añadido al carrito de Let's Read: Cien años de soledad
+[2026-10-26T21:47:22.270115] Compra realizada con éxito por Cristtopher David Moreno Zapata
+[2026-10-26T21:47:22.271161700] Carrito guardado en carrito_letsread.json
