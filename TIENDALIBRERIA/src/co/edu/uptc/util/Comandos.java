@@ -1,6 +1,6 @@
 package co.edu.uptc.util;
 
-/** Comandos de accion compartidos por la vista y el controlador. */
+
 public final class Comandos {
 
     private Comandos() {
