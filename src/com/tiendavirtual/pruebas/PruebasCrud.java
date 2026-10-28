@@ -1,0 +1,3 @@
+package com.tiendavirtual.pruebas;
+import com.tiendavirtual.modelo.Libro; import com.tiendavirtual.negocio.LibroService; import com.tiendavirtual.repositorio.LibroRepositoryMemoria;
+public class PruebasCrud { public static void main(String[] a){LibroService s=new LibroService(new LibroRepositoryMemoria());Libro l=new Libro("9781234567890","Java","Autor",2026,"Programación","UPTC",200,50000,10,"Físico",.19);s.registrar(l);System.out.println("Registrar OK");l.setPrecio(55000);s.actualizar(l);System.out.println("Actualizar OK");System.out.println("Listar: "+s.listar().size());s.marcarVentaAsociada(l.getIsbn());try{s.eliminar(l.getIsbn());}catch(Exception e){System.out.println("Eliminar bloqueado OK: "+e.getMessage());}}}
