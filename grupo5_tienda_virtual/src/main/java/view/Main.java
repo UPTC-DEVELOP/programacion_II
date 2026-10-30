@@ -8,6 +8,8 @@ import model.Cliente;
 import model.ClientePremium;
 import model.FormatoLibro;
 import model.Libro;
+import persistencia.IRepositorio;
+import persistencia.RepositorioClientesBD;
 import persistencia.RepositorioClientesJson;
 import persistencia.RepositorioLibrosJson;
 import service.IServicioClientes;
@@ -27,8 +29,13 @@ public class Main {
             @Override
             public void run() {
 
-                // CAPA 1: PERSISTENCIA (archivos JSON con Gson)
-                RepositorioClientesJson repositorioClientes = new RepositorioClientesJson();
+                // CAPA 1: PERSISTENCIA
+                // Los clientes se guardan en base de datos si se arranca con
+                // -Dtienda.bd=true; si no, en archivo JSON.
+                boolean usarBD = Boolean.getBoolean("tienda.bd");
+                IRepositorio<Cliente> repositorioClientes = usarBD
+                        ? new RepositorioClientesBD()
+                        : new RepositorioClientesJson();
                 RepositorioLibrosJson repositorioLibros = new RepositorioLibrosJson();
 
                 // CAPA 2: LOGICA DE NEGOCIO (solo se usa la interfaz)

@@ -3,6 +3,8 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -47,6 +49,15 @@ public class VentanaLibros extends JFrame {
         setLocationRelativeTo(null);
 
         setLayout(new BorderLayout(10, 10));
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                if (VentanaLibros.this.padre != null) {
+                    VentanaLibros.this.padre.setVisible(true);
+                }
+            }
+        });
 
         //  PANEL SUPERIOR DE BUSQUEDA Y FILTRADO //
         

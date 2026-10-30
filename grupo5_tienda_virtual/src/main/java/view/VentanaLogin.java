@@ -113,12 +113,31 @@ public class VentanaLogin extends JFrame {
         btnAdministrador.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new VentanaLibros(VentanaLogin.this, controladorLibro).setVisible(true);
-                setVisible(false);
+                abrirAdministracion();
             }
         });
 
         return contenedor;
+    }
+
+    private void abrirAdministracion() {
+        Object[] opciones = { "Gesti\u00f3n de Libros", "Gesti\u00f3n de Clientes" };
+        int opcion = JOptionPane.showOptionDialog(this,
+                "Seleccione el m\u00f3dulo de administraci\u00f3n:",
+                "Administraci\u00f3n",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                opciones,
+                opciones[0]);
+
+        if (opcion == 0) {
+            new VentanaLibros(VentanaLogin.this, controladorLibro).setVisible(true);
+            setVisible(false);
+        } else if (opcion == 1) {
+            new VentanaClientes(controlador, VentanaLogin.this).setVisible(true);
+            setVisible(false);
+        }
     }
 
     private void accionIniciarSesion() {
