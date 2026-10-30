@@ -16,7 +16,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-import controller.ControladorLibro;
+import service.IServicioLibros;
 import model.FormatoLibro;
 import model.Libro;
 
@@ -32,12 +32,12 @@ public class VentanaLibros extends JFrame {
     private JComboBox<FormatoLibro> cmbFormato;
     private JTable tblLibros;
     private DefaultTableModel modeloTabla;
-    private ControladorLibro controladorLibro;
+    private IServicioLibros controladorLibro;
     private JFrame padre;
 
     //  CONFIGURACION DE LAYOUTS DE LA VENTANA //
     
-    public VentanaLibros(JFrame padre, ControladorLibro controladorLibro) {
+    public VentanaLibros(JFrame padre, IServicioLibros controladorLibro) {
         super("Gestión de Libros");
         this.padre = padre;
         this.controladorLibro = controladorLibro;
@@ -295,12 +295,5 @@ public class VentanaLibros extends JFrame {
         txtIva.setText(IVA_POR_DEFECTO);
         txtCantidad.setText("");
         tblLibros.clearSelection();
-    }
-
-    // EJECUCION DIRECTA Y PRUEBAS // 
-    
-    public static void main(String[] args) {
-        VentanaLibros v = new VentanaLibros(null, new ControladorLibro());
-        v.setVisible(true);
     }
 }

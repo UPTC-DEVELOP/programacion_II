@@ -15,7 +15,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-import controller.ControladorLibro;
+import service.IServicioLibros;
 import model.CarritoCompras;
 import model.Cliente;
 import model.Compra;
@@ -33,7 +33,7 @@ public class VentanaCompras extends JFrame {
 	
 	// CLIENTE ACTUAL Y CONTROLADOR DE LIBROS
 	private Cliente cliente;
-	private ControladorLibro controladorLibro;
+	private IServicioLibros controladorLibro;
 	
 	
     // Campos de selección
@@ -62,7 +62,7 @@ public class VentanaCompras extends JFrame {
     private JButton btnComprar;
 
  // RECIBIR EL CLIENTE Y EL CONTROLADOR DE LIBROS
-    public VentanaCompras(Cliente cliente, ControladorLibro controladorLibro) {
+    public VentanaCompras(Cliente cliente, IServicioLibros controladorLibro) {
 
         this.cliente = cliente;
         this.controladorLibro = controladorLibro;

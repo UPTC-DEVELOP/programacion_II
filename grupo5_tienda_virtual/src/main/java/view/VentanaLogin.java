@@ -18,8 +18,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import controller.ControladorCliente;
-import controller.ControladorLibro;
+import service.IServicioClientes;
+import service.IServicioLibros;
 import model.Cliente;
 
 /**
@@ -29,13 +29,13 @@ public class VentanaLogin extends JFrame {
 
     private static final long serialVersionUID = 1L;
 
-    private ControladorCliente controlador;
-    private ControladorLibro controladorLibro;
+    private IServicioClientes controlador;
+    private IServicioLibros controladorLibro;
 
     private JTextField txtCorreo;
     private JPasswordField txtContrasena;
 
-    public VentanaLogin(ControladorCliente controlador, ControladorLibro controladorLibro) {
+    public VentanaLogin(IServicioClientes controlador, IServicioLibros controladorLibro) {
         this.controlador = controlador;
         this.controladorLibro = controladorLibro;
 
