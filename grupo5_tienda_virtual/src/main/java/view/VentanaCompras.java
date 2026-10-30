@@ -75,18 +75,12 @@ public class VentanaCompras extends JFrame {
         setLayout(new BorderLayout(8, 8));
 
         add(crearPanelSuperior(), BorderLayout.NORTH);
-        
-     // CARGAR LOS LIBROS DISPONIBLES EN EL COMBOBOX
-        for (Object obj : controladorLibro.listar()) {
-            cmbLibro.addItem((Libro) obj);
+
+        // CARGAR LOS LIBROS DISPONIBLES EN EL COMBOBOX
+        for (Libro libro : controladorLibro.listar()) {
+            cmbLibro.addItem(libro);
         }
-        
-        
-        add(crearPanelSuperior(), BorderLayout.NORTH);
-     // CARGAR LOS LIBROS DISPONIBLES EN EL COMBOBOX
-        for (Object obj : controladorLibro.listar()) {
-            cmbLibro.addItem((Libro) obj);
-        }
+
         add(crearTablaCarrito(), BorderLayout.CENTER);
         add(crearPanelInferior(), BorderLayout.SOUTH);
         

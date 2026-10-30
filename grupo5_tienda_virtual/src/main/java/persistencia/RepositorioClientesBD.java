@@ -25,7 +25,7 @@ import model.ClienteRegular;
  */
 public class RepositorioClientesBD implements IRepositorio<Cliente> {
 
-    private static final String RUTA_POR_DEFECTO = "datos/tienda.db";
+    private static final String RUTA_POR_DEFECTO = ConfiguracionBD.RUTA_BD;
 
     private final String url;
     private final List<Cliente> clientes;
@@ -35,7 +35,7 @@ public class RepositorioClientesBD implements IRepositorio<Cliente> {
     }
 
     public RepositorioClientesBD(String ruta) {
-        this.url = "jdbc:sqlite:" + ruta;
+        this.url = ConfiguracionBD.JDBC_PREFIJO + ruta;
         this.clientes = new ArrayList<Cliente>();
         crearCarpeta(ruta);
         crearTabla();
