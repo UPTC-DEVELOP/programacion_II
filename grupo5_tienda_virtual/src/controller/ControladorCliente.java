@@ -1,7 +1,9 @@
-package negocio;
+package controller;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import model.Cliente;
 
 /**
  * Administra en memoria los clientes de la tienda (operaciones CRUD).

@@ -1,4 +1,4 @@
-package gui;
+package view;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -12,45 +12,45 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import negocio.Cliente;
-import negocio.ControladorCliente;
-import negocio.ControladorLibro;
-import negocio.Libro;
+import controller.ControladorCliente;
+import model.Cliente;
+import model.ClientePremium;
+import model.ClienteRegular;
 
 /**
- * Ventana "Mi Cuenta": el cliente actualiza sus datos (segun el prototipo).
+ * Ventana "Registro de Cliente" segun el prototipo.
  */
-public class VentanaMiCuenta extends JFrame {
+public class VentanaRegistroCliente extends JFrame {
 
     private static final long serialVersionUID = 1L;
 
+    private static final String TIPO_REGULAR = "Regular";
+    private static final String TIPO_PREMIUM = "Premium";
+
     private ControladorCliente controlador;
-    private ControladorLibro controladorLibro;
-    private Cliente cliente;
     private JFrame padre;
 
     private JTextField txtNombre;
     private JTextField txtCorreo;
     private JTextField txtDireccion;
     private JTextField txtTelefono;
+    private JPasswordField txtContrasena;
+    private JComboBox<String> cmbTipo;
 
-    public VentanaMiCuenta(
-            ControladorCliente controlador,ControladorLibro controladorLibro,Cliente cliente,
-            JFrame padre) {
-
+    public VentanaRegistroCliente(ControladorCliente controlador, JFrame padre) {
         this.controlador = controlador;
-        this.controladorLibro = controladorLibro;
-        this.cliente = cliente;
         this.padre = padre;
 
-        setTitle("Mi Cuenta");
-        setSize(420, 300);
+        setTitle("Registro de Cliente");
+        setSize(420, 360);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(8, 8));
@@ -66,8 +66,6 @@ public class VentanaMiCuenta extends JFrame {
                 }
             }
         });
-
-        cargarDatos();
     }
 
     private JPanel crearFormulario() {
@@ -76,14 +74,17 @@ public class VentanaMiCuenta extends JFrame {
 
         txtNombre = new JTextField(18);
         txtCorreo = new JTextField(18);
-        txtCorreo.setEditable(false);
         txtDireccion = new JTextField(18);
         txtTelefono = new JTextField(18);
+        txtContrasena = new JPasswordField(18);
+        cmbTipo = new JComboBox<String>(new String[] { TIPO_REGULAR, TIPO_PREMIUM });
 
         agregarCampo(panel, "Nombre completo:", txtNombre, 0);
         agregarCampo(panel, "Correo electr\u00f3nico:", txtCorreo, 1);
         agregarCampo(panel, "Direcci\u00f3n:", txtDireccion, 2);
         agregarCampo(panel, "Tel\u00e9fono:", txtTelefono, 3);
+        agregarCampo(panel, "Contrase\u00f1a:", txtContrasena, 4);
+        agregarCampo(panel, "Tipo de cliente:", cmbTipo, 5);
 
         return panel;
     }
@@ -106,31 +107,21 @@ public class VentanaMiCuenta extends JFrame {
     private JPanel crearBoton() {
         JPanel panel = new JPanel();
         JButton btnAtras = new JButton("Atr\u00e1s");
-        JButton btnGuardar = new JButton("Guardar cambios");
-        JButton btnCompras = new JButton("Compras");
+        JButton btnRegistrarse = new JButton("Registrarse");
         btnAtras.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 volver();
             }
         });
-        btnGuardar.addActionListener(new ActionListener() {
+        btnRegistrarse.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                accionGuardar();
-            }
-            
-        });
-        
-        btnCompras.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                abrirCompras();
+                accionRegistrarse();
             }
         });
         panel.add(btnAtras);
-        panel.add(btnGuardar);
-        panel.add(btnCompras);
+        panel.add(btnRegistrarse);
         return panel;
     }
 
@@ -141,43 +132,42 @@ public class VentanaMiCuenta extends JFrame {
         }
     }
 
-    private void cargarDatos() {
-        if (cliente == null) {
-            return;
-        }
-        txtNombre.setText(cliente.getNombreCompleto());
-        txtCorreo.setText(cliente.getCorreo());
-        txtDireccion.setText(cliente.getDireccion());
-        txtTelefono.setText(cliente.getTelefono());
-    }
-
-    private void accionGuardar() {
-        if (cliente == null) {
-            JOptionPane.showMessageDialog(this, "No hay sesion iniciada.");
-            return;
-        }
-
+    private void accionRegistrarse() {
         String nombre = txtNombre.getText().trim();
+        String correo = txtCorreo.getText().trim();
         String direccion = txtDireccion.getText().trim();
         String telefono = txtTelefono.getText().trim();
+        String contrasena = new String(txtContrasena.getPassword());
 
-        if (nombre.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "El nombre completo es obligatorio.");
+        if (nombre.isEmpty() || correo.isEmpty() || contrasena.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Nombre, correo y contrase\u00f1a son obligatorios.");
             return;
         }
 
-        if (controlador.actualizarDatos(cliente.getCorreo(), nombre, direccion, telefono)) {
-            JOptionPane.showMessageDialog(this, "Datos actualizados correctamente.");
+        Cliente cliente;
+        if (TIPO_PREMIUM.equals(cmbTipo.getSelectedItem())) {
+            cliente = new ClientePremium(nombre, correo, contrasena);
         } else {
-            JOptionPane.showMessageDialog(this, "No se pudieron actualizar los datos.");
+            cliente = new ClienteRegular(nombre, correo, contrasena);
+        }
+        cliente.setDireccion(direccion);
+        cliente.setTelefono(telefono);
+
+        if (controlador.registrar(cliente)) {
+            JOptionPane.showMessageDialog(this, "Cliente registrado correctamente.");
+            limpiarFormulario();
+        } else {
+            JOptionPane.showMessageDialog(this, "Ya existe un cliente con ese correo.");
         }
     }
-    
- // ABRIR VENTANA DE COMPRAS Liz 
-    private void abrirCompras() {
 
-        VentanaCompras ventanaCompras = new VentanaCompras(cliente, controladorLibro);
-
-        ventanaCompras.setVisible(true);
+    private void limpiarFormulario() {
+        txtNombre.setText("");
+        txtCorreo.setText("");
+        txtDireccion.setText("");
+        txtTelefono.setText("");
+        txtContrasena.setText("");
+        cmbTipo.setSelectedIndex(0);
     }
 }

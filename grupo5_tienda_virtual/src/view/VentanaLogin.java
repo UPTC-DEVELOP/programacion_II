@@ -1,4 +1,4 @@
-package gui;
+package view;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -18,9 +18,9 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import negocio.Cliente;
-import negocio.ControladorCliente;
-import negocio.ControladorLibro;
+import controller.ControladorCliente;
+import controller.ControladorLibro;
+import model.Cliente;
 
 /**
  * Ventana "Iniciar Sesion" segun el prototipo.

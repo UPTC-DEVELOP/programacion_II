@@ -1,4 +1,4 @@
-package negocio;
+package model;
 
 /**
  * Cada linea del recibo: un libro con su cantidad, subtotal e impuestos.

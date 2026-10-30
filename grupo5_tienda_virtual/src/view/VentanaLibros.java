@@ -1,9 +1,10 @@
-package gui;
+package view;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.List;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -15,9 +16,9 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-import negocio.ControladorLibro;
-import negocio.FormatoLibro;
-import negocio.Libro;
+import controller.ControladorLibro;
+import model.FormatoLibro;
+import model.Libro;
 
 /// MÓDULO DE INTERFAZ GRÁFICA: VENTANA DE GESTIÓN DE LIBROS ///
 

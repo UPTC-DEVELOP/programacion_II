@@ -1,4 +1,4 @@
-package negocio;
+package model;
 
 /**
  * Cliente sin beneficios de descuento.

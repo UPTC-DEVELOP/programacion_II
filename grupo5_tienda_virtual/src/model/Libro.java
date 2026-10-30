@@ -1,4 +1,4 @@
-package negocio;
+package model;
 
 /**
  * Libro del catalogo de la tienda virtual.

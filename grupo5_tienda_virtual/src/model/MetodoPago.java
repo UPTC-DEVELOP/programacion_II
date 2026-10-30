@@ -1,4 +1,4 @@
-package negocio;
+package model;
 
 /**
  * Catalogo de metodos de pago disponibles.

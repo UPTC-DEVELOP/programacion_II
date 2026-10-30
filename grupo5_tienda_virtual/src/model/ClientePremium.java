@@ -1,4 +1,4 @@
-package negocio;
+package model;
 
 /**
  * Cliente con suscripcion Premium: obtiene descuento sobre la compra.

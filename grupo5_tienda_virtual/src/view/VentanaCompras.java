@@ -1,28 +1,27 @@
-package gui;
+package view;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.JOptionPane;
 
-import java.util.Map;
-
-import negocio.CarritoCompras;
-import negocio.Libro;
-import negocio.MetodoPago;
-import negocio.Cliente;
-import negocio.ControladorLibro;
-import negocio.Compra;
-import negocio.ItemCompra;
+import controller.ControladorLibro;
+import model.CarritoCompras;
+import model.Cliente;
+import model.Compra;
+import model.ItemCompra;
+import model.Libro;
+import model.MetodoPago;
 
 
 public class VentanaCompras extends JFrame {

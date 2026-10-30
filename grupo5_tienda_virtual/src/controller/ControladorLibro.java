@@ -1,7 +1,9 @@
-package negocio;
+package controller;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import model.Libro;
 
 /// CONTROLADOR DE NEGOCIO Y OPERACIONES EN MEMORIA ///
 

@@ -1,4 +1,4 @@
-package negocio;
+package model;
 
 public enum FormatoLibro {
     FISICO,

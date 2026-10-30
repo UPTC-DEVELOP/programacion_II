@@ -1,13 +1,13 @@
-package gui;
+package view;
 
 import javax.swing.SwingUtilities;
 
-import negocio.Cliente;
-import negocio.ClientePremium;
-import negocio.ControladorCliente;
-import negocio.ControladorLibro;
-import negocio.FormatoLibro;
-import negocio.Libro;
+import controller.ControladorCliente;
+import controller.ControladorLibro;
+import model.Cliente;
+import model.ClientePremium;
+import model.FormatoLibro;
+import model.Libro;
 
 
 /**
