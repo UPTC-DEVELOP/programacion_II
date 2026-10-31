@@ -23,6 +23,7 @@ import javax.swing.SwingUtilities;
 import co.edu.uptc.libreria.clientes.gui.DialogoCliente;
 import co.edu.uptc.libreria.clientes.gui.PanelClientes;
 import co.edu.uptc.libreria.controladores.ControladorCarrito;
+import co.edu.uptc.libreria.gui.Evento;
 import co.edu.uptc.libreria.interfaces.ICarritoPersistencia;
 import co.edu.uptc.libreria.modelo.Cliente;
 import co.edu.uptc.libreria.modelo.ItemCarrito;
