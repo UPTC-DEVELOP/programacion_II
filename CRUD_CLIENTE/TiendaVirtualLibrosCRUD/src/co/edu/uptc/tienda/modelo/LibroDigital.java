@@ -6,6 +6,9 @@ import co.edu.uptc.tienda.modelo.enums.TipoLibro;
 
 public class LibroDigital extends Libro {
 
+	public LibroDigital() {
+	}
+
 	public LibroDigital(Long idLibro, String isbn, String titulo, List<String> autores, String fechaPublicacion,
 			String genero, String editorial, int numeroPaginas, double precioBase, int stockDisponible,
 			TipoLibro tipoLibro) {

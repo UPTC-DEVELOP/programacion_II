@@ -20,6 +20,10 @@ public abstract class Libro {
 	private final double IVA = 0.15;
 	private double precioFinal;
 
+	public Libro() {
+
+	}
+
 	public Libro(Long idLibro, String isbn, String titulo, List<String> autores, String fechaPublicacion, String genero,
 			String editorial, int numeroPaginas, double precioBase, int stockDisponible, TipoLibro tipoLibro) {
 		this.idLibro = idLibro;

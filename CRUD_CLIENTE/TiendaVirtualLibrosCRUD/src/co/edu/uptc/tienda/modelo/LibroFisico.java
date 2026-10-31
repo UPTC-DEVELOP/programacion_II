@@ -8,6 +8,10 @@ public class LibroFisico extends Libro {
 
 	private String tiempoMaximoEntrega;
 
+	public LibroFisico() {
+
+	}
+
 	public LibroFisico(Long idLibro, String isbn, String titulo, List<String> autores, String fechaPublicacion,
 			String genero, String editorial, int numeroPaginas, double precioBase, int stockDisponible,
 			TipoLibro tipoLibro) {

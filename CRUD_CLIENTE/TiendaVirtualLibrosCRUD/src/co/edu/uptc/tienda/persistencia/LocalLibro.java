@@ -1,46 +1,82 @@
 package co.edu.uptc.tienda.persistencia;
 
+import java.sql.Array;
+import java.sql.PreparedStatement;
 import java.util.List;
 
+import co.edu.uptc.tienda.conexion.Conexion;
 import co.edu.uptc.tienda.interfaces.IGestionLibro;
 import co.edu.uptc.tienda.modelo.Libro;
 import co.edu.uptc.tienda.modelo.Libros;
 
 public class LocalLibro implements IGestionLibro {
 
-    private Libros libros;
-    private long siguienteIdLibro;
+	private Libros libros;
+	private long siguienteIdLibro;
 
-    public LocalLibro() {
-        this.libros = new Libros();
-        this.siguienteIdLibro = 1L;
-    }
+	public LocalLibro() {
+		this.libros = new Libros();
+		this.siguienteIdLibro = 1L;
+	}
 
-    @Override
-    public void agregar(Libro libro) {
-        libro.setIdLibro(this.siguienteIdLibro);
-        this.siguienteIdLibro++;
+	@Override
+	public void agregar(Libro libro) {
 
-        libros.agregarLibro(libro);
-    }
+		Conexion conn = new Conexion();
+		conn.conexion();
 
-    @Override
-    public List<Libro> listar() {
-        return libros.listarLibros();
-    }
+		String sentenciaSQL = "INSERT INTO libros VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    @Override
-    public Libro buscar(String titulo) {
-        return libros.buscarLibro(titulo);
-    }
+		try (PreparedStatement pstmt = conn.getConnection().prepareStatement(sentenciaSQL)) {
 
-    @Override
-    public boolean actualizar(Libro libroActualizar) {
-        return libros.actualizarLibro(libroActualizar);
-    }
+			libro.setIdLibro(this.siguienteIdLibro);
+			this.siguienteIdLibro++;
 
-    @Override
-    public boolean eliminar(String titulo) {
-        return libros.eliminarLibro(titulo);
-    }
+			pstmt.setLong(1, libro.getIdLibro());
+			pstmt.setString(2, libro.getIsbn());
+			pstmt.setString(3, libro.getTitulo());
+
+			String autoresTexto = String.join(", ", libro.getAutores());
+			pstmt.setString(4, autoresTexto);
+
+			pstmt.setString(5, libro.getFechaPublicacion());
+			pstmt.setString(6, libro.getGenero());
+			pstmt.setString(7, libro.getEditorial());
+			pstmt.setInt(8, libro.getNumeroPaginas());
+			pstmt.setDouble(9, libro.getPrecioFinal());
+			pstmt.setInt(10, libro.getStockDisponible());
+			pstmt.setString(11, libro.getTipoLibro().name());
+
+			pstmt.executeUpdate();
+
+			pstmt.close();
+			conn.desconectar();
+
+		} catch (Exception e) {
+			System.err.println("Error en el guardado en la base de Datos");
+			e.printStackTrace();
+		}
+
+		libros.agregarLibro(libro);
+	}
+
+	@Override
+	public List<Libro> listar() {
+		return libros.listarLibros();
+	}
+
+	@Override
+	public Libro buscar(String titulo) {
+		return libros.buscarLibro(titulo);
+	}
+
+	@Override
+	public boolean actualizar(Libro libroActualizar) {
+		return libros.actualizarLibro(libroActualizar);
+	}
+
+	@Override
+	public boolean eliminar(String titulo) {
+		return libros.eliminarLibro(titulo);
+	}
 }
