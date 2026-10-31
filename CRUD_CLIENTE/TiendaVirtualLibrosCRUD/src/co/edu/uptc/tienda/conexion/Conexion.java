@@ -6,21 +6,18 @@ import java.sql.SQLException;
 
 public class Conexion {
 
-	// Datos de Conexión a la BD
 	private String user = "root";
 	private String password = "G@nzalez.2015";
 	private String database = "sistema_biblioteca";
 	private String port = "3306";
 	private String url = "jdbc:mysql://localhost:" + port + "/" + database;
 
-	// Conexion de Java SQL
 	private Connection conn = null;
 
 	public Connection conexion() {
 		try {
 
 			conn = DriverManager.getConnection(url, user, password);
-
 			return conn;
 
 		} catch (SQLException e) {
@@ -43,5 +40,4 @@ public class Conexion {
 	public Connection getConnection() {
 		return conn;
 	}
-
 }

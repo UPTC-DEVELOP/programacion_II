@@ -9,9 +9,9 @@ public class GestionLibro {
 
 	private IGestionLibro gestionLibro;
 
-	  public GestionLibro(IGestionLibro gestionLibro) {
-	        this.gestionLibro = gestionLibro;
-	    }
+	public GestionLibro(IGestionLibro gestionLibro) {
+		this.gestionLibro = gestionLibro;
+	}
 
 	public void agregarLibro(Libro libro) {
 		gestionLibro.agregar(libro);
@@ -32,5 +32,4 @@ public class GestionLibro {
 	public boolean eliminarLibro(String titulo) {
 		return gestionLibro.eliminar(titulo);
 	}
-
 }

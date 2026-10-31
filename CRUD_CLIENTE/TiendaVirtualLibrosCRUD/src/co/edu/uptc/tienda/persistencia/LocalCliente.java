@@ -7,10 +7,7 @@ import co.edu.uptc.tienda.interfaces.IGestionCliente;
 import co.edu.uptc.tienda.interfaces.IGestionLibro;
 import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.modelo.Clientes;
-/**
- * Implementación de persistencia local en memoria para la gestión de clientes.
- * Asigna identificadores autoincrementables y estampas de tiempo de creación.
- */
+
 public class LocalCliente implements IGestionCliente {
 
 	private Clientes clientes;

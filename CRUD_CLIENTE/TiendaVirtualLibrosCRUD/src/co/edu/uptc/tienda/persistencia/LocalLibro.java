@@ -1,7 +1,7 @@
 package co.edu.uptc.tienda.persistencia;
 
-import java.sql.Array;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 import co.edu.uptc.tienda.conexion.Conexion;
@@ -52,8 +52,8 @@ public class LocalLibro implements IGestionLibro {
 			pstmt.close();
 			conn.desconectar();
 
-		} catch (Exception e) {
-			System.err.println("Error en el guardado en la base de Datos");
+		} catch (SQLException e) {
+			System.err.println("Error en el guardado en la base de Datos: \n");
 			e.printStackTrace();
 		}
 

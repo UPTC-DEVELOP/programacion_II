@@ -21,7 +21,6 @@ public abstract class Libro {
 	private double precioFinal;
 
 	public Libro() {
-
 	}
 
 	public Libro(Long idLibro, String isbn, String titulo, List<String> autores, String fechaPublicacion, String genero,

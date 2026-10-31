@@ -7,30 +7,29 @@ import co.edu.uptc.tienda.modelo.Cliente;
 
 public class GestionCliente {
 
-    private IGestionCliente gestionCliente;
+	private IGestionCliente gestionCliente;
 
-    // Constructor con inyección de dependencias
-    public GestionCliente(IGestionCliente gestionCliente) {
-        this.gestionCliente = gestionCliente;
-    }
+	public GestionCliente(IGestionCliente gestionCliente) {
+		this.gestionCliente = gestionCliente;
+	}
 
-    public void agregarCliente(Cliente cliente) {
-        gestionCliente.agregar(cliente);
-    }
+	public void agregarCliente(Cliente cliente) {
+		gestionCliente.agregar(cliente);
+	}
 
-    public List<Cliente> listarClientes() {
-        return gestionCliente.listar();
-    }
+	public List<Cliente> listarClientes() {
+		return gestionCliente.listar();
+	}
 
-    public Cliente buscarCliente(String identificacion) {
-        return gestionCliente.buscar(identificacion);
-    }
+	public Cliente buscarCliente(String identificacion) {
+		return gestionCliente.buscar(identificacion);
+	}
 
-    public boolean actualizarCliente(Cliente clienteActualizado) {
-        return gestionCliente.actualizar(clienteActualizado);
-    }
+	public boolean actualizarCliente(Cliente clienteActualizado) {
+		return gestionCliente.actualizar(clienteActualizado);
+	}
 
-    public boolean eliminarCliente(String identificacion) {
-        return gestionCliente.eliminar(identificacion);
-    }
+	public boolean eliminarCliente(String identificacion) {
+		return gestionCliente.eliminar(identificacion);
+	}
 }
