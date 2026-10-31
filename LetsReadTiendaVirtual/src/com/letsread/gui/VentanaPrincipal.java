@@ -33,7 +33,7 @@ public class VentanaPrincipal extends JFrame {
     private TiendaService service;
 
     private JTabbedPane pestanias;
-    private JTextField txtNombre, txtCorreo, txtDireccion, txtTelefono;
+    private JTextField txtNombre, txtCorreo, txtDireccion, txtTelefono,txtApellido;
     private JPasswordField txtClave;
     private JComboBox<String> comboTipoCliente;
     private JTable tablaLibros, tablaCarrito;
@@ -61,17 +61,19 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private JPanel crearPanelCliente() {
-        JPanel panel = new JPanel(new GridLayout(7, 2, 15, 15));
+        JPanel panel = new JPanel(new GridLayout(8, 2, 15, 15));
         panel.setBorder(BorderFactory.createTitledBorder("Registro de Cliente - Let's Read"));
 
         txtNombre = new JTextField();
+        txtApellido = new JTextField();
         txtCorreo = new JTextField();
         txtDireccion = new JTextField();
         txtTelefono = new JTextField();
         txtClave = new JPasswordField();
         comboTipoCliente = new JComboBox<>(new String[]{"Regular", "Premium"});
 
-        panel.add(new JLabel("Nombre Completo:")); panel.add(txtNombre);
+        panel.add(new JLabel("Nombres:")); panel.add(txtNombre);
+        panel.add(new JLabel("Apellidos:")); panel.add(txtApellido);
         panel.add(new JLabel("Correo Electrónico:")); panel.add(txtCorreo);
         panel.add(new JLabel("Contraseña:")); panel.add(txtClave);
         panel.add(new JLabel("Dirección:")); panel.add(txtDireccion);
