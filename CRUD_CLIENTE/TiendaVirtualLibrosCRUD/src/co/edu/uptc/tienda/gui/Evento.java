@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Evento implements ActionListener {
-
+//	public static final String CANCELAR = "Cancelar"//
 	public static final String CANCELAR = "Cancelar";
 	public static final String LOGIN = "Login";
 
