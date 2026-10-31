@@ -9,16 +9,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
-<<<<<<< HEAD
-    private JButton botonRegistrar;
-    private JButton botonActualizar;
-    private JButton botonBuscar;
-    private JButton botonEliminar;
-    private JButton botonSalir;
-    private JButton botonCarrito;
-=======
->>>>>>> 83e788452caffc8bf709ef6c08534ac89bd0f2c7
-
 public abstract class PanelCentral<T> extends JPanel {
     protected JTable tabla;
     protected DefaultTableModel modelo;
@@ -35,26 +25,6 @@ public abstract class PanelCentral<T> extends JPanel {
         pSuperior.setLayout(new BorderLayout());
         setLayout(new BorderLayout());
 
-<<<<<<< HEAD
-   JPanel panelBotones = new JPanel(
-             new GridLayout(6, 1, 10, 10)
-            
-  );
-
-   botonRegistrar = new JButton("Registrar Cliente");
-   botonActualizar = new JButton("Actualizar Cliente");
-   botonBuscar = new JButton("Buscar Cliente");
-   botonEliminar = new JButton("Eliminar Cliente");
-   botonSalir = new JButton("Salir");
-   botonCarrito = new JButton("Carrito de compras");
-
-   panelBotones.add(botonRegistrar);
-   panelBotones.add(botonActualizar);
-   panelBotones.add(botonBuscar);
-   panelBotones.add(botonEliminar);
-   panelBotones.add(botonSalir);
-   panelBotones.add(botonCarrito);
-=======
         // Panel título
         agregarTituloPanel();
         JPanel pTitulo = new JPanel();
@@ -74,7 +44,6 @@ public abstract class PanelCentral<T> extends JPanel {
         btnCrear.addActionListener(evento);
         btnVer.addActionListener(evento);
         btnLimpiar.addActionListener(evento);
->>>>>>> 83e788452caffc8bf709ef6c08534ac89bd0f2c7
 
         // Agregar botones
         pBtnFuncion.add(btnEliminar);
@@ -98,14 +67,6 @@ public abstract class PanelCentral<T> extends JPanel {
         pSuperior.add(pBtnFuncion, BorderLayout.CENTER);
         pSuperior.add(pFiltros, BorderLayout.SOUTH);
 
-<<<<<<< HEAD
-   botonSalir.addActionListener(e -> {
-           System.exit(0);
-       });
-   botonCarrito.addActionListener(e-> {
-	   new PanelCarrito().setVisible(true);
-   });
-=======
         // Tabla
         modelo = new DefaultTableModel();
         tabla = new JTable(modelo);
@@ -117,7 +78,6 @@ public abstract class PanelCentral<T> extends JPanel {
         add(spTabla, BorderLayout.CENTER);
 
         agregarIdentificadorComandoBoton();
->>>>>>> 83e788452caffc8bf709ef6c08534ac89bd0f2c7
     }
 
     // Métodos abstractos que las clases hijas deben implementar
@@ -125,4 +85,5 @@ public abstract class PanelCentral<T> extends JPanel {
     public abstract void agregarIdentificadorComandoBoton();
     public abstract void agregarCabeceraTabla();
     public abstract void poblarTabla(List<T> lista);
+
 }

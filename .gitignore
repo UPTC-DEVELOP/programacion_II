@@ -25,6 +25,7 @@ replay_pid*
 
 /TIENDALIBRERIA/bin/
 /TIENDALIBRERIA/.settings/
+/TIENDALIBRERIA/target/
 .classpath
 .project
 .metadata/
