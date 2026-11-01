@@ -1,7 +1,6 @@
 package co.edu.uptc;
 
 import javax.swing.SwingUtilities;
-
 import co.edu.uptc.config.ClienteConfig;
 import co.edu.uptc.controller.ClienteControlador;
 import co.edu.uptc.controller.Evento;
@@ -13,7 +12,7 @@ import co.edu.uptc.interfaces.ILibreria;
 import co.edu.uptc.repository.LocalLibro;
 import co.edu.uptc.service.Libreria;
 
-/** Punto de entrada y raiz de composicion: aqui se ensamblan las dependencias. */
+
 public class Inicio {
 
     public static void main(String[] args) {
