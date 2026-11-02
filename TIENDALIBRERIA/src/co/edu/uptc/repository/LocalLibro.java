@@ -22,7 +22,15 @@ public class LocalLibro implements ILibroRepositorio {
                 .findFirst()
                 .orElse(null);
     }
-
+    @Override
+    public void actualizar(Libro libro) {
+        for (int i = 0; i < libros.size(); i++) {
+            if (libros.get(i).getIsbn().equals(libro.getIsbn())) {
+                libros.set(i, libro);
+                return;
+            }
+        }
+    }
     @Override
     public void eliminar(String isbn) {
         libros.removeIf(l -> l.getIsbn().equals(isbn));

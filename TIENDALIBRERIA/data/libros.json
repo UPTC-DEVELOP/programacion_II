@@ -1,0 +1,26 @@
+[
+  {
+    "isbn": "10-20-30",
+    "tituloLibro": "cien años de soledad",
+    "autor": "Gabriel garcia marquez",
+    "fechaPublicacion": 2025,
+    "categoria": "Novela",
+    "editorial": "america",
+    "paginas": 200,
+    "precioVenta": 50000.0,
+    "cantidadDisponible": 10,
+    "formato": "fisico"
+  },
+  {
+    "isbn": "20-30-40",
+    "tituloLibro": "El peofesor",
+    "autor": "jhon",
+    "fechaPublicacion": 2020,
+    "categoria": "Novela",
+    "editorial": "paramerica",
+    "paginas": 500,
+    "precioVenta": 65000.0,
+    "cantidadDisponible": 7,
+    "formato": "fisico"
+  }
+]

@@ -8,6 +8,7 @@ import co.edu.uptc.model.Libro;
 import co.edu.uptc.exceptions.LibreriaException;
 
 public class Libreria implements ILibreria{
+	
 	private final ILibroRepositorio repositorio;
 
 	public Libreria(ILibroRepositorio repositorio) {
@@ -61,6 +62,9 @@ public class Libreria implements ILibreria{
 	        libroExistente.setCantidadDisponible(libroActualizado.getCantidadDisponible());
 	        libroExistente.setCategoria(libroActualizado.getCategoria());
 	        libroExistente.setFormato(libroActualizado.getFormato());
+	        libroExistente.setFormato(libroActualizado.getFormato());
+	        repositorio.actualizar(libroExistente);   // le avisa al repositorio
+	    
 	    }
 
 	    @Override

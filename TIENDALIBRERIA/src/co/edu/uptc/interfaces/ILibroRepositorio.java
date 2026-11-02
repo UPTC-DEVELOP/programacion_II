@@ -4,7 +4,7 @@ import java.util.List;
 
 import co.edu.uptc.model.Libro;
 
-/** Contrato de almacenamiento de libros (equivalente a IClienteRepositorio). */
+
 public interface ILibroRepositorio {
 
     void guardar(Libro libro);
@@ -12,6 +12,8 @@ public interface ILibroRepositorio {
     Libro buscar(String isbn);
 
     void eliminar(String isbn);
+   
+    void actualizar(Libro libro);
 
     List<Libro> listar();
 }
