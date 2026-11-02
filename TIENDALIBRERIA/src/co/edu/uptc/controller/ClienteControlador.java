@@ -98,39 +98,36 @@ public class ClienteControlador {
     }
 
     public void eliminarCliente() {
-        String correo = vista.getClienteSeleccionadoCorreo();
-        if (correo == null) {
+        String cedula = vista.getClienteSeleccionadoCedula();   // antes: ...Correo()
+        if (cedula == null) {
             JOptionPane.showMessageDialog(padre, "Seleccione un cliente para eliminar");
             return;
         }
-
         int respuesta = JOptionPane.showConfirmDialog(padre,
-                "¿Desea eliminar al cliente con correo " + correo + "?",
+                "¿Desea eliminar al cliente con cedula " + cedula + "?",
                 "Eliminar cliente", JOptionPane.YES_NO_OPTION);
-
         if (respuesta == JOptionPane.YES_OPTION) {
-            gestionCliente.eliminarCliente(correo);
+            gestionCliente.eliminarCliente(cedula);
             refrescarTablaClientes();
         }
     }
 
     public void verCliente() {
-        String correo = vista.getClienteSeleccionadoCorreo();
-        if (correo == null) {
+        String cedula = vista.getClienteSeleccionadoCedula();
+        if (cedula == null) {
             JOptionPane.showMessageDialog(padre, "Seleccione un cliente para ver");
             return;
         }
-
-        Cliente cliente = gestionCliente.buscarCliente(correo);
+        Cliente cliente = gestionCliente.buscarClientePorCedula(cedula);
         if (cliente != null) {
             JOptionPane.showMessageDialog(padre, cliente.toString());
         }
     }
 
     public void buscarCliente() {
-        String criterio = JOptionPane.showInputDialog(padre, "Ingrese el correo o la cédula a buscar:");
-        if (criterio != null && !criterio.trim().isEmpty()) {
-            Cliente cliente = gestionCliente.buscarCliente(criterio);
+        String cedula = JOptionPane.showInputDialog(padre, "Ingrese la cédula a buscar:");
+        if (cedula != null && !cedula.trim().isEmpty()) {
+            Cliente cliente = gestionCliente.buscarClientePorCedula(cedula);
             if (cliente != null) {
                 vista.seleccionarClientePorCorreo(cliente.getCorreo());
                 JOptionPane.showMessageDialog(padre, cliente.toString());
@@ -139,7 +136,8 @@ public class ClienteControlador {
             }
         }
     }
-
+    
+    
     // Restablece la tabla: quita la seleccion y vuelve a cargar los clientes
     public void limpiarTablaClientes() {
         refrescarTablaClientes();

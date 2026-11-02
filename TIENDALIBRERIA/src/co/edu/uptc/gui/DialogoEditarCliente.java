@@ -7,10 +7,11 @@ import co.edu.uptc.util.Comandos;
 
 public class DialogoEditarCliente extends DialogoCentralCliente {
 
-    public DialogoEditarCliente(ActionListener evento, String tituloDialogo, boolean isCrear) {
-        super(evento, tituloDialogo, isCrear);
-        // El correo es la llave del cliente: no se puede modificar
-        txCorreo.setEnabled(false);
+	public DialogoEditarCliente(ActionListener evento, String tituloDialogo, boolean isCrear) {
+	    super(evento, tituloDialogo, isCrear);
+	    // La cedula es la llave del cliente: no se puede modificar
+	    txCedula.setEnabled(false);
+	
     }
 
     @Override

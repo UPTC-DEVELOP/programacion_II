@@ -2,6 +2,7 @@ package co.edu.uptc.config;
 
 import co.edu.uptc.interfaces.IClienteRepositorio;
 import co.edu.uptc.interfaces.IGestionCliente;
+import co.edu.uptc.repository.ClienteJsonRepositorio;
 import co.edu.uptc.repository.LocalCliente;
 import co.edu.uptc.service.GestionCliente;
 
@@ -13,9 +14,7 @@ public class ClienteConfig {
     private IClienteRepositorio iCliente;
 
     private ClienteConfig() {
-
-        iCliente = new LocalCliente();
-
+        iCliente = new ClienteJsonRepositorio("data/clientes.json");
         gestionCliente = new GestionCliente(iCliente);
     }
 

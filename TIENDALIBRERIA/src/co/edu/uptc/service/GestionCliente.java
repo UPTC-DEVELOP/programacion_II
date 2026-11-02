@@ -44,40 +44,29 @@ public class GestionCliente implements IGestionCliente {
 
     @Override
     public void actualizarCliente(Cliente clienteNuevo) {
-
         validarCliente(clienteNuevo);
-
         boolean existe = false;
-
         for (Cliente existente : cliente.listar()) {
-
-            if (existente.getCorreo().equals(clienteNuevo.getCorreo())) {
-
-                existe = true;
-
-            } else if (existente.getCedula().equals(clienteNuevo.getCedula())) {
-
+            if (existente.getCedula().equals(clienteNuevo.getCedula())) {
+                existe = true;                       // es el cliente que se actualiza
+            } else if (existente.getCorreo().equals(clienteNuevo.getCorreo())) {
                 throw new IllegalArgumentException(
-                        "La cédula ya pertenece a otro cliente: "
-                        + clienteNuevo.getCedula());
+                    "El correo ya pertenece a otro cliente: " + clienteNuevo.getCorreo());
             }
         }
-
         if (!existe) {
-
             throw new IllegalArgumentException(
-                    "No existe un cliente con el correo: "
-                    + clienteNuevo.getCorreo());
+                "No existe un cliente con la cédula: " + clienteNuevo.getCedula());
         }
-
         cliente.actualizar(clienteNuevo);
+    
     }
 
     @Override
-    public void eliminarCliente(String correo) {
-
-        cliente.eliminar(correo);
+    public void eliminarCliente(String cedula) {
+        cliente.eliminar(cedula);
     }
+    
 
     @Override
     public List<Cliente> listarClientes() {

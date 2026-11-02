@@ -3,8 +3,8 @@ package co.edu.uptc.repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import co.edu.uptc.model.Cliente;
 import co.edu.uptc.interfaces.IClienteRepositorio;
+import co.edu.uptc.model.Cliente;
 
 public class LocalCliente implements IClienteRepositorio {
 
@@ -21,28 +21,17 @@ public class LocalCliente implements IClienteRepositorio {
 
     @Override
     public void actualizar(Cliente cliente) {
-
         for (int i = 0; i < clientes.size(); i++) {
-
-            if (clientes.get(i).getCorreo()
-                    .equals(cliente.getCorreo())) {
-
+            if (clientes.get(i).getCedula().equals(cliente.getCedula())) {
                 clientes.set(i, cliente);
+                return;
             }
         }
     }
 
     @Override
-    public void eliminar(String correo) {
-
-        for (Cliente cliente : clientes) {
-
-            if (cliente.getCorreo().equals(correo)) {
-
-                clientes.remove(cliente);
-                break;
-            }
-        }
+    public void eliminar(String cedula) {
+        clientes.removeIf(c -> c.getCedula().equals(cedula));
     }
 
     @Override

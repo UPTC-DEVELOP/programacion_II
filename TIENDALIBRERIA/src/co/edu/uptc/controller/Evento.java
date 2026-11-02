@@ -5,10 +5,7 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Despachador de eventos de la GUI. Cada controlador registra los comandos
- * que atiende; asi se pueden agregar modulos sin modificar esta clase.
- */
+
 public class Evento implements ActionListener {
 
     private final Map<String, Runnable> acciones = new HashMap<>();
