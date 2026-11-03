@@ -35,10 +35,6 @@ El proyecto sigue una organización MVC (Modelo, Vista y Controlador):
 
 El punto de entrada es `util.aplicacion.Main`. Los archivos locales están en `TiendaVirtual/datos`; si la aplicación no los encuentra, revisa que Eclipse ejecute con `TiendaVirtual` como directorio de trabajo.
 
-## Integrantes y aportes
-
-La evidencia disponible y sus límites están resumidos en [`docs/CONTRIBUCIONES.md`](docs/CONTRIBUCIONES.md). No se asignan tareas individuales sin respaldo en el informe, los archivos o el historial de commits.
-
 ## Rama de trabajo
 
 El material corresponde al proyecto de la rama `feature/grupo14` del repositorio del curso: [UPTC-DEVELOP/programacion_II](https://github.com/UPTC-DEVELOP/programacion_II/tree/feature/grupo14).
