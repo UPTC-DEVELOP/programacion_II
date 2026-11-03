@@ -11,15 +11,15 @@ import model.Libro;
 import persistencia.IRepositorio;
 import persistencia.RepositorioClientesBD;
 import persistencia.RepositorioClientesJson;
+import persistencia.RepositorioLibrosBD;
 import persistencia.RepositorioLibrosJson;
 import service.IServicioClientes;
 import service.IServicioLibros;
 
 /**
- * Punto de entrada de la aplicacion.
- *
- * Es el unico lugar que conoce las IMPLEMENTACIONES concretas: ensambla la
- * aplicacion en capas (persistencia -> logica de negocio -> interfaz grafica)
+ * Punto de entrada de la aplicación.
+ * Es el único lugar que conoce las IMPLEMENTACIONES concretas: ensambla la
+ * aplicación en capas (persistencia -> lógica de negocio -> interfaz gráfica)
  * y le pasa a las ventanas solo las interfaces (SOLID).
  */
 public class Main {
@@ -30,28 +30,35 @@ public class Main {
             public void run() {
 
                 // CAPA 1: PERSISTENCIA
-                // Los clientes se guardan en base de datos si se arranca con
+                // Los datos se guardan en base de datos si se arranca con
                 // -Dtienda.bd=true; si no, en archivo JSON.
+            	
                 boolean usarBD = Boolean.getBoolean("tienda.bd");
+
                 IRepositorio<Cliente> repositorioClientes = usarBD
                         ? new RepositorioClientesBD()
                         : new RepositorioClientesJson();
-                RepositorioLibrosJson repositorioLibros = new RepositorioLibrosJson();
 
-                // CAPA 2: LOGICA DE NEGOCIO (solo se usa la interfaz)
+                IRepositorio<Libro> repositorioLibros = usarBD
+                        ? new RepositorioLibrosBD()
+                        : new RepositorioLibrosJson();
+
+                // CAPA 2: LÓGICA DE NEGOCIO (solo se usa la interfaz)
+                
                 IServicioClientes controladorClientes = new ControladorCliente(repositorioClientes);
                 IServicioLibros controladorLibros = new ControladorLibro(repositorioLibros);
 
                 cargarDatosDePrueba(controladorClientes);
                 cargarLibrosDePrueba(controladorLibros);
 
-                // CAPA 3: INTERFAZ GRAFICA
+                // CAPA 3: INTERFAZ GRÁFICA
                 new VentanaLogin(controladorClientes, controladorLibros).setVisible(true);
             }
         });
     }
 
-    // CARGA CLIENTES DE PRUEBA (solo si el JSON esta vacio)
+    // CARGA CLIENTES DE PRUEBA (solo si el JSON está vacío)
+    
     private static void cargarDatosDePrueba(IServicioClientes controlador) {
         if (controlador.cantidad() > 0) {
             return;
@@ -62,7 +69,8 @@ public class Main {
         controlador.registrar(cliente);
     }
 
-    // CARGA LIBROS DE PRUEBA (solo si el JSON esta vacio)
+    // CARGA LIBROS DE PRUEBA (solo si el JSON está vacío)
+    
     private static void cargarLibrosDePrueba(IServicioLibros controladorLibro) {
         if (controladorLibro.listar().size() > 0) {
             return;
