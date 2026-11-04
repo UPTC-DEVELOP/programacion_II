@@ -85,6 +85,7 @@ public class PanelLibro extends JPanel {
 	}
 
 	public void cargarLibrosEnTabla(List<Libro> libros) {
+
 		modeloTabla.setRowCount(0);
 
 		if (libros != null) {
@@ -95,7 +96,6 @@ public class PanelLibro extends JPanel {
 				modeloTabla.addRow(fila);
 			}
 		}
-
 	}
 
 	private void buscarLibro() {
