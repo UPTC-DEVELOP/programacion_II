@@ -1,0 +1,141 @@
+package co.edu.uptc.service;
+
+import java.util.List;
+
+import co.edu.uptc.interfaces.IClienteRepositorio;
+import co.edu.uptc.interfaces.IGestionCliente;
+import co.edu.uptc.model.Cliente;
+
+public class GestionCliente implements IGestionCliente {
+
+    private IClienteRepositorio cliente;
+
+    public GestionCliente(IClienteRepositorio cliente) {
+
+        super();
+
+        this.cliente = cliente;
+    }
+
+    @Override
+    public void guardarCliente(Cliente clienteNuevo) {
+
+        validarCliente(clienteNuevo);
+
+        for (Cliente existente : cliente.listar()) {
+
+            if (existente.getCorreo().equals(clienteNuevo.getCorreo())) {
+
+                throw new IllegalArgumentException(
+                        "Ya existe un cliente con el correo: "
+                        + clienteNuevo.getCorreo());
+            }
+
+            if (existente.getCedula().equals(clienteNuevo.getCedula())) {
+
+                throw new IllegalArgumentException(
+                        "Ya existe un cliente con la cédula: "
+                        + clienteNuevo.getCedula());
+            }
+        }
+
+        cliente.guardar(clienteNuevo);
+    }
+
+    @Override
+    public void actualizarCliente(Cliente clienteNuevo) {
+        validarCliente(clienteNuevo);
+        boolean existe = false;
+        for (Cliente existente : cliente.listar()) {
+            if (existente.getCedula().equals(clienteNuevo.getCedula())) {
+                existe = true;                       // es el cliente que se actualiza
+            } else if (existente.getCorreo().equals(clienteNuevo.getCorreo())) {
+                throw new IllegalArgumentException(
+                    "El correo ya pertenece a otro cliente: " + clienteNuevo.getCorreo());
+            }
+        }
+        if (!existe) {
+            throw new IllegalArgumentException(
+                "No existe un cliente con la cédula: " + clienteNuevo.getCedula());
+        }
+        cliente.actualizar(clienteNuevo);
+    
+    }
+
+    @Override
+    public void eliminarCliente(String cedula) {
+        cliente.eliminar(cedula);
+    }
+    
+
+    @Override
+    public List<Cliente> listarClientes() {
+
+        return cliente.listar();
+    }
+
+    // Busca por correo o por cédula; devuelve null si no existe
+    @Override
+    public Cliente buscarCliente(String criterio) {
+
+        if (esVacio(criterio)) {
+
+            return null;
+        }
+
+        String clave = criterio.trim();
+
+        for (Cliente existente : cliente.listar()) {
+
+            if (existente.getCorreo().equals(clave)
+                    || existente.getCedula().equals(clave)) {
+
+                return existente;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public Cliente buscarClientePorCedula(String cedula) {
+
+        if (esVacio(cedula)) {
+
+            return null;
+        }
+
+        String clave = cedula.trim();
+
+        for (Cliente existente : cliente.listar()) {
+
+            if (existente.getCedula().equals(clave)) {
+
+                return existente;
+            }
+        }
+
+        return null;
+    }
+
+    private void validarCliente(Cliente c) {
+
+        if (c == null || esVacio(c.getCedula()) || esVacio(c.getNombre())
+                || esVacio(c.getApellido()) || esVacio(c.getCorreo())) {
+
+            throw new IllegalArgumentException(
+                    "Cédula, nombre, apellido y correo son obligatorios.");
+        }
+
+        if (!c.getCorreo().contains("@")) {
+
+            throw new IllegalArgumentException(
+                    "El correo no tiene un formato válido.");
+        }
+    }
+
+    private boolean esVacio(String texto) {
+
+        return texto == null || texto.trim().isEmpty();
+    }
+}
