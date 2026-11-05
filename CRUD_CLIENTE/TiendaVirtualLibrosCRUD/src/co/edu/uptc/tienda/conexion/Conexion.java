@@ -6,18 +6,18 @@ import java.sql.SQLException;
 
 public class Conexion {
 
-	private String user = "root";
-	private String password = "G@nzalez.2015";
-	private String database = "sistema_biblioteca";
-	private String port = "3306";
-	private String url = "jdbc:mysql://localhost:" + port + "/" + database;
-
+	private DataBaseConfig dataBaseConfig;
 	private Connection conn = null;
+
+	public Conexion() {
+		this.dataBaseConfig = new DataBaseConfig();
+	}
 
 	public Connection conexion() {
 		try {
 
-			conn = DriverManager.getConnection(url, user, password);
+			conn = DriverManager.getConnection(dataBaseConfig.generarURL(), dataBaseConfig.getUser(),
+					dataBaseConfig.getPassword());
 			return conn;
 
 		} catch (SQLException e) {

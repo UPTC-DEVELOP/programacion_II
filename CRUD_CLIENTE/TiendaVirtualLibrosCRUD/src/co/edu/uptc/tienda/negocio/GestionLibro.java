@@ -21,8 +21,8 @@ public class GestionLibro {
 		return gestionLibro.listar();
 	}
 
-	public Libro buscarLibro(String isbn) {
-		return gestionLibro.buscar(isbn);
+	public Libro buscarLibro(String titulo) {
+		return gestionLibro.buscar(titulo);
 	}
 
 	public boolean actualizarLibro(Libro libroActualizar) {
