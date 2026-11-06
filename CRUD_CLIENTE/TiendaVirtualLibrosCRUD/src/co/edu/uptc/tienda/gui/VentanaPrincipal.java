@@ -1,61 +1,40 @@
 package co.edu.uptc.tienda.gui;
 
 import javax.swing.*;
-import javax.swing.UIManager;
+
+import co.edu.uptc.tienda.negocio.IGestionAutenticacion;
+import co.edu.uptc.tienda.negocio.NegocioException;
 
 /**
- * Ventana principal de la aplicación Tienda Virtual de Libros (Módulo
- * Clientes).
+ * Ventana principal de la aplicación Tienda Virtual de Libros.
  */
 public class VentanaPrincipal extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private PanelCentral panelCentral;
-	private PanelLogin panelLogin;
-	private Evento evento;
+	private final IGestionAutenticacion gestionAutenticacion;
+	private final PanelCentral panelCentral;
+	private final PanelLogin panelLogin;
 
-	/**
-	 * Constructor principal que inicializa y centra la interfaz gráfica.
-	 */
-	public VentanaPrincipal() {
-		setTitle("Tienda Virtual de Libros - Gestión de Clientes");
+	public VentanaPrincipal(IGestionAutenticacion gestionAutenticacion, PanelCentral panelCentral) {
+		this.gestionAutenticacion = gestionAutenticacion;
+		this.panelCentral = panelCentral;
+
+		setTitle("Tienda Virtual de Libros");
 		setSize(300, 180);
 		setResizable(Boolean.FALSE);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null); // Centrar en pantalla
 
-		// Relaciones o Asociaciones
-		evento = new Evento(this);
-		panelLogin = new PanelLogin(evento);
-		this.panelCentral = new PanelCentral();
+		panelLogin = new PanelLogin(this::loguear);
 
 		add(panelLogin);
-
 	}
 
-	public static void main(String[] args) {
+	private void loguear() {
 		try {
-			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		javax.swing.SwingUtilities.invokeLater(() -> {
-			VentanaPrincipal ventana = new VentanaPrincipal();
-			ventana.setVisible(Boolean.TRUE);
-		});
-	}
-
-	public void loguear() {
-		String usuario = panelLogin.getTxtUsuario().getText();
-		char[] password = panelLogin.getTxtContrasena().getText().toCharArray();
-
-		if (usuario.trim().isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Ingrese el Usuario.", "Validación", JOptionPane.WARNING_MESSAGE);
-			return;
-		} else if (password.length < 8) {
-			JOptionPane.showMessageDialog(this, "La contraseña debe tener mínimo 8 caracteres.", "Validación",
-					JOptionPane.WARNING_MESSAGE);
+			gestionAutenticacion.autenticar(panelLogin.getUsuario(), panelLogin.getContrasena());
+		} catch (NegocioException e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Validación", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
@@ -63,10 +42,10 @@ public class VentanaPrincipal extends JFrame {
 
 		this.panelLogin.setVisible(Boolean.FALSE);
 		add(this.panelCentral);
+		setResizable(Boolean.TRUE);
 		setSize(850, 570);
 		setLocationRelativeTo(null);
 		this.panelCentral.setVisible(Boolean.TRUE);
-
 	}
 
 }

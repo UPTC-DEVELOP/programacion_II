@@ -6,21 +6,18 @@ import co.edu.uptc.tienda.modelo.enums.TipoCliente;
 public abstract class Cliente extends Persona {
 
 	private int idCliente;
-	private TipoCliente tipoCliente;
 	private String contrasenia;
 	private Timestamp fechaRegistro;
 	private int intentosFallidos;
 
 	public Cliente(String primerNombre, String otrosNombres, String primerApellido, String otrosApellidos,
 			String tipoIdentificacion, String identificacion, String correoElectronico, String celular,
-			String direccion, int idCliente, TipoCliente tipoCliente, String contrasenia, Timestamp fechaRegistro,
-			int intentosFallidos) {
+			String direccion, int idCliente, String contrasenia, Timestamp fechaRegistro, int intentosFallidos) {
 
 		super(primerNombre, otrosNombres, primerApellido, otrosApellidos, tipoIdentificacion, identificacion,
 				correoElectronico, celular, direccion);
 
 		this.idCliente = idCliente;
-		this.tipoCliente = tipoCliente;
 		this.contrasenia = contrasenia;
 		this.fechaRegistro = fechaRegistro;
 		this.intentosFallidos = intentosFallidos;
@@ -32,14 +29,6 @@ public abstract class Cliente extends Persona {
 
 	public void setIdCliente(int idCliente) {
 		this.idCliente = idCliente;
-	}
-
-	public TipoCliente getTipoCliente() {
-		return tipoCliente;
-	}
-
-	public void setTipoCliente(TipoCliente tipoCliente) {
-		this.tipoCliente = tipoCliente;
 	}
 
 	public String getContrasenia() {
@@ -66,6 +55,8 @@ public abstract class Cliente extends Persona {
 		this.intentosFallidos = intentosFallidos;
 
 	}
+
+	public abstract TipoCliente getTipoCliente();
 
 	public abstract double calcularDescuento(double subtotal);
 }

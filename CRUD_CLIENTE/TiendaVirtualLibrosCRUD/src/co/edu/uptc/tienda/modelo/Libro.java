@@ -6,6 +6,8 @@ import co.edu.uptc.tienda.modelo.enums.TipoLibro;
 
 public abstract class Libro {
 
+	public static final double IVA = 0.15;
+
 	private Long idLibro;
 	private String isbn;
 	private String titulo;
@@ -16,15 +18,9 @@ public abstract class Libro {
 	private int numeroPaginas;
 	private double precioBase;
 	private int stockDisponible;
-	private TipoLibro tipoLibro;
-	private final double IVA = 0.15;
-	private double precioFinal;
-
-	public Libro() {
-	}
 
 	public Libro(Long idLibro, String isbn, String titulo, List<String> autores, String fechaPublicacion, String genero,
-			String editorial, int numeroPaginas, double precioBase, int stockDisponible, TipoLibro tipoLibro) {
+			String editorial, int numeroPaginas, double precioBase, int stockDisponible) {
 		this.idLibro = idLibro;
 		this.isbn = isbn;
 		this.titulo = titulo;
@@ -35,16 +31,14 @@ public abstract class Libro {
 		this.numeroPaginas = numeroPaginas;
 		this.precioBase = precioBase;
 		this.stockDisponible = stockDisponible;
-		this.tipoLibro = tipoLibro;
-		this.precioFinal = calcularPrecioFinal();
 	}
 
 	public Long getIdLibro() {
 		return idLibro;
 	}
 
-	public void setIdLibro(long siguienteIdLibro) {
-		this.idLibro = siguienteIdLibro;
+	public void setIdLibro(Long idLibro) {
+		this.idLibro = idLibro;
 	}
 
 	public String getIsbn() {
@@ -119,26 +113,16 @@ public abstract class Libro {
 		this.stockDisponible = stockDisponible;
 	}
 
-	public TipoLibro getTipoLibro() {
-		return tipoLibro;
-	}
-
-	public void setTipoLibro(TipoLibro tipoLibro) {
-		this.tipoLibro = tipoLibro;
-	}
-
-	public double getIVA() {
-		return IVA;
-	}
-
+	// Se calcula bajo demanda para que siempre refleje el precio base actual
 	public double getPrecioFinal() {
-		return precioFinal;
+		return Math.round(calcularPrecioFinal() * 100.0) / 100.0;
 	}
 
-	public void setPrecioFinal(double precioFinal) {
-		this.precioFinal = precioFinal;
+	// Las subclases pueden sobrescribirlo si su formato tiene costos adicionales
+	protected double calcularPrecioFinal() {
+		return precioBase + (precioBase * IVA);
 	}
 
-	public abstract double calcularPrecioFinal();
+	public abstract TipoLibro getTipoLibro();
 
 }

@@ -17,7 +17,7 @@ public class PanelLogin extends JPanel {
 	private JPasswordField txtContrasena;
 	private JButton btnIngresar;
 
-	public PanelLogin(Evento evento) {
+	public PanelLogin(Runnable alIngresar) {
 		setLayout(new BorderLayout(10, 10));
 		JPanel panelFormulario = new JPanel(new GridLayout(2, 2, 10, 10));
 
@@ -40,15 +40,14 @@ public class PanelLogin extends JPanel {
 		add(panelFormulario, BorderLayout.CENTER);
 		add(panelBoton, BorderLayout.SOUTH);
 
-		btnIngresar.addActionListener(evento);
-		btnIngresar.setActionCommand(Evento.LOGIN);
+		btnIngresar.addActionListener(e -> alIngresar.run());
 	}
 
-	public JTextField getTxtUsuario() {
-		return txtUsuario;
+	public String getUsuario() {
+		return txtUsuario.getText();
 	}
 
-	public JPasswordField getTxtContrasena() {
-		return txtContrasena;
+	public char[] getContrasena() {
+		return txtContrasena.getPassword();
 	}
 }

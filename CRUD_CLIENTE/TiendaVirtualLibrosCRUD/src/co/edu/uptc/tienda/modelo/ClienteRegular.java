@@ -8,12 +8,15 @@ public class ClienteRegular extends Cliente {
 
 	public ClienteRegular(String primerNombre, String otrosNombres, String primerApellido, String otrosApellidos,
 			String tipoIdentificacion, String identificacion, String correoElectronico, String celular,
-			String direccion, int idCliente, TipoCliente tipoCliente, String contrasenia, Timestamp fechaRegistro,
-			int intentosFallidos) {
+			String direccion, int idCliente, String contrasenia, Timestamp fechaRegistro, int intentosFallidos) {
 
 		super(primerNombre, otrosNombres, primerApellido, otrosApellidos, tipoIdentificacion, identificacion,
-				correoElectronico, celular, direccion, idCliente, tipoCliente, contrasenia, fechaRegistro,
-				intentosFallidos);
+				correoElectronico, celular, direccion, idCliente, contrasenia, fechaRegistro, intentosFallidos);
+	}
+
+	@Override
+	public TipoCliente getTipoCliente() {
+		return TipoCliente.REGULAR;
 	}
 
 	@Override

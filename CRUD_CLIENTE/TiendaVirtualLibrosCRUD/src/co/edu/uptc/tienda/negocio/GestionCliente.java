@@ -1,35 +1,72 @@
 package co.edu.uptc.tienda.negocio;
 
+import java.sql.Timestamp;
 import java.util.List;
 
-import co.edu.uptc.tienda.interfaces.IGestionCliente;
 import co.edu.uptc.tienda.modelo.Cliente;
 
-public class GestionCliente {
+public class GestionCliente implements IGestionCliente {
 
-	private IGestionCliente gestionCliente;
+	private final IRepositorioCliente repositorio;
+	private final ValidadorCliente validador;
 
-	public GestionCliente(IGestionCliente gestionCliente) {
-		this.gestionCliente = gestionCliente;
+	public GestionCliente(IRepositorioCliente repositorio) {
+		this.repositorio = repositorio;
+		this.validador = new ValidadorCliente();
 	}
 
+	@Override
 	public void agregarCliente(Cliente cliente) {
-		gestionCliente.agregar(cliente);
+		validador.validar(cliente);
+
+		if (repositorio.buscarPorIdentificacion(cliente.getIdentificacion()) != null) {
+			throw new NegocioException(
+					"Ya existe un cliente registrado con la identificación: " + cliente.getIdentificacion());
+		}
+
+		cliente.setFechaRegistro(new Timestamp(System.currentTimeMillis()));
+		cliente.setIntentosFallidos(0);
+		repositorio.guardar(cliente);
 	}
 
+	@Override
 	public List<Cliente> listarClientes() {
-		return gestionCliente.listar();
+		return repositorio.listar();
 	}
 
+	@Override
 	public Cliente buscarCliente(String identificacion) {
-		return gestionCliente.buscar(identificacion);
+		return repositorio.buscarPorIdentificacion(identificacion);
 	}
 
-	public boolean actualizarCliente(Cliente clienteActualizado) {
-		return gestionCliente.actualizar(clienteActualizado);
+	@Override
+	public void actualizarCliente(Cliente clienteActualizado) {
+		validador.validar(clienteActualizado);
+
+		Cliente clienteActual = repositorio.buscarPorIdentificacion(clienteActualizado.getIdentificacion());
+		if (clienteActual == null) {
+			throw new NegocioException("No existe un cliente con la identificación: "
+					+ clienteActualizado.getIdentificacion());
+		}
+
+		// Datos que el usuario no puede modificar desde el formulario
+		clienteActualizado.setIdCliente(clienteActual.getIdCliente());
+		clienteActualizado.setFechaRegistro(clienteActual.getFechaRegistro());
+		clienteActualizado.setIntentosFallidos(clienteActual.getIntentosFallidos());
+
+		if (clienteActualizado.getContrasenia() == null || clienteActualizado.getContrasenia().trim().isEmpty()) {
+			clienteActualizado.setContrasenia(clienteActual.getContrasenia());
+		}
+
+		if (!repositorio.actualizar(clienteActualizado)) {
+			throw new NegocioException("No se pudo actualizar la información del cliente.");
+		}
 	}
 
-	public boolean eliminarCliente(String identificacion) {
-		return gestionCliente.eliminar(identificacion);
+	@Override
+	public void eliminarCliente(String identificacion) {
+		if (!repositorio.eliminar(identificacion)) {
+			throw new NegocioException("No existe un cliente con la identificación: " + identificacion);
+		}
 	}
 }
