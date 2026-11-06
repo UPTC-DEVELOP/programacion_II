@@ -47,6 +47,16 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.13.0</version>
       </plugin>
+
+      <!-- Permite ejecutar la aplicación con: mvn exec:java -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.5.0</version>
+        <configuration>
+          <mainClass>co.edu.uptc.AppLibros</mainClass>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>

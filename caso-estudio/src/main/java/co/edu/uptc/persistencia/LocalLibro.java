@@ -77,7 +77,11 @@ public class LocalLibro implements ILibroRepositorio {
             boolean coincideAutor = filtro.getAutor() == null || filtro.getAutor().trim().isEmpty()
                     || libro.getAutores().stream().anyMatch(a -> a.toLowerCase().contains(filtro.getAutor().toLowerCase()));
             boolean coincideCategoria = filtro.getCategoria() == null || libro.getCategoria() == filtro.getCategoria();
-            return coincideTitulo && coincideAutor && coincideCategoria;
+            boolean coincidePrecio = (filtro.getPrecioMin() == null
+                    || libro.getPrecioVenta() >= filtro.getPrecioMin())
+                    && (filtro.getPrecioMax() == null
+                    || libro.getPrecioVenta() <= filtro.getPrecioMax());
+            return coincideTitulo && coincideAutor && coincideCategoria && coincidePrecio;
         }).collect(Collectors.toList());
     }
 

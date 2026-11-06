@@ -21,4 +21,23 @@ public interface ILibroRepositorio {
     Libro consultarPorIsbn(String isbn);
     List<Libro> listarTodos();
     List<Libro> listarConFiltro(FiltroLibroDto filtro);
+
+    /**
+     * Indica si un libro tiene ventas asociadas (RF03).
+     *
+     * <p>Se declara como método default para no romper las implementaciones
+     * existentes (por ejemplo LocalLibro), que no conocen el repositorio de
+     * ventas y devuelven false. La implementación JSON lo sobrescribe cuando
+     * recibe un IVentaRepository.</p>
+     *
+     * <p>Aplica: ISP (Interface Segregation Principle) y OCP - se amplía el
+     * contrato con una operación opcional sin obligar a reescribir las clases
+     * que no la necesitan.</p>
+     *
+     * @param isbn ISBN del libro a verificar
+     * @return true si existe al menos una venta que referencia el ISBN
+     */
+    default boolean tieneVentas(String isbn) {
+        return false;
+    }
 }

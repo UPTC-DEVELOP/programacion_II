@@ -1,8 +1,11 @@
 package co.edu.uptc.negocio;
 
 import co.edu.uptc.excepciones.ReglaNegocioException;
+import co.edu.uptc.excepciones.ValidacionException;
 import co.edu.uptc.modelo.dto.ClienteDto;
 import co.edu.uptc.modelo.dto.LibroDto;
+import co.edu.uptc.modelo.enums.Formato;
+import java.time.Year;
 import java.util.regex.Pattern;
 
 /**
@@ -46,39 +49,95 @@ public class ValidadorDatos {
         validarIsbnDeDto(isbn);
     }
 
+    /**
+     * Valida que el ISBN tenga exactamente 13 dígitos (RF01).
+     *
+     * <p>Se aceptan guiones y espacios como separadores visuales, pero se
+     * ignoran para comprobar la longitud. El ISBN es la clave primaria del
+     * catálogo y no puede repetirse ni modificarse.</p>
+     *
+     * @param isbn ISBN a validar
+     * @throws ValidacionException si el ISBN está vacío o no tiene 13 dígitos
+     */
     public void validarIsbnDeDto(String isbn) throws ReglaNegocioException {
-        if (isbn == null || !ISBN_PATTERN.matcher(isbn).matches()) {
-            throw new ReglaNegocioException("El ISBN no es válido o está vacío.");
+        String limpio = (isbn == null) ? "" : isbn.replace("-", "").replace(" ", "").trim();
+        if (limpio.length() != 13 || !limpio.matches("\\d{13}")) {
+            throw new ValidacionException("El ISBN debe contener exactamente 13 dígitos.");
         }
     }
 
     public void validarIsbnDeDto(LibroDto dto) throws ReglaNegocioException {
         if (dto == null) {
-            throw new ReglaNegocioException("El libro no puede ser nulo.");
+            throw new ValidacionException("El libro no puede ser nulo.");
         }
         validarIsbnDeDto(dto.getIsbn());
     }
 
+    /**
+     * Valida los datos de un libro según las reglas de negocio de RF01.
+     *
+     * <p>Reglas aplicadas:</p>
+     * <ul>
+     *   <li>ISBN con exactamente 13 dígitos.</li>
+     *   <li>Título no vacío y de máximo 100 caracteres.</li>
+     *   <li>Al menos un autor.</li>
+     *   <li>Año de publicación mayor que 1400 y no superior al año actual.</li>
+     *   <li>Precio de venta mayor que cero.</li>
+     *   <li>Stock mayor o igual que cero.</li>
+     *   <li>Categoría y formato seleccionados.</li>
+     *   <li>Si el formato es FISICO y se informan peso/dimensiones, estos deben
+     *       ser válidos.</li>
+     * </ul>
+     *
+     * <p>Nota sobre el IVA: el proyecto existente trata el precio de catálogo
+     * como base imponible y aplica el IVA (19% para DIGITAL) en la capa del
+     * carrito mediante CalculadoraImpuesto. Por eso NO se multiplica el precio
+     * aquí: hacerlo provocaría un doble cobro de IVA y rompería RF13.</p>
+     *
+     * @param dto Libro a validar
+     * @throws ReglaNegocioException si algún dato incumple una regla
+     */
     public void validarLibro(LibroDto dto) throws ReglaNegocioException {
         validarIsbnDeDto(dto);
         validarTextoNoVacio(dto.getTitulo(), "Título");
+
+        String titulo = dto.getTitulo().trim();
+        if (titulo.length() > 100) {
+            throw new ValidacionException("El título no puede superar los 100 caracteres.");
+        }
+
         if (dto.getAutores() == null || dto.getAutores().isEmpty()) {
             throw new ReglaNegocioException("Debe indicar al menos un autor.");
         }
-        if (dto.getAnioPublicacion() < 1000 || dto.getAnioPublicacion() > 2100) {
-            throw new ReglaNegocioException("El año de publicación no es válido.");
+
+        int anioActual = Year.now().getValue();
+        if (dto.getAnioPublicacion() <= 1400 || dto.getAnioPublicacion() > anioActual) {
+            throw new ValidacionException("El año de publicación debe ser mayor que 1400 y no superar "
+                    + anioActual + ".");
         }
+
         if (dto.getPrecioVenta() <= 0) {
-            throw new ReglaNegocioException("El precio de venta debe ser mayor que cero.");
+            throw new ValidacionException("El precio de venta debe ser mayor que cero.");
         }
+
         if (dto.getStock() < 0) {
-            throw new ReglaNegocioException("El stock no puede ser negativo.");
+            throw new ValidacionException("El stock no puede ser negativo.");
         }
+
         if (dto.getCategoria() == null) {
             throw new ReglaNegocioException("Debe seleccionar una categoría.");
         }
         if (dto.getFormato() == null) {
             throw new ReglaNegocioException("Debe seleccionar el formato (Físico o Digital).");
+        }
+
+        if (dto.getFormato() == Formato.FISICO) {
+            if (dto.getPeso() != null && dto.getPeso() <= 0) {
+                throw new ValidacionException("El peso de un libro físico debe ser mayor que cero.");
+            }
+            if (dto.getDimensiones() != null && dto.getDimensiones().trim().isEmpty()) {
+                throw new ValidacionException("Las dimensiones de un libro físico no pueden estar vacías.");
+            }
         }
     }
 

@@ -17,6 +17,13 @@ public class LibroDto {
     private Formato formato;
     private Categoria categoria;
 
+    /**
+     * Atributos opcionales exigidos por RF01 para libros FÍSICOS. Se mantienen
+     * como objetos para representar "no informado" con null.
+     */
+    private Double peso;
+    private String dimensiones;
+
     // CONSTRUCTOR VACÍO 
     public LibroDto() {
         this.autores = new ArrayList<>();
@@ -59,4 +66,8 @@ public class LibroDto {
     public void setFormato(Formato formato) { this.formato = formato; }
     public Categoria getCategoria() { return categoria; }
     public void setCategoria(Categoria categoria) { this.categoria = categoria; }
+    public Double getPeso() { return peso; }
+    public void setPeso(Double peso) { this.peso = peso; }
+    public String getDimensiones() { return dimensiones; }
+    public void setDimensiones(String dimensiones) { this.dimensiones = dimensiones; }
 }

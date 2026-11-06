@@ -2,6 +2,7 @@ package co.edu.uptc.modelo;
 
 import co.edu.uptc.modelo.enums.Categoria;
 import co.edu.uptc.modelo.enums.Formato;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Libro {
@@ -15,6 +16,22 @@ public class Libro {
     private int stock;
     private Formato formato;
     private Categoria categoria; // Debe ser ENUM, NO STRING
+
+    /**
+     * Atributos opcionales exigidos por RF01 para libros FÍSICOS.
+     * Se declaran como objetos (Double/String) para poder distinguir
+     * "no informado" (null) de un valor realmente suministrado.
+     */
+    private Double peso;
+    private String dimensiones;
+
+    /**
+     * Constructor vacío requerido por Gson para deserializar los libros
+     * almacenados en data/libros.json.
+     */
+    public Libro() {
+        this.autores = new ArrayList<>();
+    }
 
     public Libro(String isbn, String titulo, List<String> autores, int anioPublicacion,
                  String editorial, int numPaginas, double precioVenta, int stock,
@@ -52,4 +69,8 @@ public class Libro {
     public void setFormato(Formato formato) { this.formato = formato; }
     public Categoria getCategoria() { return categoria; }
     public void setCategoria(Categoria categoria) { this.categoria = categoria; }
+    public Double getPeso() { return peso; }
+    public void setPeso(Double peso) { this.peso = peso; }
+    public String getDimensiones() { return dimensiones; }
+    public void setDimensiones(String dimensiones) { this.dimensiones = dimensiones; }
 }

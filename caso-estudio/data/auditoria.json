@@ -1,0 +1,13 @@
+{
+  "registros": [
+    {
+      "id": 1,
+      "accion": "CREATE",
+      "isbn": "9780151439518",
+      "usuario": "admin",
+      "fecha": "2026-11-06T16:24:53.477029",
+      "detalles": "Registro de nuevo libro: Titulo prueba"
+    }
+  ],
+  "ultimoId": 1
+}

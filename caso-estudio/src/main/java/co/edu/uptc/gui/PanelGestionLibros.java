@@ -27,6 +27,9 @@ public class PanelGestionLibros extends JPanel {
 
     // Componentes de la interfaz
     private JTextField txtBusqueda;
+    private JTextField txtAutor;
+    private JTextField txtPrecioMin;
+    private JTextField txtPrecioMax;
     private JComboBox<Categoria> comboCategoria;
     private JButton btnBuscar;
     private JButton btnNuevo;
@@ -61,8 +64,11 @@ public class PanelGestionLibros extends JPanel {
     }
 
     private void inicializarComponentes() {
-        // Campos de búsqueda
+        // Campos de búsqueda (RF04: título, autor, categoría y rango de precio)
         txtBusqueda = new CampoConHint("Título del libro", 20);
+        txtAutor = new CampoConHint("Autor", 14);
+        txtPrecioMin = new CampoConHint("Precio mín", 8);
+        txtPrecioMax = new CampoConHint("Precio máx", 8);
         comboCategoria = new JComboBox<>(Categoria.values());
         comboCategoria.insertItemAt(null, 0); // Opción "Todas"
         comboCategoria.setSelectedIndex(0);
@@ -89,20 +95,30 @@ public class PanelGestionLibros extends JPanel {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // Panel superior (búsqueda y acciones)
-        JPanel panelSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelSuperior.add(new JLabel("Buscar:"));
-        panelSuperior.add(txtBusqueda);
-        panelSuperior.add(new JLabel("Categoría:"));
-        panelSuperior.add(comboCategoria);
-        panelSuperior.add(btnBuscar);
-        panelSuperior.add(Box.createHorizontalStrut(20));
-        panelSuperior.add(btnNuevo);
-        panelSuperior.add(btnEditar);
-        panelSuperior.add(btnEliminar);
-        panelSuperior.add(Box.createHorizontalStrut(20));
-        panelSuperior.add(btnVolver);
+        // Panel superior con dos filas: filtros (fila 1) y acciones (fila 2)
+        JPanel panelFiltros = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelFiltros.add(new JLabel("Buscar:"));
+        panelFiltros.add(txtBusqueda);
+        panelFiltros.add(new JLabel("Autor:"));
+        panelFiltros.add(txtAutor);
+        panelFiltros.add(new JLabel("Categoría:"));
+        panelFiltros.add(comboCategoria);
+        panelFiltros.add(new JLabel("Precio:"));
+        panelFiltros.add(txtPrecioMin);
+        panelFiltros.add(new JLabel("-"));
+        panelFiltros.add(txtPrecioMax);
+        panelFiltros.add(btnBuscar);
 
+        JPanel panelAcciones = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelAcciones.add(btnNuevo);
+        panelAcciones.add(btnEditar);
+        panelAcciones.add(btnEliminar);
+        panelAcciones.add(Box.createHorizontalStrut(20));
+        panelAcciones.add(btnVolver);
+
+        JPanel panelSuperior = new JPanel(new GridLayout(2, 1));
+        panelSuperior.add(panelFiltros);
+        panelSuperior.add(panelAcciones);
         add(panelSuperior, BorderLayout.NORTH);
 
         // Panel central (tabla)
@@ -138,10 +154,34 @@ public class PanelGestionLibros extends JPanel {
     }
 
     /**
-     * Construye el filtro de búsqueda a partir de los campos del panel.
+     * Construye el filtro de búsqueda a partir de los campos del panel (RF04).
+     * Los precios vacíos o no numéricos se interpretan como "sin límite".
      */
     public FiltroLibroDto getFiltro() {
-        return new FiltroLibroDto(txtBusqueda.getText().trim(), null, getCategoriaSeleccionada());
+        return new FiltroLibroDto(
+                txtBusqueda.getText().trim(),
+                txtAutor.getText().trim(),
+                getCategoriaSeleccionada(),
+                parsearPrecio(txtPrecioMin),
+                parsearPrecio(txtPrecioMax));
+    }
+
+    /**
+     * Convierte el texto de un campo de precio a Double.
+     *
+     * @param campo Campo de texto con el precio
+     * @return El valor numérico o null si el campo está vacío o es inválido
+     */
+    private Double parsearPrecio(JTextField campo) {
+        String texto = campo.getText().trim().replace(',', '.');
+        if (texto.isEmpty()) {
+            return null;
+        }
+        try {
+            return Double.valueOf(texto);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     /**
