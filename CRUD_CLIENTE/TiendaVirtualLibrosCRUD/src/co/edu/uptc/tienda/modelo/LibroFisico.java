@@ -6,17 +6,15 @@ import co.edu.uptc.tienda.modelo.enums.TipoLibro;
 
 public class LibroFisico extends Libro {
 
+	private static final String TIEMPO_ENTREGA_POR_DEFECTO = "72 Horas";
+
 	private String tiempoMaximoEntrega;
 
-	public LibroFisico() {
-	}
-
 	public LibroFisico(Long idLibro, String isbn, String titulo, List<String> autores, String fechaPublicacion,
-			String genero, String editorial, int numeroPaginas, double precioBase, int stockDisponible,
-			TipoLibro tipoLibro) {
+			String genero, String editorial, int numeroPaginas, double precioBase, int stockDisponible) {
 		super(idLibro, isbn, titulo, autores, fechaPublicacion, genero, editorial, numeroPaginas, precioBase,
-				stockDisponible, tipoLibro);
-		this.tiempoMaximoEntrega = "72 Horas";
+				stockDisponible);
+		this.tiempoMaximoEntrega = TIEMPO_ENTREGA_POR_DEFECTO;
 	}
 
 	public String getTiempoMaximoEntrega() {
@@ -27,11 +25,9 @@ public class LibroFisico extends Libro {
 		this.tiempoMaximoEntrega = tiempoMaximoEntrega;
 	}
 
-	public double calcularPrecioFinal() {
-		double valorFinal = super.getPrecioBase() + (super.getPrecioBase() * super.getIVA());
-		setPrecioFinal(valorFinal);
-
-		return Math.round(valorFinal * 100.0) / 100.0;
+	@Override
+	public TipoLibro getTipoLibro() {
+		return TipoLibro.FISICO;
 	}
 
 }

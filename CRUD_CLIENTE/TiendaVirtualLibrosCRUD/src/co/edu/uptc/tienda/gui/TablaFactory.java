@@ -7,10 +7,8 @@ import javax.swing.table.DefaultTableModel;
 
 public class TablaFactory {
 
-	public static JScrollPane configurarTabla(String[] columnas, JTable tablaDestino,
-			DefaultTableModel[] modeloContenedor) {
-
-		DefaultTableModel modeloNoEditable = new DefaultTableModel(columnas, 0) {
+	public static DefaultTableModel crearModeloNoEditable(String[] columnas) {
+		return new DefaultTableModel(columnas, 0) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -18,14 +16,13 @@ public class TablaFactory {
 				return false;
 			}
 		};
+	}
 
-		modeloContenedor[0] = modeloNoEditable;
+	public static JScrollPane crearTabla(JTable tabla) {
+		tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		tabla.getTableHeader().setReorderingAllowed(false);
 
-		tablaDestino.setModel(modeloNoEditable);
-		tablaDestino.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		tablaDestino.getTableHeader().setReorderingAllowed(false);
-
-		return new JScrollPane(tablaDestino);
+		return new JScrollPane(tabla);
 	}
 
 }

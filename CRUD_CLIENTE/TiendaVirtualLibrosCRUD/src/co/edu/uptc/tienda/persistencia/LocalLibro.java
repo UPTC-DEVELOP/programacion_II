@@ -1,46 +1,69 @@
 package co.edu.uptc.tienda.persistencia;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import co.edu.uptc.tienda.interfaces.IGestionLibro;
 import co.edu.uptc.tienda.modelo.Libro;
-import co.edu.uptc.tienda.modelo.Libros;
+import co.edu.uptc.tienda.negocio.IRepositorioLibro;
 
-public class LocalLibro implements IGestionLibro {
+/**
+ * Repositorio de libros en memoria.
+ */
+public class LocalLibro implements IRepositorioLibro {
 
-	private Libros libros;
+	private final List<Libro> libros;
 	private long siguienteIdLibro;
 
 	public LocalLibro() {
-		this.libros = new Libros();
+		this.libros = new ArrayList<>();
 		this.siguienteIdLibro = 1L;
 	}
 
 	@Override
-	public void agregar(Libro libro) {
+	public void guardar(Libro libro) {
 		libro.setIdLibro(this.siguienteIdLibro);
 		this.siguienteIdLibro++;
-
-		libros.agregarLibro(libro);
+		libros.add(libro);
 	}
 
 	@Override
 	public List<Libro> listar() {
-		return libros.listarLibros();
+		return new ArrayList<>(libros);
 	}
 
 	@Override
-	public Libro buscar(String titulo) {
-		return libros.buscarLibro(titulo);
+	public Libro buscarPorIsbn(String isbn) {
+		for (Libro libro : libros) {
+			if (libro.getIsbn().equals(isbn)) {
+				return libro;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Libro buscarPorTitulo(String titulo) {
+		for (Libro libro : libros) {
+			if (libro.getTitulo().equalsIgnoreCase(titulo)) {
+				return libro;
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public boolean actualizar(Libro libroActualizar) {
-		return libros.actualizarLibro(libroActualizar);
+		for (int i = 0; i < libros.size(); i++) {
+			if (libros.get(i).getIsbn().equals(libroActualizar.getIsbn())) {
+				libros.set(i, libroActualizar);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
-	public boolean eliminar(String titulo) {
-		return libros.eliminarLibro(titulo);
+	public boolean eliminar(String isbn) {
+		return libros.removeIf(libro -> libro.getIsbn().equals(isbn));
 	}
 }

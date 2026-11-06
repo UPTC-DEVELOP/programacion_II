@@ -1,50 +1,60 @@
 package co.edu.uptc.tienda.persistencia;
 
-import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
-import co.edu.uptc.tienda.interfaces.IGestionCliente;
-import co.edu.uptc.tienda.interfaces.IGestionLibro;
 import co.edu.uptc.tienda.modelo.Cliente;
-import co.edu.uptc.tienda.modelo.Clientes;
+import co.edu.uptc.tienda.negocio.IRepositorioCliente;
 
-public class LocalCliente implements IGestionCliente {
+/**
+ * Repositorio de clientes en memoria.
+ */
+public class LocalCliente implements IRepositorioCliente {
 
-	private Clientes clientes;
+	private final List<Cliente> clientes;
 	private int siguienteId;
 
 	public LocalCliente() {
-		clientes = new Clientes();
+		clientes = new ArrayList<>();
 		siguienteId = 1;
 	}
 
 	@Override
-	public void agregar(Cliente cliente) {
+	public void guardar(Cliente cliente) {
 		cliente.setIdCliente(siguienteId);
-		cliente.setFechaRegistro(new Timestamp(System.currentTimeMillis()));
-		cliente.setIntentosFallidos(0);
 		siguienteId++;
-		clientes.agregarCliente(cliente);
+		clientes.add(cliente);
 	}
 
 	@Override
 	public List<Cliente> listar() {
-		return clientes.listarClientes();
+		return new ArrayList<>(clientes);
 	}
 
 	@Override
-	public Cliente buscar(String identificacion) {
-		return clientes.buscarCliente(identificacion);
+	public Cliente buscarPorIdentificacion(String identificacion) {
+		for (Cliente cliente : clientes) {
+			if (cliente.getIdentificacion().equals(identificacion)) {
+				return cliente;
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public boolean actualizar(Cliente clienteActualizado) {
-		return clientes.actualizarCliente(clienteActualizado);
+		for (int i = 0; i < clientes.size(); i++) {
+			if (clientes.get(i).getIdentificacion().equals(clienteActualizado.getIdentificacion())) {
+				clientes.set(i, clienteActualizado);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
 	public boolean eliminar(String identificacion) {
-		return clientes.eliminarCliente(identificacion);
+		return clientes.removeIf(cliente -> cliente.getIdentificacion().equals(identificacion));
 	}
 
 }

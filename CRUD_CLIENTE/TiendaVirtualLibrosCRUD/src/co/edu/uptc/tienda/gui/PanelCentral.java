@@ -5,32 +5,20 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import co.edu.uptc.tienda.libros.gui.PanelLibro;
-import co.edu.uptc.tienda.personas.gui.PanelCliente;
+import co.edu.uptc.tienda.gui.clientes.PanelCliente;
+import co.edu.uptc.tienda.gui.libros.PanelLibro;
 
 public class PanelCentral extends JPanel {
 
-	private PanelCliente panelCliente;
-	private PanelLibro panelLibro;
+	private static final long serialVersionUID = 1L;
 
-	public PanelCentral() {
+	public PanelCentral(PanelCliente panelCliente, PanelLibro panelLibro) {
 
 		setLayout(new BorderLayout());
 
-		// Asociaciones o Relaciones
-		panelCliente = new PanelCliente();
-		panelLibro = new PanelLibro();
-
-		// Paneles
 		JTabbedPane pPestana = new JTabbedPane();
-		JPanel pCliente = new JPanel();
-		JPanel pLibro = new JPanel();
-
-		pCliente.add(panelCliente);
-		pLibro.add(panelLibro);
-
-		pPestana.addTab("Cliente", pCliente);
-		pPestana.addTab("Libro", pLibro);
+		pPestana.addTab("Cliente", panelCliente);
+		pPestana.addTab("Libro", panelLibro);
 
 		add(pPestana);
 	}

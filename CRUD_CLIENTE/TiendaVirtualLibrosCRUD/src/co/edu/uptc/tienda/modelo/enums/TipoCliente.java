@@ -1,7 +1,36 @@
 package co.edu.uptc.tienda.modelo.enums;
 
+import co.edu.uptc.tienda.modelo.Cliente;
+import co.edu.uptc.tienda.modelo.ClientePremium;
+import co.edu.uptc.tienda.modelo.ClienteRegular;
+
+/**
+ * Cada tipo sabe construir su propio cliente. El id, la fecha de registro y los
+ * intentos fallidos los asignan el negocio y la persistencia.
+ */
 public enum TipoCliente {
 
-	REGULAR, PREMIUM
+	REGULAR {
+		@Override
+		public Cliente crear(String primerNombre, String otrosNombres, String primerApellido, String otrosApellidos,
+				String tipoIdentificacion, String identificacion, String correoElectronico, String celular,
+				String direccion, String contrasenia) {
+			return new ClienteRegular(primerNombre, otrosNombres, primerApellido, otrosApellidos, tipoIdentificacion,
+					identificacion, correoElectronico, celular, direccion, 0, contrasenia, null, 0);
+		}
+	},
+	PREMIUM {
+		@Override
+		public Cliente crear(String primerNombre, String otrosNombres, String primerApellido, String otrosApellidos,
+				String tipoIdentificacion, String identificacion, String correoElectronico, String celular,
+				String direccion, String contrasenia) {
+			return new ClientePremium(primerNombre, otrosNombres, primerApellido, otrosApellidos, tipoIdentificacion,
+					identificacion, correoElectronico, celular, direccion, 0, contrasenia, null, 0);
+		}
+	};
+
+	public abstract Cliente crear(String primerNombre, String otrosNombres, String primerApellido,
+			String otrosApellidos, String tipoIdentificacion, String identificacion, String correoElectronico,
+			String celular, String direccion, String contrasenia);
 
 }

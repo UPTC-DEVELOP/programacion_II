@@ -1,4 +1,4 @@
-package co.edu.uptc.tienda.libros.gui;
+package co.edu.uptc.tienda.gui.libros;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -10,44 +10,45 @@ import javax.swing.table.DefaultTableModel;
 
 import co.edu.uptc.tienda.gui.TablaFactory;
 import co.edu.uptc.tienda.modelo.Libro;
-import co.edu.uptc.tienda.negocio.ConfiguracionLibro;
-import co.edu.uptc.tienda.negocio.GestionLibro;
+import co.edu.uptc.tienda.negocio.IGestionLibro;
+import co.edu.uptc.tienda.negocio.NegocioException;
 
 public class PanelLibro extends JPanel {
 
-	private JPanel panelSuperior;
-	private JLabel lblTitulo;
-	private JTextField txtTitulo;
-	private JButton btnBuscar;
-	private JButton btnNuevo;
-	private JButton btnActualizar;
-	private JButton btnEliminar;
-	private JButton btnListarTodos;
+	private static final long serialVersionUID = 1L;
 
+	private static final int COLUMNA_ISBN = 1;
+
+	private JTextField txtTitulo;
 	private JTable tablaLibros;
 	private DefaultTableModel modeloTabla;
 
-	private GestionLibro gestionLibro;
+	private final IGestionLibro gestionLibro;
 
-	public PanelLibro() {
-		gestionLibro = ConfiguracionLibro.getGestionLibro();
+	public PanelLibro(IGestionLibro gestionLibro) {
+		this.gestionLibro = gestionLibro;
 
 		setLayout(new BorderLayout(5, 5));
 
-		// Creación del Panel Superior
-		panelSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+		crearPanelSuperior();
+		crearTabla();
 
-		lblTitulo = new JLabel("Titulo Libro: ");
+		cargarLibrosEnTabla(gestionLibro.listarLibros());
+	}
+
+	private void crearPanelSuperior() {
+		JPanel panelSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+
 		txtTitulo = new JTextField(12);
 
-		btnBuscar = new JButton("Buscar");
-		btnListarTodos = new JButton("Ver Todos");
-		btnNuevo = new JButton("Nuevo");
-		btnActualizar = new JButton("Actualizar");
-		btnEliminar = new JButton("Eliminar");
+		JButton btnBuscar = new JButton("Buscar");
+		JButton btnListarTodos = new JButton("Ver Todos");
+		JButton btnNuevo = new JButton("Nuevo");
+		JButton btnActualizar = new JButton("Actualizar");
+		JButton btnEliminar = new JButton("Eliminar");
 
 		btnBuscar.addActionListener(e -> buscarLibro());
-		btnNuevo.addActionListener(e -> abrirDialogoNuevoLibro());
+		btnNuevo.addActionListener(e -> abrirDialogoLibro(null));
 		btnActualizar.addActionListener(e -> abrirDialogoActualizarLibro());
 		btnEliminar.addActionListener(e -> eliminarLibroSeleccionado());
 		btnListarTodos.addActionListener(e -> {
@@ -55,8 +56,7 @@ public class PanelLibro extends JPanel {
 			cargarLibrosEnTabla(gestionLibro.listarLibros());
 		});
 
-		// Agregar controles en el orden correcto
-		panelSuperior.add(lblTitulo);
+		panelSuperior.add(new JLabel("Titulo Libro: "));
 		panelSuperior.add(txtTitulo);
 		panelSuperior.add(btnBuscar);
 		panelSuperior.add(btnListarTodos);
@@ -64,37 +64,27 @@ public class PanelLibro extends JPanel {
 		panelSuperior.add(btnActualizar);
 		panelSuperior.add(btnEliminar);
 
+		add(panelSuperior, BorderLayout.NORTH);
+	}
+
+	private void crearTabla() {
 		String[] columnas = { "ID", "ISBN", "Título", "Autores", "Fecha Publicacion", "Genero", "Editorial", "Paginas",
 				"Formato", "Stock", "Precio" };
 
-		// 1. Inicializamos la tabla del panel para que deje de ser null
-		tablaLibros = new JTable();
+		modeloTabla = TablaFactory.crearModeloNoEditable(columnas);
+		tablaLibros = new JTable(modeloTabla);
 
-		// 2. Creamos el contenedor para capturar el modelo
-		DefaultTableModel[] contenedorModelo = new DefaultTableModel[1];
-
-		// 3. Invocamos la fábrica compartida
-		JScrollPane scrollPane = TablaFactory.configurarTabla(columnas, tablaLibros, contenedorModelo);
-
-		// 4. Asignamos el modelo a la variable de tu clase de libros
-		this.modeloTabla = contenedorModelo[0];
-
-		add(panelSuperior, BorderLayout.NORTH);
-		add(scrollPane, BorderLayout.CENTER);
-
+		add(TablaFactory.crearTabla(tablaLibros), BorderLayout.CENTER);
 	}
 
-	public void cargarLibrosEnTabla(List<Libro> libros) {
-
+	private void cargarLibrosEnTabla(List<Libro> libros) {
 		modeloTabla.setRowCount(0);
 
-		if (libros != null) {
-			for (Libro lb : libros) {
-				Object[] fila = { lb.getIdLibro(), lb.getIsbn(), lb.getTitulo(), lb.getAutores(),
-						lb.getFechaPublicacion(), lb.getGenero(), lb.getEditorial(), lb.getNumeroPaginas(),
-						lb.getTipoLibro().toString(), lb.getStockDisponible(), lb.getPrecioFinal() };
-				modeloTabla.addRow(fila);
-			}
+		for (Libro lb : libros) {
+			Object[] fila = { lb.getIdLibro(), lb.getIsbn(), lb.getTitulo(), String.join(", ", lb.getAutores()),
+					lb.getFechaPublicacion(), lb.getGenero(), lb.getEditorial(), lb.getNumeroPaginas(),
+					lb.getTipoLibro().toString(), lb.getStockDisponible(), lb.getPrecioFinal() };
+			modeloTabla.addRow(fila);
 		}
 	}
 
@@ -106,23 +96,13 @@ public class PanelLibro extends JPanel {
 			return;
 		}
 
-		Libro lbEncontrado = gestionLibro.buscarLibro(titulo);
+		Libro lbEncontrado = gestionLibro.buscarLibroPorTitulo(titulo);
 
 		if (lbEncontrado != null) {
 			cargarLibrosEnTabla(Collections.singletonList(lbEncontrado));
 		} else {
 			JOptionPane.showMessageDialog(this, "No se encontró ningún libro con el Titulo: " + titulo,
 					"Búsqueda sin resultados", JOptionPane.INFORMATION_MESSAGE);
-		}
-
-	}
-
-	private void abrirDialogoNuevoLibro() {
-		DialogoLibro dialogoLibro = new DialogoLibro();
-		dialogoLibro.setVisible(Boolean.TRUE);
-
-		if (dialogoLibro.isGuardadoExitoso()) {
-			cargarLibrosEnTabla(gestionLibro.listarLibros());
 		}
 	}
 
@@ -136,7 +116,11 @@ public class PanelLibro extends JPanel {
 			return;
 		}
 
-		DialogoLibro dialogoLibro = new DialogoLibro(libroEditar);
+		abrirDialogoLibro(libroEditar);
+	}
+
+	private void abrirDialogoLibro(Libro libroEditar) {
+		DialogoLibro dialogoLibro = new DialogoLibro(gestionLibro, libroEditar);
 		dialogoLibro.setVisible(Boolean.TRUE);
 
 		if (dialogoLibro.isGuardadoExitoso()) {
@@ -149,8 +133,8 @@ public class PanelLibro extends JPanel {
 
 		if (libroEliminar == null) {
 			JOptionPane.showMessageDialog(this,
-					"Por favor seleccione un Libro de la tabla o digite un Titulo para eliminar.",
-					"Seleccionar Cliente", JOptionPane.WARNING_MESSAGE);
+					"Por favor seleccione un Libro de la tabla o digite un Titulo para eliminar.", "Seleccionar Libro",
+					JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
@@ -159,42 +143,31 @@ public class PanelLibro extends JPanel {
 				JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 
 		if (confirmacion == JOptionPane.YES_OPTION) {
-			boolean eliminado = gestionLibro.eliminarLibro(libroEliminar.getTitulo());
-
-			if (eliminado) {
+			try {
+				gestionLibro.eliminarLibro(libroEliminar.getIsbn());
 				JOptionPane.showMessageDialog(this, "Libro eliminado exitosamente.", "Eliminación Exitosa",
 						JOptionPane.INFORMATION_MESSAGE);
 				txtTitulo.setText("");
 				cargarLibrosEnTabla(gestionLibro.listarLibros());
-			} else {
-				JOptionPane.showMessageDialog(this, "No se pudo eliminar el libro seleccionado.", "Error al Eliminar",
-						JOptionPane.ERROR_MESSAGE);
+			} catch (NegocioException e) {
+				JOptionPane.showMessageDialog(this, e.getMessage(), "Error al Eliminar", JOptionPane.ERROR_MESSAGE);
 			}
-
 		}
-
 	}
 
 	private Libro obtenerLibroSeleccionadoOConsultado() {
 		int filaSeleccionada = tablaLibros.getSelectedRow();
 
 		if (filaSeleccionada != -1) {
-			String titulo = (String) modeloTabla.getValueAt(filaSeleccionada, 2);
-			return gestionLibro.buscarLibro(titulo);
+			String isbn = (String) modeloTabla.getValueAt(filaSeleccionada, COLUMNA_ISBN);
+			return gestionLibro.buscarLibroPorIsbn(isbn);
 		}
 
 		String textoTitulo = txtTitulo.getText().trim();
 		if (!textoTitulo.isEmpty()) {
-			return gestionLibro.buscarLibro(textoTitulo);
+			return gestionLibro.buscarLibroPorTitulo(textoTitulo);
 		}
 
 		return null;
-
-	}
-
-	public void ejecutarEvento(String evento) {
-		if ("ACTUALIZAR_TABLA".equalsIgnoreCase(evento)) {
-			cargarLibrosEnTabla(gestionLibro.listarLibros());
-		}
 	}
 }
