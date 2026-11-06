@@ -45,7 +45,6 @@ import co.edu.uptc.modelo.dto.FiltroLibroDto;
  * }
  * </pre>
  *
- * @author Equipo de Desarrollo UPTC
  * @version 1.0
  */
 public class LibroJsonRepository implements ILibroRepositorio {

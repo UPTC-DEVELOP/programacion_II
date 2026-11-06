@@ -12,7 +12,7 @@ import co.edu.uptc.negocio.GestionReporte;
 import co.edu.uptc.negocio.GestionSeguridad;
 import co.edu.uptc.negocio.ValidadorDatos;
 import co.edu.uptc.persistencia.AuditoriaRepository;
-import co.edu.uptc.persistencia.CarritoRepositoryEnMemoria;
+import co.edu.uptc.persistencia.CarritoJsonRepository;
 import co.edu.uptc.persistencia.LibroRepositoryFactory;
 import co.edu.uptc.persistencia.LocalCliente;
 import co.edu.uptc.persistencia.LocalVenta;
@@ -23,7 +23,7 @@ import co.edu.uptc.persistencia.LocalVenta;
  *
  * <pre>
  *   Persistencia  -> LocalCliente / LibroJsonRepository (data/libros.json) /
- *                    LocalVenta / CarritoRepositoryEnMemoria /
+ *                    LocalVenta / CarritoJsonRepository (data/carritos.json) /
  *                    AuditoriaRepository (data/auditoria.json)
  *   Validación    -> ValidadorDatos
  *   Negocio       -> GestionSeguridad / GestionCliente / GestionLibro /
@@ -42,7 +42,7 @@ public class AppLibros {
         // 1. Capa de Persistencia (se inyecta en la capa de negocio)
         LocalCliente repositorioCliente = new LocalCliente();
         LocalVenta repositorioVenta = new LocalVenta(); // Datos semilla para el dashboard
-        CarritoRepositoryEnMemoria repositorioCarrito = new CarritoRepositoryEnMemoria();
+        CarritoJsonRepository repositorioCarrito = new CarritoJsonRepository();
 
         // Auditoría de operaciones del administrador (RF17/RF18)
         IAuditoria auditoria = new AuditoriaRepository();
@@ -63,10 +63,10 @@ public class AppLibros {
         GestionDashboard gestionDashboard = new GestionDashboard(repositorioLibro, repositorioVenta);
 
         // Servicio del carrito (RF10-RF13). Inyecta 3 abstracciones:
-        // ICarritoRepository (persistencia), IGestionLibro (catálogo) e
+        // ICarritoRepository (persistencia JSON), ILibroRepositorio (catálogo) e
         // IGestionCliente (validación de sesión + tipo de cliente para descuento).
         ICarritoService carritoService = new CarritoServiceImpl(
-                repositorioCarrito, gestionLibro, gestionCliente);
+                repositorioCarrito, repositorioLibro, gestionCliente);
 
         // Servicio de reportes del administrador. Inyecta 3 abstracciones:
         // ICarritoRepository (carritos activos), IGestionLibro (títulos/precios)

@@ -17,7 +17,6 @@ import java.awt.*;
  * El diálogo se cierra solo cuando el usuario pulsa "Guardar" (con datos
  * válidos) o "Cancelar"; el llamador consulta isGuardado() y getClienteDto().
  *
- * @author Grupo 7 - UPTC
  * @version 1.0
  */
 public class DialogoCliente extends JDialog {

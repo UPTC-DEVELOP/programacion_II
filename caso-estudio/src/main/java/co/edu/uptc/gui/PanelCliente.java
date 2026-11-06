@@ -28,7 +28,6 @@ import java.util.List;
  * - Composición: PanelCarrito se inyecta como pestaña dentro de este
  *   panel (no hay herencia), cumpliendo "favorecer composición sobre herencia".
  *
- * @author Grupo 7 - UPTC
  * @version 2.0 (carrito integrado)
  */
 public class PanelCliente extends JPanel {

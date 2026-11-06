@@ -9,7 +9,6 @@ import co.edu.uptc.modelo.dto.CredencialDto;
  * - DIP (Dependency Inversion): La capa de negocio depende de esta abstracción.
  * - ISP (Interface Segregation): Solo los métodos necesarios para autenticación.
  *
- * @author Grupo 7
  * @version 1.0
  */
 public interface IGestionSeguridad {

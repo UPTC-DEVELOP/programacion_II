@@ -5,8 +5,6 @@ import java.awt.*;
 
 /**
  * Campo de texto con placeholder (hint) personalizado.
- *
- * @author Grupo 7 - UPTC
  */
 public class CampoConHint extends JTextField {
 

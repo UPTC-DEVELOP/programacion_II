@@ -18,7 +18,6 @@ import java.util.List;
  * - SRP: Solo se encarga de mostrar la interfaz y capturar eventos.
  * - DIP: Depende de ActionListener (abstracción), no de implementación concreta.
  *
- * @author Grupo 7 - UPTC
  * @version 1.0
  */
 public class PanelGestionLibros extends JPanel {

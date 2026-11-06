@@ -1,12 +1,14 @@
 package co.edu.uptc.negocio;
 
 import co.edu.uptc.modelo.enums.Categoria;
+import co.edu.uptc.modelo.enums.Formato;
 
 /**
  * CLASE ABSTRACTA CalculadoraImpuesto  (paquete: negocio)
  * ---------------------------------------------------------------------------
- * ESTRATEGIA para calcular el IVA de un libro según su categoría (RF10:
- * "Aplicar IVA (5% o 19% según categoría del libro").
+ * ESTRATEGIA para calcular el IVA de un libro. El carrito usa el formato del
+ * libro (RF10: 5% para FISICO y 19% para DIGITAL); la fábrica porCategoria se
+ * conserva para los cálculos históricos que aún dependen de la categoría.
  *
  * ¿POR QUÉ PATRÓN ESTRATEGIA (y NO un if/else en el servicio)?
  * 
@@ -57,6 +59,21 @@ public abstract class CalculadoraImpuesto {
             return new ImpuestoTasaReducida();
         }
         // Tasa general (19%) para el resto (incluye OTROS como caso por defecto).
+        return new ImpuestoTasaGeneral();
+    }
+
+    /**
+     * Devuelve la estrategia de IVA que corresponde al formato del libro. El
+     * formato FISICO usa la tasa reducida del 5% y el formato DIGITAL usa la
+     * tasa general del 19%, tal como lo exige el RF10 para el carrito.
+     *
+     * @param formato formato del libro; un valor nulo se trata como DIGITAL
+     * @return la estrategia de IVA aplicable al formato indicado
+     */
+    public static CalculadoraImpuesto porFormato(Formato formato) {
+        if (formato == Formato.FISICO) {
+            return new ImpuestoTasaReducida();
+        }
         return new ImpuestoTasaGeneral();
     }
 }

@@ -12,7 +12,6 @@ import co.edu.uptc.modelo.dto.CredencialDto;
  * - SRP: Esta clase SOLO se encarga de autenticación y seguridad.
  * - DIP: Depende de la abstracción IClienteRepositorio, no de una clase concreta.
  *
- * @author Grupo 7
  * @version 1.0
  */
 public class GestionSeguridad implements IGestionSeguridad {

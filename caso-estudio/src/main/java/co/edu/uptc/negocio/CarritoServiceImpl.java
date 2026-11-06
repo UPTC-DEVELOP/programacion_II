@@ -11,12 +11,12 @@ import co.edu.uptc.excepciones.StockInsuficienteException;
 import co.edu.uptc.interfaces.ICarritoRepository;
 import co.edu.uptc.interfaces.ICarritoService;
 import co.edu.uptc.interfaces.IGestionCliente;
-import co.edu.uptc.interfaces.IGestionLibro;
+import co.edu.uptc.interfaces.ILibroRepositorio;
 import co.edu.uptc.modelo.CarritoCompras;
 import co.edu.uptc.modelo.ItemCarrito;
+import co.edu.uptc.modelo.Libro;
 import co.edu.uptc.modelo.dto.ClienteDto;
 import co.edu.uptc.modelo.dto.ItemCarritoDto;
-import co.edu.uptc.modelo.dto.LibroDto;
 import co.edu.uptc.modelo.dto.TotalesCarritoDto;
 
 /**
@@ -24,17 +24,13 @@ import co.edu.uptc.modelo.dto.TotalesCarritoDto;
  * Implementa ICarritoService: la GUI solo conoce la interfaz (DIP).
  *
  * DEPENDENCIAS INYECTADAS POR CONSTRUCTOR (SOLID / DIP):
- *  - ICarritoRepository: persiste los carritos (hoy en memoria, luego JSON).
- *  - IGestionLibro      : valida ISBN en catálogo y consulta precio/stock/categoría (RF10).
+ *  - ICarritoRepository: persiste los carritos en memoria o en JSON.
+ *  - ILibroRepositorio  : valida la existencia del ISBN y consulta precio,
+ *                         stock y formato en el catálogo (RF10).
  *  - IGestionCliente    : valida que el cliente exista ("sesión") y obtiene su
  *                         TipoCliente para el descuento Premium (RF10/RF13).
  *  - NINGUNA dependencia se newea dentro de la clase: esto permite reemplazar
- *    cada una por un MOCK en las pruebas unitarias ( Mockito ) sin tocar el código.
- *
- * NOTA sobre "ILibroService" e "IClienteService" de la consigna:
- *  - En ESTE proyecto esas abstracciones YA existen con los nombres IGestionLibro
- *    e IGestionCliente. Crear interfaces paralelas duplicaría contratos (violación
- *    DRY); por eso se inyectan las existentes, que cumplen exactamente el rol pedido.
+ *    cada una por un MOCK en las pruebas unitarias sin modificar esta clase.
  *
  * NOTA sobre la validación de "sesión" (RF10):
  *  - La verificación estricta de sesión activa vive en IGestionSeguridad y es
@@ -45,7 +41,7 @@ import co.edu.uptc.modelo.dto.TotalesCarritoDto;
 public class CarritoServiceImpl implements ICarritoService {
 
     private final ICarritoRepository carritoRepository;
-    private final IGestionLibro libroService;
+    private final ILibroRepositorio libroRepository;
     private final IGestionCliente clienteService;
 
     /**
@@ -53,13 +49,13 @@ public class CarritoServiceImpl implements ICarritoService {
      * Las tres dependencias son ABSTRACCIONES (interfaces), no clases concretas:
      * el servicio no sabe ni debe saber cómo se persisten los datos ni de dónde
      * salen los libros/clientes. Eso permite cambiar implementaciones (p. ej.
-     * CarritoRepositoryJson) sin modificar NI UNA línea de esta clase.
+     * CarritoJsonRepository) sin modificar NI UNA línea de esta clase.
      */
     public CarritoServiceImpl(ICarritoRepository carritoRepository,
-                              IGestionLibro libroService,
+                              ILibroRepositorio libroRepository,
                               IGestionCliente clienteService) {
         this.carritoRepository = carritoRepository;
-        this.libroService = libroService;
+        this.libroRepository = libroRepository;
         this.clienteService = clienteService;
     }
 
@@ -71,38 +67,43 @@ public class CarritoServiceImpl implements ICarritoService {
         validarCantidadPositiva(cantidad);
 
         // 2) Validar que el cliente exista ("sesión" válida para el servicio).
-        validarClienteExistente(idCliente);
+        ClienteDto clienteDto = validarClienteExistente(idCliente);
 
         // 3) Validar que el ISBN exista en el catálogo (RF10).
-        LibroDto libroDto = libroService.consultarPorIsbn(isbn);
-        if (libroDto == null) {
+        Libro libro = libroRepository.consultarPorIsbn(isbn);
+        if (libro == null) {
             throw new LibroNoEncontradoException("El libro con ISBN " + isbn + " no existe en el catálogo.");
         }
 
         // 4) Obtener (o crear) el carrito del cliente.
         CarritoCompras carrito = obtenerOCrearCarrito(idCliente);
+        carrito.setTipoCliente(clienteDto.getTipoCliente());
 
         // 5) Validar stock: considera lo YA acumulado en el carrito para ese ISBN.
         ItemCarrito existente = carrito.buscarItemPorIsbn(isbn);
         int cantidadYaEnCarrito = (existente == null) ? 0 : existente.getCantidad();
         int cantidadTotalSolicitada = cantidadYaEnCarrito + cantidad;
-        if (cantidadTotalSolicitada > libroDto.getStock()) {
+        if (cantidadTotalSolicitada > libro.getStock()) {
             throw new StockInsuficienteException(
                     "Stock insuficiente. Se solicitaron " + cantidadTotalSolicitada
-                            + " unidades en total, pero solo hay " + libroDto.getStock() + " disponibles.",
-                    cantidadTotalSolicitada, libroDto.getStock());
+                            + " unidades en total, pero solo hay " + libro.getStock() + " disponibles.",
+                    cantidadTotalSolicitada, libro.getStock());
         }
 
-        // 6) Determinar la tasa de IVA según la categoría del libro (RF10) usando
+        // 6) Determinar la tasa de IVA según el formato del libro (RF10) usando
         //    la ESTRATEGIA CalculadoraImpuesto (patrón Estrategia, OCP).
-        double tasaIva = CalculadoraImpuesto.porCategoria(libroDto.getCategoria()).getTasa();
+        double tasaIva = CalculadoraImpuesto.porFormato(libro.getFormato()).getTasa();
 
         // 7) Acumular si el ISBN ya estaba; si no, crear la línea nueva (RF10).
         if (existente != null) {
             // setCantidad() de ItemCarrito recalcula solo subtotal e IVA (Fase 1).
             existente.setCantidad(cantidadTotalSolicitada);
+            if (existente.getTitulo() == null) {
+                existente.setTitulo(libro.getTitulo());
+            }
         } else {
-            ItemCarrito nuevoItem = new ItemCarrito(isbn, cantidad, libroDto.getPrecioVenta(), tasaIva);
+            ItemCarrito nuevoItem = new ItemCarrito(isbn, cantidad, libro.getPrecioVenta(), tasaIva);
+            nuevoItem.setTitulo(libro.getTitulo());
             carrito.agregarItem(nuevoItem);
         }
 
@@ -110,7 +111,7 @@ public class CarritoServiceImpl implements ICarritoService {
         carritoRepository.guardarCarrito(carrito);
 
         // 9) Devolver la línea resultante mapeada a DTO para la GUI.
-        return mapearItemADto(carrito.buscarItemPorIsbn(isbn), libroDto.getTitulo());
+        return mapearItemADto(carrito.buscarItemPorIsbn(isbn), libro.getTitulo());
     }
 
     // ----------------------- RF11: AUMENTAR / DISMINUIR -----------------------
@@ -118,36 +119,41 @@ public class CarritoServiceImpl implements ICarritoService {
     @Override
     public ItemCarritoDto aumentarCantidad(int idCliente, String isbn, int cantidadAdicional) throws ReglaNegocioException {
         validarCantidadPositiva(cantidadAdicional);
-        validarClienteExistente(idCliente);
+        ClienteDto clienteDto = validarClienteExistente(idCliente);
 
         CarritoCompras carrito = carritoRepository.obtenerCarritoPorCliente(idCliente);
         ItemCarrito item = buscarItemEnCarrito(carrito, isbn);
+        carrito.setTipoCliente(clienteDto.getTipoCliente());
 
         // Validar stock contra el TOTAL resultante (lo que ya tiene + lo que agrega).
-        LibroDto libroDto = libroService.consultarPorIsbn(isbn);
-        if (libroDto == null) {
+        Libro libro = libroRepository.consultarPorIsbn(isbn);
+        if (libro == null) {
             throw new LibroNoEncontradoException("El libro con ISBN " + isbn + " no existe en el catálogo.");
         }
         int cantidadTotalSolicitada = item.getCantidad() + cantidadAdicional;
-        if (cantidadTotalSolicitada > libroDto.getStock()) {
+        if (cantidadTotalSolicitada > libro.getStock()) {
             throw new StockInsuficienteException(
                     "Stock insuficiente. Se solicitaron " + cantidadTotalSolicitada
-                            + " unidades en total, pero solo hay " + libroDto.getStock() + " disponibles.",
-                    cantidadTotalSolicitada, libroDto.getStock());
+                            + " unidades en total, pero solo hay " + libro.getStock() + " disponibles.",
+                    cantidadTotalSolicitada, libro.getStock());
         }
 
         item.setCantidad(cantidadTotalSolicitada); // recalcula subtotal e IVA
+        if (item.getTitulo() == null) {
+            item.setTitulo(libro.getTitulo());
+        }
         carritoRepository.guardarCarrito(carrito);
-        return mapearItemADto(item, libroDto.getTitulo());
+        return mapearItemADto(item, libro.getTitulo());
     }
 
     @Override
     public ItemCarritoDto disminuirCantidad(int idCliente, String isbn, int cantidadAReducir) throws ReglaNegocioException {
         validarCantidadPositiva(cantidadAReducir);
-        validarClienteExistente(idCliente);
+        ClienteDto clienteDto = validarClienteExistente(idCliente);
 
         CarritoCompras carrito = carritoRepository.obtenerCarritoPorCliente(idCliente);
         ItemCarrito item = buscarItemEnCarrito(carrito, isbn);
+        carrito.setTipoCliente(clienteDto.getTipoCliente());
 
         // Se recalcula la nueva cantidad; se usa max(0, ...) para que pedir bajar
         // "de más" nunca deje cantidades negativas (estado inválido).
@@ -182,13 +188,14 @@ public class CarritoServiceImpl implements ICarritoService {
 
     @Override
     public TotalesCarritoDto calcularTotales(int idCliente) throws ReglaNegocioException {
-        validarClienteExistente(idCliente);
+        ClienteDto clienteDto = validarClienteExistente(idCliente);
 
         CarritoCompras carrito = carritoRepository.obtenerCarritoPorCliente(idCliente);
         // Carrito inexistente o vacío => todos los totales en 0.0 (estado válido).
         if (carrito == null || carrito.estaVacio()) {
             return new TotalesCarritoDto(0.0, 0.0, 0.0, 0.0);
         }
+        carrito.setTipoCliente(clienteDto.getTipoCliente());
 
         double subtotalGeneral = carrito.calcularSubtotalGeneral();
         double totalImpuestos = carrito.calcularTotalImpuestos();
@@ -196,7 +203,6 @@ public class CarritoServiceImpl implements ICarritoService {
         // El descuento se calcula con la ESTRATEGIA adecuada al TipoCliente (RF13).
         // Se usa el enum TipoCliente (que trae el DTO) y NO la entidad Cliente,
         // para no acoplar el servicio a los mappers de la capa de persistencia.
-        ClienteDto clienteDto = clienteService.buscarPorId(idCliente);
         double descuento = CalculadoraDescuento
                 .porTipoCliente(clienteDto.getTipoCliente())
                 .calcularDescuento(subtotalGeneral);
@@ -217,7 +223,10 @@ public class CarritoServiceImpl implements ICarritoService {
             return resultado; // sin carrito => lista vacía (no es un error)
         }
         for (ItemCarrito item : carrito.obtenerItems()) {
-            resultado.add(mapearItemADto(item, tituloDeLibro(item.getIsbn())));
+            String titulo = (item.getTitulo() != null)
+                    ? item.getTitulo()
+                    : tituloDeLibro(item.getIsbn());
+            resultado.add(mapearItemADto(item, titulo));
         }
         return resultado;
     }
@@ -236,11 +245,13 @@ public class CarritoServiceImpl implements ICarritoService {
      * Esta es la validación de "sesión" que le corresponde al SERVICIO (ver
      * comentario principal de la clase).
      */
-    private void validarClienteExistente(int idCliente) throws ClienteNoEncontradoException {
-        if (clienteService.buscarPorId(idCliente) == null) {
+    private ClienteDto validarClienteExistente(int idCliente) throws ClienteNoEncontradoException {
+        ClienteDto clienteDto = clienteService.buscarPorId(idCliente);
+        if (clienteDto == null) {
             throw new ClienteNoEncontradoException(
                     "No existe un cliente con identificador " + idCliente + ". Sesión inválida.");
         }
+        return clienteDto;
     }
 
     /**
@@ -278,8 +289,8 @@ public class CarritoServiceImpl implements ICarritoService {
      * agregarlo al carrito), se devuelve cadena vacía en vez de fallar.
      */
     private String tituloDeLibro(String isbn) {
-        LibroDto libroDto = libroService.consultarPorIsbn(isbn);
-        return (libroDto != null) ? libroDto.getTitulo() : "";
+        Libro libro = libroRepository.consultarPorIsbn(isbn);
+        return (libro != null) ? libro.getTitulo() : "";
     }
 
     /**

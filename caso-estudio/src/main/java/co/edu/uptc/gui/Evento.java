@@ -37,7 +37,6 @@ import co.edu.uptc.negocio.GestionSeguridad;
  * se agregan las dependencias ICarritoService (RF10-RF13) y
  * GestionReporte (reportes del administrador), y los comandos asociados.
  *
- * @author Grupo 7
  * @version 2.0
  */
 public class Evento implements ActionListener {

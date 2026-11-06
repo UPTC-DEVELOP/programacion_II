@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import co.edu.uptc.modelo.enums.TipoCliente;
+
 /**
  * CLASE CarritoCompras  (paquete: modelo)
  * ---------------------------------------------------------------------------
@@ -43,6 +45,12 @@ public class CarritoCompras {
 
     /** Identificador del cliente dueño del carrito: clave lógica única. */
     private int idCliente;
+
+    /**
+     * Tipo del cliente dueño del carrito. Se conserva para que el archivo JSON
+     * pueda reconstruir el descuento aplicable sin depender de otra consulta.
+     */
+    private TipoCliente tipoCliente;
 
     /**
      * Líneas del carrito. Se usa ArrayList porque el tamaño es pequeño y se
@@ -179,4 +187,8 @@ public class CarritoCompras {
     public int getIdCliente() { return idCliente; }
 
     public void setIdCliente(int idCliente) { this.idCliente = idCliente; }
+
+    public TipoCliente getTipoCliente() { return tipoCliente; }
+
+    public void setTipoCliente(TipoCliente tipoCliente) { this.tipoCliente = tipoCliente; }
 }

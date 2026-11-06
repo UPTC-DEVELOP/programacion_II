@@ -7,7 +7,6 @@ package co.edu.uptc.modelo.dto;
  * - SRP: Esta clase SOLO transporta datos de credenciales, no contiene lógica.
  * - Separación de concerns: La GUI no conoce la estructura interna del modelo Cliente.
  *
- * @author Grupo 7
  * @version 1.0
  */
 public class CredencialDto {

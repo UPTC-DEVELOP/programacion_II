@@ -12,9 +12,10 @@ import co.edu.uptc.modelo.CarritoCompras;
  * GestionReporte) depende de ESTA ABSTRACCIÓN, nunca de la implementación
  * concreta.
  *
- * Hoy la implementa CarritoRepositoryEnMemoria (HashMap en RAM); cuando se
- * agregue el módulo JSON basta crear CarritoRepositoryJson y cambiar UNA línea
- * en el Main/inyección de dependencias, sin tocar la lógica de negocio (OCP).
+ * La implementan CarritoRepositoryEnMemoria (HashMap en RAM) y
+ * CarritoJsonRepository (archivo data/carritos.json). El Main selecciona la
+ * implementación mediante inyección de dependencias sin tocar la lógica de
+ * negocio (OCP / DIP).
  *
  * MÉTODOS (nomenclatura en español, igual que ILibroRepositorio):
  *  - guardarCarrito: crea o reemplaza el carrito del cliente (upsert).

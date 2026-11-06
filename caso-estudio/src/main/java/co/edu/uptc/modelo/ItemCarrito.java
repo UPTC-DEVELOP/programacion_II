@@ -35,6 +35,13 @@ public class ItemCarrito {
     /** ISBN del libro asociado a este ítem (clave lógica dentro del carrito). */
     private String isbn;
 
+    /**
+     * Título del libro congelado al momento de agregarlo al carrito. Se conserva
+     * para que la persistencia JSON y los reportes puedan mostrar el nombre sin
+     * depender de una consulta adicional al catálogo.
+     */
+    private String titulo;
+
     /** Cantidad de unidades solicitadas. Siempre > 0 (valida el RF10 en negocio). */
     private int cantidad;
 
@@ -105,6 +112,10 @@ public class ItemCarrito {
     public String getIsbn() { return isbn; }
 
     public void setIsbn(String isbn) { this.isbn = isbn; }
+
+    public String getTitulo() { return titulo; }
+
+    public void setTitulo(String titulo) { this.titulo = titulo; }
 
     public int getCantidad() { return cantidad; }
 
