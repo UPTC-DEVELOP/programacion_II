@@ -1,6 +1,6 @@
 #### Gestionar archivos binarios y saltos de línea ####
 
-# Default: let Git auto-detect text vs binary
+# Permitirle a Git detectar texto vs binario
 * text=auto
 
 ### Documentos de Microsoft Office ###
@@ -76,7 +76,11 @@
 *.gif  binary
 *.ico  binary
 
-# Archivos compilados como binarios que sean librerías 
+### Archivos de Java ###
+
 *.class binary
 *.jar   binary
+mvnw text eol=lf
+*.cmd text eol=crlf
+
 
