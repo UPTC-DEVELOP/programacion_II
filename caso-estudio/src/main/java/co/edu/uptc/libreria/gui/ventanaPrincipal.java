@@ -37,6 +37,9 @@ import co.edu.uptc.libreria.negocio.TiendaConfig;
 import co.edu.uptc.libreria.persistencia.LocalCarritoPersistencia;
 import co.edu.uptc.libreria.persistencia.ServicioAuditoria;
 
+import java.sql.Connection;
+import co.edu.uptc.libreria.persistencia.ConexionBD;
+
 /**
  * Ventana principal de la tienda. Reune en pestañas los tres modulos:
  * Clientes, Catalogo (detalle del libro y pedido) y Carrito. La gestion de
@@ -104,6 +107,12 @@ public class ventanaPrincipal extends JFrame {
 			ventanaPrincipal v = new ventanaPrincipal();
 			v.setVisible(Boolean.TRUE);
 		});
+		//Prueba para la conexion con la base de datos
+		Connection cn = ConexionBD.getConnection();
+		if (cn != null) {
+			System.out.println("COnexion establecida");
+		}
+		
 	}
 
 	// ======================= CONSTRUCCION DE LA VISTA =======================
