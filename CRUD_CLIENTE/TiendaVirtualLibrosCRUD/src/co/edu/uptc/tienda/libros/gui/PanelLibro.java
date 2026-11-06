@@ -30,7 +30,8 @@ public class PanelLibro extends JPanel {
 	private GestionLibro gestionLibro;
 
 	public PanelLibro() {
-		gestionLibro = ConfiguracionLibro.getGestionLibro();
+		this.gestionLibro = ConfiguracionLibro.getGestionLibro();
+		this.gestionLibro.listarLibros();
 
 		setLayout(new BorderLayout(5, 5));
 

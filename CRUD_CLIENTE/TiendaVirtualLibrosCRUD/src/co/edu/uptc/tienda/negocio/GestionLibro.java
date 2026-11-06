@@ -8,9 +8,12 @@ import co.edu.uptc.tienda.modelo.Libro;
 public class GestionLibro {
 
 	private IGestionLibro gestionLibro;
+	private List<Libro> librosEnMemoria;
 
 	public GestionLibro(IGestionLibro gestionLibro) {
 		this.gestionLibro = gestionLibro;
+
+		cargarLibrosAutomaticamente();
 	}
 
 	public void agregarLibro(Libro libro) {
@@ -32,4 +35,13 @@ public class GestionLibro {
 	public boolean eliminarLibro(String titulo) {
 		return gestionLibro.eliminar(titulo);
 	}
+
+	public void cargarLibrosAutomaticamente() {
+		this.librosEnMemoria = gestionLibro.listar();
+	}
+
+	public List<Libro> getLibrosEnMemoria() {
+		return librosEnMemoria;
+	}
+
 }

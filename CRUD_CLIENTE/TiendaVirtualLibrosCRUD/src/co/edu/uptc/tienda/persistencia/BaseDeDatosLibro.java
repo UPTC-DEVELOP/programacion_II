@@ -2,6 +2,7 @@ package co.edu.uptc.tienda.persistencia;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -123,6 +124,11 @@ public class BaseDeDatosLibro implements IGestionLibro {
 
 			}
 
+			pstmt.close();
+			conn.desconectar();
+
+			conn = null;
+
 		} catch (Exception e) {
 			System.err.println("Error al obtener los valores de la Base de Datos");
 		}
@@ -200,6 +206,11 @@ public class BaseDeDatosLibro implements IGestionLibro {
 
 			}
 
+			pstmt.close();
+			conn.desconectar();
+
+			conn = null;
+
 		} catch (Exception e) {
 			System.out.println("Error al consultar los datos");
 		}
@@ -214,15 +225,36 @@ public class BaseDeDatosLibro implements IGestionLibro {
 
 		String sentenciaSQL = "UPDATE libros  SET titulo = ?, autores = ?,  fecha_publicacion = ?, genero = ?, editorial = ?, numero_paginas = ?, precio_base = ?, stock_disponible = ?, tipo_libro = ?, precio_final = ? WHERE id_libro = ?";
 
-		try (PreparedStatement pstmt = conn.getConnection().prepareStatement(sentenciaSQL)){
-			
-			
-			
-		} catch (Exception e) {
-			// TODO: handle exception
+		try (PreparedStatement pstmt = conn.getConnection().prepareStatement(sentenciaSQL)) {
+
+			pstmt.setString(1, libro.getTitulo());
+
+			List<String> listaAutores = libro.getAutores();
+			String autoresUnidos = String.join(", ", listaAutores);
+
+			pstmt.setString(2, autoresUnidos);
+			pstmt.setString(3, libro.getFechaPublicacion());
+			pstmt.setString(4, libro.getGenero());
+			pstmt.setString(5, libro.getEditorial());
+			pstmt.setInt(6, libro.getNumeroPaginas());
+			pstmt.setDouble(7, libro.getPrecioBase());
+			pstmt.setInt(8, libro.getStockDisponible());
+			pstmt.setString(9, libro.getTipoLibro().name());
+			pstmt.setDouble(10, libro.getPrecioFinal());
+			pstmt.setLong(11, libro.getIdLibro());
+
+			pstmt.executeUpdate();
+			pstmt.close();
+			conn.desconectar();
+
+			conn = null;
+
+		} catch (SQLException e) {
+			System.err.println("Error: " + e.getMessage() + "\nCódigo: " + e.getErrorCode());
+			return false;
 		}
-		
-		return false;
+
+		return true;
 	}
 
 	@Override
