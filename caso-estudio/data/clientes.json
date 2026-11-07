@@ -1,0 +1,56 @@
+{
+  "clientes": [
+    {
+      "idCliente": 1,
+      "primerNombre": "Ana",
+      "otrosNombres": "Maria",
+      "primerApellido": "Gomez",
+      "otrosApellidos": "Restrepo",
+      "tipoIdentificacion": "CC",
+      "identificacion": "1000000001",
+      "correoElectronico": "admin@libros.com",
+      "celular": "3001112233",
+      "direccion": "Calle 1 # 2-3",
+      "tipoCliente": "PREMIUM",
+      "rol": "ADMIN",
+      "contrasenia": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+      "fechaRegistro": "2026-11-06T22:24:56.011",
+      "intentosFallidos": 0
+    },
+    {
+      "idCliente": 2,
+      "primerNombre": "Luis",
+      "otrosNombres": "Andres",
+      "primerApellido": "Martinez",
+      "otrosApellidos": "Diaz",
+      "tipoIdentificacion": "CC",
+      "identificacion": "1000000002",
+      "correoElectronico": "cliente@libros.com",
+      "celular": "3004445566",
+      "direccion": "Carrera 5 # 6-7",
+      "tipoCliente": "REGULAR",
+      "rol": "CLIENTE",
+      "contrasenia": "09a31a7001e261ab1e056182a71d3cf57f582ca9a29cff5eb83be0f0549730a9",
+      "fechaRegistro": "2026-11-06T22:24:56.011",
+      "intentosFallidos": 0
+    },
+    {
+      "idCliente": 3,
+      "primerNombre": "Maria",
+      "otrosNombres": "Elena",
+      "primerApellido": "Sanchez",
+      "otrosApellidos": "Ortiz",
+      "tipoIdentificacion": "CC",
+      "identificacion": "1000000003",
+      "correoElectronico": "maria@libros.com",
+      "celular": "3007778899",
+      "direccion": "Avenida 8 # 9-10",
+      "tipoCliente": "PREMIUM",
+      "rol": "CLIENTE",
+      "contrasenia": "626e3c805e77eeb472c42c6be607be2af7ac5c08fd7050f278e0330fe81abf57",
+      "fechaRegistro": "2026-11-06T22:24:56.011",
+      "intentosFallidos": 0
+    }
+  ],
+  "ultimoId": 3
+}

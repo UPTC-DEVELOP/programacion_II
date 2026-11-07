@@ -3,6 +3,7 @@ package co.edu.uptc;
 import co.edu.uptc.gui.VentanaPrincipal;
 import co.edu.uptc.interfaces.IAuditoria;
 import co.edu.uptc.interfaces.ICarritoService;
+import co.edu.uptc.interfaces.IClienteRepositorio;
 import co.edu.uptc.interfaces.ILibroRepositorio;
 import co.edu.uptc.negocio.CarritoServiceImpl;
 import co.edu.uptc.negocio.GestionCliente;
@@ -14,7 +15,7 @@ import co.edu.uptc.negocio.ValidadorDatos;
 import co.edu.uptc.persistencia.AuditoriaRepository;
 import co.edu.uptc.persistencia.CarritoJsonRepository;
 import co.edu.uptc.persistencia.LibroRepositoryFactory;
-import co.edu.uptc.persistencia.LocalCliente;
+import co.edu.uptc.persistencia.ClienteJsonRepository;
 import co.edu.uptc.persistencia.LocalVenta;
 
 /**
@@ -22,7 +23,8 @@ import co.edu.uptc.persistencia.LocalVenta;
  * Arquitectura multicapa con inyección de dependencias:
  *
  * <pre>
- *   Persistencia  -> LocalCliente / LibroJsonRepository (data/libros.json) /
+ *   Persistencia  -> ClienteJsonRepository (data/clientes.json) /
+ *                    LibroJsonRepository (data/libros.json) /
  *                    LocalVenta / CarritoJsonRepository (data/carritos.json) /
  *                    AuditoriaRepository (data/auditoria.json)
  *   Validación    -> ValidadorDatos
@@ -40,7 +42,8 @@ import co.edu.uptc.persistencia.LocalVenta;
 public class AppLibros {
     public static void main(String[] args) {
         // 1. Capa de Persistencia (se inyecta en la capa de negocio)
-        LocalCliente repositorioCliente = new LocalCliente();
+        // Clientes persistidos en data/clientes.json (contraseñas cifradas)
+        IClienteRepositorio repositorioCliente = new ClienteJsonRepository();
         LocalVenta repositorioVenta = new LocalVenta(); // Datos semilla para el dashboard
         CarritoJsonRepository repositorioCarrito = new CarritoJsonRepository();
 
