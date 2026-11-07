@@ -56,6 +56,7 @@ public class ClienteMapper {
         dto.setTipoCliente(entity.getTipoCliente());
         dto.setContrasenia(entity.getContrasenia());
         dto.setRol(entity.getRol());
+        dto.setComprasRealizadas(entity.getComprasRealizadas());
         return dto;
     }
 }

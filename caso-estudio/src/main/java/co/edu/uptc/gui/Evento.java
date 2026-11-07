@@ -448,7 +448,8 @@ public class Evento implements ActionListener {
             return;
         }
 
-        DialogoCliente dialogo = new DialogoCliente(ventanaPrincipal, cliente);
+        // El cliente no puede cambiar su propio tipo: asciende a Premium por compras
+        DialogoCliente dialogo = new DialogoCliente(ventanaPrincipal, cliente, false);
         dialogo.setVisible(true);
         if (!dialogo.isGuardado()) {
             return;

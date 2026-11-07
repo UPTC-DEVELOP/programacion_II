@@ -34,6 +34,7 @@ public class ClientePersistenciaDto {
     private String contrasenia;
     private String fechaRegistro;
     private int intentosFallidos;
+    private int comprasRealizadas;
 
     public ClientePersistenciaDto() {
     }
@@ -68,4 +69,6 @@ public class ClientePersistenciaDto {
     public void setFechaRegistro(String fechaRegistro) { this.fechaRegistro = fechaRegistro; }
     public int getIntentosFallidos() { return intentosFallidos; }
     public void setIntentosFallidos(int intentosFallidos) { this.intentosFallidos = intentosFallidos; }
+    public int getComprasRealizadas() { return comprasRealizadas; }
+    public void setComprasRealizadas(int comprasRealizadas) { this.comprasRealizadas = comprasRealizadas; }
 }

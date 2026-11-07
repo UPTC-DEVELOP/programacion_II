@@ -9,6 +9,7 @@ import co.edu.uptc.interfaces.IClienteRepositorio;
 import co.edu.uptc.interfaces.IGestionCliente;
 import co.edu.uptc.modelo.Cliente;
 import co.edu.uptc.modelo.dto.ClienteDto;
+import co.edu.uptc.modelo.enums.TipoCliente;
 import co.edu.uptc.modelo.mapper.ClienteMapper;
 
 /**
@@ -17,6 +18,9 @@ import co.edu.uptc.modelo.mapper.ClienteMapper;
  * IClienteRepositorio, así no depende de la implementación concreta (DIP).
  */
 public class GestionCliente implements IGestionCliente {
+
+	/** Compras necesarias para que un cliente REGULAR ascienda a PREMIUM. */
+	public static final int COMPRAS_PARA_PREMIUM = 2;
 
 	private final IClienteRepositorio persistencia;
 	private final ValidadorDatos validador;
@@ -29,6 +33,10 @@ public class GestionCliente implements IGestionCliente {
 
 	@Override
 	public boolean registrarCliente(ClienteDto clienteDto) throws ReglaNegocioException {
+		if (clienteDto != null) {
+			// Todo cliente nuevo inicia como REGULAR; asciende a PREMIUM por compras
+			clienteDto.setTipoCliente(TipoCliente.REGULAR);
+		}
 		validador.validarCliente(clienteDto);
 		validador.validarContrasenaNueva(clienteDto.getContrasenia());
 
@@ -83,8 +91,43 @@ public class GestionCliente implements IGestionCliente {
 		Cliente entidad = ClienteMapper.toEntity(clienteDto);
 		entidad.setFechaRegistro(existente.getFechaRegistro());
 		entidad.setIntentosFallidos(existente.getIntentosFallidos());
+		// las compras solo cambian con registrarCompra, nunca desde el formulario
+		entidad.setComprasRealizadas(existente.getComprasRealizadas());
 		persistencia.actualizar(entidad);
 		return true;
+	}
+
+	/**
+	 * Registra una compra confirmada. Si el cliente es REGULAR y alcanza
+	 * COMPRAS_PARA_PREMIUM compras, se convierte en PREMIUM.
+	 *
+	 * @param idCliente Identificador del cliente
+	 * @return true si el cliente ascendió a PREMIUM con esta compra
+	 * @throws ReglaNegocioException si el cliente no existe
+	 */
+	@Override
+	public boolean registrarCompra(int idCliente) throws ReglaNegocioException {
+		Cliente cliente = persistencia.buscarPorId(idCliente);
+		if (cliente == null) {
+			throw new ReglaNegocioException("El cliente no existe.");
+		}
+		int compras = cliente.getComprasRealizadas() + 1;
+		boolean asciende = cliente.getTipoCliente() == TipoCliente.REGULAR
+				&& compras >= COMPRAS_PARA_PREMIUM;
+
+		Cliente actualizado = cliente;
+		if (asciende) {
+			// ClientePremium y ClienteRegular son clases distintas: se crea la
+			// entidad PREMIUM conservando todos los datos del cliente
+			ClienteDto dto = ClienteMapper.toDto(cliente);
+			dto.setTipoCliente(TipoCliente.PREMIUM);
+			actualizado = ClienteMapper.toEntity(dto);
+			actualizado.setFechaRegistro(cliente.getFechaRegistro());
+			actualizado.setIntentosFallidos(cliente.getIntentosFallidos());
+		}
+		actualizado.setComprasRealizadas(compras);
+		persistencia.actualizar(actualizado);
+		return asciende;
 	}
 
 	@Override

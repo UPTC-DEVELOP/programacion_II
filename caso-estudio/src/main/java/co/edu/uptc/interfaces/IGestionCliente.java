@@ -68,4 +68,20 @@ public interface IGestionCliente {
      * @return true si las credenciales son válidas
      */
     boolean iniciarSesion(String correo, String contrasena);
+
+    /**
+     * Registra una compra confirmada del cliente. Si es REGULAR y alcanza el
+     * número de compras requerido, asciende automáticamente a PREMIUM.
+     *
+     * <p>Debe invocarse desde el flujo de confirmación de compra del carrito.
+     * Se declara como método por defecto para no obligar a reimplementarlo en
+     * las implementaciones de prueba existentes.</p>
+     *
+     * @param idCliente Identificador del cliente
+     * @return true si el cliente ascendió a PREMIUM con esta compra
+     * @throws ReglaNegocioException si el cliente no existe
+     */
+    default boolean registrarCompra(int idCliente) throws ReglaNegocioException {
+        throw new UnsupportedOperationException("registrarCompra no está implementado.");
+    }
 }

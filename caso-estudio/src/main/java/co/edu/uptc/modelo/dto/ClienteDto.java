@@ -17,6 +17,7 @@ public class ClienteDto {
     private TipoCliente tipoCliente;
     private String contrasenia;
     private Rol rol = Rol.CLIENTE;
+    private int comprasRealizadas; // solo lectura para la GUI (lo gestiona el negocio)
 
     // Constructor vacío para que la GUI pueda instanciarlo y usar setters
     public ClienteDto() {}
@@ -48,6 +49,8 @@ public class ClienteDto {
     public void setContrasenia(String contrasenia) { this.contrasenia = contrasenia; }
     public Rol getRol() { return rol == null ? Rol.CLIENTE : rol; }
     public void setRol(Rol rol) { this.rol = rol; }
+    public int getComprasRealizadas() { return comprasRealizadas; }
+    public void setComprasRealizadas(int comprasRealizadas) { this.comprasRealizadas = comprasRealizadas; }
 
     // Método de utilidad para la GUI
     public String getNombreCompleto() {

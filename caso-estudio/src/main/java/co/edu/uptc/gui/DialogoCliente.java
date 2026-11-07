@@ -54,6 +54,23 @@ public class DialogoCliente extends JDialog {
      * @param clienteEditar DTO del cliente a editar (null si es creación)
      */
     public DialogoCliente(Frame padre, ClienteDto clienteEditar) {
+        // Por defecto solo se permite cambiar el tipo al EDITAR (uso del admin)
+        this(padre, clienteEditar, clienteEditar != null);
+    }
+
+    /**
+     * Constructor del diálogo indicando si se permite cambiar el tipo de cliente.
+     *
+     * <p>Todo cliente nuevo se registra como REGULAR y asciende a PREMIUM por
+     * sus compras, así que al crear el selector de tipo queda deshabilitado.
+     * Al editar su propio perfil el cliente tampoco puede cambiarlo; solo el
+     * administrador puede hacerlo manualmente.</p>
+     *
+     * @param padre               ventana padre
+     * @param clienteEditar       DTO del cliente a editar (null si es creación)
+     * @param permitirCambiarTipo true si el selector de tipo queda habilitado
+     */
+    public DialogoCliente(Frame padre, ClienteDto clienteEditar, boolean permitirCambiarTipo) {
         super(padre, clienteEditar == null ? "Nuevo Cliente" : "Editar Cliente", true);
 
         this.clienteEditar = clienteEditar;
@@ -69,6 +86,13 @@ public class DialogoCliente extends JDialog {
         // Si es edición, cargar los datos del cliente
         if (clienteEditar != null) {
             cargarDatos(clienteEditar);
+        } else {
+            comboTipoCliente.setSelectedItem(TipoCliente.REGULAR);
+        }
+        comboTipoCliente.setEnabled(permitirCambiarTipo);
+        if (!permitirCambiarTipo) {
+            comboTipoCliente.setToolTipText("El cliente asciende a Premium automáticamente tras "
+                    + co.edu.uptc.negocio.GestionCliente.COMPRAS_PARA_PREMIUM + " compras");
         }
     }
 

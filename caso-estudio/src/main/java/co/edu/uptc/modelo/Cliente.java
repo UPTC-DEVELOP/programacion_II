@@ -13,6 +13,8 @@ public abstract class Cliente extends Persona {
 	private Timestamp fechaRegistro;
 	private int intentosFallidos;
 	private Rol rol;
+	/** Compras confirmadas; al llegar a 2 el cliente REGULAR asciende a PREMIUM. */
+	private int comprasRealizadas;
 
 	// Constructor completo (se usa en las subclases y en el mapper)
 	public Cliente(String primerNombre, String otrosNombres, String primerApellido, String otrosApellidos,
@@ -78,6 +80,14 @@ public abstract class Cliente extends Persona {
 
 	public void setRol(Rol rol) {
 		this.rol = rol;
+	}
+
+	public int getComprasRealizadas() {
+		return comprasRealizadas;
+	}
+
+	public void setComprasRealizadas(int comprasRealizadas) {
+		this.comprasRealizadas = Math.max(0, comprasRealizadas);
 	}
 
 	/**

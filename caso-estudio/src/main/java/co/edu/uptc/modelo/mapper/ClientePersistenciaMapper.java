@@ -49,6 +49,7 @@ public final class ClientePersistenciaMapper {
         dto.setFechaRegistro(cliente.getFechaRegistro() == null
                 ? null : cliente.getFechaRegistro().toLocalDateTime().toString());
         dto.setIntentosFallidos(cliente.getIntentosFallidos());
+        dto.setComprasRealizadas(cliente.getComprasRealizadas());
         return dto;
     }
 
@@ -66,6 +67,14 @@ public final class ClientePersistenciaMapper {
         Rol rol = (dto.getRol() == null) ? Rol.CLIENTE : dto.getRol();
         Timestamp fecha = convertirFecha(dto.getFechaRegistro());
 
+        Cliente cliente = crearSegunTipo(dto, tipo, rol, fecha);
+        cliente.setComprasRealizadas(dto.getComprasRealizadas());
+        return cliente;
+    }
+
+    /** Crea ClientePremium o ClienteRegular según el tipo guardado. */
+    private static Cliente crearSegunTipo(ClientePersistenciaDto dto, TipoCliente tipo, Rol rol,
+                                          Timestamp fecha) {
         if (tipo == TipoCliente.PREMIUM) {
             return new ClientePremium(
                     dto.getPrimerNombre(), dto.getOtrosNombres(), dto.getPrimerApellido(),
