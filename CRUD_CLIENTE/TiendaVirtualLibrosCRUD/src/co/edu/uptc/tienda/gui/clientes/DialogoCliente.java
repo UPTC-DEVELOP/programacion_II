@@ -19,10 +19,7 @@ import co.edu.uptc.tienda.modelo.enums.TipoCliente;
 import co.edu.uptc.tienda.negocio.IGestionCliente;
 import co.edu.uptc.tienda.negocio.NegocioException;
 
-/**
- * Diálogo modal para la creación y actualización de clientes. Solo captura y
- * muestra datos: las reglas de negocio las aplica {@link IGestionCliente}.
- */
+
 public class DialogoCliente extends JDialog {
 
 	private static final long serialVersionUID = 1L;
