@@ -5,6 +5,7 @@ import java.util.List;
 import co.edu.uptc.libreria.modelo.Cliente;
 import co.edu.uptc.libreria.gui.Evento;
 
+//Panelclientes
 public class PanelClientes extends PanelCentral {
 
 	private static final int COL_CORREO = 1;

@@ -1,6 +1,7 @@
 package co.edu.uptc.libreria.clientes.gui;
 
 import java.awt.BorderLayout;
+
 import java.awt.Frame;
 import java.awt.GridLayout;
 
@@ -17,6 +18,8 @@ import javax.swing.JTextField;
 import co.edu.uptc.libreria.modelo.Cliente;
 import co.edu.uptc.libreria.modelo.enums.TipoCliente;
 import co.edu.uptc.libreria.gui.Evento;
+
+//DialogoCLiente
 
 public class DialogoCliente extends JDialog {
 

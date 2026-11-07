@@ -1,6 +1,7 @@
 package co.edu.uptc.libreria.gui;
 
 import java.awt.BorderLayout;
+
 import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
@@ -17,6 +18,7 @@ import co.edu.uptc.libreria.modelo.Libro;
 import co.edu.uptc.libreria.negocio.GestionLibro;
 import co.edu.uptc.libreria.negocio.LibroConfig;
 
+//PanelActualizarLibro
 public class PanelActualizarLibro extends JFrame {
 
     private JTextField campoBuscarCodigo;

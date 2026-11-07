@@ -18,6 +18,8 @@ import co.edu.uptc.libreria.gui.Evento;
  * Panel base abstracto con botones CRUD, buscador y tabla. Cada entidad
  * (clientes, libros, etc.) lo extiende y define título, comandos, columnas y filas.
  */
+
+//panel central
 public abstract class PanelCentral extends JPanel {
 
 	protected String tituloPanel;

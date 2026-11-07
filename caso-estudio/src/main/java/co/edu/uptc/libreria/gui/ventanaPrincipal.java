@@ -45,6 +45,8 @@ import co.edu.uptc.libreria.persistencia.ConexionBD;
  * Clientes, Catalogo (detalle del libro y pedido) y Carrito. La gestion de
  * libros (registrar, buscar, actualizar, eliminar) se abre desde el menu "Libros".
  */
+
+//Ventana Principal
 public class ventanaPrincipal extends JFrame {
 
 	private static final int PESTANA_CATALOGO = 1;

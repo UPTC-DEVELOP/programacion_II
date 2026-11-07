@@ -15,6 +15,7 @@ import co.edu.uptc.libreria.negocio.GestionLibro;
 import co.edu.uptc.libreria.negocio.LibroConfig;
 import co.edu.uptc.libreria.clientes.gui.PanelCentral;
 
+//Panel registrar
 public class PanelRegistrarLibro extends JFrame {
 
     private JTextField campoCodigo;

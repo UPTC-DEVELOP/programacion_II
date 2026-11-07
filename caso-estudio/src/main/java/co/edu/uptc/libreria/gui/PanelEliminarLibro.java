@@ -14,6 +14,7 @@ import co.edu.uptc.libreria.negocio.GestionLibro;
 import co.edu.uptc.libreria.negocio.LibroConfig;
 import co.edu.uptc.libreria.clientes.gui.PanelCentral;
 
+//Panel eliminar
 public class PanelEliminarLibro extends JFrame {
 
     private JTextField campoCodigo;
