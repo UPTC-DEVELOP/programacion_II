@@ -15,6 +15,17 @@ import java.util.regex.Pattern;
 public class ValidadorDatos {
 
     public static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+    /** Contraseña: mínimo 8 caracteres, al menos una mayúscula y un dígito. */
+    public static final Pattern CONTRASENA_PATTERN = Pattern.compile("^(?=.*[A-Z])(?=.*\\d).{8,}$");
+    /** Identificación numérica (CC, TI, CE): de 1 a 10 dígitos. */
+    public static final Pattern IDENTIFICACION_NUMERICA_PATTERN = Pattern.compile("^\\d{1,10}$");
+    /** Pasaporte: de 1 a 10 caracteres alfanuméricos. */
+    public static final Pattern PASAPORTE_PATTERN = Pattern.compile("^[A-Za-z0-9]{1,10}$");
+    /** Celular nacional: exactamente 10 dígitos. */
+    public static final Pattern CELULAR_PATTERN = Pattern.compile("^\\d{10}$");
+
+    private static final String TIPO_PASAPORTE = "Pasaporte";
+
     public static final Pattern ISBN_PATTERN = Pattern.compile("^(?:ISBN(?:-13)?:? )?(?=[0-9X]{10}$|(?=(?:[0-9]+[- ]){3})[- 0-9X]{13}$|97[89][0-9]{10}$|(?=(?:[0-9]+[- ]){4})[- 0-9]{17}$)(?:97[89][- ]?)?[0-9]{1,5}[- ]?[0-9]+[- ]?[0-9]+[- ]?[0-9X]$");
 
     public void validarCliente(ClienteDto dto) throws ReglaNegocioException {
@@ -22,11 +33,13 @@ public class ValidadorDatos {
         validarTextoNoVacio(dto.getPrimerNombre(), "Primer nombre");
         validarTextoNoVacio(dto.getPrimerApellido(), "Primer apellido");
         validarTextoNoVacio(dto.getIdentificacion(), "Identificación");
+        validarIdentificacion(dto.getTipoIdentificacion(), dto.getIdentificacion());
         validarTextoNoVacio(dto.getCorreoElectronico(), "Correo electrónico");
         if (!EMAIL_PATTERN.matcher(dto.getCorreoElectronico().trim()).matches()) {
             throw new ReglaNegocioException("El formato del correo electrónico no es válido.");
         }
         validarTextoNoVacio(dto.getCelular(), "Celular");
+        validarCelular(dto.getCelular());
         validarTextoNoVacio(dto.getDireccion(), "Dirección");
         if (dto.getTipoCliente() == null) {
             throw new ReglaNegocioException("Debe seleccionar el tipo de cliente.");
@@ -36,12 +49,60 @@ public class ValidadorDatos {
         }
     }
 
+    /**
+     * Valida la identificación: máximo 10 posiciones. Para CC, TI y CE solo se
+     * permiten dígitos; para Pasaporte se permiten letras y dígitos.
+     *
+     * @param tipoIdentificacion Tipo de documento (CC, TI, CE o Pasaporte)
+     * @param identificacion     Número de identificación
+     * @throws ReglaNegocioException si no cumple el formato
+     */
+    public void validarIdentificacion(String tipoIdentificacion, String identificacion)
+            throws ReglaNegocioException {
+        String valor = (identificacion == null) ? "" : identificacion.trim();
+        if (TIPO_PASAPORTE.equalsIgnoreCase(tipoIdentificacion)) {
+            if (!PASAPORTE_PATTERN.matcher(valor).matches()) {
+                throw new ReglaNegocioException(
+                        "El pasaporte debe tener máximo 10 caracteres, solo letras y números.");
+            }
+            return;
+        }
+        if (!IDENTIFICACION_NUMERICA_PATTERN.matcher(valor).matches()) {
+            throw new ReglaNegocioException(
+                    "La identificación debe contener solo dígitos y máximo 10 posiciones.");
+        }
+    }
+
+    /**
+     * Valida que el celular cumpla la estructura nacional de 10 dígitos.
+     *
+     * @param celular Número de celular
+     * @throws ReglaNegocioException si no tiene exactamente 10 dígitos
+     */
+    public void validarCelular(String celular) throws ReglaNegocioException {
+        String valor = (celular == null) ? "" : celular.trim();
+        if (!CELULAR_PATTERN.matcher(valor).matches()) {
+            throw new ReglaNegocioException("El celular debe tener exactamente 10 dígitos.");
+        }
+    }
+
+    /**
+     * Valida una contraseña NUEVA (registro o cambio de contraseña): mínimo 8
+     * caracteres, al menos una letra mayúscula y al menos un dígito.
+     *
+     * <p>No se aplica al iniciar sesión, por lo que las contraseñas de los
+     * clientes de ejemplo siguen funcionando.</p>
+     *
+     * @param contrasena Contraseña a validar
+     * @throws ReglaNegocioException si no cumple la política
+     */
     public void validarContrasenaNueva(String contrasena) throws ReglaNegocioException {
         if (contrasena == null || contrasena.trim().isEmpty()) {
             throw new ReglaNegocioException("La contraseña es obligatoria.");
         }
-        if (contrasena.trim().length() < 4) {
-            throw new ReglaNegocioException("La contraseña debe tener al menos 4 caracteres.");
+        if (!CONTRASENA_PATTERN.matcher(contrasena.trim()).matches()) {
+            throw new ReglaNegocioException(
+                    "La contraseña debe tener mínimo 8 caracteres, una mayúscula y un dígito.");
         }
     }
 

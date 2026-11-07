@@ -201,15 +201,11 @@ public class DialogoCliente extends JDialog {
             }
 
             String contrasenia = new String(txtContrasenia.getPassword()).trim();
-            if (clienteEditar == null) {
-                // En creación la contraseña es obligatoria
-                if (contrasenia.isEmpty()) {
-                    txtContrasenia.requestFocus();
-                    throw new IllegalArgumentException("La contraseña es obligatoria.");
-                }
-            } else if (!contrasenia.isEmpty() && contrasenia.length() < 4) {
+            // En creación la contraseña es obligatoria. Las reglas de formato
+            // (8 caracteres, mayúscula y dígito) se validan en ValidadorDatos.
+            if (clienteEditar == null && contrasenia.isEmpty()) {
                 txtContrasenia.requestFocus();
-                throw new IllegalArgumentException("La contraseña debe tener al menos 4 caracteres.");
+                throw new IllegalArgumentException("La contraseña es obligatoria.");
             }
 
             ClienteDto dto = new ClienteDto();
