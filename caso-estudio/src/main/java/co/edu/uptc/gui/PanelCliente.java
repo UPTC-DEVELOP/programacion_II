@@ -2,6 +2,8 @@ package co.edu.uptc.gui;
 
 import co.edu.uptc.modelo.dto.ClienteDto;
 import co.edu.uptc.modelo.dto.LibroDto;
+import co.edu.uptc.modelo.enums.TipoCliente;
+import co.edu.uptc.negocio.GestionCliente;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -239,6 +241,13 @@ public class PanelCliente extends JPanel {
         sb.append("Dirección       : ").append(nulo(clienteActual.getDireccion())).append("\n");
         sb.append("Tipo de cliente : ").append(clienteActual.getTipoCliente() == null
                 ? "-" : clienteActual.getTipoCliente().getNombreMostrar()).append("\n");
+        // Progreso hacia Premium: solo se muestra a los clientes Regulares
+        if (clienteActual.getTipoCliente() == TipoCliente.REGULAR) {
+            int meta = GestionCliente.COMPRAS_PARA_PREMIUM;
+            int compras = Math.min(clienteActual.getComprasRealizadas(), meta);
+            sb.append("Compras         : ").append(compras).append(" de ").append(meta)
+              .append(" para Premium\n");
+        }
         sb.append("Rol             : ").append(clienteActual.getRol() == null
                 ? "-" : clienteActual.getRol().getNombreMostrar()).append("\n");
         areaDatos.setText(sb.toString());

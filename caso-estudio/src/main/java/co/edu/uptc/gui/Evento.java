@@ -456,8 +456,11 @@ public class Evento implements ActionListener {
         }
 
         try {
-            gestionCliente.actualizarCliente(dialogo.getClienteDto());
-            ventanaPrincipal.getPanelCliente().setCliente(dialogo.getClienteDto());
+            ClienteDto datosNuevos = dialogo.getClienteDto();
+            gestionCliente.actualizarCliente(datosNuevos);
+            // se recarga desde el negocio para mostrar también las compras realizadas
+            ClienteDto recargado = gestionCliente.buscarPorId(datosNuevos.getIdCliente());
+            ventanaPrincipal.getPanelCliente().setCliente(recargado != null ? recargado : datosNuevos);
             mostrarInformacion("Sus datos fueron actualizados exitosamente.");
         } catch (ReglaNegocioException ex) {
             mostrarError(ex.getMessage());
