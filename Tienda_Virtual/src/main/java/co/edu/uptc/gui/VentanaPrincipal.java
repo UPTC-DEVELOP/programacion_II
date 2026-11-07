@@ -8,6 +8,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
+// Hola a todos
 public class VentanaPrincipal extends JFrame {
     private final TiendaController controller;
     private DefaultTableModel modeloTablaLibros;
