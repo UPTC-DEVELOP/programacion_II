@@ -39,64 +39,274 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private JPanel crearPanelUsuario() {
-        JPanel panel = new JPanel(new GridLayout(8, 2, 10, 10));
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JPanel form = new JPanel(new GridLayout(9, 2, 10, 10));
 
         JTextField txtId = new JTextField();
         JTextField txtNombre = new JTextField();
         JTextField txtCorreo = new JTextField();
+        JPasswordField txtContrasena = new JPasswordField();
+        JPanel panelContrasena = new JPanel(new BorderLayout(5, 0));
+        panelContrasena.add(txtContrasena, BorderLayout.CENTER);
+        panelContrasena.add(crearCasillaMostrar(txtContrasena), BorderLayout.EAST);
         JTextField txtDireccion = new JTextField();
+        JComboBox<String> cbDepartamento = new JComboBox<>(UbicacionesColombia.departamentos());
+        JComboBox<String> cbCiudad = new JComboBox<>();
+        enlazarCiudades(cbDepartamento, cbCiudad);
         JTextField txtTelefono = new JTextField();
         JComboBox<String> cbTipo = new JComboBox<>(new String[]{"ESTANDAR", "PREMIUM"});
 
-        panel.add(new JLabel("ID / Cédula:"));
-        panel.add(txtId);
-        panel.add(new JLabel("Nombre Completo:"));
-        panel.add(txtNombre);
-        panel.add(new JLabel("Correo Electrónico:"));
-        panel.add(txtCorreo);
-        panel.add(new JLabel("Dirección Envío:"));
-        panel.add(txtDireccion);
-        panel.add(new JLabel("Teléfono:"));
-        panel.add(txtTelefono);
-        panel.add(new JLabel("Tipo de Cliente:"));
-        panel.add(cbTipo);
+        form.add(new JLabel("ID / Cédula:"));
+        form.add(txtId);
+        form.add(new JLabel("Nombre Completo:"));
+        form.add(txtNombre);
+        form.add(new JLabel("Correo Electrónico:"));
+        form.add(txtCorreo);
+        form.add(new JLabel("Contraseña (mín. " + TiendaController.LONGITUD_MINIMA_CONTRASENA + " caracteres):"));
+        form.add(panelContrasena);
+        form.add(new JLabel("Dirección Envío:"));
+        form.add(txtDireccion);
+        form.add(new JLabel("Departamento:"));
+        form.add(cbDepartamento);
+        form.add(new JLabel("Ciudad:"));
+        form.add(cbCiudad);
+        form.add(new JLabel("Teléfono:"));
+        form.add(txtTelefono);
+        form.add(new JLabel("Tipo de Cliente:"));
+        form.add(cbTipo);
 
         JButton btnRegistrar = new JButton("Registrar Usuario");
-        JButton btnLogin = new JButton("Iniciar Sesión (con Correo)");
+        JButton btnLogin = new JButton("Iniciar Sesión");
+        JButton btnActualizar = new JButton("Actualizar Datos del Usuario");
+        JButton btnOlvide = new JButton("Se me olvidó la contraseña");
+        JButton btnCerrar = new JButton("Cerrar Sesión");
 
         lblUsuario = new JLabel("Estado: Sin sesión iniciada");
         lblUsuario.setForeground(Color.RED);
 
+        // --- Registrar ---
         btnRegistrar.addActionListener(e -> {
-            if (txtId.getText().isEmpty() || txtCorreo.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Complete ID y Correo.");
+            String ciudad = String.valueOf(cbCiudad.getSelectedItem()).trim();
+            String contrasena = new String(txtContrasena.getPassword());
+            if (txtId.getText().trim().isEmpty() || txtNombre.getText().trim().isEmpty()
+                    || txtCorreo.getText().trim().isEmpty() || ciudad.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Complete ID, Nombre, Correo, Departamento y Ciudad.");
                 return;
             }
-            Cliente c = new Cliente(txtId.getText(), txtNombre.getText(), txtCorreo.getText(),
-                    txtDireccion.getText(), txtTelefono.getText(), (String) cbTipo.getSelectedItem());
-            if (controller.registrarCliente(c)) {
+            if (!txtCorreo.getText().contains("@")) {
+                JOptionPane.showMessageDialog(this, "Ingrese un correo válido.");
+                return;
+            }
+            if (contrasena.length() < TiendaController.LONGITUD_MINIMA_CONTRASENA) {
+                JOptionPane.showMessageDialog(this, "La contraseña debe tener al menos "
+                        + TiendaController.LONGITUD_MINIMA_CONTRASENA + " caracteres.");
+                return;
+            }
+            Cliente c = new Cliente(txtId.getText().trim(), txtNombre.getText().trim(), txtCorreo.getText().trim(),
+                    txtDireccion.getText().trim(), (String) cbDepartamento.getSelectedItem(), ciudad,
+                    txtTelefono.getText().trim(), (String) cbTipo.getSelectedItem());
+            if (controller.registrarCliente(c, contrasena)) {
+                txtContrasena.setText("");
                 JOptionPane.showMessageDialog(this, "Cliente registrado exitosamente.");
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo registrar: el ID o el correo ya existen.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
+        // --- Iniciar sesión (correo + contraseña) ---
         btnLogin.addActionListener(e -> {
             String correo = txtCorreo.getText().trim();
-            if (controller.iniciarSesion(correo)) {
+            String contrasena = new String(txtContrasena.getPassword());
+            if (controller.iniciarSesion(correo, contrasena)) {
                 Cliente u = controller.getUsuarioLogueado();
-                lblUsuario.setText("Usuario: " + u.getNombreCompleto() + " (" + u.getTipoCliente() + ")");
-                lblUsuario.setForeground(new Color(0, 128, 0));
+                actualizarEtiquetaSesion();
+                txtContrasena.setText("");
+                actualizarTablaCarrito();
                 JOptionPane.showMessageDialog(this, "Bienvenido " + u.getNombreCompleto());
             } else {
-                JOptionPane.showMessageDialog(this, "Usuario no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "Correo o contraseña incorrectos.\nSi aún no tiene contraseña, use \"Se me olvidó la contraseña\".",
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        panel.add(btnRegistrar);
-        panel.add(btnLogin);
-        panel.add(lblUsuario);
+        // --- Se me olvidó la contraseña ---
+        btnOlvide.addActionListener(e -> mostrarRecuperarContrasena(txtCorreo.getText().trim()));
+
+        // --- Actualizar datos del usuario ---
+        btnActualizar.addActionListener(e -> mostrarFormularioActualizarUsuario());
+
+        // --- Cerrar sesión ---
+        btnCerrar.addActionListener(e -> {
+            if (controller.getUsuarioLogueado() == null) {
+                JOptionPane.showMessageDialog(this, "No hay una sesión iniciada.");
+                return;
+            }
+            controller.cerrarSesion();
+            actualizarEtiquetaSesion();
+            txtId.setText("");
+            txtNombre.setText("");
+            txtCorreo.setText("");
+            txtContrasena.setText("");
+            txtDireccion.setText("");
+            txtTelefono.setText("");
+            cbDepartamento.setSelectedIndex(0);
+            cbTipo.setSelectedIndex(0);
+            actualizarTablaCarrito();
+            JOptionPane.showMessageDialog(this, "Sesión cerrada correctamente.");
+        });
+
+        JPanel panelBotones = new JPanel(new GridLayout(2, 3, 10, 10));
+        panelBotones.add(btnRegistrar);
+        panelBotones.add(btnLogin);
+        panelBotones.add(btnActualizar);
+        panelBotones.add(btnOlvide);
+        panelBotones.add(btnCerrar);
+        panelBotones.add(lblUsuario);
+
+        panel.add(form, BorderLayout.CENTER);
+        panel.add(panelBotones, BorderLayout.SOUTH);
 
         return panel;
+    }
+
+    /** Casilla "Mostrar" que alterna entre ver y ocultar el texto de uno o varios campos de contraseña. */
+    private static JCheckBox crearCasillaMostrar(JPasswordField... campos) {
+        JCheckBox chk = new JCheckBox("Mostrar");
+        char oculto = campos[0].getEchoChar();
+        chk.addActionListener(e -> {
+            for (JPasswordField campo : campos) {
+                campo.setEchoChar(chk.isSelected() ? (char) 0 : oculto);
+            }
+        });
+        return chk;
+    }
+
+    /** Carga las ciudades del departamento elegido y las vuelve a cargar cada vez que éste cambie. */
+    private static void enlazarCiudades(JComboBox<String> cbDepartamento, JComboBox<String> cbCiudad) {
+        cbCiudad.setEditable(true); // permite escribir una ciudad que no esté en la lista
+        Runnable cargar = () -> {
+            cbCiudad.removeAllItems();
+            for (String c : UbicacionesColombia.ciudadesDe((String) cbDepartamento.getSelectedItem())) {
+                cbCiudad.addItem(c);
+            }
+        };
+        cargar.run();
+        cbDepartamento.addActionListener(e -> cargar.run());
+    }
+
+    private void actualizarEtiquetaSesion() {
+        Cliente u = controller.getUsuarioLogueado();
+        if (u == null) {
+            lblUsuario.setText("Estado: Sin sesión iniciada");
+            lblUsuario.setForeground(Color.RED);
+        } else {
+            lblUsuario.setText("Usuario: " + u.getNombreCompleto() + " (" + u.getTipoCliente() + ")");
+            lblUsuario.setForeground(new Color(0, 128, 0));
+        }
+    }
+
+    private void mostrarFormularioActualizarUsuario() {
+        Cliente u = controller.getUsuarioLogueado();
+        if (u == null) {
+            JOptionPane.showMessageDialog(this, "Debe iniciar sesión para actualizar sus datos.");
+            return;
+        }
+
+        JTextField txtNombre = new JTextField(u.getNombreCompleto());
+        JTextField txtCorreo = new JTextField(u.getCorreo());
+        JTextField txtDireccion = new JTextField(u.getDireccionEnvio());
+        JComboBox<String> cbDepartamento = new JComboBox<>(UbicacionesColombia.departamentos());
+        JComboBox<String> cbCiudad = new JComboBox<>();
+        enlazarCiudades(cbDepartamento, cbCiudad);
+        if (!u.getDepartamento().isEmpty()) {
+            cbDepartamento.setSelectedItem(u.getDepartamento());
+        }
+        cbCiudad.setSelectedItem(u.getCiudad());
+        JTextField txtTelefono = new JTextField(u.getTelefono());
+        JComboBox<String> cbTipo = new JComboBox<>(new String[]{"ESTANDAR", "PREMIUM"});
+        cbTipo.setSelectedItem(u.getTipoCliente());
+
+        Object[] message = {
+                "ID / Cédula (no editable): " + u.getId(),
+                "Nombre Completo:", txtNombre,
+                "Correo Electrónico:", txtCorreo,
+                "Dirección Envío:", txtDireccion,
+                "Departamento:", cbDepartamento,
+                "Ciudad:", cbCiudad,
+                "Teléfono:", txtTelefono,
+                "Tipo de Cliente:", cbTipo
+        };
+
+        int option = JOptionPane.showConfirmDialog(this, message, "Actualizar datos del usuario",
+                JOptionPane.OK_CANCEL_OPTION);
+        if (option != JOptionPane.OK_OPTION) return;
+
+        String ciudad = String.valueOf(cbCiudad.getSelectedItem()).trim();
+        if (txtNombre.getText().trim().isEmpty() || txtCorreo.getText().trim().isEmpty() || ciudad.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nombre, Correo y Ciudad son obligatorios.");
+            return;
+        }
+        if (!txtCorreo.getText().contains("@")) {
+            JOptionPane.showMessageDialog(this, "Ingrese un correo válido.");
+            return;
+        }
+
+        Cliente nuevo = new Cliente(u.getId(), txtNombre.getText().trim(), txtCorreo.getText().trim(),
+                txtDireccion.getText().trim(), (String) cbDepartamento.getSelectedItem(), ciudad,
+                txtTelefono.getText().trim(), (String) cbTipo.getSelectedItem());
+        try {
+            if (controller.actualizarCliente(nuevo)) {
+                actualizarEtiquetaSesion();
+                actualizarTablaCarrito(); // el descuento puede cambiar si cambió el tipo de cliente
+                JOptionPane.showMessageDialog(this, "Datos actualizados correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudieron actualizar los datos.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void mostrarRecuperarContrasena(String correoInicial) {
+        JTextField txtCorreo = new JTextField(correoInicial);
+        JTextField txtId = new JTextField();
+        JPasswordField txtNueva = new JPasswordField();
+        JPasswordField txtConfirmar = new JPasswordField();
+
+        Object[] message = {
+                "Para verificar su identidad ingrese el correo y el ID / Cédula con los que se registró.",
+                "Correo Electrónico:", txtCorreo,
+                "ID / Cédula:", txtId,
+                "Nueva contraseña (mín. " + TiendaController.LONGITUD_MINIMA_CONTRASENA + " caracteres):", txtNueva,
+                "Confirmar nueva contraseña:", txtConfirmar,
+                crearCasillaMostrar(txtNueva, txtConfirmar)
+        };
+
+        int option = JOptionPane.showConfirmDialog(this, message, "Recuperar contraseña",
+                JOptionPane.OK_CANCEL_OPTION);
+        if (option != JOptionPane.OK_OPTION) return;
+
+        String nueva = new String(txtNueva.getPassword());
+        if (!nueva.equals(new String(txtConfirmar.getPassword()))) {
+            JOptionPane.showMessageDialog(this, "Las contraseñas no coinciden.");
+            return;
+        }
+        if (nueva.length() < TiendaController.LONGITUD_MINIMA_CONTRASENA) {
+            JOptionPane.showMessageDialog(this, "La contraseña debe tener al menos "
+                    + TiendaController.LONGITUD_MINIMA_CONTRASENA + " caracteres.");
+            return;
+        }
+        if (controller.restablecerContrasena(txtCorreo.getText().trim(), txtId.getText().trim(), nueva)) {
+            JOptionPane.showMessageDialog(this, "Contraseña actualizada. Ya puede iniciar sesión.");
+        } else {
+            JOptionPane.showMessageDialog(this, "El correo y el ID no coinciden con ningún usuario registrado.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private JPanel crearPanelLibros() {
