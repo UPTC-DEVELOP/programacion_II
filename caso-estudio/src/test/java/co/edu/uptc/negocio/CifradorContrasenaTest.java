@@ -7,7 +7,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import co.edu.uptc.excepciones.ReglaNegocioException;
 import co.edu.uptc.interfaces.IClienteRepositorio;
@@ -16,7 +18,7 @@ import co.edu.uptc.modelo.dto.ClienteDto;
 import co.edu.uptc.modelo.dto.CredencialDto;
 import co.edu.uptc.modelo.enums.Rol;
 import co.edu.uptc.modelo.enums.TipoCliente;
-import co.edu.uptc.persistencia.LocalCliente;
+import co.edu.uptc.persistencia.ClienteJsonRepository;
 
 /**
  * Pruebas del cifrado de contraseñas (SHA-256) y del inicio de sesión
@@ -24,15 +26,22 @@ import co.edu.uptc.persistencia.LocalCliente;
  */
 public class CifradorContrasenaTest {
 
+    @Rule
+    public TemporaryFolder carpetaTemporal = new TemporaryFolder();
+
     private IClienteRepositorio repositorio;
     private GestionCliente gestionCliente;
     private GestionSeguridad gestionSeguridad;
 
     @Before
-    public void setUp() {
-        repositorio = new LocalCliente();
+    public void setUp() throws ReglaNegocioException {
+        String ruta = carpetaTemporal.getRoot().toPath().resolve("clientes.json").toString();
+        repositorio = new ClienteJsonRepository(ruta);
         gestionCliente = new GestionCliente(repositorio, new ValidadorDatos());
         gestionSeguridad = new GestionSeguridad(repositorio);
+
+        // cliente que ya existe, registrado con su contraseña cifrada
+        gestionCliente.registrarCliente(clienteNuevo("ana@correo.com", "1000000002", "Clave1234"));
     }
 
     private ClienteDto clienteNuevo(String correo, String identificacion, String contrasena) {
@@ -98,18 +107,18 @@ public class CifradorContrasenaTest {
     }
 
     @Test
-    public void clientesDeEjemploNoGuardanTextoPlano() {
-        assertEquals(CifradorContrasena.hash("admin123"),
-                repositorio.buscarPorCorreo("admin@libros.com").getContrasenia());
+    public void clienteExistenteNoGuardaTextoPlano() {
+        assertEquals(CifradorContrasena.hash("Clave1234"),
+                repositorio.buscarPorCorreo("ana@correo.com").getContrasenia());
     }
 
     @Test
     public void editarSinContrasenaConservaElHash() throws ReglaNegocioException {
-        String hashAntes = repositorio.buscarPorCorreo("cliente@libros.com").getContrasenia();
+        String hashAntes = repositorio.buscarPorCorreo("ana@correo.com").getContrasenia();
         ClienteDto dto = gestionCliente.buscarPorIdentificacion("1000000002");
         dto.setContrasenia("");
         gestionCliente.actualizarCliente(dto);
-        assertEquals(hashAntes, repositorio.buscarPorCorreo("cliente@libros.com").getContrasenia());
+        assertEquals(hashAntes, repositorio.buscarPorCorreo("ana@correo.com").getContrasenia());
     }
 
     @Test
@@ -118,30 +127,30 @@ public class CifradorContrasenaTest {
         dto.setContrasenia("NuevaClave9");
         gestionCliente.actualizarCliente(dto);
         assertEquals(CifradorContrasena.hash("NuevaClave9"),
-                repositorio.buscarPorCorreo("cliente@libros.com").getContrasenia());
-        assertTrue(gestionCliente.iniciarSesion("cliente@libros.com", "NuevaClave9"));
-        assertFalse(gestionCliente.iniciarSesion("cliente@libros.com", "cliente123"));
+                repositorio.buscarPorCorreo("ana@correo.com").getContrasenia());
+        assertTrue(gestionCliente.iniciarSesion("ana@correo.com", "NuevaClave9"));
+        assertFalse(gestionCliente.iniciarSesion("ana@correo.com", "Clave1234"));
     }
 
     // ------------------------- Inicio de sesión -------------------------
 
     @Test
-    public void adminIniciaSesionConContrasenaDeSiempre() {
-        assertTrue(gestionSeguridad.iniciarSesion(new CredencialDto("admin@libros.com", "admin123")));
+    public void clienteExistenteIniciaSesionConSuContrasena() {
+        assertTrue(gestionSeguridad.iniciarSesion(new CredencialDto("ana@correo.com", "Clave1234")));
         assertTrue(gestionSeguridad.haySesionActiva());
     }
 
     @Test
     public void contrasenaIncorrectaNoIniciaSesion() {
-        assertFalse(gestionSeguridad.iniciarSesion(new CredencialDto("admin@libros.com", "Admin123")));
+        assertFalse(gestionSeguridad.iniciarSesion(new CredencialDto("ana@correo.com", "clave1234")));
         assertFalse(gestionSeguridad.haySesionActiva());
     }
 
     @Test
     public void elHashNoSirveComoContrasena() {
         // Quien conozca el hash guardado no puede usarlo para entrar
-        String hash = repositorio.buscarPorCorreo("admin@libros.com").getContrasenia();
-        assertFalse(gestionSeguridad.iniciarSesion(new CredencialDto("admin@libros.com", hash)));
+        String hash = repositorio.buscarPorCorreo("ana@correo.com").getContrasenia();
+        assertFalse(gestionSeguridad.iniciarSesion(new CredencialDto("ana@correo.com", hash)));
     }
 
     @Test

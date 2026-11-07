@@ -23,13 +23,13 @@ import co.edu.uptc.modelo.mapper.ClientePersistenciaMapper;
 /**
  * Implementación del repositorio de clientes con persistencia en JSON.
  *
- * <p>Gestiona el archivo data/clientes.json: si no existe lo crea con los
- * clientes de ejemplo, y en cada operación lee el archivo, aplica el cambio y
- * lo vuelve a escribir. No contiene reglas de negocio (correo único, formato,
+  * <p>Gestiona el archivo data/clientes.json: si no existe lo crea vacio,
+ * y en cada operación lee el archivo, aplica el cambio y lo vuelve a
+ * escribir. No contiene reglas de negocio (correo único, formato,
  * cifrado…); esas viven en GestionCliente y ValidadorDatos (SRP).</p>
  *
- * <p>Cumple LSP y DIP: puede sustituir a LocalCliente en cualquier punto donde
- * se espere un IClienteRepositorio, sin cambiar la capa de negocio ni la GUI.</p>
+ *  * <p>Cumple LSP y DIP: cualquier clase que espere un IClienteRepositorio
+ * puede usarla sin cambiar la capa de negocio ni la GUI</p>
  *
  * <p>El identificador se asigna de forma secuencial con el campo ultimoId,
  * que se guarda en el archivo para que los ids no se repitan después de
@@ -71,8 +71,8 @@ public class ClienteJsonRepository implements IClienteRepositorio {
     }
 
     /**
-     * Crea la carpeta y el archivo con los clientes de ejemplo si no existen
-     * o si el archivo está vacío.
+     * Crea la carpeta y el archivo vacio si no existen
+     * o si el archivo esta vacio
      */
     private void inicializarArchivo() {
         try {
@@ -82,10 +82,6 @@ public class ClienteJsonRepository implements IClienteRepositorio {
             }
             if (!Files.exists(rutaArchivo) || Files.size(rutaArchivo) == 0) {
                 ClienteData datos = new ClienteData();
-                for (Cliente cliente : DatosEjemploClientes.crear()) {
-                    datos.getClientes().add(ClientePersistenciaMapper.toDto(cliente));
-                    datos.setUltimoId(Math.max(datos.getUltimoId(), cliente.getIdCliente()));
-                }
                 escribir(datos);
             }
         } catch (IOException e) {

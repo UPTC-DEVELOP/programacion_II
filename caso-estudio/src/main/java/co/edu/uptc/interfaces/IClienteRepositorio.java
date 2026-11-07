@@ -8,9 +8,9 @@ import java.util.List;
  * ---------------------------------------------------------------------------
  * CONTRATO de PERSISTENCIA de clientes. La capa de negocio (GestionCliente)
  * solo conoce esta interfaz, nunca la clase concreta que guarda los datos.
- * Hoy la implementa LocalCliente (lista en RAM); para usar
- * archivos, XML o JDBC basta crear otra clase que la implemente y cambiar
- * UNA línea en AppLibros (OCP / DIP).
+  * Hoy la implementa ClienteJsonRepository (archivo data/clientes.json)
+ * Para usar XML o JDBC basta crear otra clase que la implemente y cambiar
+ * UNA línea en AppLibros (OCP / DIP)
  */
 public interface IClienteRepositorio {
 

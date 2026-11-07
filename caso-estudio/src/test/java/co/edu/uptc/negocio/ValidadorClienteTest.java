@@ -5,13 +5,15 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import co.edu.uptc.excepciones.ReglaNegocioException;
 import co.edu.uptc.modelo.dto.ClienteDto;
 import co.edu.uptc.modelo.enums.Rol;
 import co.edu.uptc.modelo.enums.TipoCliente;
-import co.edu.uptc.persistencia.LocalCliente;
+import co.edu.uptc.persistencia.ClienteJsonRepository;
 
 /**
  * Pruebas de las restricciones de registro de clientes:
@@ -19,13 +21,24 @@ import co.edu.uptc.persistencia.LocalCliente;
  */
 public class ValidadorClienteTest {
 
+    @Rule
+    public TemporaryFolder carpetaTemporal = new TemporaryFolder();
+
     private ValidadorDatos validador;
     private GestionCliente gestionCliente;
 
     @Before
-    public void setUp() {
+    public void setUp() throws ReglaNegocioException {
         validador = new ValidadorDatos();
-        gestionCliente = new GestionCliente(new LocalCliente(), validador);
+        String ruta = carpetaTemporal.getRoot().toPath().resolve("clientes.json").toString();
+        gestionCliente = new GestionCliente(new ClienteJsonRepository(ruta), validador);
+
+        // cliente que ya existe, para probar correo e identificación repetidos
+        ClienteDto existente = clienteValido();
+        existente.setCorreoElectronico("ana@correo.com");
+        existente.setIdentificacion("1000000001");
+        existente.setContrasenia("Clave1234");
+        gestionCliente.registrarCliente(existente);
     }
 
     /** Cliente válido que cumple todas las restricciones. */
@@ -172,33 +185,25 @@ public class ValidadorClienteTest {
     @Test
     public void registroConCorreoRepetidoEsRechazado() {
         ClienteDto dto = clienteValido();
-        dto.setCorreoElectronico("admin@libros.com"); // ya existe en los datos de ejemplo
+        dto.setCorreoElectronico("ana@correo.com"); // ya existe (registrado en setUp)
         assertThrows(ReglaNegocioException.class, () -> gestionCliente.registrarCliente(dto));
     }
 
     @Test
     public void registroConIdentificacionRepetidaEsRechazado() {
         ClienteDto dto = clienteValido();
-        dto.setIdentificacion("1000000001"); // ya existe en los datos de ejemplo
+        dto.setIdentificacion("1000000001"); // ya existe (registrado en setUp)
         assertThrows(ReglaNegocioException.class, () -> gestionCliente.registrarCliente(dto));
     }
 
     @Test
-    public void clientesDeEjemploSiguenIniciandoSesion() {
-        // La política de contraseña solo aplica a contraseñas nuevas.
-        assertTrue(gestionCliente.iniciarSesion("admin@libros.com", "admin123"));
-        assertTrue(gestionCliente.iniciarSesion("cliente@libros.com", "cliente123"));
-        assertTrue(gestionCliente.iniciarSesion("maria@libros.com", "maria123"));
-    }
-
-    @Test
-    public void editarClienteDeEjemploSinCambiarContrasenaEsPermitido() throws ReglaNegocioException {
-        ClienteDto admin = gestionCliente.buscarPorIdentificacion("1000000001");
-        admin.setContrasenia(""); // vacío = conservar la contraseña actual
-        admin.setDireccion("Nueva dirección 123");
-        assertTrue(gestionCliente.actualizarCliente(admin));
+    public void editarClienteSinCambiarContrasenaConservaLaClave() throws ReglaNegocioException {
+        ClienteDto cliente = gestionCliente.buscarPorIdentificacion("1000000001");
+        cliente.setContrasenia(""); // vacío = conservar la contraseña actual
+        cliente.setDireccion("Nueva dirección 123");
+        assertTrue(gestionCliente.actualizarCliente(cliente));
         assertEquals("Nueva dirección 123",
                 gestionCliente.buscarPorIdentificacion("1000000001").getDireccion());
-        assertTrue(gestionCliente.iniciarSesion("admin@libros.com", "admin123"));
+        assertTrue(gestionCliente.iniciarSesion("ana@correo.com", "Clave1234"));
     }
 }

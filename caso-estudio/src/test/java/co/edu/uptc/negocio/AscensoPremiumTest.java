@@ -113,12 +113,19 @@ public class AscensoPremiumTest {
 
     @Test
     public void unClientePremiumNoCambiaDeTipo() throws ReglaNegocioException {
-        // maria@libros.com (id 3) es PREMIUM en los datos de ejemplo
-        assertFalse(gestionCliente.registrarCompra(3));
-        assertFalse(gestionCliente.registrarCompra(3));
-        ClienteDto maria = gestionCliente.buscarPorId(3);
-        assertEquals(TipoCliente.PREMIUM, maria.getTipoCliente());
-        assertEquals(2, maria.getComprasRealizadas());
+        // se registra un cliente y se cambia a PREMIUM desde la edición
+        int id = registrar("pedro@correo.com", "1212121212", TipoCliente.REGULAR).getIdCliente();
+        ClienteDto dto = gestionCliente.buscarPorId(id);
+        dto.setContrasenia("");
+        dto.setTipoCliente(TipoCliente.PREMIUM);
+        gestionCliente.actualizarCliente(dto);
+
+        // como ya es PREMIUM, las compras no lo "ascienden" otra vez
+        assertFalse(gestionCliente.registrarCompra(id));
+        assertFalse(gestionCliente.registrarCompra(id));
+        ClienteDto premium = gestionCliente.buscarPorId(id);
+        assertEquals(TipoCliente.PREMIUM, premium.getTipoCliente());
+        assertEquals(2, premium.getComprasRealizadas());
     }
 
     @Test

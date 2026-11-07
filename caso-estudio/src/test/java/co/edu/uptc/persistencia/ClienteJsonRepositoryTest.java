@@ -72,28 +72,35 @@ public class ClienteJsonRepositoryTest {
         return new String(Files.readAllBytes(Path.of(rutaArchivo)), StandardCharsets.UTF_8);
     }
 
+    /** Registra un cliente por la capa de negocio y devuelve su id. */
+    private int registrar(String correo, String identificacion) throws ReglaNegocioException {
+        ClienteDto dto = clienteNuevo(correo, identificacion);
+        gestionCliente.registrarCliente(dto);
+        return dto.getIdCliente();
+    }
+
     // ------------------------------ Archivo ------------------------------
 
     @Test
-    public void creaElArchivoConLosClientesDeEjemplo() throws Exception {
+    public void creaElArchivoVacioSiNoExiste() throws Exception {
         assertTrue(Files.exists(Path.of(rutaArchivo)));
-        assertEquals(3, repositorio.listar().size());
-        assertNotNull(repositorio.buscarPorCorreo("admin@libros.com"));
-        assertTrue(contenidoArchivo().contains("\"ultimoId\": 3"));
+        assertEquals(0, repositorio.listar().size());
+        assertTrue(contenidoArchivo().contains("\"ultimoId\": 0"));
     }
 
     @Test
     public void elArchivoNoContieneContrasenasEnTextoPlano() throws Exception {
+        registrar("sofia@correo.com", "1111111111");
         String contenido = contenidoArchivo();
-        assertFalse(contenido.contains("admin123"));
-        assertTrue(contenido.contains(CifradorContrasena.hash("admin123")));
+        assertFalse(contenido.contains("Clave2026"));
+        assertTrue(contenido.contains(CifradorContrasena.hash("Clave2026")));
     }
 
     @Test
-    public void archivoVacioSeReinicializaConEjemplos() throws Exception {
+    public void archivoVacioSeReinicializaSinClientes() throws Exception {
         Files.write(Path.of(rutaArchivo), new byte[0]);
         ClienteJsonRepository otro = new ClienteJsonRepository(rutaArchivo);
-        assertEquals(3, otro.listar().size());
+        assertEquals(0, otro.listar().size());
     }
 
     @Test
@@ -105,21 +112,31 @@ public class ClienteJsonRepositoryTest {
     // ------------------------------- Tipos -------------------------------
 
     @Test
-    public void conservaElTipoDeClienteAlLeer() {
-        assertTrue(repositorio.buscarPorCorreo("admin@libros.com") instanceof ClientePremium);
-        assertTrue(repositorio.buscarPorCorreo("cliente@libros.com") instanceof ClienteRegular);
-        assertEquals(Rol.ADMIN, repositorio.buscarPorCorreo("admin@libros.com").getRol());
+    public void conservaElTipoYElRolDelClienteAlLeer() throws ReglaNegocioException {
+        int idRegular = registrar("sofia@correo.com", "1111111111");
+        int idPremium = registrar("juan@correo.com", "2222222222");
+
+        // se cambia el tipo y el rol del segundo cliente desde la edición
+        ClienteDto dto = gestionCliente.buscarPorId(idPremium);
+        dto.setContrasenia("");
+        dto.setTipoCliente(TipoCliente.PREMIUM);
+        dto.setRol(Rol.ADMIN);
+        gestionCliente.actualizarCliente(dto);
+
+        ClienteJsonRepository otro = new ClienteJsonRepository(rutaArchivo);
+        assertTrue(otro.buscarPorId(idRegular) instanceof ClienteRegular);
+        assertTrue(otro.buscarPorId(idPremium) instanceof ClientePremium);
+        assertEquals(Rol.ADMIN, otro.buscarPorId(idPremium).getRol());
     }
 
     // ------------------------------- CRUD -------------------------------
 
     @Test
     public void registrarAsignaIdSecuencialYFecha() throws ReglaNegocioException {
-        ClienteDto dto = clienteNuevo("sofia@correo.com", "1111111111");
-        gestionCliente.registrarCliente(dto);
-        assertEquals(4, dto.getIdCliente());
+        assertEquals(1, registrar("sofia@correo.com", "1111111111"));
+        assertEquals(2, registrar("juan@correo.com", "2222222222"));
 
-        Cliente guardado = repositorio.buscarPorId(4);
+        Cliente guardado = repositorio.buscarPorId(2);
         assertNotNull(guardado);
         assertNotNull(guardado.getFechaRegistro());
         assertEquals(CifradorContrasena.hash("Clave2026"), guardado.getContrasenia());
@@ -127,33 +144,34 @@ public class ClienteJsonRepositoryTest {
 
     @Test
     public void losIdsNoSeRepitenTrasReiniciarNiTrasEliminar() throws ReglaNegocioException {
-        ClienteDto primero = clienteNuevo("uno@correo.com", "1111111111");
-        gestionCliente.registrarCliente(primero);           // id 4
-        gestionCliente.eliminarCliente(primero.getIdCliente());
+        registrar("base@correo.com", "1111111111");                 // id 1
+        int idEliminado = registrar("uno@correo.com", "2222222222"); // id 2
+        gestionCliente.eliminarCliente(idEliminado);
 
         // Se "reinicia" la aplicación creando otro repositorio sobre el mismo archivo
         GestionCliente otraSesion = new GestionCliente(
                 new ClienteJsonRepository(rutaArchivo), new ValidadorDatos());
-        ClienteDto segundo = clienteNuevo("dos@correo.com", "2222222222");
+        ClienteDto segundo = clienteNuevo("dos@correo.com", "3333333333");
         otraSesion.registrarCliente(segundo);
-        assertEquals(5, segundo.getIdCliente());
+        assertEquals(3, segundo.getIdCliente()); // no reutiliza el 2
     }
 
     @Test
     public void losDatosPersistenEntreInstancias() throws ReglaNegocioException {
-        gestionCliente.registrarCliente(clienteNuevo("sofia@correo.com", "1111111111"));
+        registrar("sofia@correo.com", "1111111111");
 
         ClienteJsonRepository otro = new ClienteJsonRepository(rutaArchivo);
         Cliente leido = otro.buscarPorCorreo("sofia@correo.com");
         assertNotNull(leido);
         assertEquals("Sofia", leido.getPrimerNombre());
         assertEquals("3157654321", leido.getCelular());
-        assertEquals(4, otro.listar().size());
+        assertEquals(1, otro.listar().size());
     }
 
     @Test
-    public void buscarPorCorreoIgnoraMayusculas() {
-        assertNotNull(repositorio.buscarPorCorreo("ADMIN@LIBROS.COM"));
+    public void buscarPorCorreoIgnoraMayusculas() throws ReglaNegocioException {
+        registrar("sofia@correo.com", "1111111111");
+        assertNotNull(repositorio.buscarPorCorreo("SOFIA@CORREO.COM"));
     }
 
     @Test
@@ -166,15 +184,16 @@ public class ClienteJsonRepositoryTest {
 
     @Test
     public void actualizarConservaFechaYContrasena() throws ReglaNegocioException {
-        Cliente antes = repositorio.buscarPorId(2);
+        int id = registrar("sofia@correo.com", "1111111111");
+        Cliente antes = repositorio.buscarPorId(id);
         Timestamp fechaAntes = antes.getFechaRegistro();
 
-        ClienteDto dto = gestionCliente.buscarPorId(2);
+        ClienteDto dto = gestionCliente.buscarPorId(id);
         dto.setDireccion("Diagonal 15 # 1-1");
         dto.setContrasenia(""); // conservar la actual
         gestionCliente.actualizarCliente(dto);
 
-        Cliente despues = new ClienteJsonRepository(rutaArchivo).buscarPorId(2);
+        Cliente despues = new ClienteJsonRepository(rutaArchivo).buscarPorId(id);
         assertEquals("Diagonal 15 # 1-1", despues.getDireccion());
         assertEquals(antes.getContrasenia(), despues.getContrasenia());
         assertEquals(fechaAntes, despues.getFechaRegistro());
@@ -182,25 +201,31 @@ public class ClienteJsonRepositoryTest {
 
     @Test
     public void actualizarPuedeCambiarElTipoDeCliente() throws ReglaNegocioException {
-        ClienteDto dto = gestionCliente.buscarPorId(2);
+        int id = registrar("sofia@correo.com", "1111111111");
+        ClienteDto dto = gestionCliente.buscarPorId(id);
         dto.setContrasenia("");
         dto.setTipoCliente(TipoCliente.PREMIUM);
         gestionCliente.actualizarCliente(dto);
-        assertTrue(new ClienteJsonRepository(rutaArchivo).buscarPorId(2) instanceof ClientePremium);
+        assertTrue(new ClienteJsonRepository(rutaArchivo).buscarPorId(id) instanceof ClientePremium);
     }
 
     @Test
-    public void eliminarPorIdYPorIdentificacion() {
-        repositorio.eliminarPorId(3);
-        assertNull(repositorio.buscarPorId(3));
-        repositorio.eliminar("1000000002");
-        assertNull(repositorio.buscar("1000000002"));
+    public void eliminarPorIdYPorIdentificacion() throws ReglaNegocioException {
+        registrar("uno@correo.com", "1111111111");
+        int id2 = registrar("dos@correo.com", "2222222222");
+        registrar("tres@correo.com", "3333333333");
+
+        repositorio.eliminarPorId(id2);
+        assertNull(repositorio.buscarPorId(id2));
+        repositorio.eliminar("3333333333");
+        assertNull(repositorio.buscar("3333333333"));
         assertEquals(1, new ClienteJsonRepository(rutaArchivo).listar().size());
     }
 
     @Test
-    public void correoRepetidoSigueRechazadoConJson() {
-        ClienteDto dto = clienteNuevo("maria@libros.com", "1111111111");
+    public void correoRepetidoSigueRechazadoConJson() throws ReglaNegocioException {
+        registrar("sofia@correo.com", "1111111111");
+        ClienteDto dto = clienteNuevo("sofia@correo.com", "2222222222");
         assertThrows(ReglaNegocioException.class, () -> gestionCliente.registrarCliente(dto));
     }
 
@@ -208,9 +233,6 @@ public class ClienteJsonRepositoryTest {
 
     @Test
     public void inicioDeSesionFuncionaConClientesDelArchivo() throws ReglaNegocioException {
-        GestionSeguridad seguridad = new GestionSeguridad(repositorio);
-        assertTrue(seguridad.iniciarSesion(new CredencialDto("admin@libros.com", "admin123")));
-
         gestionCliente.registrarCliente(clienteNuevo("sofia@correo.com", "1111111111"));
         GestionSeguridad otraSesion = new GestionSeguridad(new ClienteJsonRepository(rutaArchivo));
         assertTrue(otraSesion.iniciarSesion(new CredencialDto("sofia@correo.com", "Clave2026")));
