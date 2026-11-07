@@ -85,10 +85,35 @@ public class BaseDeDatosLibro implements IRepositorioLibro {
 		return buscarPorColumna("titulo", titulo);
 	}
 
-	// TODO: completar la sentencia UPDATE (identificar el registro por isbn)
 	@Override
 	public boolean actualizar(Libro libro) {
-		return false;
+		Conexion conn = new Conexion();
+		conn.conexion();
+
+		String sentenciaSQL = "UPDATE libros  SET titulo = ?, autores = ?,  fecha_publicacion = ?, genero = ?, editorial = ?, numero_paginas = ?, precio_base = ?, stock_disponible = ?, tipo_libro = ?, precio_final = ? WHERE id_libro = ?";
+
+		try (PreparedStatement pstmt = conn.getConnection().prepareStatement(sentenciaSQL)) {
+
+			pstmt.setString(1, libro.getTitulo());
+			pstmt.setString(2, String.join(SEPARADOR_AUTORES, libro.getAutores()));
+			pstmt.setString(3, libro.getFechaPublicacion());
+			pstmt.setString(4, libro.getGenero());
+			pstmt.setString(5, libro.getEditorial());
+			pstmt.setInt(6, libro.getNumeroPaginas());
+			pstmt.setDouble(7, libro.getPrecioBase());
+			pstmt.setInt(8, libro.getStockDisponible());
+			pstmt.setString(9, libro.getTipoLibro().name());
+			pstmt.setDouble(10, libro.getPrecioFinal());
+			pstmt.setLong(11, libro.getIdLibro());
+
+			return pstmt.executeUpdate() > 0;
+
+		} catch (Exception e) {
+			System.err.println("Error al actualizar el libro -> " + e.getMessage());
+			return false;
+		} finally {
+			conn.desconectar();
+		}
 	}
 
 	// TODO: implementar DELETE FROM libros WHERE isbn = ?
