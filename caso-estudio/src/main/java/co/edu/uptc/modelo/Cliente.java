@@ -83,6 +83,9 @@ public abstract class Cliente extends Persona {
 	/**
 	 * Compara la contraseña ingresada con la guardada.
 	 * Si la contraseña guardada está vacía no permite el acceso.
+	 *
+	 * La contraseña guardada es un hash SHA-256; quien llama debe enviar
+	 * el hash de lo que escribió el usuario (ver CifradorContrasena).
 	 */
 	public boolean validarContrasena(String contrasenaIngresada) {
 		if (contrasenia == null || contrasenia.isEmpty() || contrasenaIngresada == null) {

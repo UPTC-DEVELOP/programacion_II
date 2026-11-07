@@ -40,6 +40,8 @@ public class GestionCliente implements IGestionCliente {
 		}
 
 		clienteDto.setIdCliente(0); // el repositorio asigna el ID
+		// la contraseña se guarda cifrada, nunca en texto plano
+		clienteDto.setContrasenia(CifradorContrasena.hash(clienteDto.getContrasenia().trim()));
 		Cliente entidad = ClienteMapper.toEntity(clienteDto);
 		entidad.setFechaRegistro(new Timestamp(System.currentTimeMillis()));
 		persistencia.guardar(entidad);
@@ -69,11 +71,13 @@ public class GestionCliente implements IGestionCliente {
 		}
 
 		clienteDto.setIdCliente(existente.getIdCliente());
-		// si el formulario no trae contraseña se conserva la actual
+		// si el formulario no trae contraseña se conserva la actual (ya cifrada);
+		// si trae una nueva, se valida y se cifra
 		if (clienteDto.getContrasenia() == null || clienteDto.getContrasenia().isEmpty()) {
 			clienteDto.setContrasenia(existente.getContrasenia());
 		} else {
 			validador.validarContrasenaNueva(clienteDto.getContrasenia());
+			clienteDto.setContrasenia(CifradorContrasena.hash(clienteDto.getContrasenia().trim()));
 		}
 
 		Cliente entidad = ClienteMapper.toEntity(clienteDto);
@@ -137,7 +141,7 @@ public class GestionCliente implements IGestionCliente {
 		if (cliente == null) {
 			return false;
 		}
-		if (cliente.validarContrasena(contrasena)) {
+		if (cliente.validarContrasena(CifradorContrasena.hash(contrasena))) {
 			cliente.setIntentosFallidos(0);
 			return true;
 		}

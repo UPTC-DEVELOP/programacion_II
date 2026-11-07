@@ -30,7 +30,9 @@ public class GestionSeguridad implements IGestionSeguridad {
         }
         Cliente cliente = repositorioClientes.buscarPorCorreo(credencial.getCorreoElectronico());
 
-        if (cliente != null && cliente.validarContrasena(credencial.getContrasena())) {
+        // se compara el hash de la contraseña ingresada con el hash almacenado
+        String hashIngresado = CifradorContrasena.hash(credencial.getContrasena());
+        if (cliente != null && cliente.validarContrasena(hashIngresado)) {
             cliente.setIntentosFallidos(0);
             this.clienteAutenticado = cliente;
             return true;

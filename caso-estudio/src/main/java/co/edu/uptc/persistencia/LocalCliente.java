@@ -10,6 +10,7 @@ import co.edu.uptc.modelo.ClientePremium;
 import co.edu.uptc.modelo.ClienteRegular;
 import co.edu.uptc.modelo.enums.Rol;
 import co.edu.uptc.modelo.enums.TipoCliente;
+import co.edu.uptc.negocio.CifradorContrasena;
 
 /**
  * IMPLEMENTACIÓN EN MEMORIA del repositorio de clientes.
@@ -118,19 +119,19 @@ public class LocalCliente implements IClienteRepositorio {
 		Cliente admin = new ClientePremium(
 				"Ana", "Maria", "Gomez", "Restrepo", "CC", "1000000001",
 				"admin@libros.com", "3001112233", "Calle 1 # 2-3",
-				0, TipoCliente.PREMIUM, "admin123", ahora, 0, Rol.ADMIN);
+				0, TipoCliente.PREMIUM, CifradorContrasena.hash("admin123"), ahora, 0, Rol.ADMIN);
 		admin.setFechaRegistro(ahora);
 
 		Cliente clienteUno = new ClienteRegular(
 				"Luis", "Andres", "Martinez", "Diaz", "CC", "1000000002",
 				"cliente@libros.com", "3004445566", "Carrera 5 # 6-7",
-				0, TipoCliente.REGULAR, "cliente123", ahora, 0, Rol.CLIENTE);
+				0, TipoCliente.REGULAR, CifradorContrasena.hash("cliente123"), ahora, 0, Rol.CLIENTE);
 		clienteUno.setFechaRegistro(ahora);
 
 		Cliente clienteDos = new ClientePremium(
 				"Maria", "Elena", "Sanchez", "Ortiz", "CC", "1000000003",
 				"maria@libros.com", "3007778899", "Avenida 8 # 9-10",
-				0, TipoCliente.PREMIUM, "maria123", ahora, 0, Rol.CLIENTE);
+				0, TipoCliente.PREMIUM, CifradorContrasena.hash("maria123"), ahora, 0, Rol.CLIENTE);
 		clienteDos.setFechaRegistro(ahora);
 
 		guardar(admin);
