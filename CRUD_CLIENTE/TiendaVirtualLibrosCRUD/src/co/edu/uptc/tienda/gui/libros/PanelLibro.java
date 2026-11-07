@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
+import co.edu.uptc.tienda.gui.Evento;
 import co.edu.uptc.tienda.gui.TablaFactory;
 import co.edu.uptc.tienda.modelo.Libro;
 import co.edu.uptc.tienda.negocio.IGestionLibro;
@@ -47,14 +48,12 @@ public class PanelLibro extends JPanel {
 		JButton btnActualizar = new JButton("Actualizar");
 		JButton btnEliminar = new JButton("Eliminar");
 
-		btnBuscar.addActionListener(e -> buscarLibro());
-		btnNuevo.addActionListener(e -> abrirDialogoLibro(null));
-		btnActualizar.addActionListener(e -> abrirDialogoActualizarLibro());
-		btnEliminar.addActionListener(e -> eliminarLibroSeleccionado());
-		btnListarTodos.addActionListener(e -> {
-			txtTitulo.setText("");
-			cargarLibrosEnTabla(gestionLibro.listarLibros());
-		});
+		Evento evento = new Evento();
+		evento.registrar(btnBuscar, Evento.BUSCAR_LIBRO, this::buscarLibro);
+		evento.registrar(btnListarTodos, Evento.VER_LIBROS, this::verTodos);
+		evento.registrar(btnNuevo, Evento.CREAR_LIBRO, () -> abrirDialogoLibro(null));
+		evento.registrar(btnActualizar, Evento.ACTUALIZAR_LIBRO, this::abrirDialogoActualizarLibro);
+		evento.registrar(btnEliminar, Evento.ELIMINAR_LIBRO, this::eliminarLibroSeleccionado);
 
 		panelSuperior.add(new JLabel("Titulo Libro: "));
 		panelSuperior.add(txtTitulo);
@@ -65,6 +64,11 @@ public class PanelLibro extends JPanel {
 		panelSuperior.add(btnEliminar);
 
 		add(panelSuperior, BorderLayout.NORTH);
+	}
+
+	private void verTodos() {
+		txtTitulo.setText("");
+		cargarLibrosEnTabla(gestionLibro.listarLibros());
 	}
 
 	private void crearTabla() {

@@ -13,6 +13,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import co.edu.uptc.tienda.gui.Evento;
 import co.edu.uptc.tienda.gui.TablaFactory;
 import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.negocio.IGestionCliente;
@@ -65,14 +66,17 @@ public class PanelCliente extends JPanel {
 
 		add(panelSuperior, BorderLayout.NORTH);
 
-		btnBuscar.addActionListener(e -> buscarCliente());
-		btnListarTodos.addActionListener(e -> {
-			txtIdentificacion.setText("");
-			cargarClientesEnTabla(gestionCliente.listarClientes());
-		});
-		btnNuevo.addActionListener(e -> abrirDialogoCliente(null));
-		btnActualizar.addActionListener(e -> abrirDialogoActualizarCliente());
-		btnEliminar.addActionListener(e -> eliminarClienteSeleccionado());
+		Evento evento = new Evento();
+		evento.registrar(btnBuscar, Evento.BUSCAR_CLIENTE, this::buscarCliente);
+		evento.registrar(btnListarTodos, Evento.VER_CLIENTES, this::verTodos);
+		evento.registrar(btnNuevo, Evento.CREAR_CLIENTE, () -> abrirDialogoCliente(null));
+		evento.registrar(btnActualizar, Evento.ACTUALIZAR_CLIENTE, this::abrirDialogoActualizarCliente);
+		evento.registrar(btnEliminar, Evento.ELIMINAR_CLIENTE, this::eliminarClienteSeleccionado);
+	}
+
+	private void verTodos() {
+		txtIdentificacion.setText("");
+		cargarClientesEnTabla(gestionCliente.listarClientes());
 	}
 
 	private void crearTabla() {

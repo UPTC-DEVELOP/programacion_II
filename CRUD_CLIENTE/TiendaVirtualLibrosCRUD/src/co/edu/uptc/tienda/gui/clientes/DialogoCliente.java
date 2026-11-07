@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import co.edu.uptc.tienda.gui.Evento;
 import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.modelo.enums.TipoCliente;
 import co.edu.uptc.tienda.negocio.IGestionCliente;
@@ -127,8 +128,9 @@ public class DialogoCliente extends JDialog {
 		panelBotones.add(btnCancelar);
 		add(panelBotones, BorderLayout.SOUTH);
 
-		btnCancelar.addActionListener(e -> dispose());
-		btnGuardar.addActionListener(e -> procesarGuardado());
+		Evento evento = new Evento();
+		evento.registrar(btnCancelar, Evento.CANCELAR, this::dispose);
+		evento.registrar(btnGuardar, Evento.GUARDAR_CLIENTE, this::procesarGuardado);
 	}
 
 	private void cargarDatosCliente(Cliente cliente) {

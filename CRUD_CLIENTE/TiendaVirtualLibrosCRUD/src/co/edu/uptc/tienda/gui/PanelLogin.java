@@ -17,7 +17,7 @@ public class PanelLogin extends JPanel {
 	private JPasswordField txtContrasena;
 	private JButton btnIngresar;
 
-	public PanelLogin(Runnable alIngresar) {
+	public PanelLogin(Evento evento) {
 		setLayout(new BorderLayout(10, 10));
 		JPanel panelFormulario = new JPanel(new GridLayout(2, 2, 10, 10));
 
@@ -40,7 +40,7 @@ public class PanelLogin extends JPanel {
 		add(panelFormulario, BorderLayout.CENTER);
 		add(panelBoton, BorderLayout.SOUTH);
 
-		btnIngresar.addActionListener(e -> alIngresar.run());
+		evento.escuchar(btnIngresar, Evento.LOGIN);
 	}
 
 	public String getUsuario() {

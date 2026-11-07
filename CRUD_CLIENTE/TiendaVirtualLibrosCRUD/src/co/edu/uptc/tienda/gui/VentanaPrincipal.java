@@ -14,6 +14,7 @@ public class VentanaPrincipal extends JFrame {
 	private final IGestionAutenticacion gestionAutenticacion;
 	private final PanelCentral panelCentral;
 	private final PanelLogin panelLogin;
+	private final Evento evento;
 
 	public VentanaPrincipal(IGestionAutenticacion gestionAutenticacion, PanelCentral panelCentral) {
 		this.gestionAutenticacion = gestionAutenticacion;
@@ -25,7 +26,10 @@ public class VentanaPrincipal extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null); // Centrar en pantalla
 
-		panelLogin = new PanelLogin(this::loguear);
+		// Relaciones o Asociaciones
+		evento = new Evento();
+		evento.registrarAccion(Evento.LOGIN, this::loguear);
+		panelLogin = new PanelLogin(evento);
 
 		add(panelLogin);
 	}

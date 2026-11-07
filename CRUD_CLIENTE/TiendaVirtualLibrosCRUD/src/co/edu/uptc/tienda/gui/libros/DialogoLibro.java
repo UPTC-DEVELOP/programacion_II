@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import javax.swing.*;
 
+import co.edu.uptc.tienda.gui.Evento;
 import co.edu.uptc.tienda.modelo.Libro;
 import co.edu.uptc.tienda.modelo.enums.TipoLibro;
 import co.edu.uptc.tienda.negocio.IGestionLibro;
@@ -86,9 +87,9 @@ public class DialogoLibro extends JDialog {
 		JList<String> listaAutores = new JList<>(modeloListaAutores);
 		this.comboTipoLibro = new JComboBox<>(TipoLibro.values());
 
-		JButton btnRegistrarAutor = new JButton("Registrar Autor");
-		JButton btnRegistrarLibro = new JButton(libro == null ? "Registrar Libro" : "Actualizar Libro");
-		JButton btnCancelarRegistro = new JButton("Cancelar Registro");
+		JButton btnRegistrarAutor = new JButton(Evento.REGISTRAR_AUTOR_LIBRO);
+		JButton btnRegistrarLibro = new JButton(libro == null ? Evento.GUARDAR_LIBRO : Evento.ACTUALIZAR_LIBRO);
+		JButton btnCancelarRegistro = new JButton(Evento.CANCELAR_REGISTRO_LIBRO);
 
 		panelFormulario.add(new JLabel("ISBN (*):"));
 		panelFormulario.add(campoIsbn);
@@ -123,9 +124,10 @@ public class DialogoLibro extends JDialog {
 		panelFormulario.add(new JLabel("Formato Libro:"));
 		panelFormulario.add(comboTipoLibro);
 
-		btnCancelarRegistro.addActionListener(e -> dispose());
-		btnRegistrarAutor.addActionListener(e -> cargarAutores());
-		btnRegistrarLibro.addActionListener(e -> procesarGuardado());
+		Evento evento = new Evento();
+		evento.registrar(btnCancelarRegistro, Evento.CANCELAR_REGISTRO_LIBRO, this::dispose);
+		evento.registrar(btnRegistrarAutor, Evento.REGISTRAR_AUTOR_LIBRO, this::cargarAutores);
+		evento.registrar(btnRegistrarLibro, Evento.GUARDAR_LIBRO, this::procesarGuardado);
 
 		panelListaAutores.add(new JScrollPane(listaAutores), BorderLayout.CENTER);
 
