@@ -1,7 +1,7 @@
-package co.edu.uptc.gui;
+package main.java.co.edu.uptc.gui;
 
-import co.edu.uptc.controller.TiendaController;
-import co.edu.uptc.model.*;
+import main.java.co.edu.uptc.controller.TiendaController;
+import main.java.co.edu.uptc.model.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

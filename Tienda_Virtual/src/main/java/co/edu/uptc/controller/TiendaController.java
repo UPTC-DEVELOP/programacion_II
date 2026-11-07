@@ -1,7 +1,7 @@
-package co.edu.uptc.controller;
+package main.java.co.edu.uptc.controller;
 
-import co.edu.uptc.model.*;
-import co.edu.uptc.persistence.*;
+import main.java.co.edu.uptc.model.*;
+import main.java.co.edu.uptc.persistence.*;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;

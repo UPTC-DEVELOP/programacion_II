@@ -1,6 +1,6 @@
-package co.edu.uptc.persistence;
+package main.java.co.edu.uptc.persistence;
 import java.util.List;
-import co.edu.uptc.model.Cliente;
+import main.java.co.edu.uptc.model.Cliente;
 
 public interface IRepositorioUsuario {
     boolean guardarUsuario(Cliente cliente);

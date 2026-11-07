@@ -1,4 +1,4 @@
-package co.edu.uptc.model;
+package main.java.co.edu.uptc.model;
 
 public class ItemCarrito {
     private Libro libro;
@@ -27,5 +27,12 @@ public class ItemCarrito {
 
     public double getSubtotalConIva() {
         return libro.getPrecioVenta() * cantidad;
+    }
+    public double calcularSubtotal() {
+        return getSubtotalBase();
+    }
+
+    public double calcularImpuesto() {
+        return getImpuestos();
     }
 }
