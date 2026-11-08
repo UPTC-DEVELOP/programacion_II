@@ -1,5 +1,5 @@
-package main.java.co.edu.uptc.persistence;
-import main.java.co.edu.uptc.model.Carrito;
+package co.edu.uptc.persistence;
+import co.edu.uptc.model.Carrito;
 
 public interface IRepositorioCarrito {
     Carrito obtenerCarritoPorCliente(String clienteId);

@@ -1,9 +1,9 @@
-package main.java.co.edu.uptc.persistence;
+package co.edu.uptc.persistence;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import main.java.co.edu.uptc.model.Carrito;
+import co.edu.uptc.model.Carrito;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;

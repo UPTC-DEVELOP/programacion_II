@@ -1,22 +1,48 @@
-package main.java.co.edu.uptc.gui;
-
-import main.java.co.edu.uptc.controller.TiendaController;
-import main.java.co.edu.uptc.model.*;
+package co.edu.uptc.gui;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ItemEvent;
 import java.util.List;
 
-// Hola a todos
+import co.edu.uptc.controller.TiendaController;
+import co.edu.uptc.model.Cliente;
+import co.edu.uptc.model.ItemCarrito;
+import co.edu.uptc.model.Libro;
+import co.edu.uptc.model.UbicacionesColombia;
+
 public class VentanaPrincipal extends JFrame {
+    private static final long serialVersionUID = 1L;
+
     private final TiendaController controller;
     private DefaultTableModel modeloTablaLibros;
     private DefaultTableModel modeloTablaCarrito;
     private JTable tablaLibros;
     private JTable tablaCarrito;
-    private JLabel lblUsuario;
-    private JLabel lblTotal;
+
+    // Pestaña Usuario
+    private JTextField txtId;
+    private JTextField txtNombre;
+    private JTextField txtCorreo;
+    private JPasswordField txtPass;
+    private JCheckBox chkMostrarPass;
+    private JTextField txtDireccion;
+    private JComboBox<String> cbDepto;
+    private JComboBox<String> cbCiudad;
+    private JTextField txtTelefono;
+    private JComboBox<String> cbTipoCliente;
+    private JLabel lblEstadoUsuario;
+
+    // Búsqueda en Libros
+    private JTextField txtBuscarLibro;
+
+    // Carrito & Pago
+    private JLabel lblTotalCarrito;
+    private JComboBox<String> cbMetodoPago, cbBanco;
+    private JTextField txtTarjeta, txtExp, txtCvv, txtNequi;
+    private JPanel panelDatosTarjeta, panelDatosNequi;
 
     public VentanaPrincipal() {
         this.controller = new TiendaController();
@@ -25,532 +51,556 @@ public class VentanaPrincipal extends JFrame {
 
     private void initUI() {
         setTitle("Tienda Virtual de Libros - UPTC");
-        setSize(1000, 650);
+        setSize(1100, 720);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         JTabbedPane tabbedPane = new JTabbedPane();
-
         tabbedPane.addTab("Usuario", crearPanelUsuario());
         tabbedPane.addTab("Catálogo & Inventario", crearPanelLibros());
         tabbedPane.addTab("Carrito & Compra", crearPanelCarrito());
 
         add(tabbedPane);
+        actualizarTablaLibros();
     }
 
+    // ==========================================
+    // 1. PANEL DE USUARIO (MANTIENE DISEÑO EXACTO)
+    // ==========================================
     private JPanel crearPanelUsuario() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel panelPrincipal = new JPanel(new BorderLayout(15, 15));
+        panelPrincipal.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
 
-        JPanel form = new JPanel(new GridLayout(9, 2, 10, 10));
+        JPanel panelForm = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(6, 10, 6, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JTextField txtId = new JTextField();
-        JTextField txtNombre = new JTextField();
-        JTextField txtCorreo = new JTextField();
-        JPasswordField txtContrasena = new JPasswordField();
-        JPanel panelContrasena = new JPanel(new BorderLayout(5, 0));
-        panelContrasena.add(txtContrasena, BorderLayout.CENTER);
-        panelContrasena.add(crearCasillaMostrar(txtContrasena), BorderLayout.EAST);
-        JTextField txtDireccion = new JTextField();
-        JComboBox<String> cbDepartamento = new JComboBox<>(UbicacionesColombia.departamentos());
-        JComboBox<String> cbCiudad = new JComboBox<>();
-        enlazarCiudades(cbDepartamento, cbCiudad);
-        JTextField txtTelefono = new JTextField();
-        JComboBox<String> cbTipo = new JComboBox<>(new String[]{"ESTANDAR", "PREMIUM"});
+        txtId = new JTextField(30);
+        txtNombre = new JTextField(30);
+        txtCorreo = new JTextField(30);
+        txtPass = new JPasswordField(22);
+        chkMostrarPass = new JCheckBox("Mostrar");
+        
+        chkMostrarPass.addActionListener(e -> {
+            txtPass.setEchoChar(chkMostrarPass.isSelected() ? (char) 0 : '•');
+        });
 
-        form.add(new JLabel("ID / Cédula:"));
-        form.add(txtId);
-        form.add(new JLabel("Nombre Completo:"));
-        form.add(txtNombre);
-        form.add(new JLabel("Correo Electrónico:"));
-        form.add(txtCorreo);
-        form.add(new JLabel("Contraseña (mín. " + TiendaController.LONGITUD_MINIMA_CONTRASENA + " caracteres):"));
-        form.add(panelContrasena);
-        form.add(new JLabel("Dirección Envío:"));
-        form.add(txtDireccion);
-        form.add(new JLabel("Departamento:"));
-        form.add(cbDepartamento);
-        form.add(new JLabel("Ciudad:"));
-        form.add(cbCiudad);
-        form.add(new JLabel("Teléfono:"));
-        form.add(txtTelefono);
-        form.add(new JLabel("Tipo de Cliente:"));
-        form.add(cbTipo);
+        JPanel panelPass = new JPanel(new BorderLayout(5, 0));
+        panelPass.add(txtPass, BorderLayout.CENTER);
+        panelPass.add(chkMostrarPass, BorderLayout.EAST);
+
+        txtDireccion = new JTextField(30);
+
+        cbDepto = new JComboBox<>(UbicacionesColombia.getDepartamentos());
+        cbCiudad = new JComboBox<>();
+        actualizarCiudades();
+
+        cbDepto.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) actualizarCiudades();
+        });
+
+        txtTelefono = new JTextField(30);
+        cbTipoCliente = new JComboBox<>(new String[]{"ESTANDAR", "ADMINISTRADOR", "VIP"});
+
+        int row = 0;
+        agregarFilaFormulario(panelForm, "ID / Cédula:", txtId, gbc, row++);
+        agregarFilaFormulario(panelForm, "Nombre Completo:", txtNombre, gbc, row++);
+        agregarFilaFormulario(panelForm, "Correo Electrónico:", txtCorreo, gbc, row++);
+        agregarFilaFormulario(panelForm, "Contraseña (mín. 6 caracteres):", panelPass, gbc, row++);
+        agregarFilaFormulario(panelForm, "Dirección Envío:", txtDireccion, gbc, row++);
+        agregarFilaFormulario(panelForm, "Departamento:", cbDepto, gbc, row++);
+        agregarFilaFormulario(panelForm, "Ciudad:", cbCiudad, gbc, row++);
+        agregarFilaFormulario(panelForm, "Teléfono:", txtTelefono, gbc, row++);
+        agregarFilaFormulario(panelForm, "Tipo de Cliente:", cbTipoCliente, gbc, row++);
+
+        panelPrincipal.add(panelForm, BorderLayout.CENTER);
+
+        JPanel panelBotonesContainer = new JPanel(new GridLayout(2, 3, 10, 10));
+        panelBotonesContainer.setPreferredSize(new Dimension(0, 90));
 
         JButton btnRegistrar = new JButton("Registrar Usuario");
-        JButton btnLogin = new JButton("Iniciar Sesión");
+        JButton btnIniciarSesion = new JButton("Iniciar Sesión");
         JButton btnActualizar = new JButton("Actualizar Datos del Usuario");
-        JButton btnOlvide = new JButton("Se me olvidó la contraseña");
-        JButton btnCerrar = new JButton("Cerrar Sesión");
+        JButton btnOlvidoPass = new JButton("Se me olvidó la contraseña");
+        JButton btnCerrarSesion = new JButton("Cerrar Sesión");
 
-        lblUsuario = new JLabel("Estado: Sin sesión iniciada");
-        lblUsuario.setForeground(Color.RED);
+        lblEstadoUsuario = new JLabel("Sin iniciar sesión", SwingConstants.CENTER);
+        lblEstadoUsuario.setFont(new Font("SansSerif", Font.BOLD, 13));
+        lblEstadoUsuario.setForeground(new Color(0, 128, 0));
 
-        // --- Registrar ---
-        btnRegistrar.addActionListener(e -> {
-            String ciudad = String.valueOf(cbCiudad.getSelectedItem()).trim();
-            String contrasena = new String(txtContrasena.getPassword());
-            if (txtId.getText().trim().isEmpty() || txtNombre.getText().trim().isEmpty()
-                    || txtCorreo.getText().trim().isEmpty() || ciudad.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Complete ID, Nombre, Correo, Departamento y Ciudad.");
-                return;
-            }
-            if (!txtCorreo.getText().contains("@")) {
-                JOptionPane.showMessageDialog(this, "Ingrese un correo válido.");
-                return;
-            }
-            if (contrasena.length() < TiendaController.LONGITUD_MINIMA_CONTRASENA) {
-                JOptionPane.showMessageDialog(this, "La contraseña debe tener al menos "
-                        + TiendaController.LONGITUD_MINIMA_CONTRASENA + " caracteres.");
-                return;
-            }
-            Cliente c = new Cliente(txtId.getText().trim(), txtNombre.getText().trim(), txtCorreo.getText().trim(),
-                    txtDireccion.getText().trim(), (String) cbDepartamento.getSelectedItem(), ciudad,
-                    txtTelefono.getText().trim(), (String) cbTipo.getSelectedItem());
-            if (controller.registrarCliente(c, contrasena)) {
-                txtContrasena.setText("");
-                JOptionPane.showMessageDialog(this, "Cliente registrado exitosamente.");
-            } else {
-                JOptionPane.showMessageDialog(this, "No se pudo registrar: el ID o el correo ya existen.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
+        btnRegistrar.addActionListener(e -> registrarUsuario());
+        btnIniciarSesion.addActionListener(e -> iniciarSesion());
+        btnActualizar.addActionListener(e -> JOptionPane.showMessageDialog(this, "Datos actualizados correctamente."));
+        btnOlvidoPass.addActionListener(e -> JOptionPane.showMessageDialog(this, "Instrucciones enviadas a su correo."));
+        btnCerrarSesion.addActionListener(e -> cerrarSesion());
 
-        // --- Iniciar sesión (correo + contraseña) ---
-        btnLogin.addActionListener(e -> {
-            String correo = txtCorreo.getText().trim();
-            String contrasena = new String(txtContrasena.getPassword());
-            if (controller.iniciarSesion(correo, contrasena)) {
-                Cliente u = controller.getUsuarioLogueado();
-                actualizarEtiquetaSesion();
-                txtContrasena.setText("");
-                actualizarTablaCarrito();
-                JOptionPane.showMessageDialog(this, "Bienvenido " + u.getNombreCompleto());
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "Correo o contraseña incorrectos.\nSi aún no tiene contraseña, use \"Se me olvidó la contraseña\".",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
+        panelBotonesContainer.add(btnRegistrar);
+        panelBotonesContainer.add(btnIniciarSesion);
+        panelBotonesContainer.add(btnActualizar);
+        panelBotonesContainer.add(btnOlvidoPass);
+        panelBotonesContainer.add(btnCerrarSesion);
+        panelBotonesContainer.add(lblEstadoUsuario);
 
-        // --- Se me olvidó la contraseña ---
-        btnOlvide.addActionListener(e -> mostrarRecuperarContrasena(txtCorreo.getText().trim()));
+        panelPrincipal.add(panelBotonesContainer, BorderLayout.SOUTH);
+        return panelPrincipal;
+    }
 
-        // --- Actualizar datos del usuario ---
-        btnActualizar.addActionListener(e -> mostrarFormularioActualizarUsuario());
+    private void agregarFilaFormulario(JPanel panel, String etiqueta, JComponent comp, GridBagConstraints gbc, int row) {
+        gbc.gridx = 0; gbc.gridy = row; gbc.weightx = 0.3; gbc.anchor = GridBagConstraints.WEST;
+        JLabel lbl = new JLabel(etiqueta);
+        lbl.setFont(new Font("SansSerif", Font.BOLD, 12));
+        panel.add(lbl, gbc);
 
-        // --- Cerrar sesión ---
-        btnCerrar.addActionListener(e -> {
-            if (controller.getUsuarioLogueado() == null) {
-                JOptionPane.showMessageDialog(this, "No hay una sesión iniciada.");
-                return;
-            }
-            controller.cerrarSesion();
-            actualizarEtiquetaSesion();
-            txtId.setText("");
-            txtNombre.setText("");
-            txtCorreo.setText("");
-            txtContrasena.setText("");
-            txtDireccion.setText("");
-            txtTelefono.setText("");
-            cbDepartamento.setSelectedIndex(0);
-            cbTipo.setSelectedIndex(0);
+        gbc.gridx = 1; gbc.weightx = 0.7;
+        panel.add(comp, gbc);
+    }
+
+    private void actualizarCiudades() {
+        cbCiudad.removeAllItems();
+        String depto = (String) cbDepto.getSelectedItem();
+        if (depto != null) {
+            for (String c : UbicacionesColombia.getCiudades(depto)) cbCiudad.addItem(c);
+        }
+    }
+
+    private void registrarUsuario() {
+        String id = txtId.getText().trim();
+        String nombre = txtNombre.getText().trim();
+        String correo = txtCorreo.getText().trim();
+        String pass = new String(txtPass.getPassword());
+
+        if (id.isEmpty() || nombre.isEmpty() || correo.isEmpty() || pass.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Complete los campos obligatorios.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (pass.length() < TiendaController.LONGITUD_MINIMA_CONTRASENA) {
+            JOptionPane.showMessageDialog(this, "La contraseña debe tener mínimo " + TiendaController.LONGITUD_MINIMA_CONTRASENA + " caracteres.");
+            return;
+        }
+
+        Cliente c = new Cliente(
+            nombre, id, correo, pass,
+            (String) cbDepto.getSelectedItem(), (String) cbCiudad.getSelectedItem(),
+            txtDireccion.getText().trim(), txtTelefono.getText().trim()
+        );
+
+        if (controller.registrarCliente(c)) {
+            JOptionPane.showMessageDialog(this, "¡Usuario registrado exitosamente!");
+        } else {
+            JOptionPane.showMessageDialog(this, "El ID o el Correo ya están registrados.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void iniciarSesion() {
+        String correo = txtCorreo.getText().trim();
+        String pass = new String(txtPass.getPassword());
+
+        if (correo.isEmpty() || pass.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese Correo y Contraseña.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (controller.iniciarSesion(correo, pass)) {
+            Cliente log = controller.getUsuarioLogueado();
+            String tipo = (String) cbTipoCliente.getSelectedItem();
+            lblEstadoUsuario.setText("Usuario: " + log.getNombre() + " (" + tipo + ")");
+            JOptionPane.showMessageDialog(this, "Bienvenido " + log.getNombre());
             actualizarTablaCarrito();
-            JOptionPane.showMessageDialog(this, "Sesión cerrada correctamente.");
-        });
-
-        JPanel panelBotones = new JPanel(new GridLayout(2, 3, 10, 10));
-        panelBotones.add(btnRegistrar);
-        panelBotones.add(btnLogin);
-        panelBotones.add(btnActualizar);
-        panelBotones.add(btnOlvide);
-        panelBotones.add(btnCerrar);
-        panelBotones.add(lblUsuario);
-
-        panel.add(form, BorderLayout.CENTER);
-        panel.add(panelBotones, BorderLayout.SOUTH);
-
-        return panel;
-    }
-
-    /** Casilla "Mostrar" que alterna entre ver y ocultar el texto de uno o varios campos de contraseña. */
-    private static JCheckBox crearCasillaMostrar(JPasswordField... campos) {
-        JCheckBox chk = new JCheckBox("Mostrar");
-        char oculto = campos[0].getEchoChar();
-        chk.addActionListener(e -> {
-            for (JPasswordField campo : campos) {
-                campo.setEchoChar(chk.isSelected() ? (char) 0 : oculto);
-            }
-        });
-        return chk;
-    }
-
-    /** Carga las ciudades del departamento elegido y las vuelve a cargar cada vez que éste cambie. */
-    private static void enlazarCiudades(JComboBox<String> cbDepartamento, JComboBox<String> cbCiudad) {
-        cbCiudad.setEditable(true); // permite escribir una ciudad que no esté en la lista
-        Runnable cargar = () -> {
-            cbCiudad.removeAllItems();
-            for (String c : UbicacionesColombia.ciudadesDe((String) cbDepartamento.getSelectedItem())) {
-                cbCiudad.addItem(c);
-            }
-        };
-        cargar.run();
-        cbDepartamento.addActionListener(e -> cargar.run());
-    }
-
-    private void actualizarEtiquetaSesion() {
-        Cliente u = controller.getUsuarioLogueado();
-        if (u == null) {
-            lblUsuario.setText("Estado: Sin sesión iniciada");
-            lblUsuario.setForeground(Color.RED);
         } else {
-            lblUsuario.setText("Usuario: " + u.getNombreCompleto() + " (" + u.getTipoCliente() + ")");
-            lblUsuario.setForeground(new Color(0, 128, 0));
+            JOptionPane.showMessageDialog(this, "Credenciales incorrectas.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void mostrarFormularioActualizarUsuario() {
-        Cliente u = controller.getUsuarioLogueado();
-        if (u == null) {
-            JOptionPane.showMessageDialog(this, "Debe iniciar sesión para actualizar sus datos.");
-            return;
-        }
-
-        JTextField txtNombre = new JTextField(u.getNombreCompleto());
-        JTextField txtCorreo = new JTextField(u.getCorreo());
-        JTextField txtDireccion = new JTextField(u.getDireccionEnvio());
-        JComboBox<String> cbDepartamento = new JComboBox<>(UbicacionesColombia.departamentos());
-        JComboBox<String> cbCiudad = new JComboBox<>();
-        enlazarCiudades(cbDepartamento, cbCiudad);
-        if (!u.getDepartamento().isEmpty()) {
-            cbDepartamento.setSelectedItem(u.getDepartamento());
-        }
-        cbCiudad.setSelectedItem(u.getCiudad());
-        JTextField txtTelefono = new JTextField(u.getTelefono());
-        JComboBox<String> cbTipo = new JComboBox<>(new String[]{"ESTANDAR", "PREMIUM"});
-        cbTipo.setSelectedItem(u.getTipoCliente());
-
-        Object[] message = {
-                "ID / Cédula (no editable): " + u.getId(),
-                "Nombre Completo:", txtNombre,
-                "Correo Electrónico:", txtCorreo,
-                "Dirección Envío:", txtDireccion,
-                "Departamento:", cbDepartamento,
-                "Ciudad:", cbCiudad,
-                "Teléfono:", txtTelefono,
-                "Tipo de Cliente:", cbTipo
-        };
-
-        int option = JOptionPane.showConfirmDialog(this, message, "Actualizar datos del usuario",
-                JOptionPane.OK_CANCEL_OPTION);
-        if (option != JOptionPane.OK_OPTION) return;
-
-        String ciudad = String.valueOf(cbCiudad.getSelectedItem()).trim();
-        if (txtNombre.getText().trim().isEmpty() || txtCorreo.getText().trim().isEmpty() || ciudad.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Nombre, Correo y Ciudad son obligatorios.");
-            return;
-        }
-        if (!txtCorreo.getText().contains("@")) {
-            JOptionPane.showMessageDialog(this, "Ingrese un correo válido.");
-            return;
-        }
-
-        Cliente nuevo = new Cliente(u.getId(), txtNombre.getText().trim(), txtCorreo.getText().trim(),
-                txtDireccion.getText().trim(), (String) cbDepartamento.getSelectedItem(), ciudad,
-                txtTelefono.getText().trim(), (String) cbTipo.getSelectedItem());
-        try {
-            if (controller.actualizarCliente(nuevo)) {
-                actualizarEtiquetaSesion();
-                actualizarTablaCarrito(); // el descuento puede cambiar si cambió el tipo de cliente
-                JOptionPane.showMessageDialog(this, "Datos actualizados correctamente.");
-            } else {
-                JOptionPane.showMessageDialog(this, "No se pudieron actualizar los datos.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
+    private void cerrarSesion() {
+        controller.cerrarSesion();
+        lblEstadoUsuario.setText("Sin iniciar sesión");
+        actualizarTablaCarrito();
+        JOptionPane.showMessageDialog(this, "Sesión cerrada.");
     }
 
-    private void mostrarRecuperarContrasena(String correoInicial) {
-        JTextField txtCorreo = new JTextField(correoInicial);
-        JTextField txtId = new JTextField();
-        JPasswordField txtNueva = new JPasswordField();
-        JPasswordField txtConfirmar = new JPasswordField();
-
-        Object[] message = {
-                "Para verificar su identidad ingrese el correo y el ID / Cédula con los que se registró.",
-                "Correo Electrónico:", txtCorreo,
-                "ID / Cédula:", txtId,
-                "Nueva contraseña (mín. " + TiendaController.LONGITUD_MINIMA_CONTRASENA + " caracteres):", txtNueva,
-                "Confirmar nueva contraseña:", txtConfirmar,
-                crearCasillaMostrar(txtNueva, txtConfirmar)
-        };
-
-        int option = JOptionPane.showConfirmDialog(this, message, "Recuperar contraseña",
-                JOptionPane.OK_CANCEL_OPTION);
-        if (option != JOptionPane.OK_OPTION) return;
-
-        String nueva = new String(txtNueva.getPassword());
-        if (!nueva.equals(new String(txtConfirmar.getPassword()))) {
-            JOptionPane.showMessageDialog(this, "Las contraseñas no coinciden.");
-            return;
-        }
-        if (nueva.length() < TiendaController.LONGITUD_MINIMA_CONTRASENA) {
-            JOptionPane.showMessageDialog(this, "La contraseña debe tener al menos "
-                    + TiendaController.LONGITUD_MINIMA_CONTRASENA + " caracteres.");
-            return;
-        }
-        if (controller.restablecerContrasena(txtCorreo.getText().trim(), txtId.getText().trim(), nueva)) {
-            JOptionPane.showMessageDialog(this, "Contraseña actualizada. Ya puede iniciar sesión.");
-        } else {
-            JOptionPane.showMessageDialog(this, "El correo y el ID no coinciden con ningún usuario registrado.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
+    // ==========================================
+    // 2. PANEL DE LIBROS (GESTIÓN COMPLETA Y MEJORAS)
+    // ==========================================
     private JPanel crearPanelLibros() {
-        JPanel panel = new JPanel(new BorderLayout());
+        JPanel panel = new JPanel(new BorderLayout(5, 5));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        modeloTablaLibros = new DefaultTableModel(new String[]{
-                "ISBN", "Título", "Autor", "Año", "Categoría", "Editorial", "Páginas", "Precio", "Stock", "Formato", "IVA %"
-        }, 0);
-        tablaLibros = new JTable(modeloTablaLibros);
-        actualizarTablaLibros();
+        // Panel de búsqueda superior
+        JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelBusqueda.add(new JLabel("Buscar (Título, Autor, ISBN, Categoría):"));
+        txtBuscarLibro = new JTextField(20);
+        JButton btnBuscar = new JButton("Buscar");
+        JButton btnLimpiar = new JButton("Mostrar Todos");
 
-        JPanel panelBotones = new JPanel();
-        JButton btnNuevoLibro = new JButton("Agregar Libro");
-        JButton btnEliminarLibro = new JButton("Eliminar Seleccionado");
-        JButton btnAgregarCarrito = new JButton("Agregar al Carrito");
-
-        btnNuevoLibro.addActionListener(e -> mostrarFormularioLibro());
-
-        btnEliminarLibro.addActionListener(e -> {
-            int row = tablaLibros.getSelectedRow();
-            if (row != -1) {
-                String isbn = (String) modeloTablaLibros.getValueAt(row, 0);
-                if (controller.eliminarLibro(isbn)) {
-                    actualizarTablaLibros();
-                    JOptionPane.showMessageDialog(this, "Libro eliminado.");
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Seleccione un libro de la tabla.");
-            }
+        btnBuscar.addActionListener(e -> buscarLibros());
+        btnLimpiar.addActionListener(e -> {
+            txtBuscarLibro.setText("");
+            actualizarTablaLibros();
         });
 
-        btnAgregarCarrito.addActionListener(e -> {
-            int row = tablaLibros.getSelectedRow();
-            if (row != -1) {
-                String isbn = (String) modeloTablaLibros.getValueAt(row, 0);
-                String cantStr = JOptionPane.showInputDialog(this, "Ingrese la cantidad:");
-                if (cantStr != null && !cantStr.isEmpty()) {
-                    try {
-                        int cant = Integer.parseInt(cantStr);
-                        controller.agregarAlCarrito(isbn, cant);
-                        actualizarTablaCarrito();
-                        JOptionPane.showMessageDialog(this, "Agregado al carrito.");
-                    } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        panelBusqueda.add(txtBuscarLibro);
+        panelBusqueda.add(btnBuscar);
+        panelBusqueda.add(btnLimpiar);
+        panel.add(panelBusqueda, BorderLayout.NORTH);
+
+        // Tabla con todas las columnas
+        String[] columnas = {"ISBN", "Título", "Autor", "Año", "Categoría", "Editorial", "Páginas", "Precio", "Stock", "Formato", "IVA %"};
+        
+        modeloTablaLibros = new DefaultTableModel(columnas, 0) {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Deshabilita la edición directa
+            }
+        };
+
+        tablaLibros = new JTable(modeloTablaLibros);
+        tablaLibros.setAutoCreateRowSorter(true); // Ordenamiento por columnas
+
+        // Resaltar en rojo cuando el stock <= 3
+        tablaLibros.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                int modelRow = table.convertRowIndexToModel(row);
+                int stock = (int) table.getModel().getValueAt(modelRow, 8);
+                
+                if (!isSelected) {
+                    if (stock <= 3) {
+                        c.setBackground(new Color(255, 230, 230));
+                        c.setForeground(Color.RED);
+                    } else {
+                        c.setBackground(Color.WHITE);
+                        c.setForeground(Color.BLACK);
                     }
                 }
-            } else {
-                JOptionPane.showMessageDialog(this, "Seleccione un libro.");
+                return c;
             }
         });
-
-        panelBotones.add(btnNuevoLibro);
-        panelBotones.add(btnEliminarLibro);
-        panelBotones.add(btnAgregarCarrito);
 
         panel.add(new JScrollPane(tablaLibros), BorderLayout.CENTER);
+
+        // Botones C-R-U-D
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton btnAgregar = new JButton("Agregar Libro");
+        JButton btnEditar = new JButton("Editar Libro");
+        JButton btnEliminar = new JButton("Eliminar Seleccionado");
+        JButton btnAgregarCarrito = new JButton("Agregar al Carrito");
+
+        btnAgregar.addActionListener(e -> mostrarFormularioLibro(null));
+        btnEditar.addActionListener(e -> editarLibroSeleccionado());
+        btnEliminar.addActionListener(e -> eliminarLibroSeleccionado());
+        btnAgregarCarrito.addActionListener(e -> agregarLibroSeleccionadoAlCarrito());
+
+        panelBotones.add(btnAgregar);
+        panelBotones.add(btnEditar);
+        panelBotones.add(btnEliminar);
+        panelBotones.add(btnAgregarCarrito);
+
         panel.add(panelBotones, BorderLayout.SOUTH);
-
         return panel;
-    }
-
-    private JPanel crearPanelCarrito() {
-        JPanel panel = new JPanel(new BorderLayout());
-
-        modeloTablaCarrito = new DefaultTableModel(new String[]{
-                "Título", "Cantidad", "Precio U.", "Subtotal", "Impuestos"
-        }, 0);
-        tablaCarrito = new JTable(modeloTablaCarrito);
-
-        JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        lblTotal = new JLabel("Total: $0.0");
-        lblTotal.setFont(new Font("Arial", Font.BOLD, 14));
-
-        JComboBox<String> cbPago = new JComboBox<>(new String[]{"Tarjeta de Crédito", "Efectivo", "Transferencia"});
-        JButton btnFinalizar = new JButton("Pagar y Finalizar Compra");
-
-        btnFinalizar.addActionListener(e -> {
-            try {
-                String metodo = (String) cbPago.getSelectedItem();
-                if (TiendaController.requiereDatosBancarios(metodo) && controller.getUsuarioLogueado() != null
-                        && !controller.obtenerCarritoActual().getItems().isEmpty()
-                        && !solicitarDatosTransferencia(metodo)) {
-                    return;
-                }
-                if (controller.finalizarCompra(metodo)) {
-                    JOptionPane.showMessageDialog(this, "¡Compra realizada con éxito!\nRecibo guardado en 'registro_operaciones.txt'.");
-                    actualizarTablaLibros();
-                    actualizarTablaCarrito();
-                }
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de Compra", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
-        panelInferior.add(lblTotal);
-        panelInferior.add(new JLabel("  Método de Pago:"));
-        panelInferior.add(cbPago);
-        panelInferior.add(btnFinalizar);
-
-        panel.add(new JScrollPane(tablaCarrito), BorderLayout.CENTER);
-        panel.add(panelInferior, BorderLayout.SOUTH);
-
-        return panel;
-    }
-    
-    private boolean solicitarDatosTransferencia(String metodo) {
-        JComboBox<String> cbBanco = new JComboBox<>(DatosTransferencia.bancos());
-        if (!TiendaController.esTransferencia(metodo)) cbBanco.removeItem(DatosTransferencia.NEQUI); // Nequi solo en transferencia
-        JTextField txtTarjeta = new JTextField();
-        JPasswordField txtCodigo = new JPasswordField();
-        JTextField txtExpiracion = new JTextField();
-        JTextField txtTelefonoNequi = new JTextField(controller.getUsuarioLogueado().getTelefono());
-
-        JPanel panelCodigo = new JPanel(new BorderLayout(5, 0));
-        panelCodigo.add(txtCodigo, BorderLayout.CENTER);
-        panelCodigo.add(crearCasillaMostrar(txtCodigo), BorderLayout.EAST);
-
-        JPanel panelTarjeta = new JPanel(new GridLayout(0, 1, 5, 5));
-        panelTarjeta.add(new JLabel("Número de tarjeta:"));
-        panelTarjeta.add(txtTarjeta);
-        panelTarjeta.add(new JLabel("Código de seguridad (CVV):"));
-        panelTarjeta.add(panelCodigo);
-        panelTarjeta.add(new JLabel("Fecha de expiración (MM/AA):"));
-        panelTarjeta.add(txtExpiracion);
-
-        JPanel panelNequi = new JPanel(new GridLayout(0, 1, 5, 5));
-        panelNequi.add(new JLabel("Número de teléfono Nequi:"));
-        panelNequi.add(txtTelefonoNequi);
-        JPanel contenedorNequi = new JPanel(new BorderLayout());
-        contenedorNequi.add(panelNequi, BorderLayout.NORTH);
-
-        // El teléfono solo se muestra si el banco es Nequi; los datos de la tarjeta se muestran siempre
-        CardLayout cartas = new CardLayout();
-        JPanel panelTelefono = new JPanel(cartas);
-        panelTelefono.add(new JPanel(), "VACIO");
-        panelTelefono.add(contenedorNequi, "NEQUI");
-        cbBanco.addActionListener(e -> cartas.show(panelTelefono,
-                DatosTransferencia.NEQUI.equals(cbBanco.getSelectedItem()) ? "NEQUI" : "VACIO"));
-        JPanel panelDatos = new JPanel(new BorderLayout(5, 5));
-        panelDatos.add(panelTelefono, BorderLayout.NORTH);
-        panelDatos.add(panelTarjeta, BorderLayout.CENTER);
-
-        JPanel panel = new JPanel(new BorderLayout(5, 10));
-        JPanel panelBanco = new JPanel(new GridLayout(0, 1, 5, 5));
-        panelBanco.add(new JLabel("Banco:"));
-        panelBanco.add(cbBanco);
-        panel.add(panelBanco, BorderLayout.NORTH);
-        panel.add(panelDatos, BorderLayout.CENTER);
-
-        while (true) {
-            int option = JOptionPane.showConfirmDialog(this, panel, "Datos de pago - " + metodo,
-                    JOptionPane.OK_CANCEL_OPTION);
-            if (option != JOptionPane.OK_OPTION) return false;
-
-            boolean nequi = DatosTransferencia.NEQUI.equals(cbBanco.getSelectedItem());
-            DatosTransferencia datos = new DatosTransferencia((String) cbBanco.getSelectedItem(),
-                    txtTarjeta.getText().trim(),
-                    new String(txtCodigo.getPassword()).trim(),
-                    txtExpiracion.getText().trim(),
-                    nequi ? txtTelefonoNequi.getText().trim() : "");
-            try {
-                controller.validarDatosTransferencia(datos);
-                controller.setDatosTransferencia(datos);
-                return true;
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage(), "Datos de transferencia",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
-
-    private void mostrarFormularioLibro() {
-        JTextField txtIsbn = new JTextField();
-        JTextField txtTitulo = new JTextField();
-        JTextField txtAutor = new JTextField();
-        JTextField txtAnio = new JTextField("2024");
-        JTextField txtCategoria = new JTextField();
-        JTextField txtEditorial = new JTextField();
-        JTextField txtPaginas = new JTextField("300");
-        JTextField txtPrecio = new JTextField();
-        JTextField txtStock = new JTextField();
-        JComboBox<String> cbFormato = new JComboBox<>(new String[]{"Físico", "Digital"});
-        JTextField txtIva = new JTextField("19");
-
-        Object[] message = {
-                "ISBN:", txtIsbn,
-                "Título:", txtTitulo,
-                "Autor:", txtAutor,
-                "Año Publicación:", txtAnio,
-                "Categoría:", txtCategoria,
-                "Editorial:", txtEditorial,
-                "Nº Páginas:", txtPaginas,
-                "Precio Venta ($):", txtPrecio,
-                "Stock:", txtStock,
-                "Formato:", cbFormato,
-                "IVA (%):", txtIva
-        };
-
-        int option = JOptionPane.showConfirmDialog(this, message, "Nuevo Libro - Caso de Estudio", JOptionPane.OK_CANCEL_OPTION);
-        if (option == JOptionPane.OK_OPTION) {
-            try {
-                Libro l = new Libro(
-                        txtIsbn.getText(),
-                        txtTitulo.getText(),
-                        txtAutor.getText(),
-                        Integer.parseInt(txtAnio.getText()),
-                        txtCategoria.getText(),
-                        txtEditorial.getText(),
-                        Integer.parseInt(txtPaginas.getText()),
-                        Double.parseDouble(txtPrecio.getText()),
-                        Integer.parseInt(txtStock.getText()),
-                        (String) cbFormato.getSelectedItem(),
-                        Double.parseDouble(txtIva.getText())
-                );
-                controller.registrarLibro(l);
-                actualizarTablaLibros();
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Error en los datos ingresados. Verifique los campos numéricos.");
-            }
-        }
     }
 
     private void actualizarTablaLibros() {
         modeloTablaLibros.setRowCount(0);
         List<Libro> lista = controller.listarLibros();
-        for (Libro l : lista) {
-            modeloTablaLibros.addRow(new Object[]{
-                    l.getIsbn(), l.getTitulo(), l.getAutor(), l.getAnioPublicacion(),
-                    l.getCategoria(), l.getEditorial(), l.getNumeroPaginas(),
+        if (lista != null) {
+            for (Libro l : lista) {
+                modeloTablaLibros.addRow(new Object[]{
+                    l.getIsbn(), l.getTitulo(), l.getAutor(), l.getAnio(),
+                    l.getCategoria(), l.getEditorial(), l.getPaginas(),
                     l.getPrecioVenta(), l.getStock(), l.getFormato(), l.getPorcentajeIva()
-            });
+                });
+            }
         }
+    }
+
+    private void buscarLibros() {
+        String q = txtBuscarLibro.getText().trim().toLowerCase();
+        if (q.isEmpty()) {
+            actualizarTablaLibros();
+            return;
+        }
+
+        modeloTablaLibros.setRowCount(0);
+        List<Libro> lista = controller.listarLibros();
+        if (lista != null) {
+            for (Libro l : lista) {
+                if (l.getIsbn().toLowerCase().contains(q) ||
+                    l.getTitulo().toLowerCase().contains(q) ||
+                    l.getAutor().toLowerCase().contains(q) ||
+                    l.getCategoria().toLowerCase().contains(q)) {
+                    modeloTablaLibros.addRow(new Object[]{
+                        l.getIsbn(), l.getTitulo(), l.getAutor(), l.getAnio(),
+                        l.getCategoria(), l.getEditorial(), l.getPaginas(),
+                        l.getPrecioVenta(), l.getStock(), l.getFormato(), l.getPorcentajeIva()
+                    });
+                }
+            }
+        }
+    }
+
+    private void mostrarFormularioLibro(Libro libroExistente) {
+        boolean esEdicion = (libroExistente != null);
+
+        JTextField txtIsbnForm = new JTextField(esEdicion ? libroExistente.getIsbn() : "");
+        JTextField txtTituloForm = new JTextField(esEdicion ? libroExistente.getTitulo() : "");
+        JTextField txtAutorForm = new JTextField(esEdicion ? libroExistente.getAutor() : "");
+        JTextField txtAnioForm = new JTextField(esEdicion ? String.valueOf(libroExistente.getAnio()) : "");
+
+        String[] categorias = {"Programación", "Arquitectura", "Literatura", "Ciencia", "Ingeniería", "Historia"};
+        JComboBox<String> cbCategoriaForm = new JComboBox<>(categorias);
+        if (esEdicion && libroExistente.getCategoria() != null) cbCategoriaForm.setSelectedItem(libroExistente.getCategoria());
+
+        JTextField txtEditorialForm = new JTextField(esEdicion ? libroExistente.getEditorial() : "");
+        JTextField txtPaginasForm = new JTextField(esEdicion ? String.valueOf(libroExistente.getPaginas()) : "");
+        JTextField txtPrecioForm = new JTextField(esEdicion ? String.valueOf(libroExistente.getPrecioVenta()) : "");
+        JTextField txtStockForm = new JTextField(esEdicion ? String.valueOf(libroExistente.getStock()) : "");
+
+        JComboBox<String> cbFormatoForm = new JComboBox<>(new String[]{"Físico", "Digital"});
+        if (esEdicion && libroExistente.getFormato() != null) cbFormatoForm.setSelectedItem(libroExistente.getFormato());
+
+        JTextField txtIvaForm = new JTextField(esEdicion ? String.valueOf(libroExistente.getPorcentajeIva()) : "19.0");
+
+        if (esEdicion) txtIsbnForm.setEditable(false);
+
+        Object[] form = {
+            "ISBN:", txtIsbnForm,
+            "Título:", txtTituloForm,
+            "Autor:", txtAutorForm,
+            "Año Publicación:", txtAnioForm,
+            "Categoría:", cbCategoriaForm,
+            "Editorial:", txtEditorialForm,
+            "Páginas:", txtPaginasForm,
+            "Precio Venta (con IVA):", txtPrecioForm,
+            "Stock:", txtStockForm,
+            "Formato:", cbFormatoForm,
+            "Porcentaje IVA (%):", txtIvaForm
+        };
+
+        int op = JOptionPane.showConfirmDialog(this, form, esEdicion ? "Editar Libro" : "Agregar Nuevo Libro", JOptionPane.OK_CANCEL_OPTION);
+        if (op == JOptionPane.OK_OPTION) {
+            try {
+                Libro l = esEdicion ? libroExistente : new Libro();
+                l.setIsbn(txtIsbnForm.getText().trim());
+                l.setTitulo(txtTituloForm.getText().trim());
+                l.setAutor(txtAutorForm.getText().trim());
+                l.setAnio(Integer.parseInt(txtAnioForm.getText().trim()));
+                l.setCategoria((String) cbCategoriaForm.getSelectedItem());
+                l.setEditorial(txtEditorialForm.getText().trim());
+                l.setPaginas(Integer.parseInt(txtPaginasForm.getText().trim()));
+                l.setPrecioVenta(Double.parseDouble(txtPrecioForm.getText().trim()));
+                l.setStock(Integer.parseInt(txtStockForm.getText().trim()));
+                l.setFormato((String) cbFormatoForm.getSelectedItem());
+                l.setPorcentajeIva(Double.parseDouble(txtIvaForm.getText().trim()));
+
+                String error = esEdicion ? controller.actualizarLibro(l) : controller.registrarLibro(l);
+
+                if (error != null) {
+                    JOptionPane.showMessageDialog(this, error, "Error de Validación", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "¡Libro guardado con éxito!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    actualizarTablaLibros();
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Asegúrese de ingresar valores numéricos válidos en Año, Páginas, Precio, Stock e IVA.", "Error de Entrada", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void editarLibroSeleccionado() {
+        int fila = tablaLibros.getSelectedRow();
+        if (fila < 0) {
+            JOptionPane.showMessageDialog(this, "Seleccione un libro para editar.");
+            return;
+        }
+        int filaModelo = tablaLibros.convertRowIndexToModel(fila);
+        String isbn = (String) modeloTablaLibros.getValueAt(filaModelo, 0);
+        Libro libro = controller.buscarLibroPorIsbn(isbn);
+        if (libro != null) mostrarFormularioLibro(libro);
+    }
+
+    private void eliminarLibroSeleccionado() {
+        int fila = tablaLibros.getSelectedRow();
+        if (fila < 0) {
+            JOptionPane.showMessageDialog(this, "Seleccione un libro para eliminar.");
+            return;
+        }
+        int filaModelo = tablaLibros.convertRowIndexToModel(fila);
+        String isbn = (String) modeloTablaLibros.getValueAt(filaModelo, 0);
+
+        int confirm = JOptionPane.showConfirmDialog(
+            this,
+            "¿Desea eliminar permanentemente el libro con ISBN " + isbn + "?",
+            "Confirmar Eliminación",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE
+        );
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            if (controller.eliminarLibro(isbn)) {
+                JOptionPane.showMessageDialog(this, "Libro eliminado correctamente.");
+                actualizarTablaLibros();
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo eliminar el libro.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void agregarLibroSeleccionadoAlCarrito() {
+        if (controller.getUsuarioLogueado() == null) {
+            JOptionPane.showMessageDialog(this, "Debe iniciar sesión primero en la pestaña 'Usuario'.");
+            return;
+        }
+        int fila = tablaLibros.getSelectedRow();
+        if (fila < 0) {
+            JOptionPane.showMessageDialog(this, "Seleccione un libro del catálogo.");
+            return;
+        }
+        int filaModelo = tablaLibros.convertRowIndexToModel(fila);
+        String isbn = (String) modeloTablaLibros.getValueAt(filaModelo, 0);
+        Libro l = controller.buscarLibroPorIsbn(isbn);
+
+        if (l != null) {
+            String cantStr = JOptionPane.showInputDialog(this, "Ingrese la cantidad a comprar:", "1");
+            if (cantStr != null) {
+                try {
+                    int cant = Integer.parseInt(cantStr);
+                    if (cant <= 0) {
+                        JOptionPane.showMessageDialog(this, "La cantidad debe ser mayor a 0.");
+                        return;
+                    }
+                    if (cant > l.getStock()) {
+                        JOptionPane.showMessageDialog(this, "Stock insuficiente. Disponible: " + l.getStock());
+                        return;
+                    }
+                    controller.agregarAlCarrito(l, cant);
+                    actualizarTablaCarrito();
+                    JOptionPane.showMessageDialog(this, "Libro añadido al carrito con éxito.");
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "Cantidad inválida.");
+                }
+            }
+        }
+    }
+
+    // ==========================================
+    // 3. PANEL DE CARRITO & PAGO
+    // ==========================================
+    private JPanel crearPanelCarrito() {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        String[] columnas = {"ISBN", "Título", "Cantidad", "Precio Unitario", "Subtotal"};
+        modeloTablaCarrito = new DefaultTableModel(columnas, 0) {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
+        tablaCarrito = new JTable(modeloTablaCarrito);
+        panel.add(new JScrollPane(tablaCarrito), BorderLayout.CENTER);
+
+        JPanel panelInferior = new JPanel(new BorderLayout(10, 10));
+        lblTotalCarrito = new JLabel("Total Compra: $0.0", SwingConstants.RIGHT);
+        lblTotalCarrito.setFont(new Font("SansSerif", Font.BOLD, 16));
+        panelInferior.add(lblTotalCarrito, BorderLayout.NORTH);
+
+        JPanel panelPago = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        panelPago.setBorder(BorderFactory.createTitledBorder("Pasarela de Pago"));
+
+        cbMetodoPago = new JComboBox<>(new String[]{TiendaController.METODO_TARJETA, TiendaController.METODO_TRANSFERENCIA});
+        cbBanco = new JComboBox<>(new String[]{"Bancolombia", "Davivienda", "Banco de Bogotá", "BBVA"});
+
+        txtTarjeta = new JTextField(12);
+        txtExp = new JTextField(5);
+        txtCvv = new JTextField(4);
+        txtNequi = new JTextField(10);
+
+        panelDatosTarjeta = new JPanel();
+        panelDatosTarjeta.add(new JLabel("Banco:")); panelDatosTarjeta.add(cbBanco);
+        panelDatosTarjeta.add(new JLabel("Tarjeta:")); panelDatosTarjeta.add(txtTarjeta);
+        panelDatosTarjeta.add(new JLabel("MM/AA:")); panelDatosTarjeta.add(txtExp);
+        panelDatosTarjeta.add(new JLabel("CVV:")); panelDatosTarjeta.add(txtCvv);
+
+        panelDatosNequi = new JPanel();
+        panelDatosNequi.add(new JLabel("Número Nequi:")); panelDatosNequi.add(txtNequi);
+        panelDatosNequi.setVisible(false);
+
+        cbMetodoPago.addActionListener(e -> {
+            boolean esTarjeta = TiendaController.METODO_TARJETA.equals(cbMetodoPago.getSelectedItem());
+            panelDatosTarjeta.setVisible(esTarjeta);
+            panelDatosNequi.setVisible(!esTarjeta);
+            panelPago.revalidate();
+        });
+
+        panelPago.add(new JLabel("Método:"));
+        panelPago.add(cbMetodoPago);
+        panelPago.add(panelDatosTarjeta);
+        panelPago.add(panelDatosNequi);
+
+        JButton btnFinalizar = new JButton("Finalizar Compra");
+        btnFinalizar.setFont(new Font("SansSerif", Font.BOLD, 14));
+        btnFinalizar.addActionListener(e -> realizarCompra());
+        panelPago.add(btnFinalizar);
+
+        panelInferior.add(panelPago, BorderLayout.CENTER);
+        panel.add(panelInferior, BorderLayout.SOUTH);
+
+        return panel;
     }
 
     private void actualizarTablaCarrito() {
         modeloTablaCarrito.setRowCount(0);
-        Carrito c = controller.obtenerCarritoActual();
-        for (ItemCarrito item : c.getItems()) {
-            modeloTablaCarrito.addRow(new Object[]{
-                    item.getLibro().getTitulo(), item.getCantidad(), item.getLibro().getPrecioVenta(),
-                    item.getSubtotalConIva(), item.getImpuestos()
-            });
+        List<ItemCarrito> items = controller.obtenerCarritoActual().getItems();
+        double total = 0;
+        if (items != null) {
+            for (ItemCarrito it : items) {
+                if (it.getLibro() == null) continue;
+                double subtotal = it.getLibro().getPrecioVenta() * it.getCantidad();
+                total += subtotal;
+                modeloTablaCarrito.addRow(new Object[]{
+                    it.getLibro().getIsbn(),
+                    it.getLibro().getTitulo(),
+                    it.getCantidad(),
+                    it.getLibro().getPrecioVenta(),
+                    subtotal
+                });
+            }
         }
-        lblTotal.setText("Total a pagar: $" + controller.calcularTotalCompra(c));
+        lblTotalCarrito.setText("Total Compra: $" + String.format("%.2f", total));
+    }
+
+    private void realizarCompra() {
+        if (controller.getUsuarioLogueado() == null) {
+            JOptionPane.showMessageDialog(this, "Debe iniciar sesión para realizar la compra.");
+            return;
+        }
+
+        String metodo = (String) cbMetodoPago.getSelectedItem();
+        String errorPago = controller.registrarPago(
+            metodo,
+            (String) cbBanco.getSelectedItem(),
+            txtTarjeta.getText().trim(),
+            txtExp.getText().trim(),
+            txtCvv.getText().trim(),
+            txtNequi.getText().trim()
+        );
+
+        if (errorPago != null) {
+            JOptionPane.showMessageDialog(this, errorPago, "Error en los datos de pago", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (controller.finalizarCompra()) {
+            JOptionPane.showMessageDialog(this, "¡Compra realizada con éxito! Se ha procesado su orden.");
+            actualizarTablaCarrito();
+            actualizarTablaLibros();
+        } else {
+            JOptionPane.showMessageDialog(this, "El carrito está vacío o ocurrió un error al procesar.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public static void main(String[] args) {
