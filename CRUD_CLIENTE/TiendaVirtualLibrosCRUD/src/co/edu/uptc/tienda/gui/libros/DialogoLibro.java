@@ -13,6 +13,10 @@ import co.edu.uptc.tienda.modelo.enums.TipoLibro;
 import co.edu.uptc.tienda.negocio.IGestionLibro;
 import co.edu.uptc.tienda.negocio.NegocioException;
 
+/**
+ * Diálogo modal para registrar o actualizar un Libro. Solo captura y convierte
+ * los datos: las reglas de negocio las aplica {@link IGestionLibro}.
+ */
 public class DialogoLibro extends JDialog {
 
 	private static final long serialVersionUID = 1L;

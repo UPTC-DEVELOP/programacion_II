@@ -5,7 +5,9 @@ import javax.swing.*;
 import co.edu.uptc.tienda.negocio.IGestionAutenticacion;
 import co.edu.uptc.tienda.negocio.NegocioException;
 
-
+/**
+ * Ventana principal de la aplicación Tienda Virtual de Libros.
+ */
 public class VentanaPrincipal extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -24,7 +26,7 @@ public class VentanaPrincipal extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null); // Centrar en pantalla
 
-		// Relaciones 
+		// Relaciones o Asociaciones
 		evento = new Evento();
 		evento.registrarAccion(Evento.LOGIN, this::loguear);
 		panelLogin = new PanelLogin(evento);

@@ -4,7 +4,10 @@ import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.modelo.ClientePremium;
 import co.edu.uptc.tienda.modelo.ClienteRegular;
 
-
+/**
+ * Cada tipo sabe construir su propio cliente. El id, la fecha de registro y los
+ * intentos fallidos los asignan el negocio y la persistencia.
+ */
 public enum TipoCliente {
 
 	REGULAR {

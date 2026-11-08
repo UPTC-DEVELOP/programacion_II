@@ -6,7 +6,10 @@ import co.edu.uptc.tienda.modelo.Libro;
 import co.edu.uptc.tienda.modelo.LibroDigital;
 import co.edu.uptc.tienda.modelo.LibroFisico;
 
-
+/**
+ * Cada formato sabe construir su propio tipo de libro. Agregar un formato nuevo
+ * solo requiere una constante y su subclase, sin tocar la GUI ni el negocio.
+ */
 public enum TipoLibro {
 
 	FISICO {
