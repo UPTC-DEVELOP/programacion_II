@@ -6,6 +6,7 @@ import java.awt.BorderLayout;
 import java.util.Optional;
 
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
@@ -19,6 +20,9 @@ import co.edu.uptc.tiendalibros.gui.eventos.EnrutadorEventos;
 import co.edu.uptc.tiendalibros.gui.eventos.Evento;
 import co.edu.uptc.tiendalibros.gui.navegacion.PanelMenuNavegacion;
 import co.edu.uptc.tiendalibros.interfaces.IReceptorEventos;
+import co.edu.uptc.tiendalibros.negocio.ErrorTecnicoSistemaException;
+import co.edu.uptc.tiendalibros.persistencia.conexiones.ConexionBaseDatos;
+import co.edu.uptc.tiendalibros.persistencia.conexiones.ConfiguracionBaseDatos;
 
 /// Representa la ventana principal de la aplicación.
 ///
@@ -47,7 +51,6 @@ public class VentanaPrincipal extends VentanaBase implements IReceptorEventos {
     inicializarComponente();
   }
   
-
   @Override
   protected void inicializarComponente() {
     
@@ -93,9 +96,9 @@ public class VentanaPrincipal extends VentanaBase implements IReceptorEventos {
     // } else if (evento.equals("CONSTANTE")) {
     // // aquí va el método 2
     // } else {
-      // y si no, preguntarle al enrutador de eventos qué hacer
-      this.enrutador.manejarEvento(evento, elemento);
-      // }
+    // y si no, preguntarle al enrutador de eventos qué hacer
+    this.enrutador.manejarEvento(evento, elemento);
+    // }
     
   }
   
@@ -142,6 +145,31 @@ public class VentanaPrincipal extends VentanaBase implements IReceptorEventos {
     // cargar las fuentes y los íconos antes de crear la ventana
     Fuentes.precargar();
     IconoImagen.precargar();
+    
+    // probar la conexión con la base de datos
+    ConfiguracionBaseDatos configuracionBaseDatos = ConfiguracionBaseDatos
+      .cargar(ConfiguracionBaseDatos.RUTA_PREDETERMINADA);
+    try (ConexionBaseDatos conexionBaseDatos = new ConexionBaseDatos(configuracionBaseDatos)) {
+      String mensajeConexion = conexionBaseDatos.probar();
+      JOptionPane.showMessageDialog(
+        null,
+        mensajeConexion,
+        "Conexión Exitosa",
+        JOptionPane.INFORMATION_MESSAGE
+      );
+    } catch (ErrorTecnicoSistemaException excepcion) {
+      // throw new ErrorTecnicoSistemaException("Error técnico", excepcion);
+      // mostrar el error al usuario y terminar la ejecución del programa
+      String mensajeError = String.format("Error técnico: %n%s", excepcion.getMessage());
+      
+      JOptionPane.showMessageDialog(
+        null,
+        mensajeError,
+        "Conexión Fallida",
+        JOptionPane.INFORMATION_MESSAGE
+      );
+      System.exit(1);
+    }
     
     // mostrar la ventana en el hilo o proceso propio de Swing
     SwingUtilities.invokeLater(() -> {
