@@ -386,6 +386,11 @@ public class VentanaPrincipal extends JFrame {
         btnFinalizar.addActionListener(e -> {
             try {
                 String metodo = (String) cbPago.getSelectedItem();
+                if (TiendaController.requiereDatosBancarios(metodo) && controller.getUsuarioLogueado() != null
+                        && !controller.obtenerCarritoActual().getItems().isEmpty()
+                        && !solicitarDatosTransferencia(metodo)) {
+                    return;
+                }
                 if (controller.finalizarCompra(metodo)) {
                     JOptionPane.showMessageDialog(this, "¡Compra realizada con éxito!\nRecibo guardado en 'registro_operaciones.txt'.");
                     actualizarTablaLibros();
@@ -405,6 +410,72 @@ public class VentanaPrincipal extends JFrame {
         panel.add(panelInferior, BorderLayout.SOUTH);
 
         return panel;
+    }
+    
+    private boolean solicitarDatosTransferencia(String metodo) {
+        JComboBox<String> cbBanco = new JComboBox<>(DatosTransferencia.bancos());
+        if (!TiendaController.esTransferencia(metodo)) cbBanco.removeItem(DatosTransferencia.NEQUI); // Nequi solo en transferencia
+        JTextField txtTarjeta = new JTextField();
+        JPasswordField txtCodigo = new JPasswordField();
+        JTextField txtExpiracion = new JTextField();
+        JTextField txtTelefonoNequi = new JTextField(controller.getUsuarioLogueado().getTelefono());
+
+        JPanel panelCodigo = new JPanel(new BorderLayout(5, 0));
+        panelCodigo.add(txtCodigo, BorderLayout.CENTER);
+        panelCodigo.add(crearCasillaMostrar(txtCodigo), BorderLayout.EAST);
+
+        JPanel panelTarjeta = new JPanel(new GridLayout(0, 1, 5, 5));
+        panelTarjeta.add(new JLabel("Número de tarjeta:"));
+        panelTarjeta.add(txtTarjeta);
+        panelTarjeta.add(new JLabel("Código de seguridad (CVV):"));
+        panelTarjeta.add(panelCodigo);
+        panelTarjeta.add(new JLabel("Fecha de expiración (MM/AA):"));
+        panelTarjeta.add(txtExpiracion);
+
+        JPanel panelNequi = new JPanel(new GridLayout(0, 1, 5, 5));
+        panelNequi.add(new JLabel("Número de teléfono Nequi:"));
+        panelNequi.add(txtTelefonoNequi);
+        JPanel contenedorNequi = new JPanel(new BorderLayout());
+        contenedorNequi.add(panelNequi, BorderLayout.NORTH);
+
+        // El teléfono solo se muestra si el banco es Nequi; los datos de la tarjeta se muestran siempre
+        CardLayout cartas = new CardLayout();
+        JPanel panelTelefono = new JPanel(cartas);
+        panelTelefono.add(new JPanel(), "VACIO");
+        panelTelefono.add(contenedorNequi, "NEQUI");
+        cbBanco.addActionListener(e -> cartas.show(panelTelefono,
+                DatosTransferencia.NEQUI.equals(cbBanco.getSelectedItem()) ? "NEQUI" : "VACIO"));
+        JPanel panelDatos = new JPanel(new BorderLayout(5, 5));
+        panelDatos.add(panelTelefono, BorderLayout.NORTH);
+        panelDatos.add(panelTarjeta, BorderLayout.CENTER);
+
+        JPanel panel = new JPanel(new BorderLayout(5, 10));
+        JPanel panelBanco = new JPanel(new GridLayout(0, 1, 5, 5));
+        panelBanco.add(new JLabel("Banco:"));
+        panelBanco.add(cbBanco);
+        panel.add(panelBanco, BorderLayout.NORTH);
+        panel.add(panelDatos, BorderLayout.CENTER);
+
+        while (true) {
+            int option = JOptionPane.showConfirmDialog(this, panel, "Datos de pago - " + metodo,
+                    JOptionPane.OK_CANCEL_OPTION);
+            if (option != JOptionPane.OK_OPTION) return false;
+
+            boolean nequi = DatosTransferencia.NEQUI.equals(cbBanco.getSelectedItem());
+            DatosTransferencia datos = new DatosTransferencia((String) cbBanco.getSelectedItem(),
+                    txtTarjeta.getText().trim(),
+                    new String(txtCodigo.getPassword()).trim(),
+                    txtExpiracion.getText().trim(),
+                    nequi ? txtTelefonoNequi.getText().trim() : "");
+            try {
+                controller.validarDatosTransferencia(datos);
+                controller.setDatosTransferencia(datos);
+                return true;
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Datos de transferencia",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     private void mostrarFormularioLibro() {

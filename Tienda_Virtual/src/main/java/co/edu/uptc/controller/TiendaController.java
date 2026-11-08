@@ -16,6 +16,9 @@ public class TiendaController {
     private final IRepositorioCarrito repositorioCarrito;
     private Cliente usuarioLogueado;
     public static final int LONGITUD_MINIMA_CONTRASENA = 6;
+    public static final String METODO_TRANSFERENCIA = "Transferencia";
+    private DatosTransferencia datosTransferencia;
+    public static final String METODO_TARJETA = "Tarjeta de Crédito";
 
     public TiendaController() {
         this.repositorioLibros = new RepositorioLibrosJson();
@@ -59,6 +62,7 @@ public class TiendaController {
 
     public void cerrarSesion() {
         this.usuarioLogueado = null;
+        this.datosTransferencia = null;
     }
 
     /**
@@ -172,12 +176,75 @@ public class TiendaController {
         }
         return subtotalConIva;
     }
+    
+    // pago transferencia
+
+    public void setDatosTransferencia(DatosTransferencia datos) {
+        this.datosTransferencia = datos;
+    }
+
+    public static boolean esTransferencia(String metodoPago) {
+        return METODO_TRANSFERENCIA.equalsIgnoreCase(metodoPago);
+    }
+
+    
+    public static boolean requiereDatosBancarios(String metodoPago) {
+        return esTransferencia(metodoPago) || METODO_TARJETA.equalsIgnoreCase(metodoPago);
+    }
+
+    private static String soloDigitos(String texto) {
+        return texto == null ? "" : texto.replaceAll("\\D", "");
+    }
+
+    private static boolean sinDatosTarjeta(DatosTransferencia datos) {
+        return soloDigitos(datos.getNumeroTarjeta()).isEmpty()
+                && (datos.getCodigoSeguridad() == null || datos.getCodigoSeguridad().trim().isEmpty())
+                && (datos.getFechaExpiracion() == null || datos.getFechaExpiracion().trim().isEmpty());
+    }
+
+    // valida datos
+    public void validarDatosTransferencia(DatosTransferencia datos) throws Exception {
+        if (datos == null) throw new Exception("Debe ingresar los datos de la transferencia.");
+        if (datos.getBanco() == null || datos.getBanco().trim().isEmpty()) {
+            throw new Exception("Seleccione el banco.");
+        }
+
+        // Caso especial: con Nequi se pide el número de teléfono
+        // la tarjeta es opcional: si no se ingresa ningún dato de tarjeta basta con el teléfono
+        if (datos.esNequi()) {
+            if (!soloDigitos(datos.getTelefonoNequi()).matches("3\\d{9}")) {
+                throw new Exception("El número de teléfono de Nequi debe tener 10 dígitos y empezar por 3.");
+            }
+            if (sinDatosTarjeta(datos)) return;
+        }
+
+        String tarjeta = datos.getNumeroTarjeta() == null ? "" : datos.getNumeroTarjeta().trim();
+        if (!tarjeta.matches("[0-9 -]+") || soloDigitos(tarjeta).length() < 13 || soloDigitos(tarjeta).length() > 19) {
+            throw new Exception("El número de tarjeta debe tener entre 13 y 19 dígitos.");
+        }
+
+        String codigo = datos.getCodigoSeguridad() == null ? "" : datos.getCodigoSeguridad().trim();
+        if (!codigo.matches("\\d{3,4}")) {
+            throw new Exception("El código de seguridad debe tener 3 o 4 dígitos.");
+        }
+
+        String fecha = datos.getFechaExpiracion() == null ? "" : datos.getFechaExpiracion().trim();
+        if (!fecha.matches("(0[1-9]|1[0-2])/\\d{2}")) {
+            throw new Exception("La fecha de expiración debe tener el formato MM/AA (ej. 08/28).");
+        }
+        int mes = Integer.parseInt(fecha.substring(0, 2));
+        int anio = 2000 + Integer.parseInt(fecha.substring(3, 5));
+        if (java.time.YearMonth.of(anio, mes).isBefore(java.time.YearMonth.now())) {
+            throw new Exception("La tarjeta está vencida.");
+        }
+    }
 
     public boolean finalizarCompra(String metodoPago) throws Exception {
         if (usuarioLogueado == null) throw new Exception("Debe iniciar sesión.");
         
         Carrito carrito = obtenerCarritoActual();
         if (carrito.getItems().isEmpty()) throw new Exception("El carrito está vacío.");
+        if (requiereDatosBancarios(metodoPago)) validarDatosTransferencia(datosTransferencia);
 
         for (ItemCarrito item : carrito.getItems()) {
             Libro libro = repositorioLibros.buscarPorIsbn(item.getLibro().getIsbn());
@@ -190,7 +257,9 @@ public class TiendaController {
 
         registrarLogTransaccion(carrito, metodoPago);
         repositorioCarrito.vaciarCarrito(usuarioLogueado.getId());
+        datosTransferencia = null;
         return true;
+        
     }
 
     private void registrarLogTransaccion(Carrito carrito, String metodoPago) {
@@ -198,6 +267,16 @@ public class TiendaController {
             pw.println("=== RECIBO DE COMPRA ===");
             pw.println("Cliente: " + usuarioLogueado.getNombreCompleto() + " (" + usuarioLogueado.getTipoCliente() + ")");
             pw.println("Método de Pago: " + metodoPago);
+            if (requiereDatosBancarios(metodoPago) && datosTransferencia != null) {
+                pw.println("Banco: " + datosTransferencia.getBanco());
+                if (datosTransferencia.esNequi()) {
+                    pw.println("Teléfono Nequi: " + datosTransferencia.getTelefonoNequi());
+                }
+                if (!sinDatosTarjeta(datosTransferencia)) {
+                    pw.println("Tarjeta: " + datosTransferencia.getTarjetaEnmascarada());
+                    pw.println("Fecha de expiración: " + datosTransferencia.getFechaExpiracion());
+                }
+            }
             for (ItemCarrito item : carrito.getItems()) {
                 pw.println(" - " + item.getLibro().getTitulo() + " x" + item.getCantidad() + " = $" + item.getSubtotalConIva());
             }
