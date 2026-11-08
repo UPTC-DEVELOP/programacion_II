@@ -119,10 +119,24 @@ public class BaseDeDatosLibro implements IRepositorioLibro {
 	// TODO: implementar DELETE FROM libros WHERE isbn = ?
 	@Override
 	public boolean eliminar(String isbn) {
-		return false;
+		Conexion conn = new Conexion();
+		conn.conexion();
+
+		String sentenciaSQL = "DELETE FROM libros WHERE isbn = ?";
+
+		try (PreparedStatement pstmt = conn.getConnection().prepareStatement(sentenciaSQL)) {
+
+			pstmt.setString(1, isbn);
+			pstmt.executeUpdate();
+
+		} catch (SQLException e) {
+			System.err.println("Error al Eliminar el libro: " + e.getMessage());
+			return false;
+		}
+
+		return true;
 	}
 
-	// La columna nunca proviene del usuario, solo de las constantes de esta clase
 	private Libro buscarPorColumna(String columna, String valor) {
 		Libro libro = null;
 		Conexion conn = new Conexion();

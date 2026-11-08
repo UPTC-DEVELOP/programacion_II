@@ -16,10 +16,10 @@ public class PanelCentral extends JPanel {
 
 		setLayout(new BorderLayout());
 
-		JTabbedPane pPestana = new JTabbedPane();
-		pPestana.addTab("Cliente", panelCliente);
-		pPestana.addTab("Libro", panelLibro);
+		JTabbedPane panelPestana = new JTabbedPane();
+		panelPestana.addTab("Cliente", panelCliente);
+		panelPestana.addTab("Libro", panelLibro);
 
-		add(pPestana);
+		add(panelPestana);
 	}
 }

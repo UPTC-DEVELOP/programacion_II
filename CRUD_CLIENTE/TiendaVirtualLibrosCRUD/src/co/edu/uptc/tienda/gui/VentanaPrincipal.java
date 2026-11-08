@@ -2,6 +2,7 @@ package co.edu.uptc.tienda.gui;
 
 import javax.swing.*;
 
+import co.edu.uptc.tienda.gui.clientes.DialogoCliente;
 import co.edu.uptc.tienda.negocio.IGestionAutenticacion;
 import co.edu.uptc.tienda.negocio.NegocioException;
 
@@ -24,11 +25,12 @@ public class VentanaPrincipal extends JFrame {
 		setSize(300, 180);
 		setResizable(Boolean.FALSE);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setLocationRelativeTo(null); // Centrar en pantalla
+		setLocationRelativeTo(null);
 
 		// Relaciones o Asociaciones
 		evento = new Evento();
 		evento.registrarAccion(Evento.LOGIN, this::loguear);
+		evento.registrarAccion(Evento.REGISTRARSE, this::registrarseCliente);
 		panelLogin = new PanelLogin(evento);
 
 		add(panelLogin);
@@ -50,6 +52,12 @@ public class VentanaPrincipal extends JFrame {
 		setSize(850, 570);
 		setLocationRelativeTo(null);
 		this.panelCentral.setVisible(Boolean.TRUE);
+	}
+
+	private void registrarseCliente() {
+		JOptionPane.showMessageDialog(null,
+				"Aqui un Cliente puede registrarse en el Aplicativo\nPensar la manera en como reutilizar el formulario de Registro de DialogoCliente",
+				"Registrarse", JOptionPane.INFORMATION_MESSAGE);
 	}
 
 }

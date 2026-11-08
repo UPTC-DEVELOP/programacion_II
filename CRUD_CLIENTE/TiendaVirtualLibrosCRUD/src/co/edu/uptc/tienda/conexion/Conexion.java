@@ -31,6 +31,7 @@ public class Conexion {
 		try {
 			if (conn != null && !conn.isClosed()) {
 				conn.close();
+				conn = null;
 			}
 		} catch (SQLException e) {
 			System.err.println("Error al cerrar la conexión -> " + e.getMessage());

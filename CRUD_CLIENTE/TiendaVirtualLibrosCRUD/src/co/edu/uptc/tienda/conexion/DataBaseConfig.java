@@ -25,8 +25,10 @@ public class DataBaseConfig {
 			this.password = prop.getProperty("db.password");
 			this.port = Integer.parseInt(prop.getProperty("db.port"));
 
+			prop = null;
+
 		} catch (Exception e) {
-			System.err.println("Error: El archivo (.properties) especificado no existe: " + e.getMessage());
+			System.err.println("Error: El archivo (.properties) especificado no existe: \n" + e.getMessage());
 		}
 
 	}

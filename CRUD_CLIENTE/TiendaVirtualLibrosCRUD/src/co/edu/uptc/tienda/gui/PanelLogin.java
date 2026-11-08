@@ -16,6 +16,7 @@ public class PanelLogin extends JPanel {
 	private JTextField txtUsuario;
 	private JPasswordField txtContrasena;
 	private JButton btnIngresar;
+	private JButton btnRegistrarse;
 
 	public PanelLogin(Evento evento) {
 		setLayout(new BorderLayout(10, 10));
@@ -33,14 +34,17 @@ public class PanelLogin extends JPanel {
 		panelFormulario.add(txtContrasena);
 
 		btnIngresar = new JButton("Ingresar");
+		btnRegistrarse = new JButton("Registrar");
 
 		JPanel panelBoton = new JPanel();
 		panelBoton.add(btnIngresar);
+		panelBoton.add(btnRegistrarse);
 
 		add(panelFormulario, BorderLayout.CENTER);
 		add(panelBoton, BorderLayout.SOUTH);
 
 		evento.escuchar(btnIngresar, Evento.LOGIN);
+		evento.escuchar(btnRegistrarse, Evento.REGISTRARSE);
 	}
 
 	public String getUsuario() {

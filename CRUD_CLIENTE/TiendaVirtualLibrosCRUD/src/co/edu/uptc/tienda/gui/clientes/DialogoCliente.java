@@ -129,7 +129,7 @@ public class DialogoCliente extends JDialog {
 		add(panelBotones, BorderLayout.SOUTH);
 
 		Evento evento = new Evento();
-		evento.registrar(btnCancelar, Evento.CANCELAR, this::dispose);
+		evento.registrar(btnCancelar, Evento.CANCELAR_REGISTRO_CLIENTE, this::dispose);
 		evento.registrar(btnGuardar, Evento.GUARDAR_CLIENTE, this::procesarGuardado);
 	}
 
@@ -155,11 +155,10 @@ public class DialogoCliente extends JDialog {
 	private void procesarGuardado() {
 		TipoCliente tipoCliente = (TipoCliente) comboTipoCliente.getSelectedItem();
 
-		Cliente clienteProcesado = tipoCliente.crear(txtPrimerNombre.getText().trim(),
-				txtOtrosNombres.getText().trim(), txtPrimerApellido.getText().trim(),
-				txtOtrosApellidos.getText().trim(), txtTipoIdentificacion.getText().trim(),
-				txtIdentificacion.getText().trim(), txtCorreoElectronico.getText().trim(),
-				txtCelular.getText().trim(), txtDireccion.getText().trim(),
+		Cliente clienteProcesado = tipoCliente.crear(txtPrimerNombre.getText().trim(), txtOtrosNombres.getText().trim(),
+				txtPrimerApellido.getText().trim(), txtOtrosApellidos.getText().trim(),
+				txtTipoIdentificacion.getText().trim(), txtIdentificacion.getText().trim(),
+				txtCorreoElectronico.getText().trim(), txtCelular.getText().trim(), txtDireccion.getText().trim(),
 				new String(txtContrasenia.getPassword()).trim());
 
 		try {

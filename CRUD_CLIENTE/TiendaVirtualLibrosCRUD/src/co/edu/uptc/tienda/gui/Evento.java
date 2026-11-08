@@ -14,8 +14,8 @@ import javax.swing.AbstractButton;
  */
 public class Evento implements ActionListener {
 
-	public static final String CANCELAR = "Cancelar";
 	public static final String LOGIN = "Login";
+	public static final String REGISTRARSE = "Registrarse";
 
 	public static final String ELIMINAR_CLIENTE = "Eliminar Cliente";
 	public static final String VER_CLIENTES = "Ver Clientes";
@@ -23,6 +23,7 @@ public class Evento implements ActionListener {
 	public static final String CREAR_CLIENTE = "Nuevo Cliente";
 	public static final String BUSCAR_CLIENTE = "Buscar Cliente";
 	public static final String GUARDAR_CLIENTE = "Guardar Cliente";
+	public static final String CANCELAR_REGISTRO_CLIENTE = "Cancelar Registro Cliente";
 	public static final String EDITAR_CLIENTE = "Editar Cliente";
 
 	public static final String LIMPIAR = "Limpiar";

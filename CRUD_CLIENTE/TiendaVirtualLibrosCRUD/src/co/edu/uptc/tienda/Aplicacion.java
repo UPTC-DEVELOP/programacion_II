@@ -16,28 +16,34 @@ import co.edu.uptc.tienda.negocio.IGestionLibro;
 import co.edu.uptc.tienda.persistencia.BaseDeDatosLibro;
 import co.edu.uptc.tienda.persistencia.LocalCliente;
 
-/**
- * Punto de entrada. Es el único lugar donde se eligen las implementaciones
- * concretas de cada capa: para cambiar de persistencia solo se modifica aquí.
- */
 public class Aplicacion {
 
 	public static void main(String[] args) {
+
+		// Pintamos la Interfaz Gráfica de Swing con un Look And Feel moderno (Nimbus)
 		try {
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (Exception e) {
+			System.err.println("Error al implementar el LookAndFeel de NimbusLookAndFeel");
 			e.printStackTrace();
 		}
 
+		// Se inyectan dependencias
 		IGestionCliente gestionCliente = new GestionCliente(new LocalCliente());
 		IGestionLibro gestionLibro = new GestionLibro(new BaseDeDatosLibro());
+
+		// Se gestiona la Autenticación con el gestAutenticacion
 		IGestionAutenticacion gestionAutenticacion = new GestionAutenticacion();
 
+		// Se corre el programa en otro Hilo.
 		SwingUtilities.invokeLater(() -> {
+
 			PanelCentral panelCentral = new PanelCentral(new PanelCliente(gestionCliente),
 					new PanelLibro(gestionLibro));
 			VentanaPrincipal ventana = new VentanaPrincipal(gestionAutenticacion, panelCentral);
 			ventana.setVisible(Boolean.TRUE);
+
 		});
+
 	}
 }
