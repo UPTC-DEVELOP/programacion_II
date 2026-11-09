@@ -3,6 +3,7 @@ package co.edu.uptc.tienda.gui;
 import javax.swing.*;
 
 import co.edu.uptc.tienda.gui.clientes.DialogoCliente;
+import co.edu.uptc.tienda.gui.clientes.PanelCliente;
 import co.edu.uptc.tienda.negocio.IGestionAutenticacion;
 import co.edu.uptc.tienda.negocio.NegocioException;
 
@@ -14,12 +15,15 @@ public class VentanaPrincipal extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private final IGestionAutenticacion gestionAutenticacion;
 	private final PanelCentral panelCentral;
+	private final PanelCliente panelCliente;
 	private final PanelLogin panelLogin;
 	private final Evento evento;
 
-	public VentanaPrincipal(IGestionAutenticacion gestionAutenticacion, PanelCentral panelCentral) {
+	public VentanaPrincipal(IGestionAutenticacion gestionAutenticacion, PanelCentral panelCentral,
+			PanelCliente panelCliente) {
 		this.gestionAutenticacion = gestionAutenticacion;
 		this.panelCentral = panelCentral;
+		this.panelCliente = panelCliente;
 
 		setTitle("Tienda Virtual de Libros");
 		setSize(300, 180);
@@ -55,9 +59,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 
 	private void registrarseCliente() {
-		JOptionPane.showMessageDialog(null,
-				"Aqui un Cliente puede registrarse en el Aplicativo\nPensar la manera en como reutilizar el formulario de Registro de DialogoCliente",
-				"Registrarse", JOptionPane.INFORMATION_MESSAGE);
+		panelCliente.abrirDialogoCliente(null);
 	}
 
 }

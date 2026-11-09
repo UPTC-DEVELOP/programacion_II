@@ -136,7 +136,7 @@ public class PanelCliente extends JPanel {
 		abrirDialogoCliente(clienteAEditar);
 	}
 
-	private void abrirDialogoCliente(Cliente clienteAEditar) {
+	public void abrirDialogoCliente(Cliente clienteAEditar) {
 		DialogoCliente dialogo = new DialogoCliente(gestionCliente, clienteAEditar);
 		dialogo.setVisible(true);
 

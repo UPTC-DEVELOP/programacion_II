@@ -48,7 +48,9 @@ public class BaseDeDatosLibro implements IRepositorioLibro {
 			System.err.println("Error con la Base de Datos -> " + e.getMessage());
 		} finally {
 			conn.desconectar();
+			conn = null;
 		}
+
 	}
 
 	@Override
@@ -68,8 +70,10 @@ public class BaseDeDatosLibro implements IRepositorioLibro {
 
 		} catch (Exception e) {
 			System.err.println("Error al obtener los valores de la Base de Datos -> " + e.getMessage());
+
 		} finally {
 			conn.desconectar();
+			conn = null;
 		}
 
 		return libros;
@@ -91,6 +95,7 @@ public class BaseDeDatosLibro implements IRepositorioLibro {
 		conn.conexion();
 
 		String sentenciaSQL = "UPDATE libros  SET titulo = ?, autores = ?,  fecha_publicacion = ?, genero = ?, editorial = ?, numero_paginas = ?, precio_base = ?, stock_disponible = ?, tipo_libro = ?, precio_final = ? WHERE id_libro = ?";
+		boolean isOperacionExitosa = false;
 
 		try (PreparedStatement pstmt = conn.getConnection().prepareStatement(sentenciaSQL)) {
 
@@ -106,35 +111,45 @@ public class BaseDeDatosLibro implements IRepositorioLibro {
 			pstmt.setDouble(10, libro.getPrecioFinal());
 			pstmt.setLong(11, libro.getIdLibro());
 
-			return pstmt.executeUpdate() > 0;
+			isOperacionExitosa = pstmt.executeUpdate() > 0;
 
 		} catch (Exception e) {
 			System.err.println("Error al actualizar el libro -> " + e.getMessage());
-			return false;
+			isOperacionExitosa = false;
+
 		} finally {
 			conn.desconectar();
+			conn = null;
 		}
+
+		return isOperacionExitosa;
 	}
 
-	// TODO: implementar DELETE FROM libros WHERE isbn = ?
 	@Override
 	public boolean eliminar(String isbn) {
 		Conexion conn = new Conexion();
 		conn.conexion();
 
 		String sentenciaSQL = "DELETE FROM libros WHERE isbn = ?";
+		boolean isOperacionExitosa = false;
 
 		try (PreparedStatement pstmt = conn.getConnection().prepareStatement(sentenciaSQL)) {
 
 			pstmt.setString(1, isbn);
 			pstmt.executeUpdate();
 
+			isOperacionExitosa = pstmt.executeUpdate() > 0;
+
 		} catch (SQLException e) {
 			System.err.println("Error al Eliminar el libro: " + e.getMessage());
-			return false;
+			isOperacionExitosa = false;
+
+		} finally {
+			conn.desconectar();
+			conn = null;
 		}
 
-		return true;
+		return isOperacionExitosa;
 	}
 
 	private Libro buscarPorColumna(String columna, String valor) {
@@ -152,12 +167,16 @@ public class BaseDeDatosLibro implements IRepositorioLibro {
 				if (rs.next()) {
 					libro = mapearLibro(rs);
 				}
+			} catch (SQLException e) {
+				System.err.println("Error: " + e.getMessage());
 			}
 
 		} catch (Exception e) {
 			System.err.println("Error al consultar los datos -> " + e.getMessage());
+
 		} finally {
 			conn.desconectar();
+			conn = null;
 		}
 
 		return libro;
