@@ -18,12 +18,13 @@ import co.edu.uptc.tiendalibros.negocio.GestionAutor;
 import co.edu.uptc.tiendalibros.negocio.GestionCategoria;
 import co.edu.uptc.tiendalibros.negocio.editorial.GestionEditorial;
 import co.edu.uptc.tiendalibros.negocio.libro.GestionLibro;
-import co.edu.uptc.tiendalibros.persistencia.RepositorioAutorLibroEnCSV;
-import co.edu.uptc.tiendalibros.persistencia.RepositorioAutorenMemoria;
-import co.edu.uptc.tiendalibros.persistencia.RepositorioCategoriaEnMemoria;
-import co.edu.uptc.tiendalibros.persistencia.RepositorioEditorialEnMemoria;
-import co.edu.uptc.tiendalibros.persistencia.RepositorioFormatoLibroEnCSV;
-import co.edu.uptc.tiendalibros.persistencia.RepositorioLibroEnCSV;
+import co.edu.uptc.tiendalibros.persistencia.archivos.RepositorioAutorLibroEnCSV;
+import co.edu.uptc.tiendalibros.persistencia.archivos.RepositorioFormatoLibroEnCSV;
+import co.edu.uptc.tiendalibros.persistencia.archivos.RepositorioLibroEnCSV;
+import co.edu.uptc.tiendalibros.persistencia.jdbc.ConexionBaseDatos;
+import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioEditorialJDBC;
+import co.edu.uptc.tiendalibros.persistencia.memoria.RepositorioAutorenMemoria;
+import co.edu.uptc.tiendalibros.persistencia.memoria.RepositorioCategoriaEnMemoria;
 
 /// Representa la aplicación.
 public class Aplicacion {
@@ -34,11 +35,16 @@ public class Aplicacion {
   /// Enrutador que redirige los eventos.
   private final EnrutadorEventos enrutadorEventos;
   
+  /// Objeto que mantiene la conexión con la base de datos.
+  private final ConexionBaseDatos conexionBaseDatos;
+  
   /// Crea un nuevo objeto de controlador de aplicación.
   ///
-  /// @param ventana Ventana principal de la aplicación.
+  /// @param ventana           Ventana principal de la aplicación.
+  /// @param conexionBaseDatos Objeto que mantiene la conexión con la base de datos.
   public Aplicacion(
-    VentanaPrincipal ventana
+    VentanaPrincipal ventana,
+    ConexionBaseDatos conexion
   
   ) {
     // asignar la ventana principal
@@ -46,6 +52,9 @@ public class Aplicacion {
     
     // obtener el objeto enrutador
     this.enrutadorEventos = this.ventanaPrincipal.getEnrutador();
+    
+    // asignar la conexión con la base de datos
+    this.conexionBaseDatos = conexion;
     
     // continuar creando los otros componentes de la aplicación
     registrarControladores();
@@ -62,8 +71,8 @@ public class Aplicacion {
     PanelContenidoPrincipal contenidoPrincipal = this.ventanaPrincipal.getPanelContenidoPrincipal();
     
     // crear los repositorios de datos. Se usa el polimorfismo para adaptarse a cualquier
-    // repositorio: en este caso, un repositorio en la memoria RAM.
-    IRepositorioEditorial repositorioEditorial = new RepositorioEditorialEnMemoria();
+    // repositorio
+    IRepositorioEditorial repositorioEditorial = new RepositorioEditorialJDBC(this.conexionBaseDatos);
     
     IRepositorioAutor repositorioAutor = new RepositorioAutorenMemoria();
     

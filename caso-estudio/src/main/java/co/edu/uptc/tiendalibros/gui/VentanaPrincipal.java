@@ -21,8 +21,8 @@ import co.edu.uptc.tiendalibros.gui.eventos.Evento;
 import co.edu.uptc.tiendalibros.gui.navegacion.PanelMenuNavegacion;
 import co.edu.uptc.tiendalibros.interfaces.IReceptorEventos;
 import co.edu.uptc.tiendalibros.negocio.ErrorTecnicoSistemaException;
-import co.edu.uptc.tiendalibros.persistencia.conexiones.ConexionBaseDatos;
-import co.edu.uptc.tiendalibros.persistencia.conexiones.ConfiguracionBaseDatos;
+import co.edu.uptc.tiendalibros.persistencia.jdbc.ConexionBaseDatos;
+import co.edu.uptc.tiendalibros.persistencia.jdbc.ConfiguracionBaseDatos;
 
 /// Representa la ventana principal de la aplicación.
 ///
@@ -53,7 +53,6 @@ public class VentanaPrincipal extends VentanaBase implements IReceptorEventos {
   
   @Override
   protected void inicializarComponente() {
-    
     setTitle("Tienda Libros - Grupo 9");
     setSize(1000, 900);
     establecerIconoAplicacion();
@@ -83,6 +82,7 @@ public class VentanaPrincipal extends VentanaBase implements IReceptorEventos {
     getContentPane().add(panelDivisor, BorderLayout.CENTER);
     
     setLocationRelativeTo(null);
+    // setLocationByPlatform(true);
   }
   
   /// @see co.edu.uptc.tiendalibros.interfaces.IReceptorEventos#manejarEvento(java.lang.String, java.lang.Object)
@@ -147,9 +147,17 @@ public class VentanaPrincipal extends VentanaBase implements IReceptorEventos {
     IconoImagen.precargar();
     
     // probar la conexión con la base de datos
-    ConfiguracionBaseDatos configuracionBaseDatos = ConfiguracionBaseDatos
-      .cargar(ConfiguracionBaseDatos.RUTA_PREDETERMINADA);
-    try (ConexionBaseDatos conexionBaseDatos = new ConexionBaseDatos(configuracionBaseDatos)) {
+    ConexionBaseDatos conexionBaseDatos;
+    
+    try {
+      // cargar las opciones de conexión con la base de datos
+      ConfiguracionBaseDatos configuracionBaseDatos = ConfiguracionBaseDatos
+        .cargar(ConfiguracionBaseDatos.RUTA_PREDETERMINADA);
+      
+      // crear la conexión con la base de datos
+      conexionBaseDatos = new ConexionBaseDatos(configuracionBaseDatos);
+      
+      // mostrar el mensaje de que se pudo conectar exitosamente a la base de datos
       String mensajeConexion = conexionBaseDatos.probar();
       JOptionPane.showMessageDialog(
         null,
@@ -157,18 +165,22 @@ public class VentanaPrincipal extends VentanaBase implements IReceptorEventos {
         "Conexión Exitosa",
         JOptionPane.INFORMATION_MESSAGE
       );
+      
     } catch (ErrorTecnicoSistemaException excepcion) {
-      // throw new ErrorTecnicoSistemaException("Error técnico", excepcion);
-      // mostrar el error al usuario y terminar la ejecución del programa
-      String mensajeError = String.format("Error técnico: %n%s", excepcion.getMessage());
+      // mostrar la causa del error de conexión con la base de datos
+      String motivo = excepcion.getCause() == null ? ""
+        : excepcion.getCause()
+          .getLocalizedMessage();
+      String mensajeError = String.format("%s%n%s", excepcion.getMessage(), motivo);
       
       JOptionPane.showMessageDialog(
         null,
         mensajeError,
         "Conexión Fallida",
-        JOptionPane.INFORMATION_MESSAGE
+        JOptionPane.ERROR_MESSAGE
       );
-      System.exit(1);
+      
+      return;
     }
     
     // mostrar la ventana en el hilo o proceso propio de Swing
@@ -176,7 +188,7 @@ public class VentanaPrincipal extends VentanaBase implements IReceptorEventos {
       // crear la ventana principal
       VentanaPrincipal ventana = new VentanaPrincipal();
       // pedirle a la aplicación que inicialice componentes y que arranque la aplicación
-      new Aplicacion(ventana).iniciar();
+      new Aplicacion(ventana, conexionBaseDatos).iniciar();
     });
     
   }

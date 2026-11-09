@@ -8,8 +8,8 @@ public enum TipoFormatoLibro {
   
   /// Representa la presentación de un libro en formato digital.
   DIGITAL;
-
-  @Override 
+  
+  @Override
   public String toString() {
     return switch (this) {
       case IMPRESO -> "Impreso";
@@ -21,8 +21,8 @@ public enum TipoFormatoLibro {
   ///
   /// @param valor Texto String que se quiere convertir.
   /// @return El objeto [TipoFormatoLibro] correspondiente al texto.
-  /// @throw IllegalArgumentException Si el texto no se pudo convertir a un objeto
-  ///        [TipoFormatoLibro] válido.
+  /// @throws IllegalArgumentException Si el texto no se pudo convertir a un objeto
+  ///                                  [TipoFormatoLibro] válido.
   public static TipoFormatoLibro convertirString(String valor) {
     // mensaje de error para la excepción de conversión
     String mensaje = String.format("No se pudo convertir el valor '%s' a un tipo de formato de libro válido.", valor);

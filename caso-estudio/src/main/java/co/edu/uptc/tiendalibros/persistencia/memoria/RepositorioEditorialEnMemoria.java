@@ -1,5 +1,5 @@
 ///
-package co.edu.uptc.tiendalibros.persistencia;
+package co.edu.uptc.tiendalibros.persistencia.memoria;
 
 import java.util.ArrayList;
 import java.util.Iterator;

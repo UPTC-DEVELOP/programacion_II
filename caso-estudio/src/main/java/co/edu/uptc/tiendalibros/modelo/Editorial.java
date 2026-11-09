@@ -4,6 +4,9 @@ package co.edu.uptc.tiendalibros.modelo;
 /// Representa una editorial responsable de la publicación de un libro.
 public class Editorial extends ElementoBase {
   
+  /// Longitud máxima del nombre de la editorial.
+  public static final int LONGITUD_MAXIMA_NOMBRE = 60;
+  
   /// Nombre de la editorial.
   private String nombre;
   

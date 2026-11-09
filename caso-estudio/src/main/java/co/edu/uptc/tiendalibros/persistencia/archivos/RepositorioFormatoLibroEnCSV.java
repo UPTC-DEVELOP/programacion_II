@@ -1,5 +1,5 @@
 //
-package co.edu.uptc.tiendalibros.persistencia;
+package co.edu.uptc.tiendalibros.persistencia.archivos;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

@@ -14,6 +14,7 @@ import co.edu.uptc.tiendalibros.negocio.RespuestaExitosa;
 import co.edu.uptc.tiendalibros.negocio.RespuestaFallida;
 import co.edu.uptc.tiendalibros.negocio.ResultadoValidacion;
 import co.edu.uptc.tiendalibros.negocio.editorial.reglas.ReglaEditorialExiste;
+import co.edu.uptc.tiendalibros.negocio.editorial.reglas.ReglaEditorialNombreLongitudMaxima;
 import co.edu.uptc.tiendalibros.negocio.editorial.reglas.ReglaEditorialNombreNoVacio;
 import co.edu.uptc.tiendalibros.negocio.editorial.reglas.ReglaEditorialNombreUnico;
 import co.edu.uptc.tiendalibros.negocio.editorial.reglas.ReglaEditorialSinLibrosAsociados;
@@ -48,6 +49,7 @@ public class GestionEditorial {
     this.reglasValidacionGuardar = new ArrayList<>(
       (List.of(
         new ReglaEditorialNombreNoVacio(),
+        new ReglaEditorialNombreLongitudMaxima(),
         new ReglaEditorialNombreUnico(this.repositorioEditorial)
       ))
     );

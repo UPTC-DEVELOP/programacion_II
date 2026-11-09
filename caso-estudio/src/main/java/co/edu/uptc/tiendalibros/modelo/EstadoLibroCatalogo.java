@@ -30,8 +30,8 @@ public enum EstadoLibroCatalogo {
   ///
   /// @param valor Texto abreviatura que se quiere convertir.
   /// @return El objeto [EstadoLibroCatalogo] correspondiente al texto.
-  /// @throw IllegalArgumentException Si el texto no se pudo convertir a un objeto
-  ///        [EstadoLibroCatalogo] válido.
+  /// @throws IllegalArgumentException Si el texto no se pudo convertir a un objeto
+  ///                                  [EstadoLibroCatalogo] válido.
   public static EstadoLibroCatalogo convertirAbreviatura(String valor) {
     // mensaje de error para la excepción de conversión
     String mensaje = String
@@ -57,8 +57,8 @@ public enum EstadoLibroCatalogo {
   ///
   /// @param valor Texto String que se quiere convertir.
   /// @return El objeto [EstadoLibroCatalogo] correspondiente al texto.
-  /// @throw IllegalArgumentException Si el texto no se pudo convertir a un objeto
-  ///        [EstadoLibroCatalogo] válido.
+  /// @throws IllegalArgumentException Si el texto no se pudo convertir a un objeto
+  ///                                  [EstadoLibroCatalogo] válido.
   public static EstadoLibroCatalogo convertirString(String valor) {
     // mensaje de error para la excepción de conversión
     String mensaje = String

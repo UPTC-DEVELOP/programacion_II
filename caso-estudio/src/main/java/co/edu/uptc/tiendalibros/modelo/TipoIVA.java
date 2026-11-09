@@ -47,8 +47,8 @@ public enum TipoIVA {
   ///
   /// @param valor Texto String que se quiere convertir.
   /// @return El objeto [TipoIVA] correspondiente al texto.
-  /// @throw IllegalArgumentException Si el texto no se pudo convertir a un objeto
-  ///        [TipoIVA] válido.
+  /// @throws IllegalArgumentException Si el texto no se pudo convertir a un objeto
+  ///                                  [TipoIVA] válido.
   public static TipoIVA convertirString(String valor) {
     // mensaje de error para la excepción de conversión
     String mensaje = String.format("No se pudo convertir el valor '%s' a un tipo de IVA válido.", valor);

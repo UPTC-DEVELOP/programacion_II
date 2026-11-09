@@ -22,15 +22,12 @@ GRANT SELECT, INSERT, UPDATE, DELETE
   ON tienda_libros_gr9.* 
   TO 'gr9_aplicacion'@'%';
 
--- aplicar los nuevos permisos o privilegios
-FLUSH PRIVILEGES;
-
 /********* 3. CREAR LAS TABLAS *********/
 
 --         Crear la tabla Editoriales
 USE tienda_libros_gr9;
 
-CREATE TABLE editorial (
+CREATE TABLE IF NOT EXISTS editorial (
   id_editorial BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   nombre VARCHAR(60) NOT NULL,
   PRIMARY KEY (id_editorial)

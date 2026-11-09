@@ -1,5 +1,5 @@
 //
-package co.edu.uptc.tiendalibros.persistencia;
+package co.edu.uptc.tiendalibros.persistencia.archivos;
 
 import java.util.ArrayList;
 import java.util.List;

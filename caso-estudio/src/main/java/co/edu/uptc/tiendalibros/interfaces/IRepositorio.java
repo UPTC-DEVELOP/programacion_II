@@ -1,15 +1,13 @@
-///
+//
 package co.edu.uptc.tiendalibros.interfaces;
-
-import java.util.List;
-import java.util.Optional;
 
 import co.edu.uptc.tiendalibros.negocio.excepciones.ViolacionElementoNoExisteException;
 
-/// Representa un repositorio de datos de elementos de tipo `T`.
+/// Representa un repositorio de datos de elementos de tipo `T` en el que se pueden hacer
+/// modificaciones a los datos y consultas.
 ///
 /// @param <T> Tipo de elemento que se almacena en el repositorio.
-public interface IRepositorio<T> {
+public interface IRepositorio<T> extends IRepositorioSoloConsultas<T> {
   
   /// Guarda un elemento en el repositorio.
   ///
@@ -27,17 +25,7 @@ public interface IRepositorio<T> {
   ///
   /// @param id ID del elemento que se quiere eliminar.
   /// @return `true` si el elemento se eliminó. `false` si no se encontró.
+  /// @throws IllegalArgumentException Si el `id` especificado es nulo.
   boolean eliminar(Long id);
-  
-  /// Busca el elemento con el ID especificado.
-  ///
-  /// @param id ID del elemento que se quiere buscar.
-  /// @return El elemento encontrado, o un valor vacío si no existe.
-  Optional<T> buscarPorId(Long id);
-  
-  /// Obtiene la lista de elementos almacenados en el repositorio.
-  ///
-  /// @return Lista de elementos almacenados. Puede estar vacía, pero no se devuelve `null`.
-  List<T> listar();
   
 }

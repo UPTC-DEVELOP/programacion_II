@@ -1,5 +1,5 @@
 //
-package co.edu.uptc.tiendalibros.persistencia.conexiones;
+package co.edu.uptc.tiendalibros.persistencia.jdbc;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -71,7 +71,7 @@ public class ConfiguracionBaseDatos {
       // los valores necesarios no están, por lo que se lanza una excepción
       throw new ErrorTecnicoSistemaException(
         String.format(
-          "El archivo de configuración '%s' debe tener los valores 'db.url', 'db.usuario' y 'db.contrasena",
+          "El archivo de configuración '%s' debe tener los valores 'db.url', 'db.usuario' y 'db.contrasena'",
           ruta.toAbsolutePath()
         ), null
       );
