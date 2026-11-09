@@ -15,7 +15,8 @@
       "rol": "ADMIN",
       "contrasenia": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
       "fechaRegistro": "2026-11-06T22:24:56.011",
-      "intentosFallidos": 0
+      "intentosFallidos": 0,
+      "comprasRealizadas": 0
     },
     {
       "idCliente": 2,
@@ -32,7 +33,8 @@
       "rol": "CLIENTE",
       "contrasenia": "09a31a7001e261ab1e056182a71d3cf57f582ca9a29cff5eb83be0f0549730a9",
       "fechaRegistro": "2026-11-06T22:24:56.011",
-      "intentosFallidos": 0
+      "intentosFallidos": 0,
+      "comprasRealizadas": 0
     },
     {
       "idCliente": 3,
@@ -49,8 +51,45 @@
       "rol": "CLIENTE",
       "contrasenia": "626e3c805e77eeb472c42c6be607be2af7ac5c08fd7050f278e0330fe81abf57",
       "fechaRegistro": "2026-11-06T22:24:56.011",
-      "intentosFallidos": 0
+      "intentosFallidos": 0,
+      "comprasRealizadas": 0
+    },
+    {
+      "idCliente": 5,
+      "primerNombre": "oscar",
+      "otrosNombres": "",
+      "primerApellido": "clavijo",
+      "otrosApellidos": "",
+      "tipoIdentificacion": "CC",
+      "identificacion": "1023568954",
+      "correoElectronico": "admin.prueba@uptc.edu.co",
+      "celular": "3111112233",
+      "direccion": "calle 45 sur",
+      "tipoCliente": "REGULAR",
+      "rol": "ADMIN",
+      "contrasenia": "0a5bc3e342432f1bad92ffd51b785343ec72906cdba6a26131060b008e786656",
+      "fechaRegistro": "2026-11-09T16:05:19.885",
+      "intentosFallidos": 0,
+      "comprasRealizadas": 0
+    },
+    {
+      "idCliente": 6,
+      "primerNombre": "oscar",
+      "otrosNombres": "",
+      "primerApellido": "clavijo",
+      "otrosApellidos": "",
+      "tipoIdentificacion": "CC",
+      "identificacion": "1472589635",
+      "correoElectronico": "oscar@gmail.com",
+      "celular": "3223336599",
+      "direccion": "calle 45 sur",
+      "tipoCliente": "REGULAR",
+      "rol": "CLIENTE",
+      "contrasenia": "ff3317ed92af000942897760a1cdad0920e8f3fdb42f7d29a4e0c4843598a30c",
+      "fechaRegistro": "2026-11-09T16:40:44.362",
+      "intentosFallidos": 0,
+      "comprasRealizadas": 0
     }
   ],
-  "ultimoId": 3
+  "ultimoId": 6
 }
