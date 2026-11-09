@@ -14,6 +14,8 @@ import co.edu.uptc.negocio.GestionLibro;
 import co.edu.uptc.negocio.GestionReporte;
 import co.edu.uptc.negocio.GestionSeguridad;
 import co.edu.uptc.negocio.ValidadorDatos;
+import co.edu.uptc.persistencia.AuditoriaCompuesta;
+import co.edu.uptc.persistencia.AuditoriaRepository;
 import co.edu.uptc.persistencia.AuditoriaTxtRepository;
 import co.edu.uptc.persistencia.CarritoJdbcRepository;
 import co.edu.uptc.persistencia.CarritoJsonRepository;
@@ -21,6 +23,7 @@ import co.edu.uptc.persistencia.ClienteJdbcRepository;
 import co.edu.uptc.persistencia.ClienteJsonRepository;
 import co.edu.uptc.persistencia.FacturaJsonRepository;
 import co.edu.uptc.persistencia.LibroJdbcRepository;
+import co.edu.uptc.persistencia.LibroJsonRepository;
 import co.edu.uptc.persistencia.LibroRepositoryFactory;
 import co.edu.uptc.persistencia.VentaJdbcRepository;
 
@@ -73,24 +76,22 @@ public class AppLibros {
 
         //CarritoJsonRepository carritoRepositorioJson = new CarritoJsonRepository();
 
-        // Auditoría de operaciones del administrador (RF17/RF18)
-        IAuditoria auditoria = new AuditoriaTxtRepository();
-  // Repositorio de libros persistido en data/libros.json. Se inyecta el
-        // repositorio de ventas para validar que un libro no tenga ventas (RF03).
+        // Auditoría de operaciones del administrador (RF17/RF18): el TXT es el
+        // destino obligatorio y el JSON se conserva como espejo adicional.
+        IAuditoria auditoria = new AuditoriaCompuesta(
+                new AuditoriaTxtRepository(), new AuditoriaRepository());
 
-       /*  ILibroRepositorio libroJsonrepositorio = LibroRepositoryFactory.crear(
-                LibroRepositoryFactory.Tipo.JSON, repositorioVenta);
-                */
-
-        // Libros se persisten en PostgreSQL y los JSON no se eliminan.
+        // Libros se persisten en PostgreSQL y se replican en data/libros.json.
         ILibroRepositorio repositorioLibro = new LibroJdbcRepository(repositorioVenta);
+        ILibroRepositorio repositorioLibroJson = new LibroJsonRepository(repositorioVenta);
 
         // 2. Capa de Validación
         ValidadorDatos validador = new ValidadorDatos();
 
         // 3. Capa de Negocio (Inyección de Dependencias)
         GestionSeguridad gestionSeguridad = new GestionSeguridad(repositorioCliente);
-        GestionLibro gestionLibro = new GestionLibro(repositorioLibro, validador, auditoria);
+        GestionLibro gestionLibro = new GestionLibro(
+                repositorioLibro, validador, repositorioLibroJson, auditoria);
         GestionCliente gestionCliente = new GestionCliente(repositorioCliente, validador,
                 repositorioClienteJson, auditoria);
         // GestionDashboard inyecta DOS repositorios: libros (stock) y ventas (KPIs)

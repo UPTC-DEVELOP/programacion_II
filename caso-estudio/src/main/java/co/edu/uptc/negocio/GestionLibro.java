@@ -21,19 +21,19 @@ import co.edu.uptc.modelo.mapper.LibroMapper;
 /**
  * Capa de NEGOCIO de los libros (CRUD).
  *
- * <p>Depende de la abstracción ILibroRepositorio (DIP) y valida los datos con
+ * Depende de la abstracción ILibroRepositorio (DIP) y valida los datos con
  * ValidadorDatos antes de persistirlos. También registra cada operación en la
- * auditoría (RF17/RF18) a través de la abstracción IAuditoria.</p>
+ * auditoría (RF17/RF18) a través de la abstracción IAuditoria.
  *
- * <p>Aplica:
- * <ul>
- *   <li>SRP: contiene solo reglas de negocio y orquestación; no sabe cómo se
- *       guardan los datos.</li>
- *   <li>DIP: recibe las dependencias por constructor.</li>
- *   <li>OCP: puede cambiar la persistencia (JSON, JDBC, memoria) sin tocar esta
- *       clase.</li>
- *   <li>LSP: funciona con cualquier implementación de ILibroRepositorio.</li>
- * </ul>
+ * Aplica:
+ * 
+ *   SRP: contiene solo reglas de negocio y orquestación; no sabe cómo se
+ *       guardan los datos.
+ *   DIP: recibe las dependencias por constructor.
+ *   OCP: puede cambiar la persistencia (JSON, JDBC, memoria) sin tocar esta
+ *       clase.
+ *  LSP: funciona con cualquier implementación de ILibroRepositorio.
+ *
  */
 public class GestionLibro implements IGestionLibro {
 
@@ -41,17 +41,19 @@ public class GestionLibro implements IGestionLibro {
     private static final String USUARIO_ADMIN = "admin";
 
     private final ILibroRepositorio persistencia;
+    private final ILibroRepositorio persistenciaJson;
     private final ValidadorDatos validador;
     private final IAuditoria auditoria;
 
     /**
-     * Constructor compatible con el código existente (sin auditoría).
+     * Constructor compatible con el código existente (sin auditoría ni espejo
+     * JSON).
      *
      * @param persistencia Repositorio de libros
      * @param validador    Validador de datos
      */
     public GestionLibro(ILibroRepositorio persistencia, ValidadorDatos validador) {
-        this(persistencia, validador, null);
+        this(persistencia, validador, null, null);
     }
 
     /**
@@ -63,7 +65,23 @@ public class GestionLibro implements IGestionLibro {
      */
     public GestionLibro(ILibroRepositorio persistencia, ValidadorDatos validador,
                         IAuditoria auditoria) {
+        this(persistencia, validador, null, auditoria);
+    }
+
+    /**
+     * Constructor con espejo JSON y auditoría. La persistencia principal
+     * (PostgreSQL) sigue siendo la fuente de verdad; el repositorio JSON
+     * recibe una copia de cada operación confirmada para cumplir RF02/RF03.
+     *
+     * @param persistencia     Repositorio principal de libros
+     * @param validador        Validador de datos
+     * @param persistenciaJson Repositorio JSON de respaldo (puede ser null)
+     * @param auditoria        Servicio de auditoría (puede ser null)
+     */
+    public GestionLibro(ILibroRepositorio persistencia, ValidadorDatos validador,
+                        ILibroRepositorio persistenciaJson, IAuditoria auditoria) {
         this.persistencia = persistencia;
+        this.persistenciaJson = persistenciaJson;
         this.validador = validador;
         this.auditoria = auditoria;
     }
@@ -84,7 +102,10 @@ public class GestionLibro implements IGestionLibro {
                     + " ya está registrado en el catálogo.");
         }
 
-        persistencia.guardar(LibroMapper.toEntity(libroDto));
+        Libro entidad = LibroMapper.toEntity(libroDto);
+        persistencia.guardar(entidad);
+        replicarEnJson(() -> persistenciaJson.guardar(entidad),
+                "registrar el libro " + libroDto.getIsbn());
         auditar(AccionAuditoria.CREATE, libroDto.getIsbn(),
                 "Registro de nuevo libro: " + libroDto.getTitulo());
     }
@@ -92,8 +113,8 @@ public class GestionLibro implements IGestionLibro {
     /**
      * Actualiza un libro existente validando las reglas de RF02.
      *
-     * <p>El ISBN actúa como clave primaria y no se modifica: la GUI lo bloquea
-     * en modo edición y el servicio reemplaza el registro con el mismo ISBN.</p>
+     * El ISBN actúa como clave primaria y no se modifica: la GUI lo bloquea
+     * en modo edición y el servicio reemplaza el registro con el mismo ISBN.
      *
      * @param libroDto Libro con los datos actualizados
      * @throws ReglaNegocioException si los datos no son válidos
@@ -108,7 +129,10 @@ public class GestionLibro implements IGestionLibro {
                     + libroDto.getIsbn() + ".");
         }
 
-        persistencia.actualizar(LibroMapper.toEntity(libroDto));
+        Libro entidad = LibroMapper.toEntity(libroDto);
+        persistencia.actualizar(entidad);
+        replicarEnJson(() -> persistenciaJson.actualizar(entidad),
+                "actualizar el libro " + libroDto.getIsbn());
         auditar(AccionAuditoria.UPDATE, libroDto.getIsbn(),
                 "Actualización de libro: " + libroDto.getTitulo()
                         + " (precio=" + libroDto.getPrecioVenta()
@@ -118,8 +142,8 @@ public class GestionLibro implements IGestionLibro {
     /**
      * Elimina un libro validando las reglas de RF03.
      *
-     * <p>Verifica que el ISBN exista y que no tenga ventas asociadas. La
-     * confirmación previa al borrado es responsabilidad de la GUI.</p>
+     * Verifica que el ISBN exista y que no tenga ventas asociadas. La
+     * confirmación previa al borrado es responsabilidad de la GUI.
      *
      * @param isbn ISBN del libro a eliminar
      * @throws ReglaNegocioException si el ISBN no es válido
@@ -141,6 +165,8 @@ public class GestionLibro implements IGestionLibro {
         }
 
         persistencia.eliminar(isbn);
+        replicarEnJson(() -> persistenciaJson.eliminar(isbn),
+                "eliminar el libro " + isbn);
         auditar(AccionAuditoria.DELETE, isbn,
                 "Eliminación de libro: " + existente.getTitulo());
     }
@@ -180,6 +206,26 @@ public class GestionLibro implements IGestionLibro {
             return null;
         }
         return LibroMapper.toDto(persistencia.consultarPorIsbn(isbn.trim()));
+    }
+
+    /**
+     * Replica una operación ya confirmada en la persistencia principal hacia
+     * el repositorio JSON. Un fallo del espejo se informa por consola y no
+     * revierte ni invalida la operación de PostgreSQL.
+     *
+     * @param operacion Acción de escritura sobre el repositorio JSON
+     * @param descripcion Descripción usada en el mensaje de advertencia
+     */
+    private void replicarEnJson(Runnable operacion, String descripcion) {
+        if (persistenciaJson == null) {
+            return;
+        }
+        try {
+            operacion.run();
+        } catch (PersistenciaException e) {
+            System.err.println("No se pudo replicar en JSON al " + descripcion
+                    + ": " + e.getMessage());
+        }
     }
 
     /**

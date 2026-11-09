@@ -6,6 +6,7 @@ import java.util.List;
 import co.edu.uptc.excepciones.CantidadInvalidaException;
 import co.edu.uptc.excepciones.ClienteNoEncontradoException;
 import co.edu.uptc.excepciones.LibroNoEncontradoException;
+import co.edu.uptc.excepciones.PersistenciaException;
 import co.edu.uptc.excepciones.ReglaNegocioException;
 import co.edu.uptc.excepciones.StockInsuficienteException;
 import co.edu.uptc.interfaces.ICarritoRepository;
@@ -202,9 +203,8 @@ public class CarritoServiceImpl implements ICarritoService {
     public void eliminarCarrito(int idCliente) throws ReglaNegocioException {
         validarClienteExistente(idCliente);
         carritoRepository.eliminarCarrito(idCliente);
-        if (carritoRepositoryJson != null) {
-            carritoRepositoryJson.eliminarCarrito(idCliente);
-        }
+        replicarEnJson(() -> carritoRepositoryJson.eliminarCarrito(idCliente),
+                "eliminar el carrito del cliente " + idCliente);
     }
 
     // ------------------------- RF13: CALCULAR TOTALES -------------------------
@@ -319,8 +319,24 @@ public class CarritoServiceImpl implements ICarritoService {
     /*modificacion:Brayan Panqueva*/
     private void guardarCarrito(CarritoCompras carrito) {
         carritoRepository.guardarCarrito(carrito);
-        if (carritoRepositoryJson != null) {
-            carritoRepositoryJson.guardarCarrito(carrito);
+        replicarEnJson(() -> carritoRepositoryJson.guardarCarrito(carrito),
+                "guardar el carrito del cliente " + carrito.getIdCliente());
+    }
+
+    /**
+     * Replica una operación ya confirmada en JDBC hacia el repositorio JSON.
+     * Un fallo del espejo se informa por consola y no revierte ni invalida la
+     * operación principal.
+     */
+    private void replicarEnJson(Runnable operacion, String descripcion) {
+        if (carritoRepositoryJson == null) {
+            return;
+        }
+        try {
+            operacion.run();
+        } catch (PersistenciaException e) {
+            System.err.println("No se pudo replicar en JSON al " + descripcion
+                    + ": " + e.getMessage());
         }
     }
 

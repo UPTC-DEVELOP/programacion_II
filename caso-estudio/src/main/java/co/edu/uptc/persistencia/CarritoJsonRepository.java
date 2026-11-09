@@ -168,6 +168,26 @@ public class CarritoJsonRepository implements ICarritoRepository {
     }
 
     /**
+     * Reemplaza todo el contenido del archivo JSON con la lista indicada.
+     * Se usa para la sincronización inicial desde PostgreSQL y deja un
+     * respaldo del archivo anterior antes de sobrescribirlo.
+     *
+     * @param carritos Carritos que deben quedar en el archivo
+     */
+    public synchronized void sincronizar(List<CarritoCompras> carritos) {
+        List<CarritoSessionDto> dtos = new ArrayList<>();
+        if (carritos != null) {
+            for (CarritoCompras carrito : carritos) {
+                if (carrito != null) {
+                    dtos.add(construirDto(carrito));
+                }
+            }
+        }
+        respaldarArchivoActual("bak");
+        escribir(dtos);
+    }
+
+    /**
      * Convierte el carrito a su DTO de persistencia y completa los totales que
      * se guardan como instantánea. El descuento reutiliza la estrategia del
      * dominio para no duplicar el porcentaje Premium.
@@ -250,6 +270,28 @@ public class CarritoJsonRepository implements ICarritoRepository {
         } catch (IOException e) {
             throw new PersistenciaException(
                     "No se pudo recuperar el archivo de carritos corrupto: " + rutaArchivo, e);
+        }
+    }
+
+    /**
+     * Respalda el archivo actual con una marca de tiempo antes de
+     * sobrescribirlo.
+     *
+     * @param etiqueta Prefijo del respaldo (bak, corrupt, etc.)
+     */
+    private void respaldarArchivoActual(String etiqueta) {
+        try {
+            if (!Files.exists(rutaArchivo)) {
+                return;
+            }
+            String marca = LocalDateTime.now()
+                    .format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS"));
+            Path respaldo = rutaArchivo.resolveSibling(
+                    rutaArchivo.getFileName() + "." + etiqueta + "-" + marca);
+            Files.copy(rutaArchivo, respaldo, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new PersistenciaException(
+                    "No se pudo respaldar el archivo de carritos: " + rutaArchivo, e);
         }
     }
 

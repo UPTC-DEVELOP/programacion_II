@@ -19,5 +19,58 @@
         "porcentajeIva": 5
       }
     ]
+  },
+  {
+    "idVenta": 2,
+    "fecha": "2026-11-09T17:30:14.902923",
+    "clienteNombre": "oscar clavijo",
+    "clienteCorreo": "oscar@gmail.com",
+    "tipoCliente": "Premium",
+    "subtotal": 1254000.0,
+    "impuestos": 94060.0,
+    "descuento": 0.0,
+    "total": 1348060.0,
+    "lineas": [
+      {
+        "isbn": "9780201633610",
+        "titulo": "Design Patterns",
+        "cantidad": 3,
+        "precioUnitario": 150000.0,
+        "subtotal": 450000.0,
+        "porcentajeIva": 5
+      },
+      {
+        "isbn": "9780134685991",
+        "titulo": "Effective Java",
+        "cantidad": 1,
+        "precioUnitario": 135000.0,
+        "subtotal": 135000.0,
+        "porcentajeIva": 19
+      },
+      {
+        "isbn": "9780062316097",
+        "titulo": "Sapiens",
+        "cantidad": 1,
+        "precioUnitario": 89000.0,
+        "subtotal": 89000.0,
+        "porcentajeIva": 19
+      },
+      {
+        "isbn": "9780553380163",
+        "titulo": "A Brief History of Time",
+        "cantidad": 3,
+        "precioUnitario": 72000.0,
+        "subtotal": 216000.0,
+        "porcentajeIva": 5
+      },
+      {
+        "isbn": "9780451524935",
+        "titulo": "1984",
+        "cantidad": 7,
+        "precioUnitario": 52000.0,
+        "subtotal": 364000.0,
+        "porcentajeIva": 5
+      }
+    ]
   }
 ]

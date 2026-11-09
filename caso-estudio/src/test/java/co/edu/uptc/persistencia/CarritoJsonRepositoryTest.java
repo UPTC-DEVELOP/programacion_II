@@ -122,6 +122,23 @@ public class CarritoJsonRepositoryTest {
         assertEquals(218.0, carrito.get("totalFinal").getAsDouble(), 0.001);
     }
 
+    @Test
+    public void testSincronizarReemplazaYRespalda() throws Exception {
+        repositorio.guardarCarrito(crearCarrito(1001, TipoCliente.REGULAR,
+                "9783161484100", "Clean Code", 1, 100.0, 0.19));
+
+        repositorio.sincronizar(List.of(crearCarrito(1002, TipoCliente.PREMIUM,
+                "9780134685991", "Effective Java", 2, 50.0, 0.19)));
+
+        assertEquals(1, repositorio.listarTodos().size());
+        assertNull(repositorio.obtenerCarritoPorCliente(1001));
+        assertNotNull(repositorio.obtenerCarritoPorCliente(1002));
+        try (var archivos = Files.list(rutaCarritos.getParent())) {
+            assertTrue(archivos.anyMatch(p -> p.getFileName().toString()
+                    .startsWith("carritos.json.bak-")));
+        }
+    }
+
     private CarritoCompras crearCarrito(int idCliente, TipoCliente tipoCliente,
                                         String isbn, String titulo, int cantidad,
                                         double precioUnitario, double tasaIva) {

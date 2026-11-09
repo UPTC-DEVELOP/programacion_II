@@ -2,3 +2,11 @@
 2 | 2026-11-09T16:07:59.999916100 | CREATE | admin | 9780132350884 | Registro de nuevo libro: clean code
 3 | 2026-11-09T16:40:44.447685600 | CREATE | admin | 1472589635 | Registro de cliente: oscar@gmail.com
 4 | 2026-11-09T17:20:00.622721 | CREATE | admin | 1025888442 | Registro de cliente: admin@uptc.edu.co
+5 | 2026-11-09T17:24:44.198476200 | CREATE | admin | 9780134685991 | Registro de nuevo libro: Effective Java
+6 | 2026-11-09T17:25:31.079831 | CREATE | admin | 9780201633610 | Registro de nuevo libro: Design Patterns
+7 | 2026-11-09T17:26:06.858482500 | CREATE | admin | 9780441172719 | Registro de nuevo libro: Dune
+8 | 2026-11-09T17:26:49.125663100 | CREATE | admin | 9780451524935 | Registro de nuevo libro: 1984
+9 | 2026-11-09T17:27:32.305095700 | CREATE | admin | 9780062316097 | Registro de nuevo libro: Sapiens
+10 | 2026-11-09T17:28:17.749643800 | CREATE | admin | 9780141439518 | Registro de nuevo libro: Pride and Prejudice
+11 | 2026-11-09T17:29:01.307140100 | CREATE | admin | 9780553380163 | Registro de nuevo libro: A Brief History of Time
+12 | 2026-11-09T17:48:24.106371600 | CREATE | admin | 9780743477123 | Registro de nuevo libro: Romeo and Juliet

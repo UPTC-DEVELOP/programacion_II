@@ -3,6 +3,7 @@ package co.edu.uptc.negocio;
 import java.util.ArrayList;
 import java.util.List;
 import co.edu.uptc.excepciones.ClienteNoEncontradoException;
+import co.edu.uptc.excepciones.PersistenciaException;
 import co.edu.uptc.excepciones.ReglaNegocioException;
 import co.edu.uptc.interfaces.ICarritoRepository;
 import co.edu.uptc.interfaces.IClienteRepositorio;
@@ -76,7 +77,16 @@ public class GestionCompra implements IGestionCompra {
         int idVenta = compraRepository.finalizarCompra(
                 new SolicitudCompraDto(idCliente, subtotal, impuestos, descuento, total,
                         pagoValidado.metodo(), items));
-        if (carritoRepositoryJson != null) carritoRepositoryJson.eliminarCarrito(idCliente);
+        if (carritoRepositoryJson != null) {
+            try {
+                carritoRepositoryJson.eliminarCarrito(idCliente);
+            } catch (PersistenciaException e) {
+                // La venta ya fue confirmada en JDBC; un fallo del espejo JSON
+                // no debe convertir una compra exitosa en un error para el usuario.
+                System.err.println("No se pudo eliminar el carrito JSON del cliente "
+                        + idCliente + ": " + e.getMessage());
+            }
+        }
         return compraRepository.consultarFactura(idVenta);
     }
 

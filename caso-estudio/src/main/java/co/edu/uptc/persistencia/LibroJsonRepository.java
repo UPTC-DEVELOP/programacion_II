@@ -6,6 +6,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -100,8 +103,15 @@ public class LibroJsonRepository implements ILibroRepositorio {
             if (carpeta != null) {
                 Files.createDirectories(carpeta);
             }
-            if (!Files.exists(rutaArchivo)) {
+            if (!Files.exists(rutaArchivo) || Files.size(rutaArchivo) == 0) {
                 escribir(new LibroData());
+            } else {
+                // Valida el JSON existente y lo recupera si está corrupto.
+                try {
+                    leer();
+                } catch (PersistenciaException e) {
+                    recuperarArchivoCorrupto();
+                }
             }
         } catch (IOException e) {
             throw new PersistenciaException("No se pudo inicializar el archivo de libros: "
@@ -127,7 +137,15 @@ public class LibroJsonRepository implements ILibroRepositorio {
             return;
         }
         LibroData datos = leer();
-        datos.getLibros().add(libro);
+        List<Libro> libros = datos.getLibros();
+        for (int i = 0; i < libros.size(); i++) {
+            if (libro.getIsbn() != null && libro.getIsbn().equals(libros.get(i).getIsbn())) {
+                libros.set(i, libro);
+                escribir(datos);
+                return;
+            }
+        }
+        libros.add(libro);
         datos.setUltimoId(datos.getUltimoId() + 1);
         escribir(datos);
     }
@@ -179,6 +197,29 @@ public class LibroJsonRepository implements ILibroRepositorio {
         if (eliminado) {
             escribir(datos);
         }
+    }
+
+    /**
+     * Reemplaza todo el contenido del archivo JSON con la lista indicada.
+     * Se usa para la sincronización inicial desde PostgreSQL y siempre deja
+     * un respaldo del archivo anterior antes de sobrescribirlo.
+     *
+     * @param libros Libros que deben quedar en el archivo
+     */
+    public synchronized void sincronizar(List<Libro> libros) {
+        LibroData datos = new LibroData();
+        List<Libro> copia = new ArrayList<>();
+        if (libros != null) {
+            for (Libro libro : libros) {
+                if (libro != null) {
+                    copia.add(libro);
+                }
+            }
+        }
+        datos.setLibros(copia);
+        datos.setUltimoId(copia.size());
+        respaldarArchivoActual("bak");
+        escribir(datos);
     }
 
     /**
@@ -342,8 +383,10 @@ public class LibroJsonRepository implements ILibroRepositorio {
             throw new PersistenciaException("No se pudo leer el archivo de libros: "
                     + rutaArchivo, e);
         } catch (JsonParseException e) {
-            throw new PersistenciaException("El archivo de libros contiene un JSON inválido: "
-                    + rutaArchivo, e);
+            // RF02/RF03: si el JSON está corrupto se respalda y se reconstruye
+            // vacío para no bloquear el CRUD principal en PostgreSQL.
+            recuperarArchivoCorrupto();
+            return new LibroData();
         }
     }
 
@@ -366,6 +409,36 @@ public class LibroJsonRepository implements ILibroRepositorio {
             throw new PersistenciaException("No se pudo escribir el archivo de libros: "
                     + rutaArchivo, e);
         }
+    }
+
+    /**
+     * Respalda el archivo actual con una marca de tiempo antes de
+     * sobrescribirlo o reconstruirlo.
+     *
+     * @param etiqueta Prefijo del respaldo (bak, corrupt, etc.)
+     */
+    private void respaldarArchivoActual(String etiqueta) {
+        try {
+            if (!Files.exists(rutaArchivo)) {
+                return;
+            }
+            String marca = LocalDateTime.now()
+                    .format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS"));
+            Path respaldo = rutaArchivo.resolveSibling(
+                    rutaArchivo.getFileName() + "." + etiqueta + "-" + marca);
+            Files.copy(rutaArchivo, respaldo, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new PersistenciaException("No se pudo respaldar el archivo de libros: "
+                    + rutaArchivo, e);
+        }
+    }
+
+    /**
+     * Respalda un archivo corrupto y lo reconstruye con la estructura vacía.
+     */
+    private void recuperarArchivoCorrupto() {
+        respaldarArchivoActual("corrupt");
+        escribir(new LibroData());
     }
 
     /**

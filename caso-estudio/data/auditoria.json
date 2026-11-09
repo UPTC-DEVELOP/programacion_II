@@ -23,7 +23,15 @@
       "usuario": "admin",
       "fecha": "2026-11-08T18:47:33.102074",
       "detalles": "Registro de nuevo libro: java desde 0"
+    },
+    {
+      "id": 4,
+      "accion": "CREATE",
+      "isbn": "9780743477123",
+      "usuario": "admin",
+      "fecha": "2026-11-09T17:48:24.108369300",
+      "detalles": "Registro de nuevo libro: Romeo and Juliet"
     }
   ],
-  "ultimoId": 3
+  "ultimoId": 4
 }
