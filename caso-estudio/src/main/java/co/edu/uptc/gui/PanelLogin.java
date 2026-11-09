@@ -1,9 +1,21 @@
 package co.edu.uptc.gui;
 
-import co.edu.uptc.modelo.dto.CredencialDto;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
+import co.edu.uptc.modelo.dto.CredencialDto;
+import co.edu.uptc.persistencia.SesionRecordadaRepository;
 
 /**
  * Pantalla de LOGIN de la tienda virtual.
@@ -23,6 +35,8 @@ public class PanelLogin extends JPanel {
 
     public PanelLogin(ActionListener manejadorEventos) {
         inicializarComponentes();
+        /*modificacion:Brayan Panqueva*/
+        txtCorreo.setText(SesionRecordadaRepository.obtenerCorreo());
         configurarLayout();
         registrarEventos(manejadorEventos);
     }
@@ -90,7 +104,7 @@ public class PanelLogin extends JPanel {
         add(btnRegistrarse, gbc);
 
         gbc.gridy = 6;
-        add(new JLabel("Admin: admin@libros.com / admin123"), gbc);
+        add(new JLabel("¿no tienes cuenta? puedes registrarte."), gbc);
     }
 
     /**
@@ -104,7 +118,7 @@ public class PanelLogin extends JPanel {
 
     /** Limpia los campos después de cerrar sesión. */
     public void limpiar() {
-        txtCorreo.setText("");
+        txtCorreo.setText(SesionRecordadaRepository.obtenerCorreo());
         txtContrasena.setText("");
     }
 }

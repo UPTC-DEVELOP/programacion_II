@@ -9,7 +9,10 @@ import co.edu.uptc.interfaces.ICarritoService;
 import co.edu.uptc.modelo.dto.ClienteDto;
 import co.edu.uptc.modelo.dto.CredencialDto;
 import co.edu.uptc.modelo.dto.LibroDto;
+import co.edu.uptc.modelo.dto.CompraDtos.FacturaDto;
+import java.util.function.Consumer;
 import co.edu.uptc.negocio.GestionCliente;
+import co.edu.uptc.negocio.GestionCompra;
 import co.edu.uptc.negocio.GestionDashboard;
 import co.edu.uptc.negocio.GestionLibro;
 import co.edu.uptc.negocio.GestionReporte;
@@ -52,20 +55,24 @@ public class VentanaPrincipal extends JFrame {
      */
     public VentanaPrincipal(GestionSeguridad gestionSeguridad, GestionCliente gestionCliente,
                             GestionLibro gestionLibro, GestionDashboard gestionDashboard,
-                            ICarritoService carritoService, GestionReporte gestionReporte) {
+                            ICarritoService carritoService, GestionReporte gestionReporte,
+                            GestionCompra gestionCompra,
+                            Consumer<FacturaDto> guardarFactura) {
         inicializarComponentes(gestionSeguridad, gestionCliente, gestionLibro, gestionDashboard,
-                carritoService, gestionReporte);
+                carritoService, gestionReporte, gestionCompra, guardarFactura);
         configurarVentana();
     }
 
     private void inicializarComponentes(GestionSeguridad seguridad, GestionCliente gc, GestionLibro gl,
-                                        GestionDashboard gd, ICarritoService cs, GestionReporte gr) {
+                                        GestionDashboard gd, ICarritoService cs, GestionReporte gr,
+                                        GestionCompra gcompra, Consumer<FacturaDto> guardarFactura) {
         cardLayout = new CardLayout();
         panelContenedor = new JPanel(cardLayout);
 
         // El controlador solo necesita la ventana: los paneles se crean después
         // y se leen a través de los getters en el momento de cada evento.
-        Evento evento = new Evento(this, seguridad, gc, gl, gd, cs, gr);
+        /*modificacion:Brayan Panqueva*/
+        Evento evento = new Evento(this, seguridad, gc, gl, gd, cs, gr, gcompra, guardarFactura);
 
         panelLogin = new PanelLogin(evento);
         panelDashboard = new PanelDashboard(evento);

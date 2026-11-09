@@ -123,12 +123,20 @@ FOR DELETE USING (app_es_admin());
 CREATE POLICY leer_reviews ON product_reviews
 FOR SELECT USING (app_email() IS NOT NULL AND app_email() <> '');
 
+--*/*modificacion:Brayan Panqueva: Se añade la política para la inserción de reseñas por parte del propietario*/*--
 CREATE POLICY reviews_insert_owner ON product_reviews
 FOR INSERT WITH CHECK (
     EXISTS (
         SELECT 1 FROM clients c
          WHERE c.id_cliente = product_reviews.id_cliente
            AND c.correo_electronico = app_email()
+    )
+    AND EXISTS (
+        SELECT 1
+          FROM buys b
+          JOIN sale_detais sd ON sd.id_venta = b.id_venta
+         WHERE b.id_cliente = product_reviews.id_cliente
+           AND sd.isbn_libro = product_reviews.isbn_libro
     )
 );
 

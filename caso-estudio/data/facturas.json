@@ -1,0 +1,23 @@
+[
+  {
+    "idVenta": 7,
+    "fecha": "2026-11-09T13:47:33.441729",
+    "clienteNombre": "Brayan Javier Panqueva Pelayo",
+    "clienteCorreo": "javierbrayan750@gmail.com",
+    "tipoCliente": "Premium",
+    "subtotal": 50000.0,
+    "impuestos": 2500.0,
+    "descuento": 5000.0,
+    "total": 47500.0,
+    "lineas": [
+      {
+        "isbn": "1234567891012",
+        "titulo": "java desde 0",
+        "cantidad": 1,
+        "precioUnitario": 50000.0,
+        "subtotal": 50000.0,
+        "porcentajeIva": 5
+      }
+    ]
+  }
+]

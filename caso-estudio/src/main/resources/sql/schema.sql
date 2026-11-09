@@ -153,6 +153,21 @@ ALTER TABLE buys
             (total_pagar IS NULL OR total_pagar >= 0)
         );
 
+-- /*modificacion:Brayan Panqueva: ALTERA LA TABLA BUYS PARA SUS DESCUENTOS*/
+ALTER TABLE buys
+    ADD COLUMN IF NOT EXISTS descuento DECIMAL(10, 2) NOT NULL DEFAULT 0;
+ALTER TABLE buys DROP CONSTRAINT IF EXISTS chk_buys_descuento_no_negativo;
+ALTER TABLE buys ADD CONSTRAINT chk_buys_descuento_no_negativo CHECK (descuento >= 0);
+
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id_log SERIAL PRIMARY KEY,
+    id_cliente INT REFERENCES clients(id_cliente),
+    id_venta INT REFERENCES buys(id_venta) ON DELETE SET NULL,
+    accion VARCHAR(40) NOT NULL,
+    detalles TEXT,
+    fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 ALTER TABLE sale_detais DROP CONSTRAINT IF EXISTS chk_sale_detais_cantidad;
 ALTER TABLE sale_detais DROP CONSTRAINT IF EXISTS chk_sale_detais_precio_no_negativo;
 ALTER TABLE sale_detais DROP CONSTRAINT IF EXISTS chk_sale_detais_subtotal_no_negativo;

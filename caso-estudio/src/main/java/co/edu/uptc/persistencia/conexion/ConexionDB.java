@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Locale;
+import java.util.Locale;
 import java.util.Properties;
 /*
  * 
@@ -11,9 +13,9 @@ import java.util.Properties;
  * GESTIONA CONEXION CON postgreSQL, CARGA CREDENCIALES DESDE db.properties, Y ESTABLECE VARIABLES DE SESIÓN PARA RLS.
  * @author: Equipo de desarrollo grupo 7 
  * */
-public class ConexionDB {
-    private static Connection conexion = null;
+public final class ConexionDB {
     private static final Properties props = new Properties();
+    private static final ThreadLocal<String> USUARIO_SESION = new ThreadLocal<>();
 
     // Bloque estático para cargar las credenciales desde db.properties una sola vez al iniciar la clase
     static {
@@ -30,33 +32,25 @@ public class ConexionDB {
     }
 
     private ConexionDB() {
-        // Constructor privado para prevenir instanciación (Patrón Singleton)
+        // Constructor privado para prevenir instanciación.
     }
 
-    /**
-     * Obtiene la instancia única de la conexión a PostgreSQL.
-     * Si la conexión está cerrada o es nula, establece una nueva usando db.properties.
-     */
-    public static synchronized Connection obtenerConexion() throws SQLException {
-        if (conexion == null || conexion.isClosed()) {
-            String url = props.getProperty("db.url");
-            String user = props.getProperty("db.user");
-            String pass = props.getProperty("db.password");
-
-            // Validaciones defensivas para el equipo de desarrollo local
-            if (url == null || user == null) {
-                throw new SQLException("Faltan propiedades de conexión o no se puede acceder a ellas.");
-            }
-
-            try {
-                // Carga explícita del driver de PostgreSQL 
-                Class.forName("org.postgresql.Driver");
-                conexion = DriverManager.getConnection(url, user, pass);
-            } catch (ClassNotFoundException e) {
-                throw new SQLException("error de comunicacion con postgreSQL, intentelo de nuevo.", e);
-            }
+    /*modificacion:Brayan Panqueva*/
+    public static Connection obtenerConexion() throws SQLException {
+        String url = props.getProperty("db.url");
+        String user = props.getProperty("db.user");
+        String pass = props.getProperty("db.password");
+        if (url == null || url.isBlank() || user == null || user.isBlank()) {
+            throw new SQLException("Faltan propiedades de conexión PostgreSQL.");
         }
-        return conexion;
+        try {
+            Class.forName("org.postgresql.Driver");
+            Connection nueva = DriverManager.getConnection(url.trim(), user.trim(), pass);
+            configurarSesion(nueva, USUARIO_SESION.get());
+            return nueva;
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("No se encontró el driver de PostgreSQL.", e);
+        }
     }
 
     /**
@@ -64,28 +58,27 @@ public class ConexionDB {
      * @param email Correo electrónico del usuario autenticado en la aplicación Swing.
      */
     public static void establecerUsuarioSesion(String email) {
-        String query = "SELECT set_config('app.user_email', ?, false)";
-        try {
-            Connection conn = obtenerConexion();
-            try (var pstmt = conn.prepareStatement(query)) {
-                pstmt.setString(1, email != null ? email.toLowerCase().trim() : "");
-                pstmt.execute();
-            }
-        } catch (SQLException e) {
-            System.err.println("Error al configurar la variable de sesión para RLS: " + e.getMessage());
+        USUARIO_SESION.set(email == null ? "" : email.trim().toLowerCase(Locale.ROOT));
+    }
+
+    public static String obtenerUsuarioSesion() { return USUARIO_SESION.get(); }
+
+    public static void configurarSesion(Connection conexion, String email) throws SQLException {
+        if (conexion == null) return;
+        try (var pstmt = conexion.prepareStatement("SELECT set_config('app.user_email', ?, false)")) {
+            pstmt.setString(1, email == null ? "" : email.trim().toLowerCase(Locale.ROOT));
+            pstmt.execute();
+        }
+    }
+
+    public static void cerrarConexion(Connection conexion) {
+        if (conexion != null) {
+            try { conexion.close(); } catch (SQLException ignored) { }
         }
     }
 
     /**
      * Cierra la conexión activa de manera segura al apagar la aplicación.
      */
-    public static void cerrarConexion() {
-        try {
-            if (conexion != null && !conexion.isClosed()) {
-                conexion.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+    public static void cerrarConexion() { USUARIO_SESION.remove(); }
 }

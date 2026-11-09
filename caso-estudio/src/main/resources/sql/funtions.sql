@@ -80,4 +80,47 @@ BEGIN
 END;
 $$;
 
+-- /*modificacion:Brayan Panqueva*/
+-- FUNCION QUE DESCUENTA ES STOCK POR VENTA...
+CREATE OR REPLACE FUNCTION descontar_stock_por_venta()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+DECLARE
+    v_stock INT;
+BEGIN
+    SELECT cantidad_inventario INTO v_stock
+      FROM books
+     WHERE isbn = NEW.isbn_libro
+     FOR UPDATE;
+
+    IF v_stock IS NULL THEN
+        RAISE EXCEPTION 'El libro % no existe en inventario', NEW.isbn_libro;
+    END IF;
+    IF NEW.cantidad <= 0 OR NEW.cantidad > v_stock THEN
+        RAISE EXCEPTION 'Stock insuficiente para %: solicitado %, disponible %',
+            NEW.isbn_libro, NEW.cantidad, v_stock;
+    END IF;
+
+    UPDATE books
+       SET cantidad_inventario = cantidad_inventario - NEW.cantidad
+     WHERE isbn = NEW.isbn_libro;
+    RETURN NEW;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION registrar_auditoria_compra()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    INSERT INTO audit_logs(id_cliente, id_venta, accion, detalles)
+    VALUES (NEW.id_cliente, NEW.id_venta, 'COMPRA',
+            'Compra registrada por ' || COALESCE(app_email(), 'usuario no identificado'));
+    RETURN NEW;
+END;
+$$;
+
 COMMIT;
