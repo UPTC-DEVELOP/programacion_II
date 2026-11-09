@@ -6,13 +6,13 @@ import co.edu.uptc.interfaces.IVentaRepository;
 /**
  * Fábrica de repositorios de libros.
  *
- * <p>Permite cambiar entre la implementación en memoria (LocalLibro) y la
+ * Permite cambiar entre la implementación en memoria (LocalLibro) y la
  * implementación JSON (LibroJsonRepository) sin modificar la capa de negocio ni
- * la de presentación. El punto de composición (AppLibros) elige el tipo.</p>
+ * la de presentación. El punto de composición (AppLibros) elige el tipo.
  *
- * <p>Aplica: OCP (Open/Closed) y DIP (Dependency Inversion): las capas altas
+ * Aplica: OCP (Open/Closed) y DIP (Dependency Inversion): las capas altas
  * dependen de ILibroRepositorio, y esta fábrica es el único lugar que conoce
- * las clases concretas.</p>
+ * las clases concretas.
  */
 public final class LibroRepositoryFactory {
 

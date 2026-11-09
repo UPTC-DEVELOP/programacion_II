@@ -14,15 +14,15 @@ import co.edu.uptc.negocio.GestionSeguridad;
 import co.edu.uptc.negocio.ValidadorDatos;
 import co.edu.uptc.persistencia.AuditoriaRepository;
 import co.edu.uptc.persistencia.CarritoJsonRepository;
-import co.edu.uptc.persistencia.LibroRepositoryFactory;
 import co.edu.uptc.persistencia.ClienteJsonRepository;
+import co.edu.uptc.persistencia.LibroRepositoryFactory;
 import co.edu.uptc.persistencia.LocalVenta;
 
 /**
  * Punto de entrada de la Tienda Virtual de Libros.
  * Arquitectura multicapa con inyección de dependencias:
  *
- * <pre>
+ * 
  *   Persistencia  -> ClienteJsonRepository (data/clientes.json) /
  *                    LibroJsonRepository (data/libros.json) /
  *                    LocalVenta / CarritoJsonRepository (data/carritos.json) /
@@ -32,12 +32,12 @@ import co.edu.uptc.persistencia.LocalVenta;
  *                    GestionDashboard / CarritoServiceImpl (ICarritoService) /
  *                    GestionReporte
  *   Presentación  -> VentanaPrincipal (Swing)
- * </pre>
+ * 
  *
- * <p>La persistencia de libros se selecciona a través de
+ * La persistencia de libros se selecciona a través de
  * {@link LibroRepositoryFactory}: con Tipo.JSON se usa data/libros.json y con
  * Tipo.MEMORIA se conserva el comportamiento histórico de LocalLibro. La capa
- * de negocio sigue dependiendo únicamente de ILibroRepositorio (DIP).</p>
+ * de negocio sigue dependiendo únicamente de ILibroRepositorio (DIP).
  */
 public class AppLibros {
     public static void main(String[] args) {

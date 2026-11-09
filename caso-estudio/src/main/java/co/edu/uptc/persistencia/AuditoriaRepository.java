@@ -23,16 +23,16 @@ import co.edu.uptc.modelo.enums.AccionAuditoria;
 /**
  * Implementación de la auditoría con persistencia en JSON (RF17/RF18).
  *
- * <p>Esta clase gestiona el archivo data/auditoria.json: lo crea si no existe,
+ * Esta clase gestiona el archivo data/auditoria.json: lo crea si no existe,
  * agrega un registro por cada operación CRUD y permite consultar el historial.
  * No contiene reglas de negocio; solo persiste lo que la capa de negocio le
- * indica (SRP).</p>
+ * indica (SRP).
  *
- * <p>Es thread-safe: todos los métodos públicos que acceden al archivo están
- * sincronizados para evitar corrupción por escrituras concurrentes.</p>
+ * Es thread-safe: todos los métodos públicos que acceden al archivo están
+ * sincronizados para evitar corrupción por escrituras concurrentes.
  *
- * <p>Aplica: SRP (persistencia de auditoría), DIP (implementa IAuditoria) y
- * OCP (puede reemplazarse por otra implementación sin cambiar el servicio).</p>
+ * Aplica: SRP (persistencia de auditoría), DIP (implementa IAuditoria) y
+ * OCP (puede reemplazarse por otra implementación sin cambiar el servicio).
  */
 public class AuditoriaRepository implements IAuditoria {
 

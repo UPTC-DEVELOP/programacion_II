@@ -25,25 +25,25 @@ import co.edu.uptc.modelo.dto.FiltroLibroDto;
 /**
  * Implementación del repositorio de libros con persistencia en JSON.
  *
- * <p>Gestiona el archivo data/libros.json: lo crea con una estructura vacía si
+ * Gestiona el archivo data/libros.json: lo crea con una estructura vacía si
  * no existe, serializa/deserializa con Gson y aplica los filtros de RF04. No
  * contiene validaciones de negocio; esas viven en GestionLibro y ValidadorDatos
- * (SRP).</p>
+ * (SRP).
  *
- * <p>La clase cumple LSP: puede sustituir a LocalLibro en cualquier punto donde
+ * La clase cumple LSP: puede sustituir a LocalLibro en cualquier punto donde
  * se espere un ILibroRepositorio. Cumple DIP: la capa de negocio solo conoce la
- * interfaz.</p>
+ * interfaz.
  *
- * <p>Es thread-safe: los métodos que leen o escriben el archivo están
- * sincronizados para evitar condiciones de carrera entre hilos.</p>
+ * Es thread-safe: los métodos que leen o escriben el archivo están
+ * sincronizados para evitar condiciones de carrera entre hilos.
  *
- * <p>Estructura del archivo:</p>
- * <pre>
+ * Estructura del archivo:
+ * 
  * {
  *   "libros": [ ... ],
  *   "ultimoId": 1
  * }
- * </pre>
+ * 
  *
  * @version 1.0
  */

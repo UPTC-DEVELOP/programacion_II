@@ -28,17 +28,17 @@ import co.edu.uptc.negocio.CalculadoraDescuento;
 /**
  * Implementación del repositorio de carritos con persistencia en JSON.
  *
- * <p>Administra el archivo data/carritos.json, lo crea con la estructura vacía
+ *Administra el archivo data/carritos.json, lo crea con la estructura vacía
  * cuando no existe y conserva un carrito por cliente. La clase cumple el
  * contrato ICarritoRepository, por lo que puede sustituir a
- * CarritoRepositoryEnMemoria sin modificar la capa de negocio (LSP y DIP).</p>
+ * CarritoRepositoryEnMemoria sin modificar la capa de negocio (LSP y DIP).
  *
- * <p>Los métodos públicos están sincronizados para evitar escrituras
+ * Los métodos públicos están sincronizados para evitar escrituras
  * concurrentes sobre el mismo archivo. Cada operación realiza una lectura
- * completa, aplica el cambio y reescribe el archivo de forma inmediata.</p>
+ * completa, aplica el cambio y reescribe el archivo de forma inmediata.
  *
- * <p>Estructura del archivo:</p>
- * <pre>
+ * Estructura del archivo:
+ * 
  * {
  *   "carritos": [
  *     {
@@ -53,7 +53,7 @@ import co.edu.uptc.negocio.CalculadoraDescuento;
  *     }
  *   ]
  * }
- * </pre>
+ * 
  */
 public class CarritoJsonRepository implements ICarritoRepository {
 

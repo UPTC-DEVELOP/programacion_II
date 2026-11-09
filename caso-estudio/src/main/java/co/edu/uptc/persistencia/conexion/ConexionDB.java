@@ -9,7 +9,7 @@ import java.util.Properties;
  * 
  * 
  * GESTIONA CONEXION CON postgreSQL, CARGA CREDENCIALES DESDE db.properties, Y ESTABLECE VARIABLES DE SESIÓN PARA RLS.
- * @author: Equipo de desarrollo grupo 7 UPTC
+ * @author: Equipo de desarrollo grupo 7 
  * */
 public class ConexionDB {
     private static Connection conexion = null;

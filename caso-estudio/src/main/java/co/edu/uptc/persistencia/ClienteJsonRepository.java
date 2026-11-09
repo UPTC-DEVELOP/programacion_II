@@ -23,25 +23,25 @@ import co.edu.uptc.modelo.mapper.ClientePersistenciaMapper;
 /**
  * Implementación del repositorio de clientes con persistencia en JSON.
  *
-  * <p>Gestiona el archivo data/clientes.json: si no existe lo crea vacio,
+  *Gestiona el archivo data/clientes.json: si no existe lo crea vacio,
  * y en cada operación lee el archivo, aplica el cambio y lo vuelve a
  * escribir. No contiene reglas de negocio (correo único, formato,
- * cifrado…); esas viven en GestionCliente y ValidadorDatos (SRP).</p>
+ * cifrado…); esas viven en GestionCliente y ValidadorDatos (SRP).
  *
- *  * <p>Cumple LSP y DIP: cualquier clase que espere un IClienteRepositorio
- * puede usarla sin cambiar la capa de negocio ni la GUI</p>
+ *  *Cumple LSP y DIP: cualquier clase que espere un IClienteRepositorio
+ * puede usarla sin cambiar la capa de negocio ni la GUI
  *
- * <p>El identificador se asigna de forma secuencial con el campo ultimoId,
+ * El identificador se asigna de forma secuencial con el campo ultimoId,
  * que se guarda en el archivo para que los ids no se repitan después de
- * reiniciar la aplicación.</p>
+ * reiniciar la aplicación.
  *
- * <p>Estructura del archivo:</p>
- * <pre>
+ * Estructura del archivo:
+ * 
  * {
  *   "clientes": [ { "idCliente": 1, "correoElectronico": "...", "contrasenia": "&lt;hash&gt;", ... } ],
  *   "ultimoId": 3
  * }
- * </pre>
+ *
  */
 public class ClienteJsonRepository implements IClienteRepositorio {
 
