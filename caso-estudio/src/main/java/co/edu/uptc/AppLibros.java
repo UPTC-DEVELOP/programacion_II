@@ -17,15 +17,11 @@ import co.edu.uptc.negocio.ValidadorDatos;
 import co.edu.uptc.persistencia.AuditoriaTxtRepository;
 import co.edu.uptc.persistencia.CarritoJdbcRepository;
 import co.edu.uptc.persistencia.CarritoJsonRepository;
-
-import co.edu.uptc.persistencia.ClienteJsonRepository;
-import co.edu.uptc.persistencia.LibroRepositoryFactory;
-import co.edu.uptc.persistencia.LocalVenta;
-
 import co.edu.uptc.persistencia.ClienteJdbcRepository;
 import co.edu.uptc.persistencia.ClienteJsonRepository;
 import co.edu.uptc.persistencia.FacturaJsonRepository;
 import co.edu.uptc.persistencia.LibroJdbcRepository;
+import co.edu.uptc.persistencia.LibroRepositoryFactory;
 import co.edu.uptc.persistencia.VentaJdbcRepository;
 
 
