@@ -1,5 +1,6 @@
 {
   "carritos": [
+<<<<<<< HEAD
     {
       "idCarrito": 7,
       "idCliente": 6,
@@ -51,5 +52,8 @@
       "descuentoAplicado": 78600.0,
       "totalFinal": 764480.0
     }
+=======
+
+>>>>>>> 190c38b (feat: limpieza de carritos json)
   ]
 }
