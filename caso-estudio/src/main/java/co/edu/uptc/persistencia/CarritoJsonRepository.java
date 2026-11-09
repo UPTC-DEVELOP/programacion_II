@@ -7,6 +7,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,6 +102,9 @@ public class CarritoJsonRepository implements ICarritoRepository {
             }
             if (!Files.exists(rutaArchivo) || Files.size(rutaArchivo) == 0) {
                 escribir(new ArrayList<>());
+            } else {
+                // Valida la integridad del archivo existente al arrancar.
+                leer();
             }
         } catch (IOException e) {
             throw new PersistenciaException(
@@ -199,12 +205,14 @@ public class CarritoJsonRepository implements ICarritoRepository {
 
             JsonElement raiz = JsonParser.parseString(contenido);
             if (!raiz.isJsonObject()) {
+                recuperarArchivoCorrupto();
                 return new ArrayList<>();
             }
 
             JsonObject objeto = raiz.getAsJsonObject();
             JsonElement arreglo = objeto.get(CLAVE_CARRITOS);
             if (arreglo == null || !arreglo.isJsonArray()) {
+                recuperarArchivoCorrupto();
                 return new ArrayList<>();
             }
 
@@ -214,8 +222,34 @@ public class CarritoJsonRepository implements ICarritoRepository {
             throw new PersistenciaException(
                     "No se pudo leer el archivo de carritos: " + rutaArchivo, e);
         } catch (JsonParseException e) {
+            // RF17: valida la sintaxis del JSON. Si está corrupto se respalda y
+            // se reconstruye vacío para no bloquear el resto de la aplicación.
+            recuperarArchivoCorrupto();
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Respalda el archivo JSON corrupto y lo reconstruye con la estructura
+     * vacía válida. Se usa cuando la lectura detecta sintaxis inválida.
+     */
+    private void recuperarArchivoCorrupto() {
+        try {
+            Path carpeta = rutaArchivo.toAbsolutePath().getParent();
+            if (carpeta != null) {
+                Files.createDirectories(carpeta);
+            }
+            if (Files.exists(rutaArchivo)) {
+                String marca = LocalDateTime.now()
+                        .format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS"));
+                Path respaldo = rutaArchivo.resolveSibling(
+                        rutaArchivo.getFileName() + ".corrupt-" + marca);
+                Files.copy(rutaArchivo, respaldo, StandardCopyOption.REPLACE_EXISTING);
+            }
+            escribir(new ArrayList<>());
+        } catch (IOException e) {
             throw new PersistenciaException(
-                    "El archivo de carritos contiene un JSON inválido: " + rutaArchivo, e);
+                    "No se pudo recuperar el archivo de carritos corrupto: " + rutaArchivo, e);
         }
     }
 

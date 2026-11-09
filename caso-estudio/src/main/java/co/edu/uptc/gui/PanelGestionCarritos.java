@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,7 @@ public class PanelGestionCarritos extends JPanel {
     // Comandos de acción
     public static final String CMD_ELIMINAR_CARRITO = "ADMIN_ELIMINAR_CARRITO";
     public static final String CMD_ACTUALIZAR = "ADMIN_ACTUALIZAR_CARRITOS";
+    public static final String CMD_SELECCIONAR_CARRITO = "ADMIN_SELECCIONAR_CARRITO";
 
     // Tabla resumen de carritos
     private JTable tablaCarritos;
@@ -89,8 +91,9 @@ public class PanelGestionCarritos extends JPanel {
         tablaCarritos.setRowHeight(26);
         // Al seleccionar una fila se carga el detalle (evento de selección de tabla)
         tablaCarritos.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                cargarDetalleSeleccionado();
+            if (!e.getValueIsAdjusting() && tablaCarritos.getSelectedRow() != -1) {
+                manejadorEventos.actionPerformed(new ActionEvent(
+                        this, ActionEvent.ACTION_PERFORMED, CMD_SELECCIONAR_CARRITO));
             }
         });
         panelNorte.add(new JScrollPane(tablaCarritos), BorderLayout.CENTER);
@@ -158,13 +161,6 @@ public class PanelGestionCarritos extends JPanel {
             return null;
         }
         return carritosMostrados.get(fila).getIdCliente();
-    }
-
-    /** Carga el detalle de ítems del carrito seleccionado (llamado por el listener de selección). */
-    private void cargarDetalleSeleccionado() {
-        // El detalle se llena desde Evento vía actualizarDetalle(...); aquí solo se limpia
-        // al cambiar de selección para evitar mostrar datos obsoletos.
-        modeloDetalle.setRowCount(0);
     }
 
     /** Actualiza la tabla de detalle con los ítems de UN carrito específico. */

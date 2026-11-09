@@ -89,7 +89,25 @@
       "fechaRegistro": "2026-11-09T16:40:44.362",
       "intentosFallidos": 0,
       "comprasRealizadas": 0
+    },
+    {
+      "idCliente": 7,
+      "primerNombre": "oscar",
+      "otrosNombres": "",
+      "primerApellido": "chicue",
+      "otrosApellidos": "",
+      "tipoIdentificacion": "CC",
+      "identificacion": "1025888442",
+      "correoElectronico": "admin@uptc.edu.co",
+      "celular": "3111112233",
+      "direccion": "calle 45 sur",
+      "tipoCliente": "REGULAR",
+      "rol": "ADMIN",
+      "contrasenia": "0a5bc3e342432f1bad92ffd51b785343ec72906cdba6a26131060b008e786656",
+      "fechaRegistro": "2026-11-09T17:20:00.549",
+      "intentosFallidos": 0,
+      "comprasRealizadas": 0
     }
   ],
-  "ultimoId": 6
+  "ultimoId": 7
 }

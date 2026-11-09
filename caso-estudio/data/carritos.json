@@ -43,7 +43,8 @@
       "totalImpuestos": 89717.7,
       "descuentoAplicado": 0.0,
       "totalFinal": 1506071.7
-
+    },
+    {
       "idCarrito": 8,
       "idCliente": 1,
       "tipoCliente": "PREMIUM",
@@ -61,7 +62,6 @@
       "totalImpuestos": 2500.0,
       "descuentoAplicado": 5000.0,
       "totalFinal": 47500.0
-
     }
   ]
 }

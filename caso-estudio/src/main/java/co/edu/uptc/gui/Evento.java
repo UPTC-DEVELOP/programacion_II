@@ -216,6 +216,9 @@ public class Evento implements ActionListener {
             case CMD_ADMIN_ACTUALIZAR_CARRITOS:
                 refrescarGestionCarritos();
                 break;
+            case PanelGestionCarritos.CMD_SELECCIONAR_CARRITO:
+                cargarDetalleCarritoAdmin();
+                break;
 
             // ---------------- Navegación entre tarjetas ----------------
             case VentanaPrincipal.PANEL_ADMIN:
@@ -734,20 +737,22 @@ public class Evento implements ActionListener {
         }
 
         try {
-            // Se usa el repositorio de carritos a través del servicio; aquí se
-            // elimina directamente vía la dependencia inyectada en GestionReporte
-            // no es posible, por eso se usa el servicio de carrito con el id.
-            // En una ampliación futura se agregaria un metodo eliminarCarrito
-            // en ICarritoService; por ahora se simula con eliminarItem por cada item.
-            List<ItemCarritoDto> items = carritoService.obtenerItems(idCliente);
-            for (ItemCarritoDto item : items) {
-                carritoService.eliminarItem(idCliente, item.getIsbn());
-            }
+            carritoService.eliminarCarrito(idCliente);
             mostrarInformacion("Carrito eliminado exitosamente.");
             refrescarGestionCarritos();
         } catch (Exception ex) {
             mostrarError("Error inesperado al eliminar el carrito: " + ex.getMessage());
         }
+    }
+
+    /** Carga en la tabla de detalle los ítems del carrito seleccionado por el admin. */
+    private void cargarDetalleCarritoAdmin() {
+        PanelGestionCarritos panel =
+                ventanaPrincipal.getPanelDashboard().getPanelGestionCarritos();
+        Integer idCliente = panel.getClienteSeleccionado();
+        panel.actualizarDetalle(idCliente == null
+                ? null
+                : carritoService.obtenerItems(idCliente));
     }
 
     // =========================== REFRESCOS ===========================

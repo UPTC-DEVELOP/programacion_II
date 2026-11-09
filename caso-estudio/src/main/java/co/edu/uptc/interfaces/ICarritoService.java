@@ -64,6 +64,12 @@ public interface ICarritoService {
     void eliminarItem(int idCliente, String isbn) throws ReglaNegocioException;
 
     /**
+     * Elimina por completo el carrito del cliente, incluidas todas sus líneas.
+     * Lo usa el administrador desde la vista de gestión de carritos.
+     */
+    void eliminarCarrito(int idCliente) throws ReglaNegocioException;
+
+    /**
      * Devuelve las líneas del carrito (mapeadas a DTOs, con título del libro)
      * para que la GUI las muestre. Lista vacía si el cliente no tiene carrito.
      */

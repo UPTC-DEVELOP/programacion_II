@@ -194,6 +194,19 @@ public class CarritoServiceImpl implements ICarritoService {
         // 'item' solo se usó para validar que existía antes de borrar.
     }
 
+    /**
+     * Elimina el carrito completo del cliente. Se propaga a las dos
+     * implementaciones de persistencia para mantener sincronizados JDBC y JSON.
+     */
+    @Override
+    public void eliminarCarrito(int idCliente) throws ReglaNegocioException {
+        validarClienteExistente(idCliente);
+        carritoRepository.eliminarCarrito(idCliente);
+        if (carritoRepositoryJson != null) {
+            carritoRepositoryJson.eliminarCarrito(idCliente);
+        }
+    }
+
     // ------------------------- RF13: CALCULAR TOTALES -------------------------
 
     @Override

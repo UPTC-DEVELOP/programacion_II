@@ -106,7 +106,7 @@ public class AppLibros {
         // ICarritoRepository (carritos activos), IGestionLibro (títulos/precios)
         // e IClienteRepositorio (nombres de clientes).
         GestionReporte gestionReporte = new GestionReporte(
-                repositorioCarritoJson, gestionLibro, repositorioCliente);
+                repositorioCarrito, gestionLibro, repositorioCliente);
         /*modificacion:Brayan Panqueva*/
         // Servicio de gestión de compras. Inyecta 3 abstracciones:
         GestionCompra gestionCompra = new GestionCompra(

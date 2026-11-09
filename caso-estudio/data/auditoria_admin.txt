@@ -1,3 +1,4 @@
 1 | 2026-11-09T16:05:19.981243 | CREATE | admin | 1023568954 | Registro de cliente: admin.prueba@uptc.edu.co
 2 | 2026-11-09T16:07:59.999916100 | CREATE | admin | 9780132350884 | Registro de nuevo libro: clean code
 3 | 2026-11-09T16:40:44.447685600 | CREATE | admin | 1472589635 | Registro de cliente: oscar@gmail.com
+4 | 2026-11-09T17:20:00.622721 | CREATE | admin | 1025888442 | Registro de cliente: admin@uptc.edu.co
