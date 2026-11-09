@@ -10,6 +10,7 @@ import co.edu.uptc.gui.VentanaPrincipal;
 import co.edu.uptc.interfaces.IGestionCliente;
 import co.edu.uptc.interfaces.ILibreria;
 import co.edu.uptc.repository.LibroJsonRepositorio;
+import co.edu.uptc.repository.LibroMySqlRepository;
 import co.edu.uptc.repository.LocalLibro;
 import co.edu.uptc.service.Libreria;
 
@@ -18,8 +19,8 @@ public class Inicio {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-        	ILibreria libreria = new Libreria(new LibroJsonRepositorio("data/libros.json"));
-            IGestionCliente gestionCliente = ClienteConfig.getInstancia().getGestionCliente();
+        	ILibreria libreria = new Libreria(new LibroMySqlRepository());
+        	IGestionCliente gestionCliente = ClienteConfig.getInstancia().getGestionCliente();
 
             Evento evento = new Evento();
             VentanaPrincipal ventana = new VentanaPrincipal(evento);

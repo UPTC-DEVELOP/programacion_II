@@ -22,5 +22,17 @@
     "precioVenta": 65000.0,
     "cantidadDisponible": 7,
     "formato": "fisico"
+  },
+  {
+    "isbn": "SB-10-30A",
+    "tituloLibro": "PERSONAS DESCONOCIDAS",
+    "autor": "JHON",
+    "fechaPublicacion": 2015,
+    "categoria": "Novela",
+    "editorial": "IBANEZ",
+    "paginas": 540,
+    "precioVenta": 55000.0,
+    "cantidadDisponible": 20,
+    "formato": "fisico"
   }
 ]
