@@ -7,7 +7,23 @@
       "usuario": "admin",
       "fecha": "2026-11-06T16:24:53.477029",
       "detalles": "Registro de nuevo libro: Titulo prueba"
+    },
+    {
+      "id": 2,
+      "accion": "CREATE",
+      "isbn": "1234567891011",
+      "usuario": "admin",
+      "fecha": "2026-11-08T14:45:22.880045",
+      "detalles": "Registro de nuevo libro: aprende java desde 0"
+    },
+    {
+      "id": 3,
+      "accion": "CREATE",
+      "isbn": "1234567891012",
+      "usuario": "admin",
+      "fecha": "2026-11-08T18:47:33.102074",
+      "detalles": "Registro de nuevo libro: java desde 0"
     }
   ],
-  "ultimoId": 1
+  "ultimoId": 3
 }

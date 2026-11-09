@@ -4,6 +4,7 @@ import co.edu.uptc.interfaces.IClienteRepositorio;
 import co.edu.uptc.interfaces.IGestionSeguridad;
 import co.edu.uptc.modelo.Cliente;
 import co.edu.uptc.modelo.dto.CredencialDto;
+import co.edu.uptc.persistencia.conexion.ConexionDB;
 
 /**
  * Clase que gestiona la autenticación y seguridad del sistema.
@@ -28,17 +29,32 @@ public class GestionSeguridad implements IGestionSeguridad {
         if (credencial == null) {
             return false;
         }
-        Cliente cliente = repositorioClientes.buscarPorCorreo(credencial.getCorreoElectronico());
+        /*modificacion:Brayan Panqueva*/
+        String correoOriginal = credencial.getCorreoElectronico().trim().toLowerCase();
+        String correo = normalizarCorreoAdministrativo(correoOriginal);
+        ConexionDB.establecerUsuarioSesion(correoOriginal);
+        Cliente cliente = repositorioClientes.buscarPorCorreo(correoOriginal);
+        if (cliente == null) {
+            ConexionDB.establecerUsuarioSesion(correo);
+            cliente = repositorioClientes.buscarPorCorreo(correo);
+        }
 
         // se compara el hash de la contraseña ingresada con el hash almacenado
         String hashIngresado = CifradorContrasena.hash(credencial.getContrasena());
         if (cliente != null && cliente.validarContrasena(hashIngresado)) {
+            if (!correoOriginal.equals(correo) && correoOriginal.equals(cliente.getCorreoElectronico())) {
+                cliente.setCorreoElectronico(correo);
+                repositorioClientes.actualizar(cliente);
+                ConexionDB.establecerUsuarioSesion(correo);
+            }
             cliente.setIntentosFallidos(0);
+            repositorioClientes.actualizar(cliente);
             this.clienteAutenticado = cliente;
             return true;
         }
         if (cliente != null) {
             cliente.setIntentosFallidos(cliente.getIntentosFallidos() + 1);
+            repositorioClientes.actualizar(cliente);
         }
         return false;
     }
@@ -46,6 +62,7 @@ public class GestionSeguridad implements IGestionSeguridad {
     @Override
     public void cerrarSesion() {
         this.clienteAutenticado = null;
+        ConexionDB.establecerUsuarioSesion("");
     }
 
     @Override
@@ -55,5 +72,10 @@ public class GestionSeguridad implements IGestionSeguridad {
 
     public Cliente getClienteAutenticado() {
         return clienteAutenticado;
+    }
+
+    private String normalizarCorreoAdministrativo(String correo) {
+        String normalizado = correo == null ? "" : correo.trim().toLowerCase();
+        return normalizado.replaceFirst("@co\\.edu\\.uptc$", "@uptc.edu.co");
     }
 }

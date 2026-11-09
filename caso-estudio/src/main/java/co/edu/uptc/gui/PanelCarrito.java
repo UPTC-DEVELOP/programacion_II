@@ -68,6 +68,8 @@ public class PanelCarrito extends JPanel {
     public static final String CMD_ELIMINAR = "CARRITO_ELIMINAR";
     public static final String CMD_VACIAR = "CARRITO_VACIAR";
     public static final String CMD_ACTUALIZAR_TOTALES = "CARRITO_ACTUALIZAR";
+    /*modificacion:Brayan Panqueva*/
+    public static final String CMD_FINALIZAR_COMPRA = "CARRITO_FINALIZAR_COMPRA";
 
     // --- Componentes de la interfaz ---
     private JTable tablaItems;
@@ -140,6 +142,7 @@ public class PanelCarrito extends JPanel {
         panelBotones.add(Box.createHorizontalStrut(20));
         panelBotones.add(boton("Vaciar carrito", CMD_VACIAR));
         panelBotones.add(boton("Actualizar totales", CMD_ACTUALIZAR_TOTALES));
+        panelBotones.add(boton("Finalizar compra", CMD_FINALIZAR_COMPRA));
         panelSur.add(panelBotones, BorderLayout.NORTH);
 
         // Panel de totales (RF13)

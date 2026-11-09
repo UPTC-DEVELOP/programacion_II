@@ -41,6 +41,7 @@ import co.edu.uptc.modelo.dto.TotalesCarritoDto;
 public class CarritoServiceImpl implements ICarritoService {
 
     private final ICarritoRepository carritoRepository;
+    private final ICarritoRepository carritoRepositoryJson;
     private final ILibroRepositorio libroRepository;
     private final IGestionCliente clienteService;
 
@@ -54,9 +55,18 @@ public class CarritoServiceImpl implements ICarritoService {
     public CarritoServiceImpl(ICarritoRepository carritoRepository,
                               ILibroRepositorio libroRepository,
                               IGestionCliente clienteService) {
+        this(carritoRepository, libroRepository, clienteService, null);
+    }
+
+    /*modificacion:Brayan Panqueva*/
+    public CarritoServiceImpl(ICarritoRepository carritoRepository,
+                              ILibroRepositorio libroRepository,
+                              IGestionCliente clienteService,
+                              ICarritoRepository carritoRepositoryJson) {
         this.carritoRepository = carritoRepository;
         this.libroRepository = libroRepository;
         this.clienteService = clienteService;
+        this.carritoRepositoryJson = carritoRepositoryJson;
     }
 
     // ----------------------------- RF10: AGREGAR -----------------------------
@@ -108,7 +118,7 @@ public class CarritoServiceImpl implements ICarritoService {
         }
 
         // 8) Persistir el carrito actualizado (upsert por idCliente).
-        carritoRepository.guardarCarrito(carrito);
+        guardarCarrito(carrito);
 
         // 9) Devolver la línea resultante mapeada a DTO para la GUI.
         return mapearItemADto(carrito.buscarItemPorIsbn(isbn), libro.getTitulo());
@@ -142,7 +152,7 @@ public class CarritoServiceImpl implements ICarritoService {
         if (item.getTitulo() == null) {
             item.setTitulo(libro.getTitulo());
         }
-        carritoRepository.guardarCarrito(carrito);
+        guardarCarrito(carrito);
         return mapearItemADto(item, libro.getTitulo());
     }
 
@@ -160,7 +170,7 @@ public class CarritoServiceImpl implements ICarritoService {
         int nuevaCantidad = Math.max(0, item.getCantidad() - cantidadAReducir);
         item.setCantidad(nuevaCantidad); // recalcula subtotal e IVA (si es 0, ambos quedan en 0.0)
 
-        carritoRepository.guardarCarrito(carrito);
+        guardarCarrito(carrito);
 
         // Si la cantidad llegó a 0, el DTO resultante lo refleja: la GUI puede
         // SUGERIR la eliminación (RF11). El servicio NO borra solo (eso es RF12
@@ -179,7 +189,7 @@ public class CarritoServiceImpl implements ICarritoService {
 
         // eliminarItemPorIsbn() de CarritoCompras remueve la línea (Fase 1).
         carrito.eliminarItemPorIsbn(isbn);
-        carritoRepository.guardarCarrito(carrito);
+        guardarCarrito(carrito);
         // La CONFIRMACIÓN previa a este borrado es responsabilidad de la GUI (RF12).
         // 'item' solo se usó para validar que existía antes de borrar.
     }
@@ -291,6 +301,14 @@ public class CarritoServiceImpl implements ICarritoService {
     private String tituloDeLibro(String isbn) {
         Libro libro = libroRepository.consultarPorIsbn(isbn);
         return (libro != null) ? libro.getTitulo() : "";
+    }
+
+    /*modificacion:Brayan Panqueva*/
+    private void guardarCarrito(CarritoCompras carrito) {
+        carritoRepository.guardarCarrito(carrito);
+        if (carritoRepositoryJson != null) {
+            carritoRepositoryJson.guardarCarrito(carrito);
+        }
     }
 
     /**

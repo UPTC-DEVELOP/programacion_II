@@ -3,6 +3,7 @@ package co.edu.uptc.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.swing.JOptionPane;
 
@@ -12,10 +13,14 @@ import co.edu.uptc.modelo.dto.CredencialDto;
 import co.edu.uptc.modelo.dto.FiltroLibroDto;
 import co.edu.uptc.modelo.dto.IngresoClienteDto;
 import co.edu.uptc.modelo.dto.ItemCarritoDto;
+import co.edu.uptc.modelo.dto.CompraDtos.FacturaDto;
+import co.edu.uptc.modelo.dto.CompraDtos.PagoDto;
 import co.edu.uptc.modelo.dto.LibroDto;
 import co.edu.uptc.modelo.enums.Rol;
 import co.edu.uptc.modelo.mapper.ClienteMapper;
+import co.edu.uptc.persistencia.SesionRecordadaRepository;
 import co.edu.uptc.negocio.GestionCliente;
+import co.edu.uptc.negocio.GestionCompra;
 import co.edu.uptc.negocio.GestionDashboard;
 import co.edu.uptc.negocio.GestionLibro;
 import co.edu.uptc.negocio.GestionReporte;
@@ -90,6 +95,9 @@ public class Evento implements ActionListener {
     // nuevas dependencias (DIP: interfaz para el carrito, clase para reportes)
     private final co.edu.uptc.interfaces.ICarritoService carritoService;
     private final GestionReporte gestionReporte;
+    /*modificacion:Brayan Panqueva*/
+    private final GestionCompra gestionCompra;
+    private final Consumer<FacturaDto> guardarFactura;
 
     /**
      * CONSTRUCTOR CON INYECCIÓN DE DEPENDENCIAS (SOLID / DIP).
@@ -100,7 +108,9 @@ public class Evento implements ActionListener {
                   GestionCliente gestionCliente, GestionLibro gestionLibro,
                   GestionDashboard gestionDashboard,
                   co.edu.uptc.interfaces.ICarritoService carritoService,
-                  GestionReporte gestionReporte) {
+                  GestionReporte gestionReporte,
+                  GestionCompra gestionCompra,
+                  Consumer<FacturaDto> guardarFactura) {
         this.ventanaPrincipal = ventanaPrincipal;
         this.gestionSeguridad = gestionSeguridad;
         this.gestionCliente = gestionCliente;
@@ -108,6 +118,8 @@ public class Evento implements ActionListener {
         this.gestionDashboard = gestionDashboard;
         this.carritoService = carritoService;
         this.gestionReporte = gestionReporte;
+        this.gestionCompra = gestionCompra;
+        this.guardarFactura = guardarFactura;
     }
 
     /**
@@ -192,6 +204,10 @@ public class Evento implements ActionListener {
             case CMD_ACTUALIZAR_TOTALES:
                 refrescarCarritoCliente();
                 break;
+            /*modificacion:Brayan Panqueva*/
+            case PanelCarrito.CMD_FINALIZAR_COMPRA:
+                manejarFinalizarCompra();
+                break;
 
             // ---------------- gestión de carritos del ADMIN ----------------
             case CMD_ADMIN_ELIMINAR_CARRITO:
@@ -261,6 +277,9 @@ public class Evento implements ActionListener {
             return;
         }
 
+        /*modificacion:Brayan Panqueva*/
+        SesionRecordadaRepository.guardarCorreo(
+                gestionSeguridad.getClienteAutenticado().getCorreoElectronico());
         ClienteDto usuario = ClienteMapper.toDto(gestionSeguridad.getClienteAutenticado());
         boolean esAdmin = usuario.getRol() == Rol.ADMIN;
 
@@ -652,6 +671,43 @@ public class Evento implements ActionListener {
             mostrarError(ex.getMessage());
         } catch (Exception ex) {
             mostrarError("Error inesperado al vaciar el carrito: " + ex.getMessage());
+        }
+    }
+
+    /*modificacion:Brayan Panqueva*/
+    private void manejarFinalizarCompra() {
+        ClienteDto cliente = ventanaPrincipal.getPanelCliente().getCliente();
+        if (cliente == null) {
+            mostrarAdvertencia("Debe iniciar sesión para finalizar la compra.");
+            return;
+        }
+        double total;
+        try {
+            total = carritoService.calcularTotales(cliente.getIdCliente()).getTotalFinal();
+        } catch (ReglaNegocioException ex) {
+            mostrarError(ex.getMessage());
+            return;
+        }
+        PagoDto pago = DialogoPago.mostrar(ventanaPrincipal, total);
+        if (pago == null) return;
+        int opcion = JOptionPane.showConfirmDialog(ventanaPrincipal,
+                "¿Desea confirmar la compra y descontar el inventario?",
+                "Confirmar compra", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (opcion != JOptionPane.YES_OPTION) return;
+        try {
+            var factura = gestionCompra.finalizarCompra(cliente.getIdCliente(), pago);
+            PagoDto pagoValidado = "EFECTIVO".equalsIgnoreCase(pago.metodo())
+                    ? new PagoDto(pago.metodo(), "", "", pago.montoPagado(), pago.montoPagado() - total)
+                    : pago;
+            new DialogoCompra(ventanaPrincipal, factura, gestionCompra, guardarFactura, pagoValidado).setVisible(true);
+            ClienteDto actualizado = gestionCliente.buscarPorId(cliente.getIdCliente());
+            ventanaPrincipal.getPanelCliente().setCliente(actualizado == null ? cliente : actualizado);
+            refrescarCarritoCliente();
+            refrescarCatalogoCliente();
+        } catch (ReglaNegocioException ex) {
+            mostrarError(ex.getMessage());
+        } catch (Exception ex) {
+            mostrarError("No se pudo finalizar la compra: " + ex.getMessage());
         }
     }
 

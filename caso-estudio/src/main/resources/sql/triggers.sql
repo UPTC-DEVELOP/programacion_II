@@ -12,6 +12,17 @@ ON clients
 FOR EACH ROW
 EXECUTE FUNCTION asignar_rol_por_correo();
 
+-- ACTUALIZA CORREOS ELECTRONICOS DE CLIENTES ADMINS CON DOMINIO @co.edu.uptc A @uptc.edu.co
+UPDATE clients c
+   SET correo_electronico = regexp_replace(lower(trim(c.correo_electronico)),
+                                            '@co[.]edu[.]uptc$', '@uptc.edu.co')
+ WHERE lower(trim(c.correo_electronico)) ~ '@co[.]edu[.]uptc$'
+   AND NOT EXISTS (
+       SELECT 1 FROM clients existente
+        WHERE lower(trim(existente.correo_electronico)) = regexp_replace(
+            lower(trim(c.correo_electronico)), '@co[.]edu[.]uptc$', '@uptc.edu.co')
+   );
+
 --  Eliminar el trigger si ya existe para permitir recargas limpias
 DROP TRIGGER IF EXISTS trg_verificar_ascenso_premium ON buys;
 
@@ -31,5 +42,18 @@ WHERE c.tipo_cliente = 'Regular'
           FROM buys b
          WHERE b.id_cliente = c.id_cliente
       ) >= 2;
+
+--- DESCUENTO DE STOCK POR VENTA
+DROP TRIGGER IF EXISTS trg_descontar_stock_por_venta ON sale_detais;
+CREATE TRIGGER trg_descontar_stock_por_venta
+BEFORE INSERT ON sale_detais
+FOR EACH ROW
+EXECUTE FUNCTION descontar_stock_por_venta();
+
+DROP TRIGGER IF EXISTS trg_auditar_compra ON buys;
+CREATE TRIGGER trg_auditar_compra
+AFTER INSERT ON buys
+FOR EACH ROW
+EXECUTE FUNCTION registrar_auditoria_compra();
 
 COMMIT;

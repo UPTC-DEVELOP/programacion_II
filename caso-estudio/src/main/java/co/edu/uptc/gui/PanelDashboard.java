@@ -144,8 +144,9 @@ public class PanelDashboard extends JPanel {
         boton.addActionListener(manejadorEventos);
         boton.setFocusPainted(false);
         boton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        boton.setBackground(new Color(44, 62, 80));
-        boton.setForeground(Color.WHITE);
+        /*modificacion:Brayan Panqueva*/
+        boton.setBackground(Color.WHITE);
+        boton.setForeground(Color.BLACK);
         boton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         boton.setAlignmentX(Component.LEFT_ALIGNMENT);
         boton.setCursor(new Cursor(Cursor.HAND_CURSOR));

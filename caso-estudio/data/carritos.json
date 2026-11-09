@@ -1,3 +1,23 @@
 {
-  "carritos": []
+  "carritos": [
+    {
+      "idCarrito": 8,
+      "idCliente": 1,
+      "tipoCliente": "PREMIUM",
+      "items": [
+        {
+          "isbn": "1234567891012",
+          "titulo": "java desde 0",
+          "cantidad": 1,
+          "precioUnitario": 50000.0,
+          "ivaAplicado": 5.0,
+          "subtotal": 50000.0
+        }
+      ],
+      "subtotalGeneral": 50000.0,
+      "totalImpuestos": 2500.0,
+      "descuentoAplicado": 5000.0,
+      "totalFinal": 47500.0
+    }
+  ]
 }

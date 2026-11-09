@@ -6,11 +6,14 @@ import java.util.stream.Collectors;
 
 import co.edu.uptc.excepciones.ReglaNegocioException;
 import co.edu.uptc.interfaces.IClienteRepositorio;
+import co.edu.uptc.interfaces.IAuditoria;
 import co.edu.uptc.interfaces.IGestionCliente;
 import co.edu.uptc.modelo.Cliente;
 import co.edu.uptc.modelo.dto.ClienteDto;
 import co.edu.uptc.modelo.enums.TipoCliente;
 import co.edu.uptc.modelo.mapper.ClienteMapper;
+import co.edu.uptc.modelo.enums.AccionAuditoria;
+import co.edu.uptc.persistencia.conexion.ConexionDB;
 
 /**
  * Capa de NEGOCIO de los clientes (CRUD).
@@ -23,12 +26,28 @@ public class GestionCliente implements IGestionCliente {
 	public static final int COMPRAS_PARA_PREMIUM = 2;
 
 	private final IClienteRepositorio persistencia;
+	private final IClienteRepositorio persistenciaJson;
 	private final ValidadorDatos validador;
+	private final IAuditoria auditoria;
 
 	// constructor
 	public GestionCliente(IClienteRepositorio persistencia, ValidadorDatos validador) {
+		this(persistencia, validador, null);
+	}
+
+	/*modificacion:Brayan Panqueva*/
+	public GestionCliente(IClienteRepositorio persistencia, ValidadorDatos validador,
+			IClienteRepositorio persistenciaJson) {
+		this(persistencia, validador, persistenciaJson, null);
+	}
+
+	/*modificacion:Brayan Panqueva*/
+	public GestionCliente(IClienteRepositorio persistencia, ValidadorDatos validador,
+			IClienteRepositorio persistenciaJson, IAuditoria auditoria) {
 		this.persistencia = persistencia;
 		this.validador = validador;
+		this.persistenciaJson = persistenciaJson;
+		this.auditoria = auditoria;
 	}
 
 	@Override
@@ -36,6 +55,11 @@ public class GestionCliente implements IGestionCliente {
 		if (clienteDto != null) {
 			// Todo cliente nuevo inicia como REGULAR; asciende a PREMIUM por compras
 			clienteDto.setTipoCliente(TipoCliente.REGULAR);
+		}
+		/*modificacion:Brayan Panqueva*/
+		if (clienteDto != null && clienteDto.getCorreoElectronico() != null) {
+			clienteDto.setCorreoElectronico(clienteDto.getCorreoElectronico().trim().toLowerCase());
+			ConexionDB.establecerUsuarioSesion(clienteDto.getCorreoElectronico());
 		}
 		validador.validarCliente(clienteDto);
 		validador.validarContrasenaNueva(clienteDto.getContrasenia());
@@ -53,6 +77,8 @@ public class GestionCliente implements IGestionCliente {
 		Cliente entidad = ClienteMapper.toEntity(clienteDto);
 		entidad.setFechaRegistro(new Timestamp(System.currentTimeMillis()));
 		persistencia.guardar(entidad);
+		if (persistenciaJson != null) persistenciaJson.guardar(entidad);
+		auditar(AccionAuditoria.CREATE, entidad.getIdentificacion(), "Registro de cliente: " + entidad.getCorreoElectronico());
 		clienteDto.setIdCliente(entidad.getIdCliente());
 		return true;
 	}
@@ -94,6 +120,8 @@ public class GestionCliente implements IGestionCliente {
 		// las compras solo cambian con registrarCompra, nunca desde el formulario
 		entidad.setComprasRealizadas(existente.getComprasRealizadas());
 		persistencia.actualizar(entidad);
+		if (persistenciaJson != null) persistenciaJson.actualizar(entidad);
+		auditar(AccionAuditoria.UPDATE, entidad.getIdentificacion(), "Actualización de cliente: " + entidad.getCorreoElectronico());
 		return true;
 	}
 
@@ -126,7 +154,8 @@ public class GestionCliente implements IGestionCliente {
 			actualizado.setIntentosFallidos(cliente.getIntentosFallidos());
 		}
 		actualizado.setComprasRealizadas(compras);
-		persistencia.actualizar(actualizado);
+			persistencia.actualizar(actualizado);
+			if (persistenciaJson != null) persistenciaJson.actualizar(actualizado);
 		return asciende;
 	}
 
@@ -140,7 +169,13 @@ public class GestionCliente implements IGestionCliente {
 			throw new ReglaNegocioException("No se puede eliminar el único usuario del sistema.");
 		}
 		persistencia.eliminarPorId(idCliente);
+		if (persistenciaJson != null) persistenciaJson.eliminarPorId(idCliente);
+		auditar(AccionAuditoria.DELETE, existente.getIdentificacion(), "Eliminación de cliente: " + existente.getCorreoElectronico());
 		return true;
+	}
+
+	private void auditar(AccionAuditoria accion, String identificacion, String detalles) {
+		if (auditoria != null) auditoria.registrar(accion, identificacion, "admin", detalles);
 	}
 
 	@Override
