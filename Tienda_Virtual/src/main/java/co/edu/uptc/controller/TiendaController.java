@@ -46,14 +46,14 @@ public class TiendaController {
         if (repositorioUsuario.buscarPorId(cliente.getId()) != null) return false;
         if (repositorioUsuario.buscarPorCorreo(cliente.getCorreo()) != null) return false;
 
-        cliente.setContrasena(sha256(cliente.getContrasena()));
-        return repositorioUsuario.guardarCliente(cliente);
+        cliente.setContrasenaHash(sha256(cliente.getContrasenaHash()));
+        return repositorioUsuario.guardarUsuario(cliente);
     }
 
     public boolean iniciarSesion(String correo, String contrasena) {
         if (correo == null || contrasena == null) return false;
         Cliente c = repositorioUsuario.buscarPorCorreo(correo.trim());
-        if (c != null && c.getContrasena() != null && c.getContrasena().equals(sha256(contrasena))) {
+        if (c != null && c.getContrasenaHash() != null && c.getContrasenaHash().equals(sha256(contrasena))) {
             this.usuarioLogueado = c;
             return true;
         }
@@ -171,7 +171,7 @@ public class TiendaController {
         }
 
         try (PrintWriter out = new PrintWriter(new FileWriter("operaciones_tienda.txt", true))) {
-            out.println("COMPRA - Cliente: " + usuarioLogueado.getNombre() + " (" + usuarioLogueado.getCorreo() + ")");
+            out.println("COMPRA - Cliente: " + usuarioLogueado.getNombreCompleto() + " (" + usuarioLogueado.getCorreo() + ")");
             out.println("Total Pagado: $" + c.calcularTotal());
             out.println("----------------------------------------");
         } catch (IOException e) {

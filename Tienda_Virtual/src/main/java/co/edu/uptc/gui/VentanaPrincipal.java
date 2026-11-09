@@ -181,10 +181,12 @@ public class VentanaPrincipal extends JFrame {
         }
 
         Cliente c = new Cliente(
-            nombre, id, correo, pass,
+            id, nombre, correo, txtDireccion.getText().trim(),
             (String) cbDepto.getSelectedItem(), (String) cbCiudad.getSelectedItem(),
-            txtDireccion.getText().trim(), txtTelefono.getText().trim()
+            txtTelefono.getText().trim(), (String) cbTipoCliente.getSelectedItem()
         );
+        
+        c.setContrasenaHash(pass);
 
         if (controller.registrarCliente(c)) {
             JOptionPane.showMessageDialog(this, "¡Usuario registrado exitosamente!");
@@ -205,8 +207,8 @@ public class VentanaPrincipal extends JFrame {
         if (controller.iniciarSesion(correo, pass)) {
             Cliente log = controller.getUsuarioLogueado();
             String tipo = (String) cbTipoCliente.getSelectedItem();
-            lblEstadoUsuario.setText("Usuario: " + log.getNombre() + " (" + tipo + ")");
-            JOptionPane.showMessageDialog(this, "Bienvenido " + log.getNombre());
+            lblEstadoUsuario.setText("Usuario: " + log.getNombreCompleto() + " (" + tipo + ")");
+            JOptionPane.showMessageDialog(this, "Bienvenido " + log.getNombreCompleto());
             actualizarTablaCarrito();
         } else {
             JOptionPane.showMessageDialog(this, "Credenciales incorrectas.", "Error", JOptionPane.ERROR_MESSAGE);
