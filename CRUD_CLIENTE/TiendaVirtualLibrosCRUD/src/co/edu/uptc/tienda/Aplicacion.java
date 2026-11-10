@@ -13,6 +13,7 @@ import co.edu.uptc.tienda.negocio.GestionLibro;
 import co.edu.uptc.tienda.negocio.IGestionAutenticacion;
 import co.edu.uptc.tienda.negocio.IGestionCliente;
 import co.edu.uptc.tienda.negocio.IGestionLibro;
+import co.edu.uptc.tienda.negocio.IRepositorioCliente;
 import co.edu.uptc.tienda.persistencia.BaseDeDatosLibro;
 import co.edu.uptc.tienda.persistencia.LocalCliente;
 
@@ -29,11 +30,13 @@ public class Aplicacion {
 		}
 
 		// Se inyectan dependencias.
-		IGestionCliente gestionCliente = new GestionCliente(new LocalCliente());
+		// Un único repositorio de clientes: el login debe ver a los clientes registrados
+		IRepositorioCliente repositorioCliente = new LocalCliente();
+		IGestionCliente gestionCliente = new GestionCliente(repositorioCliente);
 		IGestionLibro gestionLibro = new GestionLibro(new BaseDeDatosLibro());
 
 		// Se gestiona la Autenticación con el gestAutenticacion
-		IGestionAutenticacion gestionAutenticacion = new GestionAutenticacion();
+		IGestionAutenticacion gestionAutenticacion = new GestionAutenticacion(repositorioCliente);
 
 		// Se corre el programa en otro Hilo.
 		SwingUtilities.invokeLater(() -> {

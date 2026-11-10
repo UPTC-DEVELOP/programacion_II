@@ -22,8 +22,9 @@ public class PanelLogin extends JPanel {
 		setLayout(new BorderLayout(10, 10));
 		JPanel panelFormulario = new JPanel(new GridLayout(2, 2, 10, 10));
 
-		JLabel lblUsuario = new JLabel("Usuario:", SwingConstants.CENTER);
+		JLabel lblUsuario = new JLabel("Correo electrónico:", SwingConstants.CENTER);
 		txtUsuario = new JTextField(15);
+		txtUsuario.setToolTipText("Correo electrónico registrado");
 
 		JLabel lblContrasena = new JLabel("Contraseña:", SwingConstants.CENTER);
 		txtContrasena = new JPasswordField(15);
@@ -53,5 +54,16 @@ public class PanelLogin extends JPanel {
 
 	public char[] getContrasena() {
 		return txtContrasena.getPassword();
+	}
+
+	// Se usa tras un intento fallido: borra la contraseña y deja el cursor listo
+	public void limpiarContrasena() {
+		txtContrasena.setText("");
+		txtContrasena.requestFocusInWindow();
+	}
+
+	// Permite iniciar sesión presionando Enter
+	public JButton getBotonIngresar() {
+		return btnIngresar;
 	}
 }
