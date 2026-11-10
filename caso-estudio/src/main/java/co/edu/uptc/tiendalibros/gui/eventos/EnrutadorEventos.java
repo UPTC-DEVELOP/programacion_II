@@ -3,19 +3,14 @@ package co.edu.uptc.tiendalibros.gui.eventos;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
+import co.edu.uptc.tiendalibros.gui.errores.ManejadorErroresNoCapturados;
 import co.edu.uptc.tiendalibros.interfaces.IReceptorEventos;
-import co.edu.uptc.tiendalibros.negocio.ErrorTecnicoSistemaException;
 
 /// Representa un objeto que enruta o asocia eventos con sus manejadores.
 public class EnrutadorEventos implements IReceptorEventos {
-  
-  /// Objeto que registra los errores provocados por excepciones.
-  private static final Logger LOGGER = Logger.getLogger(EnrutadorEventos.class.getName());
   
   /// Contenedor que asocia un evento o ruta con su función manejadora.
   private final Map<String, ManejadorEvento> rutasEventos;
@@ -66,15 +61,11 @@ public class EnrutadorEventos implements IReceptorEventos {
     try {
       // tercero, invocar la función manejadora enviando el elemento que se quiere manejar
       funcion.aceptar(elemento);
-    } catch (ErrorTecnicoSistemaException error) {
-      // registrar los errores técnicos del sistema manejados por el programa de la tienda
-      LOGGER.log(Level.SEVERE, String.format("Error técnico al manejar el evento: %s", evento), error);
-      notificarErrorSistema();
     } catch (RuntimeException error) {
-      // registrar los demás errores técnicos del sistema
-      LOGGER.log(Level.SEVERE, String.format("Error inesperado al manejar el evento: %s", evento), error);
-      notificarErrorSistema();
+      // registrar los errores del sistema
+      ManejadorErroresNoCapturados.reportarErrorInesperado("Evento " + evento, error);
     }
+    
   }
   
   /// Maneja el evento especificado sin un elemento. Es decir, que para manejar el evento no
@@ -87,14 +78,5 @@ public class EnrutadorEventos implements IReceptorEventos {
     manejarEvento(evento, null);
   }
   
-  private void notificarErrorSistema() {
-    JOptionPane.showMessageDialog(
-      null,
-      String.format(
-        "Ocurrió un problema inesperado en el sistema. La operación no se completó.%nSi este problema persisten, por favor, contacte a soporte técnico."
-      ),
-      "Error Técnico del Sistema",
-      JOptionPane.ERROR_MESSAGE
-    );
-  }
+
 }

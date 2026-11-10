@@ -5,6 +5,7 @@ target/
 # Archivos compilados y registros
 *.class
 *.log
+logs/
 
 
 # Restos de fusiones y editores
@@ -28,6 +29,7 @@ Desktop.ini
 $RECYCLE.BIN/
 ehthumbs.db
 *.lnk
+*.lck
 
 # IDEs
 .settings/

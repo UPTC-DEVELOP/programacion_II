@@ -6,23 +6,17 @@ import java.awt.BorderLayout;
 import java.util.Optional;
 
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.SwingUtilities;
 
 import co.edu.uptc.tiendalibros.gui.avisos.Aviso;
 import co.edu.uptc.tiendalibros.gui.componentes.PanelAvisos;
 import co.edu.uptc.tiendalibros.gui.componentes.VentanaBase;
-import co.edu.uptc.tiendalibros.gui.estilos.Fuentes;
 import co.edu.uptc.tiendalibros.gui.estilos.IconoImagen;
 import co.edu.uptc.tiendalibros.gui.eventos.EnrutadorEventos;
 import co.edu.uptc.tiendalibros.gui.eventos.Evento;
 import co.edu.uptc.tiendalibros.gui.navegacion.PanelMenuNavegacion;
 import co.edu.uptc.tiendalibros.interfaces.IReceptorEventos;
-import co.edu.uptc.tiendalibros.negocio.ErrorTecnicoSistemaException;
-import co.edu.uptc.tiendalibros.persistencia.jdbc.ConexionBaseDatos;
-import co.edu.uptc.tiendalibros.persistencia.jdbc.ConfiguracionBaseDatos;
 
 /// Representa la ventana principal de la aplicación.
 ///
@@ -139,58 +133,4 @@ public class VentanaPrincipal extends VentanaBase implements IReceptorEventos {
       );
     }
   }
-  
-  public static void main(String[] args) {
-    
-    // cargar las fuentes y los íconos antes de crear la ventana
-    Fuentes.precargar();
-    IconoImagen.precargar();
-    
-    // probar la conexión con la base de datos
-    ConexionBaseDatos conexionBaseDatos;
-    
-    try {
-      // cargar las opciones de conexión con la base de datos
-      ConfiguracionBaseDatos configuracionBaseDatos = ConfiguracionBaseDatos
-        .cargar(ConfiguracionBaseDatos.RUTA_PREDETERMINADA);
-      
-      // crear la conexión con la base de datos
-      conexionBaseDatos = new ConexionBaseDatos(configuracionBaseDatos);
-      
-      // mostrar el mensaje de que se pudo conectar exitosamente a la base de datos
-      String mensajeConexion = conexionBaseDatos.probar();
-      JOptionPane.showMessageDialog(
-        null,
-        mensajeConexion,
-        "Conexión Exitosa",
-        JOptionPane.INFORMATION_MESSAGE
-      );
-      
-    } catch (ErrorTecnicoSistemaException excepcion) {
-      // mostrar la causa del error de conexión con la base de datos
-      String motivo = excepcion.getCause() == null ? ""
-        : excepcion.getCause()
-          .getLocalizedMessage();
-      String mensajeError = String.format("%s%n%s", excepcion.getMessage(), motivo);
-      
-      JOptionPane.showMessageDialog(
-        null,
-        mensajeError,
-        "Conexión Fallida",
-        JOptionPane.ERROR_MESSAGE
-      );
-      
-      return;
-    }
-    
-    // mostrar la ventana en el hilo o proceso propio de Swing
-    SwingUtilities.invokeLater(() -> {
-      // crear la ventana principal
-      VentanaPrincipal ventana = new VentanaPrincipal();
-      // pedirle a la aplicación que inicialice componentes y que arranque la aplicación
-      new Aplicacion(ventana, conexionBaseDatos).iniciar();
-    });
-    
-  }
-  
 }
