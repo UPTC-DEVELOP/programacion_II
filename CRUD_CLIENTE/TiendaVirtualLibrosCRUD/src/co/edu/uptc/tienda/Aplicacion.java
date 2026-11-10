@@ -28,7 +28,7 @@ public class Aplicacion {
 			e.printStackTrace();
 		}
 
-		// Se inyectan dependencias
+		// Se inyectan dependencias.
 		IGestionCliente gestionCliente = new GestionCliente(new LocalCliente());
 		IGestionLibro gestionLibro = new GestionLibro(new BaseDeDatosLibro());
 
