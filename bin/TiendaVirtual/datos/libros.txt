@@ -1,0 +1,6 @@
+Cien años de soledad;Gabriel García Márquez;Físico;45000
+El principito;Antoine de Saint-Exupéry;Digital;18000
+1984;George Orwell;Físico;32000
+Don Quijote de la Mancha;Miguel de Cervantes;Digital;25000
+el principito;ANtonine sain;Físico;18000
+cien años de soledad;gabriel garcia;Físico;45000

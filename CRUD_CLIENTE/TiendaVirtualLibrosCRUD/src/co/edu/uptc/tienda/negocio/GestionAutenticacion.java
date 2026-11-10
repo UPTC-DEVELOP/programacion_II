@@ -15,6 +15,10 @@ public class GestionAutenticacion implements IGestionAutenticacion {
 
 	// Formato básico: texto@dominio.extension
 	private static final Pattern FORMATO_CORREO = Pattern.compile("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
+	// si se quiere que solo termine en @uptc.edu,co
+	//private static final String DOMINIO_PERMITIDO = "@uptc.edu.co";
+	
+	
 
 	// Mensaje único para no revelar si el usuario existe o no
 	private static final String CREDENCIALES_INVALIDAS = "Correo o contraseña incorrectos.";
@@ -49,7 +53,7 @@ public class GestionAutenticacion implements IGestionAutenticacion {
 		if (correo == null || correo.trim().isEmpty()) {
 			throw new NegocioException("Ingrese el Correo electrónico.");
 		}
-
+//	// si se quiere que solo termine en @uptc.edu,co
 		if (!FORMATO_CORREO.matcher(correo.trim()).matches()) {
 			throw new NegocioException("Ingrese un Correo electrónico válido (ejemplo: usuario@dominio.com).");
 		}
