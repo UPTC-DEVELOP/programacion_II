@@ -1,98 +1,58 @@
-# Instalación y ejecución multiplataforma
+# Instalación — TiendaVirtual
 
 ## Requisitos
 
-- Java/JDK 17, Maven y Eclipse con Maven (m2e).
-- Para JDBC: MariaDB Server o MySQL Server; **no es necesario instalar ambos**. Los dos drivers están declarados en `pom.xml`.
-- Proyecto abierto desde la carpeta donde están `pom.xml`, `config/`, `datos/` y `sql/`.
+- JDK 17 y Maven 3.
+- Eclipse IDE con soporte Maven, si se utiliza interfaz de desarrollo.
+- MariaDB o MySQL para la persistencia JDBC. El carrito en JSON no necesita servidor.
 
-## CachyOS KDE / Arch Linux
+## Preparación del proyecto
+
+Desde `TiendaVirtual/`, comprobar la compilación:
 
 ```bash
-sudo pacman -Syu
-sudo pacman -S --needed jdk17-openjdk maven mariadb
-# Ejecutar solo si MariaDB se instala por primera vez y no hay tablas del sistema:
-if ! sudo test -d /var/lib/mysql/mysql; then
-  sudo mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
-fi
+java -version
+mvn -version
+mvn clean verify
+```
+
+En Eclipse, importar la carpeta como **Existing Maven Project** y ejecutar `util.aplicacion.Main`. El directorio de trabajo debe ser la carpeta que contiene `pom.xml`.
+
+## Base de datos
+
+Instalar y activar MariaDB (CachyOS/Arch Linux):
+
+```bash
+sudo pacman -S --needed mariadb jdk17-openjdk maven
+# Solo en una instalación nueva, si /var/lib/mysql no está inicializado:
+sudo mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
 sudo systemctl enable --now mariadb
 ```
 
-Desde la raíz del proyecto:
+Importar el esquema desde la carpeta `TiendaVirtual/`:
 
 ```bash
-# Como administrador, crear el esquema (no usar sobre datos ajenos sin revisar)
 sudo mariadb < sql/esquema.sql
-# Entra a la consola SQL como administrador:
-sudo mariadb
 ```
 
-Una vez dentro del intérprete SQL, asignar una **contraseña personal distinta** en lugar del ejemplo:
+Crear un usuario de aplicación en la consola SQL del administrador de MariaDB (sustituir la clave):
 
 ```sql
-CREATE USER IF NOT EXISTS 'tienda_app'@'127.0.0.1' IDENTIFIED BY 'REEMPLAZAR_CLAVE';
+CREATE USER IF NOT EXISTS 'tienda_app'@'127.0.0.1' IDENTIFIED BY 'CLAVE_LOCAL';
 GRANT SELECT, INSERT, UPDATE, DELETE ON tienda_virtual.* TO 'tienda_app'@'127.0.0.1';
 ```
 
-En la raíz del proyecto:
-
-```bash
-cp config/database.properties.example config/database.properties
-chmod 600 config/database.properties
-# Editar el archivo para poner contraseña local y carrito.storage=jdbc
-${EDITOR:-nano} config/database.properties
-mvn clean verify
-mvn -q dependency:build-classpath -Dmdep.outputFile=target/dependencias.txt
-java -cp "target/classes:$(cat target/dependencias.txt)" util.aplicacion.Main
-```
-
-El contenido esperado del archivo privado es:
+Copiar `config/database.properties.example` como `config/database.properties` y ajustar:
 
 ```properties
 database.url=jdbc:mariadb://127.0.0.1:3306/tienda_virtual
 database.user=tienda_app
-database.password=CLAVE_PERSONAL_NO_PUBLICAR
+database.password=CLAVE_LOCAL
 carrito.storage=jdbc
 ```
 
-Para comprobar las tablas sin revelar contraseñas en capturas, conectarse con el cliente de MariaDB y ejecutar:
+Para guardar el carrito en archivo, usar `carrito.storage=json`. El archivo `database.properties` es local y no debe subirse a GitHub.
 
-```sql
-SHOW TABLES FROM tienda_virtual;
-SELECT carrito_id, titulo, cantidad, precio FROM tienda_virtual.carrito_items;
-SELECT nombre, correo, tipo_cliente FROM tienda_virtual.usuarios;
-```
+## Windows 10/11
 
-**Importante:** MariaDB utiliza la tabla `usuarios` con clave `correo`; no consultar una columna `id` inexistente.
-
-## Windows 10/11 (PowerShell)
-
-1. Instalar JDK 17 y Maven (por ejemplo con Windows Package Manager si está disponible).
-2. Instalar **MariaDB Server** mediante su instalador oficial. No requiere MySQL Server en paralelo.
-3. Desde un cliente MariaDB con privilegios administrativos, ejecutar las instrucciones de `sql/esquema.sql`. Después crear el usuario `tienda_app` y otorgar permisos como arriba.
-4. Copiar `config\database.properties.example` a `config\database.properties` y completar la contraseña.
-5. En PowerShell, dentro del directorio que contiene `pom.xml`:
-
-```powershell
-java -version
-mvn -version
-mvn clean verify
-mvn dependency:build-classpath "-Dmdep.outputFile=target/dependencias.txt"
-$CP = "target\classes;target\test-classes;$(Get-Content .\target\dependencias.txt -Raw)"
-java -cp "$CP" util.aplicacion.Main
-```
-
-En Eclipse: `File > Import > Maven > Existing Maven Projects`, seleccionar la carpeta de este `pom.xml`, hacer `Maven > Update Project` y ejecutar `util.aplicacion.Main`. Configurar **Working Directory** como raíz del proyecto.
-
-## Errores frecuentes
-
-- `No existe config/database.properties`: iniciar Java desde la raíz correcta; verificar archivo y ruta.
-- `Access denied`: verificar usuario, host `127.0.0.1`, contraseña y privilegios.
-- `Unknown column 'id'`: `usuarios` tiene PK `correo`, no `id`.
-- `No suitable driver`: resolver dependencias Maven y revisar URL `jdbc:mariadb:` / `jdbc:mysql:`.
-- El carrito muestra datos de otro usuario: verificar que `ControladorInicio` cree `RepositorioCarrito(usuario.getCorreo())` y que la versión ejecutada esté actualizada.
-- Los usuarios Swing no aparecen en SQL: **estado conocido de integración**, no falla del servidor.
-
-## Protección de archivos
-
-No copiar contraseñas entre equipos. `config/database.properties` y `datos/usuarios.txt` no forman parte del ZIP publicable. Cada integrante crea sus credenciales y datos locales.
+Instalar JDK 17, Maven y MariaDB Server; crear la base con `sql/esquema.sql`, configurar el mismo archivo `.properties` con las credenciales **del equipo de Windows** e importar `TiendaVirtual/` en Eclipse. Los comandos Maven son iguales; los comandos de ejecución Java para PowerShell están en [Pruebas](PRUEBAS.md).
