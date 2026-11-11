@@ -7,6 +7,15 @@ import java.util.List;
 public class Carrito {
 
     private final List<ItemCarrito> items = new ArrayList<>();
+    private String idCliente;
+
+    public String getIdCliente() {
+        return idCliente;
+    }
+
+    public void setIdCliente(String idCliente) {
+        this.idCliente = idCliente;
+    }
 
     public ItemCarrito buscarItem(String isbn) {
         for (ItemCarrito item : items) {
@@ -27,6 +36,10 @@ public class Carrito {
 
     public List<ItemCarrito> getItems() {
         return Collections.unmodifiableList(items);
+    }
+
+    public void vaciar() {
+        items.clear();
     }
 
     public boolean estaVacio() {
