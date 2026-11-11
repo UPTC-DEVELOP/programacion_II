@@ -29,4 +29,4 @@ java -cp "target/classes:$(cat target/dependencias.txt)" util.aplicacion.Main
 
 En Eclipse: **File > Import > Maven > Existing Maven Projects** y seleccionar `TiendaVirtual/`.
 
-Las instrucciones para configurar la base de datos y ejecutar las pruebas están en [Instalación](TiendaVirtual/docs/INSTALACION.md) y [Pruebas](TiendaVirtual/docs/PRUEBAS.md).
+Las instrucciones para configurar la base de datos y ejecutar las pruebas están en docs/INSTALACION.md y docs/PRUEBAS.md
