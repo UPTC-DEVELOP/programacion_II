@@ -62,7 +62,18 @@ public class VentaFrame extends JFrame {
         modelo = new DefaultTableModel(
             new String[]{"ID", "Fecha", "Monto", "ID Cliente"}, 0
         );
+
         tabla = new JTable(modelo);
+        tabla.setSelectionMode(
+            ListSelectionModel.SINGLE_SELECTION
+        );
+
+        // Al seleccionar una fila, cargar sus datos.
+        tabla.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                cargarVentaSeleccionada();
+            }
+        });
 
         add(formulario, BorderLayout.NORTH);
         add(new JScrollPane(tabla), BorderLayout.CENTER);
@@ -78,63 +89,156 @@ public class VentaFrame extends JFrame {
     private Venta obtenerVenta() {
         String id = txtId.getText().trim();
         String fecha = txtFecha.getText().trim();
-        double monto = Double.parseDouble(txtMonto.getText().trim());
-        int cliente = Integer.parseInt(txtCliente.getText().trim());
+        String montoTexto = txtMonto.getText().trim();
+        String clienteTexto = txtCliente.getText().trim();
+
+        if (id.isEmpty() || fecha.isEmpty()
+                || montoTexto.isEmpty() || clienteTexto.isEmpty()) {
+            throw new IllegalArgumentException(
+                "Complete todos los campos."
+            );
+        }
+
+        double monto = Double.parseDouble(montoTexto);
+        int cliente = Integer.parseInt(clienteTexto);
 
         return new Venta(id, fecha, monto, cliente);
+    }
+
+    private String obtenerIdSeleccionado() {
+        int fila = tabla.getSelectedRow();
+
+        if (fila >= 0) {
+            return modelo.getValueAt(fila, 0).toString().trim();
+        }
+
+        return txtId.getText().trim();
+    }
+
+    private void cargarVentaSeleccionada() {
+        int fila = tabla.getSelectedRow();
+
+        if (fila < 0) {
+            return;
+        }
+
+        txtId.setText(modelo.getValueAt(fila, 0).toString());
+        txtFecha.setText(modelo.getValueAt(fila, 1).toString());
+        txtMonto.setText(modelo.getValueAt(fila, 2).toString());
+        txtCliente.setText(modelo.getValueAt(fila, 3).toString());
     }
 
     private void registrar() {
         try {
             controller.registrar(obtenerVenta());
-            JOptionPane.showMessageDialog(this, "Venta registrada correctamente.");
+
+            JOptionPane.showMessageDialog(
+                this, "Venta registrada correctamente."
+            );
+
             listar();
             limpiar();
+
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(),
-                "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(
+                this, ex.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 
     private void consultar() {
-        Venta venta = controller.consultar(txtId.getText().trim());
+        try {
+            String id = obtenerIdSeleccionado();
 
-        if (venta == null) {
-            JOptionPane.showMessageDialog(this, "No se encontró la venta.");
-            return;
+            if (id.isEmpty()) {
+                JOptionPane.showMessageDialog(
+                    this, "Seleccione una venta o escriba su ID."
+                );
+                return;
+            }
+
+            Venta venta = controller.consultar(id);
+
+            if (venta == null) {
+                JOptionPane.showMessageDialog(
+                    this, "No se encontró la venta."
+                );
+                return;
+            }
+
+            txtId.setText(venta.getId());
+            txtFecha.setText(venta.getFecha());
+            txtMonto.setText(String.valueOf(venta.getMontoTotal()));
+            txtCliente.setText(String.valueOf(venta.getIdCliente()));
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(
+                this, ex.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE
+            );
         }
-
-        txtFecha.setText(venta.getFecha());
-        txtMonto.setText(String.valueOf(venta.getMontoTotal()));
-        txtCliente.setText(String.valueOf(venta.getIdCliente()));
     }
 
     private void actualizar() {
         try {
             controller.actualizar(obtenerVenta());
-            JOptionPane.showMessageDialog(this, "Venta actualizada correctamente.");
+
+            JOptionPane.showMessageDialog(
+                this, "Venta actualizada correctamente."
+            );
+
             listar();
             limpiar();
+
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(),
-                "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(
+                this, ex.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 
     private void eliminar() {
         try {
-            controller.eliminar(txtId.getText().trim());
-            JOptionPane.showMessageDialog(this, "Venta eliminada correctamente.");
-            listar();
-            limpiar();
+            String id = obtenerIdSeleccionado();
+
+            if (id.isEmpty()) {
+                JOptionPane.showMessageDialog(
+                    this, "Seleccione una venta o escriba su ID."
+                );
+                return;
+            }
+
+            int confirmacion = JOptionPane.showConfirmDialog(
+                this,
+                "¿Está seguro de eliminar esta venta?",
+                "Confirmar eliminación",
+                JOptionPane.YES_NO_OPTION
+            );
+
+            if (confirmacion == JOptionPane.YES_OPTION) {
+                controller.eliminar(id);
+
+                JOptionPane.showMessageDialog(
+                    this, "Venta eliminada correctamente."
+                );
+
+                listar();
+                limpiar();
+            }
+
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(),
-                "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(
+                this, ex.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 
     private void listar() {
         modelo.setRowCount(0);
+
         List<Venta> ventas = controller.listar();
 
         for (Venta venta : ventas) {
@@ -152,5 +256,6 @@ public class VentaFrame extends JFrame {
         txtFecha.setText("");
         txtMonto.setText("");
         txtCliente.setText("");
+        tabla.clearSelection();
     }
 }
