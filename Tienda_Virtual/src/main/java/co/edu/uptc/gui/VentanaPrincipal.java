@@ -397,10 +397,16 @@ public class VentanaPrincipal extends JFrame {
                 l.setPrecioVenta(Double.parseDouble(txtPrecioForm.getText().trim()));
                 l.setStock(Integer.parseInt(txtStockForm.getText().trim()));
                 l.setFormato((String) cbFormatoForm.getSelectedItem());
+                
+             // =========================================================================
+             // Fragmento representativo: Registro/actualización de libro y validación UI
+             // =========================================================================
                 l.setPorcentajeIva(Double.parseDouble(txtIvaForm.getText().trim()));
 
+             // 1. Llamada al controlador para actualizar o registrar el libro en persistencia
                 String error = esEdicion ? controller.actualizarLibro(l) : controller.registrarLibro(l);
 
+             // 2. Verificación del resultado de la operación y notificación en la interfaz gráfica
                 if (error != null) {
                     JOptionPane.showMessageDialog(this, error, "Error de Validación", JOptionPane.ERROR_MESSAGE);
                 } else {
@@ -408,6 +414,7 @@ public class VentanaPrincipal extends JFrame {
                     actualizarTablaLibros();
                 }
             } catch (NumberFormatException ex) {
+            	// 3. Captura de excepciones si el usuario ingresa caracteres no numéricos en el formulario
                 JOptionPane.showMessageDialog(this, "Asegúrese de ingresar valores numéricos válidos en Año, Páginas, Precio, Stock e IVA.", "Error de Entrada", JOptionPane.ERROR_MESSAGE);
             }
         }
