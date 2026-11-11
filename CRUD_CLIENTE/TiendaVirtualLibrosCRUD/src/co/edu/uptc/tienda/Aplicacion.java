@@ -6,7 +6,6 @@ import javax.swing.UIManager;
 import co.edu.uptc.tienda.gui.PanelCentral;
 import co.edu.uptc.tienda.gui.VentanaPrincipal;
 import co.edu.uptc.tienda.gui.clientes.PanelCliente;
-import co.edu.uptc.tienda.gui.compras.PanelCatalogo;
 import co.edu.uptc.tienda.gui.libros.PanelLibro;
 import co.edu.uptc.tienda.negocio.GestionAutenticacion;
 import co.edu.uptc.tienda.negocio.GestionCliente;
