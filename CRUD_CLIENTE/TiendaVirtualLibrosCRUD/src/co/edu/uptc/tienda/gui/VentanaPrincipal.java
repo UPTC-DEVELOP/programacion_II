@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import co.edu.uptc.tienda.gui.clientes.DialogoCliente;
 import co.edu.uptc.tienda.gui.clientes.PanelCliente;
+import co.edu.uptc.tienda.gui.compras.PanelCatalogo;
 import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.negocio.IGestionAutenticacion;
 import co.edu.uptc.tienda.negocio.NegocioException;
@@ -16,6 +17,7 @@ public class VentanaPrincipal extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private final IGestionAutenticacion gestionAutenticacion;
 	private final PanelCentral panelCentral;
+	private final PanelCatalogo panelCatalogo;
 	private final PanelCliente panelCliente;
 	private final PanelLogin panelLogin;
 	private final Evento evento;
@@ -24,10 +26,11 @@ public class VentanaPrincipal extends JFrame {
 	private Cliente clienteAutenticado;
 
 	public VentanaPrincipal(IGestionAutenticacion gestionAutenticacion, PanelCentral panelCentral,
-			PanelCliente panelCliente) {
+			PanelCliente panelCliente, PanelCatalogo panelCatalogo) {
 		this.gestionAutenticacion = gestionAutenticacion;
 		this.panelCentral = panelCentral;
 		this.panelCliente = panelCliente;
+		this.panelCatalogo = panelCatalogo;
 
 		setTitle("Tienda Virtual de Libros");
 		setSize(380, 180);
@@ -47,27 +50,32 @@ public class VentanaPrincipal extends JFrame {
 
 	private void loguear() {
 		try {
-			clienteAutenticado = gestionAutenticacion.autenticar(panelLogin.getUsuario(),
-					panelLogin.getContrasena());
+			clienteAutenticado = gestionAutenticacion.autenticar(panelLogin.getUsuario(), panelLogin.getContrasena());
 		} catch (NegocioException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Validación", JOptionPane.WARNING_MESSAGE);
 			panelLogin.limpiarContrasena();
 			return;
 		}
 
-		JOptionPane.showMessageDialog(this, "Bienvenido(a), " + clienteAutenticado.getPrimerNombre() + " "
-				+ clienteAutenticado.getPrimerApellido() + ".", "Inicio de sesión exitoso",
-				JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(
+				this, "Bienvenido(a), " + clienteAutenticado.getPrimerNombre() + " "
+						+ clienteAutenticado.getPrimerApellido() + ".",
+				"Inicio de sesión exitoso", JOptionPane.INFORMATION_MESSAGE);
 
 		setTitle("Tienda Virtual de Libros - " + clienteAutenticado.getPrimerNombre() + " ("
 				+ clienteAutenticado.getTipoCliente() + ")");
 		getRootPane().setDefaultButton(null);
 		this.panelLogin.setVisible(Boolean.FALSE);
-		add(this.panelCentral);
+		add(this.panelCatalogo);
 		setResizable(Boolean.TRUE);
-		setSize(850, 570);
+		setSize(1100, 650);
 		setLocationRelativeTo(null);
-		this.panelCentral.setVisible(Boolean.TRUE);
+		this.panelCatalogo.setVisible(Boolean.TRUE);
+	}
+
+	public void cerrarSesion() {
+		this.panelCatalogo.setVisible(Boolean.FALSE);
+		this.panelLogin.setVisible(Boolean.TRUE);
 	}
 
 	private void registrarseCliente() {

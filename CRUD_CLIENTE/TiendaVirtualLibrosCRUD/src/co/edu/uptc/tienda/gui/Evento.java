@@ -16,6 +16,7 @@ public class Evento implements ActionListener {
 
 	public static final String LOGIN = "Login";
 	public static final String REGISTRARSE = "Registrarse";
+	public static final String CERRAR_SESION = "Cerrar Sesion";
 
 	public static final String ELIMINAR_CLIENTE = "Eliminar Cliente";
 	public static final String VER_CLIENTES = "Ver Clientes";

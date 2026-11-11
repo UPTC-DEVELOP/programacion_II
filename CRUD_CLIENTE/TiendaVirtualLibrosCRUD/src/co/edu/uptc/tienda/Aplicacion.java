@@ -6,6 +6,7 @@ import javax.swing.UIManager;
 import co.edu.uptc.tienda.gui.PanelCentral;
 import co.edu.uptc.tienda.gui.VentanaPrincipal;
 import co.edu.uptc.tienda.gui.clientes.PanelCliente;
+import co.edu.uptc.tienda.gui.compras.PanelCatalogo;
 import co.edu.uptc.tienda.gui.libros.PanelLibro;
 import co.edu.uptc.tienda.negocio.GestionAutenticacion;
 import co.edu.uptc.tienda.negocio.GestionCliente;
@@ -30,7 +31,8 @@ public class Aplicacion {
 		}
 
 		// Se inyectan dependencias.
-		// Un único repositorio de clientes: el login debe ver a los clientes registrados
+		// Un único repositorio de clientes: el login debe ver a los clientes
+		// registrados
 		IRepositorioCliente repositorioCliente = new LocalCliente();
 		IGestionCliente gestionCliente = new GestionCliente(repositorioCliente);
 		IGestionLibro gestionLibro = new GestionLibro(new BaseDeDatosLibro());
@@ -43,8 +45,9 @@ public class Aplicacion {
 
 			PanelCentral panelCentral = new PanelCentral(new PanelCliente(gestionCliente),
 					new PanelLibro(gestionLibro));
+			PanelCatalogo panelCatalogo = new PanelCatalogo(gestionLibro);
 			VentanaPrincipal ventana = new VentanaPrincipal(gestionAutenticacion, panelCentral,
-					new PanelCliente(gestionCliente));
+					new PanelCliente(gestionCliente), panelCatalogo);
 			ventana.setVisible(Boolean.TRUE);
 
 		});
