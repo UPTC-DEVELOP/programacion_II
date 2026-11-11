@@ -129,4 +129,18 @@ public class GestionCliente {
 		 && cliente.getTelefono() != null && !cliente.getTelefono().isEmpty();
 		 
 		}
+		public ArrayList<Cliente> listarClientes() {
+		    return new ArrayList<>(clientes);
+		}
+
+		public boolean eliminarCliente(int numeroDocumento) {
+		    Cliente cliente = buscarPorDocumento(numeroDocumento);
+
+		    if (cliente == null) {
+		        return false;
+		    }
+
+		    clientes.remove(cliente);
+		    return true;
+		}
 }

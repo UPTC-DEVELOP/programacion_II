@@ -39,24 +39,25 @@ public class LoginFrame extends JFrame {
 			
 			Cliente cliente=gestionCliente.iniciarSesion(correo, contrasenia);
 			
-			if(cliente !=null) { 
-				javax.swing.JOptionPane.showMessageDialog(this, "INICIO DE SESIÓN CORRECTO");
-				intentos=0;
-				
-				ModificarClienteFrame ventana = new ModificarClienteFrame(gestionCliente, cliente);
-				
-				ventana.setVisible(true);
+			if (cliente != null) {
+			    javax.swing.JOptionPane.showMessageDialog(this, "INICIO DE SESIÓN CORRECTO");
+			    intentos = 0;
+
+			    MenuPrincipal ventana = new MenuPrincipal(gestionCliente);
+			    ventana.setVisible(true);
+			    dispose();
+
 			} else {
-				intentos ++;
-				
-				if(intentos <5) {
-				
-					javax.swing.JOptionPane.showMessageDialog(this, "CORREO O CONTRASEÑA INCORRECTOS INTENTO " + intentos + " DE 5");
-				} else {
-					javax.swing.JOptionPane.showMessageDialog(this, "SE ALCANZÓ EL MÁXIMO DE 5 INTENTOS");
-					btIniciarSesion.setEnabled(false);
-				}
-				
+			    intentos++;
+
+			    if (intentos < 5) {
+			        javax.swing.JOptionPane.showMessageDialog(this,
+			            "CORREO O CONTRASEÑA INCORRECTOS INTENTO " + intentos + " DE 5");
+			    } else {
+			        javax.swing.JOptionPane.showMessageDialog(this,
+			            "SE ALCANZÓ EL MÁXIMO DE 5 INTENTOS");
+			        btIniciarSesion.setEnabled(false);
+			    }
 			}
 		});
 		
