@@ -34,7 +34,7 @@ public class ReviewJdbcRepository implements IReviewRepository {
     @Override
     public List<Review> listarPorLibro(String isbn) {
         List<Review> out = new ArrayList<>();
-        try (Connection c = ConexionDB.obtenerConexion(); PreparedStatement p = c.prepareStatement("SELECT id_resena,isbn_libro,id_cliente,calificacion,comentario FROM product_reviews WHERE isbn_libro=? ORDER BY fecha DESC")) {
+        try (Connection c = ConexionDB.obtenerConexion(); PreparedStatement p = c.prepareStatement("SELECT id_resena,isbn_libro,id_cliente,calificacion,comentario FROM product_reviews WHERE isbn_libro=? ORDER BY fecha DESC, id_resena DESC")) {
             p.setString(1, isbn);
             try (ResultSet r = p.executeQuery()) {
                 while (r.next()) {
@@ -68,6 +68,45 @@ public class ReviewJdbcRepository implements IReviewRepository {
             p.executeUpdate();
         } catch (SQLException e) {
             throw error(e, "eliminar la reseña");
+        }
+    }
+
+    /** Usa la función SQL nombre_cliente_resena (SECURITY DEFINER): solo expone el nombre. */
+    @Override
+    public java.util.Map<Integer, String> nombresClientes(String isbn) {
+        java.util.Map<Integer, String> nombres = new java.util.HashMap<>();
+        try (Connection c = ConexionDB.obtenerConexion(); PreparedStatement p = c.prepareStatement("SELECT DISTINCT id_cliente, nombre_cliente_resena(id_cliente) FROM product_reviews WHERE isbn_libro=?")) {
+            p.setString(1, isbn);
+            try (ResultSet r = p.executeQuery()) {
+                while (r.next()) {
+                    if (r.getString(2) != null) {
+                        nombres.put(r.getInt(1), r.getString(2));
+                    }
+                }
+            }
+            return nombres;
+        } catch (SQLException e) {
+            throw error(e, "consultar los nombres de los autores de las reseñas");
+        }
+    }
+
+    /** Fecha de registro de cada reseña del libro, indexada por id de reseña. */
+    @Override
+    public java.util.Map<Integer, java.time.LocalDateTime> fechasResenas(String isbn) {
+        java.util.Map<Integer, java.time.LocalDateTime> fechas = new java.util.HashMap<>();
+        try (Connection c = ConexionDB.obtenerConexion(); PreparedStatement p = c.prepareStatement("SELECT id_resena, fecha FROM product_reviews WHERE isbn_libro=?")) {
+            p.setString(1, isbn);
+            try (ResultSet r = p.executeQuery()) {
+                while (r.next()) {
+                    java.sql.Timestamp t = r.getTimestamp(2);
+                    if (t != null) {
+                        fechas.put(r.getInt(1), t.toLocalDateTime());
+                    }
+                }
+            }
+            return fechas;
+        } catch (SQLException e) {
+            throw error(e, "consultar las fechas de las reseñas");
         }
     }
 

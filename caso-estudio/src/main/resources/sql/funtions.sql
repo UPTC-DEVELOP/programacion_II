@@ -54,6 +54,22 @@ AS $$
     )
 $$;
 
+-- Nombre del autor de una reseña (RF19/RF20). SECURITY DEFINER para saltar la RLS de
+-- clients, pero SOLO devuelve nombre_completo y SOLO de clientes que tienen alguna
+-- reseña: no expone correo, dirección, teléfono ni a clientes sin reseñas.
+CREATE OR REPLACE FUNCTION nombre_cliente_resena(p_id_cliente INT)
+RETURNS TEXT
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+    SELECT c.nombre_completo
+      FROM clients c
+     WHERE c.id_cliente = p_id_cliente
+       AND EXISTS (SELECT 1 FROM product_reviews r WHERE r.id_cliente = c.id_cliente)
+$$;
+
 --  Función que evalúa el número de compras y actualiza el tipo de cliente
 CREATE OR REPLACE FUNCTION actualizar_tipo_cliente_premium()
 RETURNS TRIGGER

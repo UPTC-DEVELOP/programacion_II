@@ -58,6 +58,9 @@ public class PanelCliente extends JPanel {
     private JButton btnAgregarCarrito;
     private JButton btnIrCarrito;
     private JSpinner spinnerCantidad;
+    // reseñas y calificaciones (RF19/RF20)
+    private JButton btnVerResenas;
+    private transient co.edu.uptc.interfaces.IGestionResena servicioResenas;
 
     //panel del carrito inyectado como pestaña (composición)
     private final PanelCarrito panelCarrito;
@@ -104,6 +107,30 @@ public class PanelCliente extends JPanel {
         spinnerCantidad = new JSpinner(new SpinnerNumberModel(1, 1, 999, 1));
         btnAgregarCarrito = boton("Agregar al carrito", CMD_AGREGAR_CARRITO);
         btnIrCarrito = boton("Ir al carrito", CMD_IR_CARRITO);
+        btnVerResenas = new JButton("Ver reseñas");
+        btnVerResenas.addActionListener(e -> abrirResenas());
+    }
+
+    /** Inyectado por VentanaPrincipal (DIP). */
+    public void setServicioResenas(co.edu.uptc.interfaces.IGestionResena servicio) {
+        this.servicioResenas = servicio;
+    }
+
+    /** Abre un diálogo con las reseñas del libro seleccionado en el catálogo. */
+    private void abrirResenas() {
+        LibroDto libro = getLibroSeleccionado();
+        if (libro == null || clienteActual == null || servicioResenas == null) {
+            JOptionPane.showMessageDialog(this, "Seleccione un libro del catálogo.");
+            return;
+        }
+        PanelResenas panel = new PanelResenas(servicioResenas);
+        panel.mostrarLibro(libro.getIsbn(), libro.getTitulo(), clienteActual.getIdCliente());
+        JDialog dialogo = new JDialog(SwingUtilities.getWindowAncestor(this),
+                "Reseñas", Dialog.ModalityType.APPLICATION_MODAL);
+        dialogo.setContentPane(panel);
+        dialogo.setSize(700, 420);
+        dialogo.setLocationRelativeTo(this);
+        dialogo.setVisible(true);
     }
 
     private void configurarLayout() {
@@ -149,6 +176,8 @@ public class PanelCliente extends JPanel {
         panelAccionesCarrito.add(btnAgregarCarrito);
         panelAccionesCarrito.add(Box.createHorizontalStrut(15));
         panelAccionesCarrito.add(btnIrCarrito);
+        panelAccionesCarrito.add(Box.createHorizontalStrut(15));
+        panelAccionesCarrito.add(btnVerResenas);
         panelCatalogo.add(panelAccionesCarrito, BorderLayout.SOUTH);
 
         // Pestaña 2: Mi carrito (RF10-RF13) — PanelCarrito inyectado por composición

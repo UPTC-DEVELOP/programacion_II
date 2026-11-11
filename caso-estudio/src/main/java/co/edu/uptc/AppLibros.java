@@ -5,7 +5,10 @@ import co.edu.uptc.interfaces.IAuditoria;
 import co.edu.uptc.interfaces.ICarritoService;
 import co.edu.uptc.interfaces.IClienteRepositorio;
 import co.edu.uptc.interfaces.ILibroRepositorio;
+import co.edu.uptc.interfaces.IGestionResena;
 import co.edu.uptc.interfaces.IVentaRepository;
+import co.edu.uptc.negocio.GestionResena;
+import co.edu.uptc.persistencia.ReviewJdbcRepository;
 import co.edu.uptc.negocio.CarritoServiceImpl;
 import co.edu.uptc.negocio.GestionCliente;
 import co.edu.uptc.negocio.GestionCompra;
@@ -114,11 +117,16 @@ public class AppLibros {
                 repositorioCarrito, repositorioCliente, repositorioVentaJdbc,
                 repositorioCarritoJson);
 
+        // Reseñas y calificaciones (RF19/RF20): repositorio JDBC + servicio de negocio.
+        IGestionResena gestionResena = new GestionResena(
+                new ReviewJdbcRepository(), repositorioLibro, repositorioCliente);
+
         // 4. Capa de Presentación (GUI)
         java.awt.EventQueue.invokeLater(() -> {
             VentanaPrincipal ventana = new VentanaPrincipal(
                     gestionSeguridad, gestionCliente, gestionLibro, gestionDashboard,
-                    carritoService, gestionReporte, gestionCompra, repositorioFacturaJson::guardar);
+                    carritoService, gestionReporte, gestionCompra, repositorioFacturaJson::guardar,
+                    gestionResena);
             ventana.setVisible(true);
         });
     }

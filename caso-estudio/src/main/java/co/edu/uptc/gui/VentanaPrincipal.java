@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import co.edu.uptc.interfaces.ICarritoService;
+import co.edu.uptc.interfaces.IGestionResena;
 import co.edu.uptc.modelo.dto.ClienteDto;
 import co.edu.uptc.modelo.dto.CredencialDto;
 import co.edu.uptc.modelo.dto.LibroDto;
@@ -57,15 +58,17 @@ public class VentanaPrincipal extends JFrame {
                             GestionLibro gestionLibro, GestionDashboard gestionDashboard,
                             ICarritoService carritoService, GestionReporte gestionReporte,
                             GestionCompra gestionCompra,
-                            Consumer<FacturaDto> guardarFactura) {
+                            Consumer<FacturaDto> guardarFactura,
+                            IGestionResena gestionResena) {
         inicializarComponentes(gestionSeguridad, gestionCliente, gestionLibro, gestionDashboard,
-                carritoService, gestionReporte, gestionCompra, guardarFactura);
+                carritoService, gestionReporte, gestionCompra, guardarFactura, gestionResena);
         configurarVentana();
     }
 
     private void inicializarComponentes(GestionSeguridad seguridad, GestionCliente gc, GestionLibro gl,
                                         GestionDashboard gd, ICarritoService cs, GestionReporte gr,
-                                        GestionCompra gcompra, Consumer<FacturaDto> guardarFactura) {
+                                        GestionCompra gcompra, Consumer<FacturaDto> guardarFactura,
+                                        IGestionResena gestionResena) {
         cardLayout = new CardLayout();
         panelContenedor = new JPanel(cardLayout);
 
@@ -79,6 +82,7 @@ public class VentanaPrincipal extends JFrame {
         panelGestionLibros = new PanelGestionLibros(evento);
         panelGestionClientes = new PanelGestionClientes(evento);
         panelCliente = new PanelCliente(evento);
+        panelCliente.setServicioResenas(gestionResena);
 
         panelContenedor.add(panelLogin, PANEL_LOGIN);
         panelContenedor.add(panelDashboard, PANEL_ADMIN);
