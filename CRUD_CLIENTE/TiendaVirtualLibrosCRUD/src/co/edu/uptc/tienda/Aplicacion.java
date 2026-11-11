@@ -45,9 +45,8 @@ public class Aplicacion {
 
 			PanelCentral panelCentral = new PanelCentral(new PanelCliente(gestionCliente),
 					new PanelLibro(gestionLibro));
-			PanelCatalogo panelCatalogo = new PanelCatalogo(gestionLibro);
 			VentanaPrincipal ventana = new VentanaPrincipal(gestionAutenticacion, panelCentral,
-					new PanelCliente(gestionCliente), panelCatalogo);
+					new PanelCliente(gestionCliente), gestionLibro);
 			ventana.setVisible(Boolean.TRUE);
 
 		});

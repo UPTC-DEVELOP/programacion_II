@@ -7,6 +7,7 @@ import co.edu.uptc.tienda.gui.clientes.PanelCliente;
 import co.edu.uptc.tienda.gui.compras.PanelCatalogo;
 import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.negocio.IGestionAutenticacion;
+import co.edu.uptc.tienda.negocio.IGestionLibro;
 import co.edu.uptc.tienda.negocio.NegocioException;
 
 /**
@@ -15,7 +16,10 @@ import co.edu.uptc.tienda.negocio.NegocioException;
 public class VentanaPrincipal extends JFrame {
 
 	private static final long serialVersionUID = 1L;
+
 	private final IGestionAutenticacion gestionAutenticacion;
+	private final IGestionLibro gestionLibro;
+
 	private final PanelCentral panelCentral;
 	private final PanelCatalogo panelCatalogo;
 	private final PanelCliente panelCliente;
@@ -26,11 +30,12 @@ public class VentanaPrincipal extends JFrame {
 	private Cliente clienteAutenticado;
 
 	public VentanaPrincipal(IGestionAutenticacion gestionAutenticacion, PanelCentral panelCentral,
-			PanelCliente panelCliente, PanelCatalogo panelCatalogo) {
+			PanelCliente panelCliente, IGestionLibro gestionLibro) {
 		this.gestionAutenticacion = gestionAutenticacion;
+		this.gestionLibro = gestionLibro;
+
 		this.panelCentral = panelCentral;
 		this.panelCliente = panelCliente;
-		this.panelCatalogo = panelCatalogo;
 
 		setTitle("Tienda Virtual de Libros");
 		setSize(380, 180);
@@ -43,6 +48,9 @@ public class VentanaPrincipal extends JFrame {
 		evento.registrarAccion(Evento.LOGIN, this::loguear);
 		evento.registrarAccion(Evento.REGISTRARSE, this::registrarseCliente);
 		panelLogin = new PanelLogin(evento);
+
+		evento.registrarAccion(Evento.CERRAR_SESION, this::cerrarSesion);
+		panelCatalogo = new PanelCatalogo(gestionLibro, evento);
 
 		add(panelLogin);
 		getRootPane().setDefaultButton(panelLogin.getBotonIngresar());
@@ -73,9 +81,13 @@ public class VentanaPrincipal extends JFrame {
 		this.panelCatalogo.setVisible(Boolean.TRUE);
 	}
 
-	public void cerrarSesion() {
+	private void cerrarSesion() {
 		this.panelCatalogo.setVisible(Boolean.FALSE);
 		this.panelLogin.setVisible(Boolean.TRUE);
+
+		setTitle("Tienda Virtual de Libros");
+		setSize(380, 180);
+		setLocationRelativeTo(null);
 	}
 
 	private void registrarseCliente() {

@@ -26,7 +26,7 @@ public class PanelCatalogo extends JPanel {
 
 	private final IGestionLibro gestionLibro;
 
-	public PanelCatalogo(IGestionLibro gestionLibro) {
+	public PanelCatalogo(IGestionLibro gestionLibro, Evento evento) {
 		this.gestionLibro = gestionLibro;
 
 		setLayout(new BorderLayout(10, 10));
@@ -36,6 +36,7 @@ public class PanelCatalogo extends JPanel {
 
 		cargarLibrosEnTabla(this.gestionLibro.listarLibros());
 
+		evento.escuchar(this.btnCerrarSesion, Evento.CERRAR_SESION);
 	}
 
 	private void crearPanelSuperior() {
@@ -51,7 +52,6 @@ public class PanelCatalogo extends JPanel {
 		Evento evento = new Evento();
 		evento.registrar(this.btnBuscar, Evento.BUSCAR_LIBRO, this::buscarPorTitulo);
 		evento.registrar(this.btnVerTodos, Evento.VER_LIBROS, this::verTodos);
-		evento.registrar(this.btnCerrarSesion, Evento.CERRAR_SESION, this::cerrarSesion);
 
 		panelSuperiorIzq.add(new JLabel("Titulo Libro: ", SwingConstants.CENTER));
 		panelSuperiorIzq.add(this.txtTitulo);
@@ -112,9 +112,6 @@ public class PanelCatalogo extends JPanel {
 	private void verTodos() {
 		this.txtTitulo.setText("");
 		cargarLibrosEnTabla(this.gestionLibro.listarLibros());
-	}
-
-	private void cerrarSesion() {
 	}
 
 }
