@@ -1,47 +1,56 @@
-# Tienda Virtual de Libros — Grupo 14
+# TiendaVirtual — Grupo 14 · Programación II (UPTC)
 
-Proyecto académico de **Programación II (2026-II)**. Aplicación de escritorio desarrollada en Java Swing para gestionar libros, usuarios, clientes, carrito de compras y pedidos.
+Proyecto de escritorio en **Java 17 + Swing + Maven**, desarrollado a partir de la base compartida por el Grupo 14 en el repositorio académico `UPTC-DEVELOP/programacion_II` (rama de trabajo indicada: `feature/grupo14`). Versión Maven: **1.0.18**.
 
-## Funciones incluidas
+> **Estado:** compilación y pruebas de carrito/JDBC realizadas en CachyOS; **integración del CRUD JDBC de usuarios con las pantallas Swing pendiente**. No presentar este estado como entrega funcional totalmente integrada.
 
-- Inicio de sesión y registro de usuarios.
-- Consulta y administración del catálogo de libros.
-- Registro y gestión de clientes.
-- Carrito de compras con operaciones para agregar, actualizar cantidades, eliminar elementos y consultar el total.
-- Módulo de evaluación de pedidos e inventario, accesible desde la ventana principal.
-- Persistencia local de usuarios y libros mediante archivos de texto.
+## Responsabilidades
 
-## Estructura
-
-El proyecto sigue una organización MVC (Modelo, Vista y Controlador):
-
-| Carpeta | Contenido |
+| Integrante | Aporte principal |
 |---|---|
-| `src/modelo` | Entidades y repositorios de libros, usuarios, carrito, productos y pedidos. |
-| `src/vista` | Ventanas e interfaces Swing. |
-| `src/controlador` | Eventos, validaciones y coordinación entre vistas y modelos. |
-| `src/persistencia` | Lectura y escritura de los datos de libros y usuarios. |
-| `src/excepciones` | Excepciones de validación. |
-| `src/util` | Estilos y clase de inicio de la aplicación. |
-| `datos` | Archivos locales de datos iniciales. |
+| **Jhonatan Giraldo** | CRUD de carrito, persistencia JSON y JDBC, cálculos y carrito individual por correo |
+| **Elke Sommer Daza** | CRUD de usuarios mediante JDBC (`usuariosjdbc`): insertar, consultar, actualizar, eliminar |
+| **Base del grupo** | Login, registro, catálogo, gestión de clientes y módulo «Gestión de pedidos» |
 
-## Abrir y ejecutar en Eclipse
+## Inicio rápido
 
-1. Descomprime el ZIP.
-2. En Eclipse, selecciona **File → Import → Existing Projects into Workspace**.
-3. Elige la carpeta `programacion_II-feature-grupo14/TiendaVirtual` (contiene `.project` y `.classpath`).
-4. Configura un JRE compatible con **Java 21**, indicado en `.classpath`.
-5. Abre `src/util/aplicacion/Main.java` y selecciona **Run As → Java Application**.
+**Requisitos:** JDK 17, Maven 3.x, Eclipse con soporte Maven; opcional MariaDB Server/MySQL Server para JDBC.
 
-El punto de entrada es `util.aplicacion.Main`. Los archivos locales están en `TiendaVirtual/datos`; si la aplicación no los encuentra, revisa que Eclipse ejecute con `TiendaVirtual` como directorio de trabajo.
+1. **Eclipse:** `File > Import > Maven > Existing Maven Projects` y seleccionar la carpeta que contiene este `pom.xml`.
+2. **Terminal:** ejecutar `mvn clean verify`.
+3. **Para el carrito con base de datos:** crear el esquema con `sql/esquema.sql`, copiar `config/database.properties.example` a `config/database.properties`, configurar credenciales y poner `carrito.storage=jdbc`. El archivo real de configuración está excluido de Git.
+4. **Ejecutar:** en Eclipse, `util.aplicacion.Main` como Java Application, con directorio de trabajo igual a esta carpeta.
 
-## Rama de trabajo
+**Sin servidor:** la opción `carrito.storage=json` funciona con `datos/carrito.json` y permite la prueba del carrito local. Las funciones del paquete `usuariosjdbc` sí requieren servidor.
 
-El material corresponde al proyecto de la rama `feature/grupo14` del repositorio del curso: [UPTC-DEVELOP/programacion_II](https://github.com/UPTC-DEVELOP/programacion_II/tree/feature/grupo14).
+## Dónde está el código
 
-## Tecnologías
+- `src/main/java/util/aplicacion/Main.java`: punto de entrada de Swing.
+- `src/main/java/vista/`: ventanas y componentes.
+- `src/main/java/controlador/`: eventos y flujo entre ventanas.
+- `src/main/java/modelo/`: entidades, carrito, catálogo y repositorios originales.
+- `src/main/java/persistencia/`: archivos locales y carrito JDBC.
+- `src/main/java/configuracion/ConfiguracionBD.java`: URL JDBC, credenciales y modo de carrito.
+- `src/main/java/usuariosjdbc/`: CRUD JDBC aportado por Elke, todavía independiente del registro y login Swing.
+- `sql/esquema.sql`: tablas SQL `usuarios` y `carrito_items`.
+- `src/test/java/pruebas/PruebaCarrito.java`: prueba funcional manual del carrito JSON.
 
-- Java 21
-- Java Swing
-- Eclipse IDE
-- Archivos de texto para persistencia local
+## Pruebas verificadas y límites
+
+- Reportado y observado en CachyOS: `mvn clean verify` / `mvn clean package` con `BUILD SUCCESS`; `usuariosjdbc.pruebas.PruebasUsuarios` indica `Conexion OK`; `pruebas.PruebaCarrito` indica `PRUEBA_CARRITO_OK`.
+- Se probaron operaciones SQL CRUD de usuarios y de filas del carrito mediante comandos de prueba, y se confirmó que Swing guardó y recuperó un artículo en MariaDB.
+- Se observó el identificador de carrito `usuario:j@mail.com` separado del antiguo `local`. La comprobación de dos carritos **con contenido simultáneo** aún debe repetirse en la versión final si se solicita evidencia formal.
+- **No está integrado:** las pantallas de usuarios usan `modelo.RepositorioUsuarios` y `datos/usuarios.txt`, no `usuariosjdbc.repositorio.RepositorioUsuarios`.
+- **Riesgo pendiente:** las contraseñas del módulo local y del CRUD JDBC se almacenan sin hash; no usar datos reales ni desplegar en producción.
+- Maven no ejecuta automáticamente todas las clases `main()` de pruebas: consultar `docs/PRUEBAS.md`.
+
+## Documentación
+
+| Documento | Contenido |
+|---|---|
+| [Arquitectura](docs/ARQUITECTURA.md) | Recorrido del código y persistencias |
+| [Instalación](docs/INSTALACION.md) | CachyOS KDE, Windows 10/11 y MariaDB |
+| [Pruebas](docs/PRUEBAS.md) | Comandos y resultados esperados |
+| [Estado y pendientes](docs/ESTADO_Y_PENDIENTES.md) | Cumplimiento parcial, riesgos y próximos pasos |
+
+**No subir** `config/database.properties`, `datos/usuarios.txt`, `datos/carrito.json`, respaldos ni `target/`/`bin/`. Este repositorio conserva únicamente el ejemplo de configuración y el catálogo inicial.
