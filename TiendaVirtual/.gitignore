@@ -1,1 +1,19 @@
-/bin/
+# Build / IDE
+target/
+bin/
+*.class
+*.log
+*.bak
+respaldos/
+.metadata/
+.idea/
+.DS_Store
+# Credenciales y datos locales
+config/database.properties
+datos/usuarios.txt
+datos/carrito.json
+usuarios-publicos.json
+*.env
+.env
+# Informes de prueba locales
+evidencias/

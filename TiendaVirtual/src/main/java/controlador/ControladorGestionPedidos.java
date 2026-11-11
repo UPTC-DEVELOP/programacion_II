@@ -10,17 +10,15 @@ import excepciones.ExcepcionValidacion;
 import modelo.Pedido;
 import modelo.Producto;
 import modelo.RepositorioProductos;
-import vista.VistaEvaluacionParte2;
+import vista.VistaGestionPedidos;
 
-public class ControladorEvaluacionParte2 implements ActionListener {
-    private VistaEvaluacionParte2 vista;
-    private RepositorioProductos repositorioProductos;
+public class ControladorGestionPedidos implements ActionListener {
+    private VistaGestionPedidos vista;
     private ArrayList<Pedido> historialPedidos;
 
-    public ControladorEvaluacionParte2(VistaEvaluacionParte2 vista,
+    public ControladorGestionPedidos(VistaGestionPedidos vista,
             RepositorioProductos repositorioProductos) {
         this.vista = vista;
-        this.repositorioProductos = repositorioProductos;
         this.historialPedidos = new ArrayList<Pedido>();
 
         vista.cargarProductos(repositorioProductos.getProductos());

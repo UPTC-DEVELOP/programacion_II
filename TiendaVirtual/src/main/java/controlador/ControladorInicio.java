@@ -11,29 +11,30 @@ import excepciones.ExcepcionValidacion;
 import modelo.Libro;
 import modelo.RepositorioLibros;
 import modelo.RepositorioCarrito;
+import modelo.Usuario;
 import modelo.RepositorioUsuarios;
 import modelo.RepositorioProductos;
 import vista.VistaCliente;
 import vista.VistaCarrito;
 import vista.VistaInicio;
 import vista.VistaLogin;
-import vista.VistaEvaluacionParte2;
+import vista.VistaGestionPedidos;
 public class ControladorInicio implements ActionListener {
     private VistaInicio vista;
     private VistaLogin login;
     private RepositorioLibros repositorio;
     private RepositorioCarrito repositorioCarrito;
     public ControladorInicio(VistaInicio vista, VistaLogin login,
-            RepositorioLibros repositorio) {
+            RepositorioLibros repositorio, Usuario usuario) {
         this.vista = vista;
         this.login = login;
         this.repositorio = repositorio;
-        this.repositorioCarrito = new RepositorioCarrito();
+        this.repositorioCarrito = new RepositorioCarrito(usuario.getCorreo());
         vista.getBotonAnadirLibro().addActionListener(this);
         vista.getBotonQuitarLibro().addActionListener(this);
         vista.getBotonGestionarClientes().addActionListener(this);
         vista.getBotonCarrito().addActionListener(this);
-        vista.getBotonEvaluacionParte2().addActionListener(this);
+        vista.getBotonGestionPedidos().addActionListener(this);
         vista.getBotonCerrarSesion().addActionListener(this);
         actualizarTabla();
     }
@@ -48,8 +49,8 @@ public class ControladorInicio implements ActionListener {
             abrirGestionClientes();
         } else if (origen == vista.getBotonCarrito()) {
             abrirCarrito();
-        } else if (origen == vista.getBotonEvaluacionParte2()) {
-            abrirEvaluacionParte2();
+        } else if (origen == vista.getBotonGestionPedidos()) {
+            abrirGestionPedidos();
         } else if (origen == vista.getBotonCerrarSesion()) {
             cerrarSesion();
         }
@@ -60,10 +61,10 @@ public class ControladorInicio implements ActionListener {
         vistaCarrito.setVisible(true);
     }
 
-    private void abrirEvaluacionParte2() {
-        VistaEvaluacionParte2 vistaEvaluacion = new VistaEvaluacionParte2();
+    private void abrirGestionPedidos() {
+        VistaGestionPedidos vistaEvaluacion = new VistaGestionPedidos();
         RepositorioProductos repositorioProductos = new RepositorioProductos();
-        new ControladorEvaluacionParte2(vistaEvaluacion, repositorioProductos);
+        new ControladorGestionPedidos(vistaEvaluacion, repositorioProductos);
         vistaEvaluacion.setVisible(true);
     }
 

@@ -31,6 +31,7 @@ public class VistaCarrito extends JFrame {
     private JButton botonActualizar;
     private JButton botonEliminar;
     private JButton botonLimpiar;
+    private JButton botonVaciar;
     private JButton botonCerrar;
     private JTable tablaCarrito;
     private DefaultTableModel modeloTabla;
@@ -38,7 +39,7 @@ public class VistaCarrito extends JFrame {
 
     public VistaCarrito() {
         setTitle("Carrito de compras");
-        setSize(760, 520);
+        setSize(920, 550);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -89,11 +90,13 @@ public class VistaCarrito extends JFrame {
         botonActualizar = new JButton("Actualizar");
         botonEliminar = new JButton("Eliminar");
         botonLimpiar = new JButton("Limpiar");
+        botonVaciar = new JButton("Vaciar carrito");
 
         Estilos.botonPrincipal(botonAgregar);
         Estilos.botonSecundario(botonActualizar);
         Estilos.botonSecundario(botonEliminar);
         Estilos.botonClaro(botonLimpiar);
+        Estilos.botonClaro(botonVaciar);
 
         JPanel acciones = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 6));
         acciones.setBackground(Estilos.FONDO);
@@ -101,6 +104,7 @@ public class VistaCarrito extends JFrame {
         acciones.add(botonActualizar);
         acciones.add(botonEliminar);
         acciones.add(botonLimpiar);
+        acciones.add(botonVaciar);
 
         String[] columnas = { "Libro", "Cantidad", "Precio", "Subtotal" };
         modeloTabla = new DefaultTableModel(columnas, 0) {
@@ -177,7 +181,7 @@ public class VistaCarrito extends JFrame {
         });
     }
 
-    public void mostrarTotal(int total) {
+    public void mostrarTotal(long total) {
         etiquetaTotal.setText("Total: " + formatearDinero(total));
     }
 
@@ -213,6 +217,8 @@ public class VistaCarrito extends JFrame {
         return botonLimpiar;
     }
 
+    public JButton getBotonVaciar() { return botonVaciar; }
+
     public JButton getBotonCerrar() {
         return botonCerrar;
     }
@@ -221,7 +227,7 @@ public class VistaCarrito extends JFrame {
         return tablaCarrito;
     }
 
-    private String formatearDinero(int valor) {
+    private String formatearDinero(long valor) {
         return String.format("$%,d", valor).replace(',', '.');
     }
 }

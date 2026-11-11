@@ -1,5 +1,6 @@
 package controlador;
 
+import java.io.IOException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -36,6 +37,9 @@ public class ControladorCarrito implements ActionListener {
             }
         });
 
+        try { repositorio.cargar(librosDisponibles); }
+        catch (IOException ex) { mostrarAdvertencia("No fue posible cargar el carrito: " + ex.getMessage()); }
+        vista.getBotonVaciar().addActionListener(this);
         actualizarTabla();
     }
 
@@ -49,6 +53,8 @@ public class ControladorCarrito implements ActionListener {
             actualizar();
         } else if (origen == vista.getBotonEliminar()) {
             eliminar();
+        } else if (origen == vista.getBotonVaciar()) {
+            vaciar();
         } else if (origen == vista.getBotonLimpiar()) {
             vista.limpiarCampos();
         } else if (origen == vista.getBotonCerrar()) {
@@ -71,6 +77,8 @@ public class ControladorCarrito implements ActionListener {
                     JOptionPane.INFORMATION_MESSAGE);
         } catch (NumberFormatException e) {
             mostrarAdvertencia("La cantidad debe ser un número entero.");
+        } catch (IOException e) {
+            mostrarAdvertencia("No se pudo guardar el carrito: " + e.getMessage());
         } catch (ExcepcionValidacion e) {
             mostrarAdvertencia(e.getMessage());
         }
@@ -95,6 +103,8 @@ public class ControladorCarrito implements ActionListener {
                     JOptionPane.INFORMATION_MESSAGE);
         } catch (NumberFormatException e) {
             mostrarAdvertencia("La cantidad debe ser un número entero.");
+        } catch (IOException e) {
+            mostrarAdvertencia("No se pudo guardar el carrito: " + e.getMessage());
         } catch (ExcepcionValidacion e) {
             mostrarAdvertencia(e.getMessage());
         }
@@ -118,8 +128,19 @@ public class ControladorCarrito implements ActionListener {
                 actualizarTabla();
                 vista.limpiarCampos();
             }
+        } catch (IOException e) {
+            mostrarAdvertencia("No se pudo guardar el carrito: " + e.getMessage());
         } catch (ExcepcionValidacion e) {
             mostrarAdvertencia(e.getMessage());
+        }
+    }
+
+    private void vaciar() {
+        if (repositorio.listar().isEmpty()) return;
+        int opcion = JOptionPane.showConfirmDialog(vista, "¿Vaciar todo el carrito?", "Confirmar", JOptionPane.YES_NO_OPTION);
+        if (opcion == JOptionPane.YES_OPTION) {
+            try { repositorio.vaciar(); actualizarTabla(); vista.limpiarCampos(); }
+            catch (IOException e) { mostrarAdvertencia("No se pudo guardar el carrito: " + e.getMessage()); }
         }
     }
 

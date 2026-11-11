@@ -22,7 +22,7 @@ import modelo.Pedido;
 import modelo.Producto;
 import util.Estilos;
 
-public class VistaEvaluacionParte2 extends JFrame {
+public class VistaGestionPedidos extends JFrame {
     private static final long serialVersionUID = 1L;
 
     private JComboBox<Producto> comboProductos;
@@ -38,8 +38,8 @@ public class VistaEvaluacionParte2 extends JFrame {
     private JTable tablaHistorial;
     private DefaultTableModel modeloTabla;
 
-    public VistaEvaluacionParte2() {
-        setTitle("Evaluación Parte 2 - Pedidos e inventario");
+    public VistaGestionPedidos() {
+        setTitle("Gestión de pedidos e inventario");
         setSize(900, 620);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);

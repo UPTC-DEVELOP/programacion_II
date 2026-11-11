@@ -1,0 +1,6 @@
+# Copiar a config/database.properties y completar localmente, sin subir contrasenas
+database.url=jdbc:mariadb://127.0.0.1:3306/tienda_virtual
+database.user=tienda_app
+database.password=
+# json funciona sin servidor; jdbc requiere el esquema SQL y el driver Maven
+carrito.storage=json

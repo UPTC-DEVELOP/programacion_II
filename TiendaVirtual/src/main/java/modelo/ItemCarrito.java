@@ -33,7 +33,7 @@ public class ItemCarrito {
         this.cantidad = cantidad;
     }
 
-    public int getSubtotal() {
-        return libro.getPrecio() * cantidad;
+    public long getSubtotal() {
+        return (long) libro.getPrecio() * cantidad;
     }
 }

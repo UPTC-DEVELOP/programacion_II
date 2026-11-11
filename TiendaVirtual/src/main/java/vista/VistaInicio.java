@@ -20,7 +20,7 @@ public class VistaInicio extends JFrame {
     private JButton botonQuitarLibro;
     private JButton botonGestionarClientes;
     private JButton botonCarrito;
-    private JButton botonEvaluacionParte2;
+    private JButton botonGestionPedidos;
     private JButton botonCerrarSesion;
     private JTable tablaLibros;
     private DefaultTableModel modeloTabla;
@@ -70,12 +70,12 @@ public class VistaInicio extends JFrame {
         botonQuitarLibro = new JButton("Quitar libro");
         botonGestionarClientes = new JButton("Gestionar clientes");
         botonCarrito = new JButton("Carrito");
-        botonEvaluacionParte2 = new JButton("Evaluación Parte 2");
+        botonGestionPedidos = new JButton("Gestión de pedidos");
         Estilos.botonPrincipal(botonAnadirLibro);
         Estilos.botonSecundario(botonQuitarLibro);
         Estilos.botonSecundario(botonGestionarClientes);
         Estilos.botonPrincipal(botonCarrito);
-        Estilos.botonSecundario(botonEvaluacionParte2);
+        Estilos.botonSecundario(botonGestionPedidos);
         JPanel acciones = new JPanel(
                 new FlowLayout(FlowLayout.LEFT, 10, 8));
         acciones.setBackground(Estilos.FONDO);
@@ -83,7 +83,7 @@ public class VistaInicio extends JFrame {
         acciones.add(botonQuitarLibro);
         acciones.add(botonGestionarClientes);
         acciones.add(botonCarrito);
-        acciones.add(botonEvaluacionParte2);
+        acciones.add(botonGestionPedidos);
         JPanel centro = new JPanel(new BorderLayout());
         centro.setBackground(Estilos.FONDO);
         centro.setBorder(
@@ -106,8 +106,8 @@ public class VistaInicio extends JFrame {
     public JButton getBotonCarrito() {
         return botonCarrito;
     }
-    public JButton getBotonEvaluacionParte2() {
-        return botonEvaluacionParte2;
+    public JButton getBotonGestionPedidos() {
+        return botonGestionPedidos;
     }
     public JButton getBotonCerrarSesion() {
         return botonCerrarSesion;
