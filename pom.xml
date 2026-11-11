@@ -5,6 +5,13 @@
   <version>1.0.0</version>
   <name>Tienda Virtual de Libros</name>
   <description>sistema de gestion de libreria virtual</description>
+  <dependencies>
+    <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.13.1</version>
+    </dependency>
+</dependencies>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
