@@ -81,7 +81,8 @@ public class RepositorioClientesJson implements IRepositorio<Cliente> {
                 clientes.addAll(leidos);
             }
         } catch (IOException | JsonParseException e) {
-            System.err.println("No se pudo leer " + archivo.toAbsolutePath() + ": " + e.getMessage());
+            throw new PersistenciaException(
+                    "No se pudo leer " + archivo.toAbsolutePath(), e);
         }
     }
 
@@ -94,7 +95,8 @@ public class RepositorioClientesJson implements IRepositorio<Cliente> {
             Type tipoLista = new TypeToken<List<Cliente>>() { }.getType();
             Files.writeString(archivo, gson.toJson(clientes, tipoLista), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            System.err.println("No se pudo escribir " + archivo.toAbsolutePath() + ": " + e.getMessage());
+            throw new PersistenciaException(
+                    "No se pudo escribir " + archivo.toAbsolutePath(), e);
         }
     }
 

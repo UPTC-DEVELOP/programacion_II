@@ -69,7 +69,8 @@ public class RepositorioLibrosJson implements IRepositorio<Libro> {
                 libros.addAll(leidos);
             }
         } catch (IOException | JsonParseException e) {
-            System.err.println("No se pudo leer " + archivo.toAbsolutePath() + ": " + e.getMessage());
+            throw new PersistenciaException(
+                    "No se pudo leer " + archivo.toAbsolutePath(), e);
         }
     }
 
@@ -81,7 +82,8 @@ public class RepositorioLibrosJson implements IRepositorio<Libro> {
             }
             Files.writeString(archivo, gson.toJson(libros, tipoLista), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            System.err.println("No se pudo escribir " + archivo.toAbsolutePath() + ": " + e.getMessage());
+            throw new PersistenciaException(
+                    "No se pudo escribir " + archivo.toAbsolutePath(), e);
         }
     }
 

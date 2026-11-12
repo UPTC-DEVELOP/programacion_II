@@ -1,19 +1,26 @@
 package view;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import controller.ControladorCliente;
+import controller.ControladorCompras;
 import controller.ControladorLibro;
 import model.Cliente;
 import model.ClientePremium;
+import model.Compra;
 import model.FormatoLibro;
 import model.Libro;
 import persistencia.IRepositorio;
+import persistencia.PersistenciaException;
 import persistencia.RepositorioClientesBD;
 import persistencia.RepositorioClientesJson;
+import persistencia.RepositorioComprasBD;
+import persistencia.RepositorioComprasJson;
 import persistencia.RepositorioLibrosBD;
 import persistencia.RepositorioLibrosJson;
 import service.IServicioClientes;
+import service.IServicioCompras;
 import service.IServicioLibros;
 
 /**
@@ -28,31 +35,43 @@ public class Main {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                try {
+                    // CAPA 1: PERSISTENCIA
+                    // Los datos se guardan en base de datos si se arranca con
+                    // -Dtienda.bd=true; si no, en archivo JSON.
+                	
+                    boolean usarBD = Boolean.getBoolean("tienda.bd");
 
-                // CAPA 1: PERSISTENCIA
-                // Los datos se guardan en base de datos si se arranca con
-                // -Dtienda.bd=true; si no, en archivo JSON.
-            	
-                boolean usarBD = Boolean.getBoolean("tienda.bd");
+                    IRepositorio<Cliente> repositorioClientes = usarBD
+                            ? new RepositorioClientesBD()
+                            : new RepositorioClientesJson();
 
-                IRepositorio<Cliente> repositorioClientes = usarBD
-                        ? new RepositorioClientesBD()
-                        : new RepositorioClientesJson();
+                    IRepositorio<Libro> repositorioLibros = usarBD
+                            ? new RepositorioLibrosBD()
+                            : new RepositorioLibrosJson();
 
-                IRepositorio<Libro> repositorioLibros = usarBD
-                        ? new RepositorioLibrosBD()
-                        : new RepositorioLibrosJson();
+                    IRepositorio<Compra> repositorioCompras = usarBD
+                            ? new RepositorioComprasBD()
+                            : new RepositorioComprasJson();
 
-                // CAPA 2: LÓGICA DE NEGOCIO (solo se usa la interfaz)
-                
-                IServicioClientes controladorClientes = new ControladorCliente(repositorioClientes);
-                IServicioLibros controladorLibros = new ControladorLibro(repositorioLibros);
+                    // CAPA 2: LÓGICA DE NEGOCIO (solo se usa la interfaz)
+                    
+                    IServicioClientes controladorClientes = new ControladorCliente(repositorioClientes);
+                    IServicioLibros controladorLibros = new ControladorLibro(repositorioLibros);
+                    IServicioCompras controladorCompras = new ControladorCompras(repositorioCompras);
 
-                cargarDatosDePrueba(controladorClientes);
-                cargarLibrosDePrueba(controladorLibros);
+                    cargarDatosDePrueba(controladorClientes);
+                    cargarLibrosDePrueba(controladorLibros);
 
-                // CAPA 3: INTERFAZ GRÁFICA
-                new VentanaLogin(controladorClientes, controladorLibros).setVisible(true);
+                    // CAPA 3: INTERFAZ GRÁFICA
+                    new VentanaLogin(controladorClientes, controladorLibros, controladorCompras)
+                            .setVisible(true);
+                } catch (PersistenciaException e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null,
+                            "No se pudo inicializar el almacenamiento:\n" + e.getMessage(),
+                            "Error de persistencia", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
     }
@@ -66,7 +85,9 @@ public class Main {
         Cliente cliente = new ClientePremium("Juan Perez", "juan@uptc.edu.co", "1234");
         cliente.setDireccion("Cra 11 #15-20, Tunja");
         cliente.setTelefono("311 555 2233");
-        controlador.registrar(cliente);
+        if (!controlador.registrar(cliente)) {
+            throw new PersistenciaException("No se pudo guardar el cliente de prueba");
+        }
     }
 
     // CARGA LIBROS DE PRUEBA (solo si el JSON está vacío)
@@ -106,8 +127,10 @@ public class Main {
                 FormatoLibro.DIGITAL
         );
 
-        controladorLibro.registrar(libro1);
-        controladorLibro.registrar(libro2);
-        controladorLibro.registrar(libro3);
+        if (!controladorLibro.registrar(libro1)
+                || !controladorLibro.registrar(libro2)
+                || !controladorLibro.registrar(libro3)) {
+            throw new PersistenciaException("No se pudieron guardar los libros de prueba");
+        }
     }
 }

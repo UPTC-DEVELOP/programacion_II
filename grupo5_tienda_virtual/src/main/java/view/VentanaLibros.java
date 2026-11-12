@@ -174,8 +174,10 @@ public class VentanaLibros extends JFrame {
                 JOptionPane.showMessageDialog(this, "Libro registrado exitosamente.");
                 actualizarTabla(controladorLibro.listar());
                 limpiarCampos();
+            } else if (controladorLibro.buscar(libro.getIsbn()) != null) {
+                JOptionPane.showMessageDialog(this, "Error: El ISBN ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(this, "Error: El ISBN ya existe o datos inválidos.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No se pudo guardar el libro. Verifique los datos o el almacenamiento.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Por favor ingrese valores numéricos válidos.", "Error de formato", JOptionPane.WARNING_MESSAGE);
@@ -192,8 +194,10 @@ public class VentanaLibros extends JFrame {
                 JOptionPane.showMessageDialog(this, "Libro actualizado correctamente.");
                 actualizarTabla(controladorLibro.listar());
                 limpiarCampos();
-            } else {
+            } else if (controladorLibro.buscar(isbn) == null) {
                 JOptionPane.showMessageDialog(this, "No se encontró un libro con el ISBN ingresado.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo guardar la actualización. Verifique los datos o el almacenamiento.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Verifique los datos numéricos.", "Error", JOptionPane.WARNING_MESSAGE);
@@ -215,8 +219,10 @@ public class VentanaLibros extends JFrame {
                 JOptionPane.showMessageDialog(this, "Libro eliminado con éxito.");
                 actualizarTabla(controladorLibro.listar());
                 limpiarCampos();
+            } else if (controladorLibro.buscar(isbn) == null) {
+                JOptionPane.showMessageDialog(this, "No se encontró un libro con el ISBN ingresado.", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(this, "No se pudo eliminar el libro.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No se pudo eliminar el libro. Verifique el almacenamiento.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

@@ -1,8 +1,5 @@
 package persistencia;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -37,20 +34,9 @@ public class RepositorioClientesBD implements IRepositorio<Cliente> {
     public RepositorioClientesBD(String ruta) {
         this.url = ConfiguracionBD.JDBC_PREFIJO + ruta;
         this.clientes = new ArrayList<Cliente>();
-        crearCarpeta(ruta);
+        ConfiguracionBD.crearCarpeta(ruta);
         crearTabla();
         cargar();
-    }
-
-    private void crearCarpeta(String ruta) {
-        Path padre = Path.of(ruta).toAbsolutePath().getParent();
-        if (padre != null) {
-            try {
-                Files.createDirectories(padre);
-            } catch (IOException e) {
-                System.err.println("No se pudo crear la carpeta de la BD: " + e.getMessage());
-            }
-        }
     }
 
     private Connection conectar() throws SQLException {
@@ -68,7 +54,7 @@ public class RepositorioClientesBD implements IRepositorio<Cliente> {
         try (Connection conexion = conectar(); Statement st = conexion.createStatement()) {
             st.execute(sql);
         } catch (SQLException e) {
-            System.err.println("No se pudo crear la tabla clientes: " + e.getMessage());
+            throw new PersistenciaException("No se pudo crear la tabla clientes", e);
         }
     }
 
@@ -108,7 +94,8 @@ public class RepositorioClientesBD implements IRepositorio<Cliente> {
                 clientes.add(cliente);
             }
         } catch (SQLException e) {
-            System.err.println("No se pudieron leer los clientes de la BD: " + e.getMessage());
+            throw new PersistenciaException(
+                    "No se pudieron leer los clientes de la BD", e);
         }
     }
 
@@ -119,26 +106,35 @@ public class RepositorioClientesBD implements IRepositorio<Cliente> {
         try (Connection conexion = conectar()) {
             conexion.setAutoCommit(false);
 
-            try (Statement st = conexion.createStatement()) {
-                st.executeUpdate("DELETE FROM clientes");
-            }
-
-            try (PreparedStatement ps = conexion.prepareStatement(insert)) {
-                for (Cliente cliente : clientes) {
-                    ps.setString(1, cliente.getCorreo());
-                    ps.setString(2, cliente.getNombreCompleto());
-                    ps.setString(3, cliente.getDireccion());
-                    ps.setString(4, cliente.getTelefono());
-                    ps.setString(5, cliente.getContrasena());
-                    ps.setString(6, cliente instanceof ClientePremium ? "premium" : "regular");
-                    ps.addBatch();
+            try {
+                try (Statement st = conexion.createStatement()) {
+                    st.executeUpdate("DELETE FROM clientes");
                 }
-                ps.executeBatch();
-            }
 
-            conexion.commit();
+                try (PreparedStatement ps = conexion.prepareStatement(insert)) {
+                    for (Cliente cliente : clientes) {
+                        ps.setString(1, cliente.getCorreo());
+                        ps.setString(2, cliente.getNombreCompleto());
+                        ps.setString(3, cliente.getDireccion());
+                        ps.setString(4, cliente.getTelefono());
+                        ps.setString(5, cliente.getContrasena());
+                        ps.setString(6, cliente instanceof ClientePremium ? "premium" : "regular");
+                        ps.addBatch();
+                    }
+                    ps.executeBatch();
+                }
+
+                conexion.commit();
+            } catch (SQLException e) {
+                try {
+                    conexion.rollback();
+                } catch (SQLException ignored) {
+                }
+                throw e;
+            }
         } catch (SQLException e) {
-            System.err.println("No se pudieron guardar los clientes en la BD: " + e.getMessage());
+            throw new PersistenciaException(
+                    "No se pudieron guardar los clientes en la BD", e);
         }
     }
 }

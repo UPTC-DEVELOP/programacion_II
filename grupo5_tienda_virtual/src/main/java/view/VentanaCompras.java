@@ -15,6 +15,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import service.IServicioCompras;
 import service.IServicioLibros;
 import model.CarritoCompras;
 import model.Cliente;
@@ -34,6 +35,7 @@ public class VentanaCompras extends JFrame {
 	// CLIENTE ACTUAL Y CONTROLADOR DE LIBROS
 	private Cliente cliente;
 	private IServicioLibros controladorLibro;
+	private IServicioCompras controladorCompras;
 	
 	
     // Campos de selección
@@ -61,11 +63,13 @@ public class VentanaCompras extends JFrame {
     private JButton btnVaciar;
     private JButton btnComprar;
 
- // RECIBIR EL CLIENTE Y EL CONTROLADOR DE LIBROS
-    public VentanaCompras(Cliente cliente, IServicioLibros controladorLibro) {
+ // RECIBIR EL CLIENTE Y LOS CONTROLADORES
+    public VentanaCompras(Cliente cliente, IServicioLibros controladorLibro,
+            IServicioCompras controladorCompras) {
 
         this.cliente = cliente;
         this.controladorLibro = controladorLibro;
+        this.controladorCompras = controladorCompras;
         carrito = new CarritoCompras();
 
         setTitle("Gestion de Compras");
@@ -225,11 +229,17 @@ public class VentanaCompras extends JFrame {
     
     private void eliminarDelCarrito() {
 
-        Libro libro = (Libro) cmbLibro.getSelectedItem();
+        int filaSeleccionada = tablaCarrito.getSelectedRow();
 
-        if (libro == null) {
+        if (filaSeleccionada == -1) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Seleccione un libro de la tabla."
+            );
             return;
         }
+
+        Libro libro = (Libro) modeloTabla.getValueAt(filaSeleccionada, 0);
 
         carrito.eliminarLibro(libro);
 
@@ -276,8 +286,8 @@ public class VentanaCompras extends JFrame {
         );
      
         // MOSTRAR DESCUENTO PREMIUM
-        double valorDescuento =
-                carrito.calcularSubtotal() * cliente.calcularDescuento();
+        double descuento = cliente != null ? cliente.calcularDescuento() : 0.0;
+        double valorDescuento = carrito.calcularSubtotal() * descuento;
 
         lblDescuentoPremium.setText(
                 String.format("$%,.2f", valorDescuento)
@@ -287,7 +297,7 @@ public class VentanaCompras extends JFrame {
         lblTotal.setText(
                 String.format(
                         "$%,.2f",
-                        carrito.calcularTotal(cliente.calcularDescuento())
+                        carrito.calcularTotal(descuento)
                 )
         );
     }
@@ -347,6 +357,7 @@ public class VentanaCompras extends JFrame {
 
         // CREAR LA COMPRA
         Compra compra = new Compra(metodoPago.getNombre());
+        compra.setCorreoCliente(cliente.getCorreo());
 
         // CREAR LOS ITEMS DE LA COMPRA
         for (Map.Entry<Libro, Integer> entrada :
@@ -360,34 +371,53 @@ public class VentanaCompras extends JFrame {
             compra.agregarItem(item);
         }
 
+        // CALCULAR TOTAL FINAL CON DESCUENTO PREMIUM
+        double totalFinal = carrito.calcularTotal(cliente.calcularDescuento());
+        compra.setTotal(totalFinal);
+
+        // GUARDAR LA COMPRA
+        if (!controladorCompras.registrarCompra(compra)) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No se pudo guardar la compra. Verifique el almacenamiento.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
         // ACTUALIZAR EL INVENTARIO
+        StringBuilder fallosInventario = new StringBuilder();
         for (Map.Entry<Libro, Integer> entrada :
                 carrito.getItems().entrySet()) {
 
             Libro libro = entrada.getKey();
             int cantidad = entrada.getValue();
 
-            controladorLibro.actualizarInventario(
+            if (!controladorLibro.actualizarInventario(
                     libro.getIsbn(),
                     cantidad
-            );
+            )) {
+                fallosInventario.append(libro.getTitulo()).append("\n");
+            }
         }
 
         // GUARDAR LA COMPRA EN EL CLIENTE
         cliente.agregarCompra(compra);
-        
-     // CALCULAR TOTAL FINAL CON DESCUENTO PREMIUM
-        double totalFinal = carrito.calcularTotal(cliente.calcularDescuento());
 
-     // MOSTRAR RESUMEN DE LA COMPRA
-        JOptionPane.showMessageDialog(
-                this,
-                "COMPRA REALIZADA CORRECTAMENTE\n\n"
-                        + "Cliente: " + cliente.getNombreCompleto()
-                        + "\nMetodo de pago: " + metodoPago.getNombre()
-                        + "\nFecha: " + compra.getFecha()
-                        + "\nTotal: " + String.format("$%,.2f", totalFinal)
-        );
+        // MOSTRAR RESUMEN DE LA COMPRA
+        String mensaje = "COMPRA REALIZADA CORRECTAMENTE\n\n"
+                + "Cliente: " + cliente.getNombreCompleto()
+                + "\nMetodo de pago: " + metodoPago.getNombre()
+                + "\nFecha: " + compra.getFecha()
+                + "\nTotal: " + String.format("$%,.2f", totalFinal);
+
+        if (fallosInventario.length() > 0) {
+            mensaje += "\n\nAviso: no se pudo actualizar el inventario de:\n"
+                    + fallosInventario;
+        }
+
+        JOptionPane.showMessageDialog(this, mensaje);
 
         // VACIAR EL CARRITO
         carrito.vaciar();

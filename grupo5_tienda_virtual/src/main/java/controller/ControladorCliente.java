@@ -5,6 +5,7 @@ import java.util.List;
 
 import model.Cliente;
 import persistencia.IRepositorio;
+import persistencia.PersistenciaException;
 import service.IServicioClientes;
 
 /**
@@ -31,9 +32,14 @@ public class ControladorCliente implements IServicioClientes {
                 || buscar(cliente.getCorreo()) != null) {
             return false;
         }
-        repositorio.agregar(cliente);
-        repositorio.guardar();
-        return true;
+        try {
+            repositorio.agregar(cliente);
+            repositorio.guardar();
+            return true;
+        } catch (PersistenciaException e) {
+            revertir();
+            return false;
+        }
     }
 
     @Override
@@ -61,11 +67,16 @@ public class ControladorCliente implements IServicioClientes {
         if (actual == null) {
             return false;
         }
-        actual.setNombreCompleto(nombreCompleto);
-        actual.setDireccion(direccion);
-        actual.setTelefono(telefono);
-        repositorio.guardar();
-        return true;
+        try {
+            actual.setNombreCompleto(nombreCompleto);
+            actual.setDireccion(direccion);
+            actual.setTelefono(telefono);
+            repositorio.guardar();
+            return true;
+        } catch (PersistenciaException e) {
+            revertir();
+            return false;
+        }
     }
 
     @Override
@@ -74,9 +85,22 @@ public class ControladorCliente implements IServicioClientes {
         if (actual == null) {
             return false;
         }
-        repositorio.eliminar(actual);
-        repositorio.guardar();
-        return true;
+        try {
+            repositorio.eliminar(actual);
+            repositorio.guardar();
+            return true;
+        } catch (PersistenciaException e) {
+            revertir();
+            return false;
+        }
+    }
+
+    private void revertir() {
+        try {
+            repositorio.cargar();
+        } catch (PersistenciaException e) {
+            System.err.println("No se pudo recargar el estado de clientes: " + e.getMessage());
+        }
     }
 
     @Override

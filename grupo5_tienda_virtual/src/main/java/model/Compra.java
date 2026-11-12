@@ -8,8 +8,11 @@ import java.util.List;
  */
 public class Compra {
 
+    private long id;
     private String metodoPago;
     private java.time.LocalDate fecha;
+    private String correoCliente;
+    private double total;
     private List<ItemCompra> items;
 
     public Compra() {
@@ -22,6 +25,11 @@ public class Compra {
         this.metodoPago = metodoPago;
     }
 
+    public Compra(String metodoPago, String correoCliente) {
+        this(metodoPago);
+        this.correoCliente = correoCliente;
+    }
+
     public void agregarItem(ItemCompra item) {
         items.add(item);
     }
@@ -32,6 +40,14 @@ public class Compra {
             total += item.getTotalLinea();
         }
         return total;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getMetodoPago() {
@@ -48,6 +64,22 @@ public class Compra {
 
     public void setFecha(java.time.LocalDate fecha) {
         this.fecha = fecha;
+    }
+
+    public String getCorreoCliente() {
+        return correoCliente;
+    }
+
+    public void setCorreoCliente(String correoCliente) {
+        this.correoCliente = correoCliente;
+    }
+
+    public double getTotal() {
+        return total;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
     }
 
     public List<ItemCompra> getItems() {

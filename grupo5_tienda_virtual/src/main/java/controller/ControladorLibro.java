@@ -5,6 +5,7 @@ import java.util.List;
 
 import model.Libro;
 import persistencia.IRepositorio;
+import persistencia.PersistenciaException;
 import service.IServicioLibros;
 
 /**
@@ -41,9 +42,14 @@ public class ControladorLibro implements IServicioLibros {
         if (buscar(libro.getIsbn()) != null) {
             return false;
         }
-        repositorio.agregar(libro);
-        repositorio.guardar();
-        return true;
+        try {
+            repositorio.agregar(libro);
+            repositorio.guardar();
+            return true;
+        } catch (PersistenciaException e) {
+            revertir();
+            return false;
+        }
     }
 
     // LISTADO COMPLETO DE LIBROS (RF04)
@@ -92,18 +98,23 @@ public class ControladorLibro implements IServicioLibros {
         if (actual == null || datos == null) {
             return false;
         }
-        actual.setTitulo(datos.getTitulo());
-        actual.setAutor(datos.getAutor());
-        actual.setAnioPublicacion(datos.getAnioPublicacion());
-        actual.setCategoria(datos.getCategoria());
-        actual.setEditorial(datos.getEditorial());
-        actual.setNumeroPaginas(datos.getNumeroPaginas());
-        actual.setPrecio(datos.getPrecio());
-        actual.setPorcentajeIva(datos.getPorcentajeIva());
-        actual.setCantidadDisponible(datos.getCantidadDisponible());
-        actual.setFormato(datos.getFormato());
-        repositorio.guardar();
-        return true;
+        try {
+            actual.setTitulo(datos.getTitulo());
+            actual.setAutor(datos.getAutor());
+            actual.setAnioPublicacion(datos.getAnioPublicacion());
+            actual.setCategoria(datos.getCategoria());
+            actual.setEditorial(datos.getEditorial());
+            actual.setNumeroPaginas(datos.getNumeroPaginas());
+            actual.setPrecio(datos.getPrecio());
+            actual.setPorcentajeIva(datos.getPorcentajeIva());
+            actual.setCantidadDisponible(datos.getCantidadDisponible());
+            actual.setFormato(datos.getFormato());
+            repositorio.guardar();
+            return true;
+        } catch (PersistenciaException e) {
+            revertir();
+            return false;
+        }
     }
 
     // ELIMINAR UN LIBRO POR ISBN (RF03)
@@ -113,9 +124,14 @@ public class ControladorLibro implements IServicioLibros {
         if (actual == null) {
             return false;
         }
-        repositorio.eliminar(actual);
-        repositorio.guardar();
-        return true;
+        try {
+            repositorio.eliminar(actual);
+            repositorio.guardar();
+            return true;
+        } catch (PersistenciaException e) {
+            revertir();
+            return false;
+        }
     }
 
     // VALIDAR LA DISPONIBILIDAD DE STOCK (RF17)
@@ -133,10 +149,23 @@ public class ControladorLibro implements IServicioLibros {
     public boolean actualizarInventario(String isbn, int cantidadVendida) {
         Libro libro = buscar(isbn);
         if (libro != null && libro.getCantidadDisponible() >= cantidadVendida) {
-            libro.setCantidadDisponible(libro.getCantidadDisponible() - cantidadVendida);
-            repositorio.guardar();
-            return true;
+            try {
+                libro.setCantidadDisponible(libro.getCantidadDisponible() - cantidadVendida);
+                repositorio.guardar();
+                return true;
+            } catch (PersistenciaException e) {
+                revertir();
+                return false;
+            }
         }
         return false;
+    }
+
+    private void revertir() {
+        try {
+            repositorio.cargar();
+        } catch (PersistenciaException e) {
+            System.err.println("No se pudo recargar el estado de libros: " + e.getMessage());
+        }
     }
 }

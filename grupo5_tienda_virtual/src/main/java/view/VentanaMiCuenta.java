@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import service.IServicioClientes;
+import service.IServicioCompras;
 import service.IServicioLibros;
 import model.Cliente;
 
@@ -31,6 +32,7 @@ public class VentanaMiCuenta extends JFrame {
 
     private IServicioClientes controlador;
     private IServicioLibros controladorLibro;
+    private IServicioCompras controladorCompras;
     private Cliente cliente;
     private JFrame padre;
 
@@ -40,11 +42,12 @@ public class VentanaMiCuenta extends JFrame {
     private JTextField txtTelefono;
 
     public VentanaMiCuenta(
-            IServicioClientes controlador,IServicioLibros controladorLibro,Cliente cliente,
-            JFrame padre) {
+            IServicioClientes controlador, IServicioLibros controladorLibro,
+            IServicioCompras controladorCompras, Cliente cliente, JFrame padre) {
 
         this.controlador = controlador;
         this.controladorLibro = controladorLibro;
+        this.controladorCompras = controladorCompras;
         this.cliente = cliente;
         this.padre = padre;
 
@@ -107,6 +110,7 @@ public class VentanaMiCuenta extends JFrame {
         JButton btnAtras = new JButton("Atr\u00e1s");
         JButton btnGuardar = new JButton("Guardar cambios");
         JButton btnCompras = new JButton("Compras");
+        JButton btnHistorial = new JButton("Historial");
         btnAtras.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -127,9 +131,17 @@ public class VentanaMiCuenta extends JFrame {
                 abrirCompras();
             }
         });
+
+        btnHistorial.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                abrirHistorial();
+            }
+        });
         panel.add(btnAtras);
         panel.add(btnGuardar);
         panel.add(btnCompras);
+        panel.add(btnHistorial);
         return panel;
     }
 
@@ -168,15 +180,21 @@ public class VentanaMiCuenta extends JFrame {
         if (controlador.actualizarDatos(cliente.getCorreo(), nombre, direccion, telefono)) {
             JOptionPane.showMessageDialog(this, "Datos actualizados correctamente.");
         } else {
-            JOptionPane.showMessageDialog(this, "No se pudieron actualizar los datos.");
+            JOptionPane.showMessageDialog(this,
+                    "No se pudieron actualizar los datos. Verifique el almacenamiento.");
         }
     }
     
  // ABRIR VENTANA DE COMPRAS Liz 
     private void abrirCompras() {
 
-        VentanaCompras ventanaCompras = new VentanaCompras(cliente, controladorLibro);
+        VentanaCompras ventanaCompras =
+                new VentanaCompras(cliente, controladorLibro, controladorCompras);
 
         ventanaCompras.setVisible(true);
+    }
+
+    private void abrirHistorial() {
+        new VentanaHistorialCompras(controladorCompras, cliente, this).setVisible(true);
     }
 }

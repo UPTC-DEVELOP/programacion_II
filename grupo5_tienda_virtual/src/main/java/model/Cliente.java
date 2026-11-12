@@ -14,7 +14,7 @@ public abstract class Cliente {
     private String direccion;
     private String telefono;
     private String contrasena;
-    private List<Compra> compras;
+    private transient List<Compra> compras;
 
     protected Cliente() {
         this.compras = new ArrayList<Compra>();

@@ -19,6 +19,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import service.IServicioClientes;
+import service.IServicioCompras;
 import service.IServicioLibros;
 import model.Cliente;
 
@@ -31,13 +32,16 @@ public class VentanaLogin extends JFrame {
 
     private IServicioClientes controlador;
     private IServicioLibros controladorLibro;
+    private IServicioCompras controladorCompras;
 
     private JTextField txtCorreo;
     private JPasswordField txtContrasena;
 
-    public VentanaLogin(IServicioClientes controlador, IServicioLibros controladorLibro) {
+    public VentanaLogin(IServicioClientes controlador, IServicioLibros controladorLibro,
+            IServicioCompras controladorCompras) {
         this.controlador = controlador;
         this.controladorLibro = controladorLibro;
+        this.controladorCompras = controladorCompras;
 
         setTitle("Iniciar Sesi\u00f3n");
         setSize(420, 300);
@@ -151,7 +155,7 @@ public class VentanaLogin extends JFrame {
 
         Cliente cliente = controlador.iniciarSesion(correo, contrasena);
         if (cliente != null) {
-            new VentanaMiCuenta(controlador, controladorLibro, cliente,
+            new VentanaMiCuenta(controlador, controladorLibro, controladorCompras, cliente,
                     VentanaLogin.this).setVisible(true);
             setVisible(false);
         } else {

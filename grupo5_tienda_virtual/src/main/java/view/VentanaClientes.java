@@ -130,7 +130,8 @@ public class VentanaClientes extends JFrame {
                 JOptionPane.showMessageDialog(this, "Cliente eliminado correctamente.");
                 cargarTabla();
             } else {
-                JOptionPane.showMessageDialog(this, "No se pudo eliminar el cliente.");
+                JOptionPane.showMessageDialog(this,
+                        "No se pudo eliminar el cliente. Verifique el almacenamiento.");
             }
         }
     }

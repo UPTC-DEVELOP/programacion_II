@@ -1,5 +1,9 @@
 package persistencia;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 /**
  * Configuracion central de la base de datos.
  *
@@ -20,5 +24,18 @@ public final class ConfiguracionBD {
 
     public static String url() {
         return JDBC_PREFIJO + RUTA_BD;
+    }
+
+    public static void crearCarpeta(String ruta) {
+        Path padre = Path.of(ruta).toAbsolutePath().getParent();
+        if (padre == null) {
+            return;
+        }
+        try {
+            Files.createDirectories(padre);
+        } catch (IOException e) {
+            throw new PersistenciaException(
+                    "No se pudo crear la carpeta de datos: " + padre, e);
+        }
     }
 }

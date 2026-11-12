@@ -157,8 +157,11 @@ public class VentanaRegistroCliente extends JFrame {
         if (controlador.registrar(cliente)) {
             JOptionPane.showMessageDialog(this, "Cliente registrado correctamente.");
             limpiarFormulario();
-        } else {
+        } else if (controlador.buscar(correo) != null) {
             JOptionPane.showMessageDialog(this, "Ya existe un cliente con ese correo.");
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo guardar el cliente. Verifique el almacenamiento.");
         }
     }
 

@@ -32,6 +32,7 @@ public class RepositorioLibrosBD implements IRepositorio<Libro> {
     public RepositorioLibrosBD(String rutaBd) {
         this.rutaBd = rutaBd;
         this.libros = new ArrayList<>();
+        ConfiguracionBD.crearCarpeta(rutaBd);
         crearTablaSiNoExiste();
         cargar();
     }
@@ -63,7 +64,7 @@ public class RepositorioLibrosBD implements IRepositorio<Libro> {
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
-            System.err.println("Error al crear la tabla libros: " + e.getMessage());
+            throw new PersistenciaException("No se pudo crear la tabla libros", e);
         }
     }
 
@@ -150,7 +151,8 @@ public class RepositorioLibrosBD implements IRepositorio<Libro> {
                 libros.add(libro);
             }
         } catch (SQLException e) {
-            System.err.println("Error al cargar libros desde la BD: " + e.getMessage());
+            throw new PersistenciaException(
+                    "No se pudieron leer los libros de la BD", e);
         }
     }
 
@@ -164,43 +166,52 @@ public class RepositorioLibrosBD implements IRepositorio<Libro> {
                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = obtenerConexion()) {
-            conn.setAutoCommit(false); 
-            
+            conn.setAutoCommit(false);
+
             // SE DESACTIVA EL AUTO-COMMIT PARA EJECUTAR LAS OPERACIONES EN LOTE
 
-            // SE LIMPIA LA TABLA PARA INSERTAR LA INFORMACIÓN ACTUALIZADA
-            
-            try (Statement deleteStmt = conn.createStatement()) {
-                deleteStmt.executeUpdate(sqlDelete);
-            }
+            try {
+                // SE LIMPIA LA TABLA PARA INSERTAR LA INFORMACIÓN ACTUALIZADA
 
-            // SE INSERTAN TODOS LOS LIBROS EN UN SOLO LOTE (OPERACIÓN OPTIMIZADA)
-            
-            try (PreparedStatement insertStmt = conn.prepareStatement(sqlInsert)) {
-                for (Libro libro : libros) {
-                    insertStmt.setString(1, libro.getIsbn());
-                    insertStmt.setString(2, libro.getTitulo());
-                    insertStmt.setString(3, libro.getAutor());
-                    insertStmt.setInt(4, libro.getAnioPublicacion());
-                    insertStmt.setString(5, libro.getCategoria());
-                    insertStmt.setString(6, libro.getEditorial());
-                    insertStmt.setInt(7, libro.getNumeroPaginas());
-                    insertStmt.setDouble(8, libro.getPrecio());
-                    insertStmt.setDouble(9, libro.getPorcentajeIva());
-                    insertStmt.setInt(10, libro.getCantidadDisponible());
-                    insertStmt.setString(11, libro.getFormato() != null ? libro.getFormato().name() : null);
-
-                    insertStmt.addBatch();
+                try (Statement deleteStmt = conn.createStatement()) {
+                    deleteStmt.executeUpdate(sqlDelete);
                 }
-                insertStmt.executeBatch();
-            }
 
-            conn.commit(); 
-            
-            // SE CONFIRMAN Y APLICAN LOS CAMBIOS EN LA BASE DE DATOS
-            
+                // SE INSERTAN TODOS LOS LIBROS EN UN SOLO LOTE (OPERACIÓN OPTIMIZADA)
+
+                try (PreparedStatement insertStmt = conn.prepareStatement(sqlInsert)) {
+                    for (Libro libro : libros) {
+                        insertStmt.setString(1, libro.getIsbn());
+                        insertStmt.setString(2, libro.getTitulo());
+                        insertStmt.setString(3, libro.getAutor());
+                        insertStmt.setInt(4, libro.getAnioPublicacion());
+                        insertStmt.setString(5, libro.getCategoria());
+                        insertStmt.setString(6, libro.getEditorial());
+                        insertStmt.setInt(7, libro.getNumeroPaginas());
+                        insertStmt.setDouble(8, libro.getPrecio());
+                        insertStmt.setDouble(9, libro.getPorcentajeIva());
+                        insertStmt.setInt(10, libro.getCantidadDisponible());
+                        insertStmt.setString(11, libro.getFormato() != null ? libro.getFormato().name() : null);
+
+                        insertStmt.addBatch();
+                    }
+                    insertStmt.executeBatch();
+                }
+
+                conn.commit();
+
+                // SE CONFIRMAN Y APLICAN LOS CAMBIOS EN LA BASE DE DATOS
+
+            } catch (SQLException e) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ignored) {
+                }
+                throw e;
+            }
         } catch (SQLException e) {
-            System.err.println("Error al guardar la lista de libros en BD: " + e.getMessage());
+            throw new PersistenciaException(
+                    "No se pudieron guardar los libros en la BD", e);
         }
     }
 }
