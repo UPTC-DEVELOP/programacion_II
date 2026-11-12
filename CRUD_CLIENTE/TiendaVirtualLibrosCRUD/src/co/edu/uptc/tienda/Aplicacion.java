@@ -15,7 +15,7 @@ import co.edu.uptc.tienda.negocio.IGestionCliente;
 import co.edu.uptc.tienda.negocio.IGestionLibro;
 import co.edu.uptc.tienda.negocio.IRepositorioCliente;
 import co.edu.uptc.tienda.persistencia.BaseDeDatosLibro;
-import co.edu.uptc.tienda.persistencia.LocalCliente;
+import co.edu.uptc.tienda.persistencia.ClienteJSON;
 
 public class Aplicacion {
 
@@ -31,7 +31,8 @@ public class Aplicacion {
 
 		// Se inyectan dependencias.
 		// Un único repositorio de clientes: el login debe ver a los clientes registrados
-		IRepositorioCliente repositorioCliente = new LocalCliente();
+		// Los clientes se guardan en data/clientes.json (antes: new LocalCliente(), en memoria)
+		IRepositorioCliente repositorioCliente = new ClienteJSON();
 		IGestionCliente gestionCliente = new GestionCliente(repositorioCliente);
 		IGestionLibro gestionLibro = new GestionLibro(new BaseDeDatosLibro());
 
