@@ -1,0 +1,112 @@
+// Codigo de Maicol
+package negocio;
+
+public class Libro {
+
+    private String isbn;
+    private String titulo;
+    private String autor;
+    private int anioPublicacion;
+    private String editorial;
+    private int numPaginas;
+    private double precio;
+    private double ivaPorcentaje;
+    private int stock;
+    private String formato;
+
+    public Libro(String isbn, String titulo, String autor, int anioPublicacion,
+                 String editorial, int numPaginas, double precio,
+                 double ivaPorcentaje, int stock, String formato) {
+
+        this.isbn = isbn;
+        this.titulo = titulo;
+        this.autor = autor;
+        this.anioPublicacion = anioPublicacion;
+        this.editorial = editorial;
+        this.numPaginas = numPaginas;
+        this.precio = precio;
+        this.ivaPorcentaje = ivaPorcentaje;
+        this.stock = stock;
+        this.formato = formato;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public String getAutor() {
+        return autor;
+    }
+
+    public int getAnioPublicacion() {
+        return anioPublicacion;
+    }
+
+    public String getEditorial() {
+        return editorial;
+    }
+
+    public int getNumPaginas() {
+        return numPaginas;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public double getIvaPorcentaje() {
+        return ivaPorcentaje;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public String getFormato() {
+        return formato;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public void setAutor(String autor) {
+        this.autor = autor;
+    }
+
+    public void setAnioPublicacion(int anioPublicacion) {
+        this.anioPublicacion = anioPublicacion;
+    }
+
+    public void setEditorial(String editorial) {
+        this.editorial = editorial;
+    }
+
+    public void setNumPaginas(int numPaginas) {
+        this.numPaginas = numPaginas;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
+    public void setIvaPorcentaje(double ivaPorcentaje) {
+        this.ivaPorcentaje = ivaPorcentaje;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    public void setFormato(String formato) {
+        this.formato = formato;
+    }
+
+    public boolean validarStock(int cantidad) {
+        return cantidad > 0 && cantidad <= stock;
+    }
+}
