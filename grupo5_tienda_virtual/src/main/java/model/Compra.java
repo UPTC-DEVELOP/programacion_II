@@ -11,6 +11,8 @@ public class Compra {
     private String metodoPago;
     private java.time.LocalDate fecha;
     private List<ItemCompra> items;
+    private String correoCliente;
+    private double total;
 
     public Compra() {
         this.items = new ArrayList<ItemCompra>();
@@ -34,6 +36,22 @@ public class Compra {
         return total;
     }
 
+    public String getCorreoCliente() {
+        return correoCliente;
+    }
+
+    public void setCorreoCliente(String correoCliente) {
+        this.correoCliente = correoCliente;
+    }
+
+    public double getTotal() {
+        return total > 0 ? total : calcularTotal();
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
+    }
+    
     public String getMetodoPago() {
         return metodoPago;
     }
