@@ -1,0 +1,17 @@
+TIENDA VIRTUAL DE LIBROS - UPTC
+=============================================
+Recibo de compra #1
+Fecha: 2026-11-10T14:50:16.880736200
+Cliente: Cliente Premium
+Correo: premium@test.com
+Tipo: Premium
+Pago: Tarjeta
+
+Cien años de soledad | 2 x $ 50.000,00
+  Subtotal: $ 100.000,00 | IVA: $ 19.000,00 | Total: $ 119.000,00
+
+Subtotal: $ 100.000,00
+Impuestos: $ 19.000,00
+Descuento Premium: $ 11.900,00
+TOTAL A PAGAR: $ 107.100,00
+=============================================

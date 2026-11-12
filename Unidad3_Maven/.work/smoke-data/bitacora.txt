@@ -1,0 +1,4 @@
+[2026-11-10 14:50:16] REGISTRAR_CLIENTE  | correo=premium@test.com, tipo=Premium
+[2026-11-10 14:50:16] INICIO_SESION      | correo=premium@test.com
+[2026-11-10 14:50:16] AGREGAR_CARRITO    | cliente=premium@test.com, ISBN=9789586600001, cantidad=2
+[2026-11-10 14:50:16] CONFIRMAR_COMPRA   | Compra #1, cliente=premium@test.com, total=107100.0
