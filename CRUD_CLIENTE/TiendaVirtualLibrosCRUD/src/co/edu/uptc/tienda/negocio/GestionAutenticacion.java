@@ -1,11 +1,13 @@
 package co.edu.uptc.tienda.negocio;
 
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
+import co.edu.uptc.tienda.conexion.DataBaseConfig;
 import co.edu.uptc.tienda.modelo.Administrador;
 import co.edu.uptc.tienda.modelo.Cliente;
 
@@ -29,9 +31,9 @@ public class GestionAutenticacion implements IGestionAutenticacion {
 
 		adminProps = new Properties();
 
-		try (FileInputStream fis = new FileInputStream("adminUser.properties")) {
+		try (InputStream input = DataBaseConfig.class.getClassLoader().getResourceAsStream("adminUser.properties")) {
 
-			adminProps.load(fis);
+			adminProps.load(input);
 
 		} catch (Exception e) {
 			System.err.println("Error: No se puede cargar el archivo (properties) \n:" + e.getMessage());
