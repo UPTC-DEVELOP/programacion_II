@@ -42,7 +42,6 @@ public class GestionAutenticacion implements IGestionAutenticacion {
 			return cliente;
 
 		} finally {
-			// La contraseña no debe quedar en memoria más tiempo del necesario
 			if (contrasena != null) {
 				Arrays.fill(contrasena, '\0');
 			}

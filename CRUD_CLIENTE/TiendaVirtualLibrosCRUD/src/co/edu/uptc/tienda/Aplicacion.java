@@ -30,9 +30,15 @@ public class Aplicacion {
 		}
 
 		// Se inyectan dependencias.
+<<<<<<< HEAD
 		// Un único repositorio de clientes: el login debe ver a los clientes registrados
 		// Los clientes se guardan en data/clientes.json (antes: new LocalCliente(), en memoria)
 		IRepositorioCliente repositorioCliente = new ClienteJSON();
+=======
+		// Un único repositorio de clientes: el login debe ver a los clientes
+		// registrados
+		IRepositorioCliente repositorioCliente = new LocalCliente();
+>>>>>>> 8294c679e4e4bcf08af72bf72f54d9fb35ea5840
 		IGestionCliente gestionCliente = new GestionCliente(repositorioCliente);
 		IGestionLibro gestionLibro = new GestionLibro(new BaseDeDatosLibro());
 
@@ -45,7 +51,7 @@ public class Aplicacion {
 			PanelCentral panelCentral = new PanelCentral(new PanelCliente(gestionCliente),
 					new PanelLibro(gestionLibro));
 			VentanaPrincipal ventana = new VentanaPrincipal(gestionAutenticacion, panelCentral,
-					new PanelCliente(gestionCliente));
+					new PanelCliente(gestionCliente), gestionLibro);
 			ventana.setVisible(Boolean.TRUE);
 
 		});
