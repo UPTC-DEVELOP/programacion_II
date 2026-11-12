@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioFormatoLibro;
 import co.edu.uptc.tiendalibros.modelo.Dinero;
-import co.edu.uptc.tiendalibros.modelo.EstadoLibroCatalogo;
+import co.edu.uptc.tiendalibros.modelo.EstadoEnCatalogo;
 import co.edu.uptc.tiendalibros.modelo.FormatoLibro;
 import co.edu.uptc.tiendalibros.modelo.FormatoLibroBuilder;
 import co.edu.uptc.tiendalibros.modelo.TipoFormatoLibro;
@@ -81,7 +81,7 @@ public class RepositorioFormatoLibroEnCSV extends RepositorioElementoEnCSVBase<F
       .tipoIVA(formatoLibro.getTipoIVA())
       .inventario(formatoLibro.getInventario())
       .cantidadPaginas(formatoLibro.getCantidadPaginas())
-      .estadoLibroCatalogo(formatoLibro.getEstadoLibroCatalogo())
+      .estadoEnCatalogo(formatoLibro.getEstadoEnCatalogo())
       .construir();
   }
   
@@ -107,7 +107,7 @@ public class RepositorioFormatoLibroEnCSV extends RepositorioElementoEnCSVBase<F
       int cantidadPaginas = Integer.parseInt(campos[RepositorioFormatoLibroEnCSV.COLUMNA_CANTIDAD_PAGINAS].trim());
       // convertir el estado del libro en el catálogo
       String estadoLibroCatalogoString = campos[RepositorioFormatoLibroEnCSV.COLUMNA_ESTADO_LIBRO_CATALOGO].trim();
-      EstadoLibroCatalogo estadoLibroCatalogo = EstadoLibroCatalogo
+      EstadoEnCatalogo estadoLibroCatalogo = EstadoEnCatalogo
         .convertirAbreviatura(estadoLibroCatalogoString);
       
       // retornar el formato de libro con los datos leídos
@@ -119,7 +119,7 @@ public class RepositorioFormatoLibroEnCSV extends RepositorioElementoEnCSVBase<F
         .tipoIVA(tipoIVA)
         .inventario(inventario)
         .cantidadPaginas(cantidadPaginas)
-        .estadoLibroCatalogo(estadoLibroCatalogo)
+        .estadoEnCatalogo(estadoLibroCatalogo)
         .construir();
       return Optional.of(formatoLibro);
     }
@@ -148,7 +148,7 @@ public class RepositorioFormatoLibroEnCSV extends RepositorioElementoEnCSVBase<F
           .name(),
       String.valueOf(formatoLibro.getInventario()),
       String.valueOf(formatoLibro.getCantidadPaginas()),
-      formatoLibro.getEstadoLibroCatalogo()
+      formatoLibro.getEstadoEnCatalogo()
         .getAbreviatura()
     );
   }

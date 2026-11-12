@@ -2,8 +2,10 @@ package co.edu.uptc.tiendalibros.gui.libro;
 
 import java.awt.GridBagLayout;
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
@@ -17,14 +19,20 @@ import co.edu.uptc.tiendalibros.gui.componentes.PanelCamposBase;
 import co.edu.uptc.tiendalibros.gui.componentes.RestriccionesCelda;
 import co.edu.uptc.tiendalibros.gui.componentes.ValidadorFormulario;
 import co.edu.uptc.tiendalibros.gui.estilos.FabricaEstilos;
+import co.edu.uptc.tiendalibros.gui.estilos.FormatosDinero;
 import co.edu.uptc.tiendalibros.modelo.Dinero;
-import co.edu.uptc.tiendalibros.modelo.EstadoLibroCatalogo;
+import co.edu.uptc.tiendalibros.modelo.EstadoEnCatalogo;
 import co.edu.uptc.tiendalibros.modelo.FormatoLibro;
 import co.edu.uptc.tiendalibros.modelo.TipoFormatoLibro;
 import co.edu.uptc.tiendalibros.modelo.TipoIVA;
 import co.edu.uptc.tiendalibros.negocio.ResultadoValidacion;
 
-public class PanelCamposFormatoLibro extends PanelCamposBase<ElementoVistaFormatoLibro, DatosEntradaFormatoLibro> {
+public class PanelCamposFormatoLibro
+  extends PanelCamposBase<ElementoVistaFormatoLibro, Optional<DatosEntradaFormatoLibro>> {
+  
+  /// Casilla para indicar si el libro se ofrece en este formato.
+  private JCheckBox chkOfrecido;
+  
   /// Campo para mostrar el tipo de formato.
   private JTextField txtTipoFormato;
   
@@ -90,6 +98,12 @@ public class PanelCamposFormatoLibro extends PanelCamposBase<ElementoVistaFormat
     setBackground(null);
     setLayout(new GridBagLayout());
     
+    // crear la casilla para ofrecer el formato. Al cambiar su estado seleccionado, se
+    // habilitan o deshabilitan los campos del formato
+    String textoCasilla = String.format("Ofrecer el libro en formato %s", nombreFormato.toLowerCase());
+    this.chkOfrecido = new JCheckBox(textoCasilla);
+    this.chkOfrecido.addActionListener((e) -> habilitarCampos(this.chkOfrecido.isSelected()));
+    
     // crear el campo de tipo de formato de libro
     this.txtTipoFormato = new JTextField();
     FabricaEstilos.fabrica(this.txtTipoFormato)
@@ -109,7 +123,7 @@ public class PanelCamposFormatoLibro extends PanelCamposBase<ElementoVistaFormat
     // crear el campo de precio base
     this.txtPrecioBase = new JFormattedTextField();
     this.txtPrecioBase.setValue(BigDecimal.ZERO);
-    this.txtPrecioBase.setFormatterFactory(Dinero.crearFabricaFormatoPredeterminado());
+    this.txtPrecioBase.setFormatterFactory(FormatosDinero.crearFabricaFormatoPredeterminado());
     FabricaEstilos.fabrica(this.txtPrecioBase)
       .campoTexto(20);
     
@@ -205,6 +219,11 @@ public class PanelCamposFormatoLibro extends PanelCamposBase<ElementoVistaFormat
     // obtener el objeto formato de libro que es el elemento principal que maneja este panel
     FormatoLibro formatoLibro = elementoVista.getElemento();
     
+    // marcar la casilla según si el libro ofrece el formato, y habilitar o deshabilitar los
+    // campos según corresponda
+    this.chkOfrecido.setSelected(elementoVista.esOfrecido());
+    habilitarCampos(elementoVista.esOfrecido());
+    
     // mostrar los atributos del formato del libro
     this.txtTipoFormato.setText(
       formatoLibro.getTipoFormato()
@@ -227,6 +246,19 @@ public class PanelCamposFormatoLibro extends PanelCamposBase<ElementoVistaFormat
     this.rbIva19.setSelected(tipoIVA == TipoIVA.IVA_19);
     this.rbIva5.setSelected(tipoIVA == TipoIVA.IVA_5);
     
+  }
+  
+  /// Habilita o deshabilita los campos que el usuario llena solo cuando el libro ofrece el
+  /// formato.
+  ///
+  /// @param habilitar `true` para habilitar los campos, `false` para deshabilitarlos.
+  private void habilitarCampos(boolean habilitar) {
+    this.txtInventario.setEnabled(habilitar);
+    this.txtCantidadPaginas.setEnabled(habilitar);
+    this.txtPrecioBase.setEnabled(habilitar);
+    this.rbIva19.setEnabled(habilitar);
+    this.rbIva5.setEnabled(habilitar);
+    this.txtPrecioVenta.setEnabled(habilitar);
   }
   
   public void ubicarComponentes() {
@@ -257,6 +289,15 @@ public class PanelCamposFormatoLibro extends PanelCamposBase<ElementoVistaFormat
     // .gridx(1)
     // .expandirHorizontal()
     // );
+    
+    // ubicar la casilla de ofrecer el formato, que ocupa toda la primera fila
+    agregar(
+      this.chkOfrecido,
+      base.clonar()
+        .gridy(0)
+        .gridx(0)
+        .gridwidth(4)
+    );
     
     // ubicar la etiqueta inventario
     agregar(
@@ -372,6 +413,11 @@ public class PanelCamposFormatoLibro extends PanelCamposBase<ElementoVistaFormat
   @Override
   public ResultadoValidacion validarCampos() {
     
+    // si el libro no ofrece este formato, sus campos no se deben validar
+    if (this.chkOfrecido.isSelected() == false) {
+      return new ResultadoValidacion();
+    }
+    
     return new ValidadorFormulario()
       .numeroEntero(obtenerAtributoFormato("inventario"), "inventario", this.txtInventario)
       .numeroEntero(obtenerAtributoFormato("cantidadPaginas"), "páginas", this.txtCantidadPaginas)
@@ -380,7 +426,12 @@ public class PanelCamposFormatoLibro extends PanelCamposBase<ElementoVistaFormat
   }
   
   @Override
-  public DatosEntradaFormatoLibro capturarDatos() {
+  public Optional<DatosEntradaFormatoLibro> capturarDatos() {
+    // si el libro no ofrece este formato, no hay datos que capturar
+    if (!this.chkOfrecido.isSelected()) {
+      return Optional.empty();
+    }
+    
     // obtener el formato del libro el cual es el objeto principal manejado por el panel
     FormatoLibro formatoLibro = getElementoVista().getElemento();
     // obtener el id del formato del libro
@@ -390,7 +441,7 @@ public class PanelCamposFormatoLibro extends PanelCamposBase<ElementoVistaFormat
     TipoFormatoLibro tipoFormato = formatoLibro.getTipoFormato();
     
     // obtener el estado
-    EstadoLibroCatalogo estadoLibroCatalogo = formatoLibro.getEstadoLibroCatalogo();
+    EstadoEnCatalogo estadoLibroCatalogo = formatoLibro.getEstadoEnCatalogo();
     
     // obtener el inventario
     int inventario = Integer.valueOf(
@@ -411,7 +462,7 @@ public class PanelCamposFormatoLibro extends PanelCamposBase<ElementoVistaFormat
     TipoIVA tipoIVA = obtenerTipoIva();
     
     // obtener un nuevo objeto formato de libro a partir de estos valores
-    return DatosEntradaFormatoLibro.builder()
+    DatosEntradaFormatoLibro datos = DatosEntradaFormatoLibro.builder()
       .id(idFormatoLibro)
       .idLibro(formatoLibro.getIdLibro())
       .tipoFormato(tipoFormato)
@@ -422,6 +473,7 @@ public class PanelCamposFormatoLibro extends PanelCamposBase<ElementoVistaFormat
       .estadoLibroCatalogo(estadoLibroCatalogo)
       .construir();
     
+    return Optional.of(datos);
   }
   
   /// Obtiene el tipo de IVA seleccionado.

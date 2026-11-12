@@ -62,7 +62,7 @@ public abstract class RepositorioArchivoBase<T> {
       // ocurrió una excepción de entrada y salida.
       // se convierte en una excepción propia de error técnico del sistema
       throw new ErrorTecnicoSistemaException(
-        String.format("No se pudo guardar el archivo de datos '%s'", this.rutaArchivo), excepcion
+        String.format("No se pudo cargar el archivo de datos '%s'", this.rutaArchivo), excepcion
       );
     }
   }
@@ -101,8 +101,12 @@ public abstract class RepositorioArchivoBase<T> {
       String linea;
       String lineaEncabezado = null;
       
+      // contador de la línea actual
+      int numeroLinea = 0;
+      
       // leer todas las líneas del archivo hasta que no quede ninguna
       while ((linea = lector.readLine()) != null) {
+        numeroLinea++;
         
         // saltarse las líneas vacías
         if (linea.isBlank()) {
@@ -117,6 +121,18 @@ public abstract class RepositorioArchivoBase<T> {
         
         // la línea puede tener datos por lo que se debe convertir
         Optional<T> registro = convertirLinea(linea);
+        
+        // si la línea no pudo ser convertida, se detiene la ejecución, y se le avisa al usuario
+        if (registro.isEmpty()) {
+          throw new ErrorTecnicoSistemaException(
+            String.format(
+              "La línea %d del archivo de datos '%s' no tiene el formato esperado.",
+              numeroLinea,
+              this.rutaArchivo
+            ),
+            null
+          );
+        }
         
         // si se obtuvo un registro, se debe procesar
         if (registro.isPresent()) {
@@ -197,8 +213,8 @@ public abstract class RepositorioArchivoBase<T> {
     );
   }
   
-  /// Obtiene la lista de registros. Esta lista es una copia de la lista interna de
-  /// registros.
+  /// Obtiene la lista de registros. Esta lista es una vista de solo lectura de la lista
+  /// interna de registros.
   ///
   /// @return Copia de la lista de registros.
   public List<T> getRegistros() { return Collections.unmodifiableList(this.registros); }
@@ -257,9 +273,10 @@ public abstract class RepositorioArchivoBase<T> {
   ///
   /// @param id ID del registro que se quiere eliminar.
   /// @return `true` si se eliminó, `false` si no se encontró.
+  /// @throws IllegalArgumentException Si `id` es nulo.
   public boolean eliminar(Long id) {
     if (id == null) {
-      return false;
+      throw new IllegalArgumentException("Error: No se puede eliminar con ID nulo");
     }
     
     // es mejor utilizar un iterador para eliminar un elemento de la lista mientras se está

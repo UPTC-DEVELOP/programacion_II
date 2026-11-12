@@ -29,10 +29,9 @@ public class ReglaFormatoLibroPrecioPositivo implements IReglaValidacion<Formato
   @Override
   public boolean cumple(FormatoLibro formato) {
     // se revisa si el precio base decimal es mayor que cero
-    return formato.getPrecioBase() != null
-      && formato.getPrecioBase()
-        .getCantidad()
-        .compareTo(java.math.BigDecimal.ZERO) > 0;
+    return (formato.getPrecioBase() != null)
+      && (formato.getPrecioBase()
+        .esPositivo());
   }
   
   @Override

@@ -12,17 +12,18 @@ import co.edu.uptc.tiendalibros.interfaces.IRepositorioAutor;
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioAutorLibro;
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioCategoria;
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioEditorial;
-import co.edu.uptc.tiendalibros.interfaces.IRepositorioFormatoLibro;
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioLibro;
+import co.edu.uptc.tiendalibros.interfaces.IRepositorioLibroConFormatos;
 import co.edu.uptc.tiendalibros.negocio.GestionAutor;
 import co.edu.uptc.tiendalibros.negocio.GestionCategoria;
 import co.edu.uptc.tiendalibros.negocio.editorial.GestionEditorial;
 import co.edu.uptc.tiendalibros.negocio.libro.GestionLibro;
 import co.edu.uptc.tiendalibros.persistencia.archivos.RepositorioAutorLibroEnCSV;
-import co.edu.uptc.tiendalibros.persistencia.archivos.RepositorioFormatoLibroEnCSV;
-import co.edu.uptc.tiendalibros.persistencia.archivos.RepositorioLibroEnCSV;
 import co.edu.uptc.tiendalibros.persistencia.jdbc.ConexionBaseDatos;
 import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioEditorialJDBC;
+import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioFormatoLibroJDBC;
+import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioLibroConFormatosJDBC;
+import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioLibroJDBC;
 import co.edu.uptc.tiendalibros.persistencia.memoria.RepositorioAutorenMemoria;
 import co.edu.uptc.tiendalibros.persistencia.memoria.RepositorioCategoriaEnMemoria;
 
@@ -70,19 +71,24 @@ public class Aplicacion {
     // panel del contenido principal de la ventana
     PanelContenidoPrincipal contenidoPrincipal = this.ventanaPrincipal.getPanelContenidoPrincipal();
     
-    // crear los repositorios de datos. Se usa el polimorfismo para adaptarse a cualquier
-    // repositorio
+    // crear los repositorios de datos.
     IRepositorioEditorial repositorioEditorial = new RepositorioEditorialJDBC(this.conexionBaseDatos);
     
     IRepositorioAutor repositorioAutor = new RepositorioAutorenMemoria();
     
     IRepositorioCategoria repositorioCategoria = new RepositorioCategoriaEnMemoria();
     
-    IRepositorioLibro repositorioLibro = new RepositorioLibroEnCSV("datos/libros.csv");
-    
-    IRepositorioFormatoLibro repositorioFormato = new RepositorioFormatoLibroEnCSV("datos/formatos_libros.csv");
-    
     IRepositorioAutorLibro repositorioAutorLibro = new RepositorioAutorLibroEnCSV("datos/autores_libros.csv");
+    
+    RepositorioLibroJDBC repositorioLibroJDBC = new RepositorioLibroJDBC(this.conexionBaseDatos);
+    
+    RepositorioFormatoLibroJDBC repositorioFormatoLibroJDBC = new RepositorioFormatoLibroJDBC(this.conexionBaseDatos);
+    
+    IRepositorioLibro repositorioLibro = repositorioLibroJDBC;
+    
+    IRepositorioLibroConFormatos repositorioLibroConFormatos = new RepositorioLibroConFormatosJDBC(
+      this.conexionBaseDatos, repositorioLibroJDBC, repositorioFormatoLibroJDBC
+    );
     
     // crear los gestores de lógica del negocio
     GestionEditorial gestorEditorial = new GestionEditorial(repositorioEditorial, repositorioLibro);
@@ -91,10 +97,11 @@ public class Aplicacion {
     
     GestionCategoria gestorCategoria = new GestionCategoria(repositorioCategoria);
     
-    // el gestor de libros necesita el repositorio de libros, formatos, editoriales y
-    // categorías
+ // el gestor de libros necesita el repositorio de libros, el de libros con formatos,
+    // editoriales, categorías y asociaciones autor-libro
     GestionLibro gestorLibro = new GestionLibro(
-      repositorioLibro, repositorioFormato, repositorioEditorial, repositorioCategoria, repositorioAutorLibro
+      repositorioLibro, repositorioLibroConFormatos, repositorioEditorial, repositorioCategoria,
+      repositorioAutorLibro
     );
     
     // crear los controladores que intermedian entre la interfaz gráfica y la capa de lógica

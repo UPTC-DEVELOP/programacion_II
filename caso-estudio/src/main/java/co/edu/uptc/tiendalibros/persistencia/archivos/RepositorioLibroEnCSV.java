@@ -70,6 +70,7 @@ public class RepositorioLibroEnCSV extends RepositorioElementoEnCSVBase<Libro> i
       .anioPublicacion(libro.getAnioPublicacion())
       .idCategoria(libro.getIdCategoria())
       .idEditorial(libro.getIdEditorial())
+      .listaAutoria(libro.getListaAutoria())
       .imagenLibro(libro.getImagenLibro())
       .construir();
   }
@@ -123,12 +124,12 @@ public class RepositorioLibroEnCSV extends RepositorioElementoEnCSVBase<Libro> i
     return String.join(
       getSeparador(),
       String.valueOf(libro.getId()),
-      libro.getIsbn() == null ? "" : libro.getIsbn(),
-      libro.getTitulo() == null ? "" : libro.getTitulo(),
+      textoParaCelda(libro.getIsbn()),
+      textoParaCelda(libro.getTitulo()),
       String.valueOf(libro.getAnioPublicacion()),
       libro.getIdCategoria() == null ? "" : String.valueOf(libro.getIdCategoria()),
       libro.getIdEditorial() == null ? "" : String.valueOf(libro.getIdEditorial()),
-      libro.getImagenLibro() == null ? "" : String.valueOf(libro.getImagenLibro())
+      textoParaCelda(libro.getImagenLibro())
     );
   }
   
@@ -166,7 +167,8 @@ public class RepositorioLibroEnCSV extends RepositorioElementoEnCSVBase<Libro> i
     }
     // buscar loslibros que tengan el mismo ISBN
     for (Libro libro : getRegistros()) {
-      if (isbn.equals(libro.getIsbn())) {
+      if (isbn.trim()
+        .equals(libro.getIsbn())) {
         return Optional.of(libro);
       }
     }

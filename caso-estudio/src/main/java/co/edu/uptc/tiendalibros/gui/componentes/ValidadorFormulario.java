@@ -75,7 +75,7 @@ public class ValidadorFormulario {
       return this;
     }
     
-    // intentar convetir el texto a un número entero
+    // intentar convertir el texto a un número entero
     try {
       Integer.parseInt(valorTexto);
     } catch (NullPointerException | IllegalArgumentException excepcion) {
@@ -110,7 +110,7 @@ public class ValidadorFormulario {
       return this;
     }
     
-    // intentar convetir el texto a un número decimal
+    // intentar convertir el texto a un número decimal
     try {
       Double.parseDouble(valorTexto);
     } catch (NullPointerException | IllegalArgumentException excepcion) {

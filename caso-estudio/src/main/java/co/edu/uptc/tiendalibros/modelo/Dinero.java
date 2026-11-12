@@ -2,40 +2,34 @@
 package co.edu.uptc.tiendalibros.modelo;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Currency;
 import java.util.Locale;
+import java.util.Objects;
 
-import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.text.NumberFormatter;
-
-/// Representa dinero. Es un BigDecimal configurado con redondeo.
+/// Representa una cantidad de dinero en una moneda. Es un BigDecimal configurado con
+/// redondeo.
+/// 
+/// Es un objeto tipo inmutable porque ninguna operación modifica el objeto y toda
+/// operación devuelve un nuevo objeto [Dinero].
+/// 
+/// El redondeo usado es `RoundingMode.HALF_EVEN`.
 ///
 /// @author Andrés Ávila
-public class Dinero {
+public class Dinero implements Comparable<Dinero> {
   
-  /// Contexto para las operaciones matemáticas.
-  public static MathContext CONTEXTO_DINERO = new MathContext(16, RoundingMode.HALF_EVEN);
+  /// Modo de redondeo que se aplica cada vez que se crea un objeto [Dinero].
+  public static final RoundingMode MODO_REDONDEO = RoundingMode.HALF_EVEN;
   
   /// Código ISO 4217 de la moneda predeterminada.
-  public static String CODIGO_MONEDA = "COP";
+  public static final String CODIGO_MONEDA = "COP";
   
   /// Locale predeterminado para formatear cantidades de dinero.
-  public static Locale LOCALE_PREDETERMINADO = Locale.of("es", "CO");
+  public static final Locale LOCALE_PREDETERMINADO = Locale.of("es", "CO");
   
   /// Moneda predeterminada basada en el código de la moneda.
-  public static Currency MONEDA = Currency.getInstance(Dinero.CODIGO_MONEDA);
-  
-  /// Formateador de moneda.
-  public static NumberFormat FORMATEADOR_MONEDA = null;
-  
-  static {
-    Dinero.FORMATEADOR_MONEDA = NumberFormat.getCurrencyInstance(Dinero.LOCALE_PREDETERMINADO);
-    Dinero.FORMATEADOR_MONEDA.setCurrency(Dinero.MONEDA);
-  }
+  public static final Currency MONEDA = Currency.getInstance(Dinero.CODIGO_MONEDA);
   
   /// Representa la cantidad cero (0.00) de dinero.
   public static final Dinero CERO = new Dinero("0.00");
@@ -44,10 +38,10 @@ public class Dinero {
   public static final Dinero UNO = new Dinero("1.00");
   
   /// Cantidad de dinero.
-  private BigDecimal cantidad;
+  private final BigDecimal cantidad;
   
   /// Moneda que se usa para el dinero.
-  private Currency moneda;
+  private final Currency moneda;
   
   /// Crea un nuevo objeto [Dinero] con la cantidad cero y la moneda predeterminada.
   public Dinero() {
@@ -65,31 +59,41 @@ public class Dinero {
   ///
   /// @param cantidad Cantidad de dinero.
   /// @param moneda   Moneda que se usa para el dinero.
+  /// 
+  /// @throws IllegalArgumentException Si ocurren estos casos:
+  /// - `cantidad` es nulo
+  /// - `moneda` es nulo
+  /// - `moneda` no tiene números decimales o fracciones
   public Dinero(
     BigDecimal cantidad,
     Currency moneda
   ) {
     // la cantidad no puede ser un nulo
     if (cantidad == null) {
-      throw new IllegalArgumentException("Moneda: el valor de cantidad no puede ser vacío.");
+      throw new IllegalArgumentException("Dinero: el valor de cantidad no puede ser vacío.");
     }
     // la moneda no puede ser vacía
     if (moneda == null) {
-      throw new IllegalArgumentException("Moneda: el valor de moneda no puede ser vacío.");
+      throw new IllegalArgumentException("Dinero: el valor de moneda no puede ser vacío.");
+    }
+    // toda moneda debe tener dígitos decimales o fraccionarios para representar, por ejemplo,
+    // centavos
+    if (moneda.getDefaultFractionDigits() < 0) {
+      throw new IllegalArgumentException(
+        String.format("Dinero: la moneda '%s' no tiene decimales definidos.", moneda.getCurrencyCode())
+      );
     }
     
-    this.setMoneda(moneda);
-    
+    this.moneda = moneda;
     // establecer la escala y el redondeo.
-    // la escala es el número de decimales que puede depender de la moneda.
-    this.cantidad = cantidad.setScale(moneda.getDefaultFractionDigits(), Dinero.CONTEXTO_DINERO.getRoundingMode());
+    this.cantidad = cantidad.setScale(moneda.getDefaultFractionDigits(), Dinero.MODO_REDONDEO);
   }
   
   /// Crea un objeto [Dinero] con la cantidad especificada y la moneda predeterminada.
   ///
   /// @param cantidad Representación textual de la cantidad de dinero.
-  /// @throws NumberFormatException Si el valor de cantidad debe ser un representación válida
-  ///                               de [BigDecimal]
+  /// @throws IllegalArgumentException Si `cantidad` es nulo. de [BigDecimal]
+  /// @throws NumberFormatException    Si `cantidad` no es un número válido.
   public Dinero(
     String cantidad
   ) {
@@ -98,24 +102,32 @@ public class Dinero {
   
   /// Crea un nuevo objeto [Dinero] a partir de los valores especificados.
   ///
-  /// @param cantidad Representación textual de la cantidad de dinero.
-  /// @param moneda   Moneda que se usa para el dinero.
-  /// @throws NumberFormatException Si el valor de cantidad debe ser un representación válida
-  ///                               de [BigDecimal]
+  /// @param cantidad                 Representación textual de la cantidad de dinero.
+  /// @param moneda                   Moneda que se usa para el dinero.
+  /// @param IllegalArgumentException Si `cantidad` es nulo.
+  /// @throws NumberFormatException Si el valor de `cantidad` debe ser un representación
+  ///                               válida de [BigDecimal]
   public Dinero(
     String cantidad,
     Currency moneda
   ) {
+    // verificar que el texto cantidad no sea nulo.
+    if (cantidad == null) {
+      throw new IllegalArgumentException("Dinero: el texto de cantidad no puede ser nulo.");
+    }
+    
     // primero intentar crear un número BigDecimal a partir de la representación textual.
     BigDecimal laCantidad = BigDecimal.ZERO;
     try {
       laCantidad = new BigDecimal(cantidad);
     } catch (NumberFormatException excepcion) {
       throw new NumberFormatException(
-        "Moneda: el valor de cantidad debe ser un representación válida de BigDecimal."
+        String.format(
+          "Dinero: el valor de cantidad '%s' debe ser un representación válida de BigDecimal.",
+          cantidad
+        )
       );
     }
-    
     this(laCantidad, moneda);
   }
   
@@ -124,22 +136,18 @@ public class Dinero {
   /// @return Cantidad de dinero.
   public BigDecimal getCantidad() { return this.cantidad; }
   
-  /// Establecer la cantidad de dinero.
-  ///
-  /// @param cantidad Cantidad de dinero.
-  public void setCantidad(BigDecimal cantidad) { this.cantidad = cantidad; }
-  
   /// Obtiene la moneda que se usa para el dinero.
   ///
   /// @return Moneda que se usa para el dinero.
   public Currency getMoneda() { return this.moneda; }
   
-  /// Establece la moneda que se usa para el dinero.
-  ///
-  /// @param moneda Moneda que se usa para el dinero.
-  public void setMoneda(Currency moneda) { this.moneda = moneda; }
-  
   /// Calcula la suma de este objeto [Dinero] con el objeto [Dinero] especificado.
+  /// 
+  /// El objeto `otro` no debe ser nulo.
+  /// 
+  /// El objeto `otro` debe tener la misma moneda que este objeto.
+  /// 
+  /// El resultado es un nuevo objeto [Dinero].
   ///
   /// @param otro El otro objeto [Dinero] que se quiere sumar.
   /// @return La suma de ambos objetos: this + otro.
@@ -151,6 +159,12 @@ public class Dinero {
   }
   
   /// Calcula la resta de este objeto [Dinero] con el objeto [Dinero] especificado.
+  /// 
+  /// El objeto `otro` no debe ser nulo.
+  /// 
+  /// El objeto `otro` debe tener la misma moneda que este objeto.
+  /// 
+  /// El resultado es un nuevo objeto [Dinero].
   ///
   /// @param otro El otro objeto [Dinero] que se quiere restar.
   /// @return La resta de ambos objetos: this - otro.
@@ -161,30 +175,97 @@ public class Dinero {
     return new Dinero(this.cantidad.subtract(otro.getCantidad()), this.moneda);
   }
   
-  /// Calcula la multiplicación de este objeto [Dinero] con el objeto [Dinero] especificado.
-  ///
-  /// @param otro El otro objeto [Dinero] que se quiere multiplicar.
-  /// @return La multiplicación de ambos objetos: this * otro.
-  /// @throws IllegalArgumentException Si el objeto `otro` tiene una moneda diferente si
-  ///                                  este objeto.
-  public Dinero multiplicar(Dinero otro) {
-    return new Dinero(this.cantidad.multiply(otro.getCantidad()), this.moneda);
+  /// Calcula la multiplicación de este objeto [Dinero] por un número entero de unidades.
+  /// 
+  /// @param unidades Número de unidades por el que se multiplica.
+  /// @return El resultado de la multiplicación: this × unidades.
+  public Dinero multiplicar(int unidades) {
+    return multiplicar(BigDecimal.valueOf(unidades));
   }
   
-  /// Calcula la división de este objeto [Dinero] con el objeto [Dinero] especificado.
+  /// Calcula la multiplicación de este objeto [Dinero] por un factor decimal.
+  /// 
+  /// @param factor Factor por el que se multiplica.
+  /// @return El resultado de la multiplicación: this × factor.
+  /// @throws IllegalArgumentException Si `factor` es nulo.
+  public Dinero multiplicar(BigDecimal factor) {
+    // No se puede hacer la operación si el factor es nulo
+    if (factor == null) {
+      throw new IllegalArgumentException("Dinero: el parámetro 'factor' no puede ser nulo.");
+    }
+    return new Dinero(this.cantidad.multiply(factor), this.moneda);
+  }
+  
+  /// Divide este objeto [Dinero] entre un divisor decimal.
+  /// 
+  /// @param divisor Divisor. No puede ser nulo ni cero.
+  /// @return El resultado de la división: this ÷ divisor.
+  /// @throws IllegalArgumentException Si `divisor` es nulo.
+  /// @throws ArithmeticException      Si `divisor` es cero
+  public Dinero dividir(BigDecimal divisor) {
+    // No se puede hacer la operación si el divisor es nulo
+    if (divisor == null) {
+      throw new IllegalArgumentException("Dinero: el divisor no puede ser nulo.");
+    }
+    // tener en cuenta el redondeo
+    return new Dinero(this.cantidad.divide(divisor, this.cantidad.scale(), Dinero.MODO_REDONDEO), this.moneda);
+  }
+  
+  /// Determina si esta cantidad es exactamente cero.
+  public boolean esCero() {
+    return this.cantidad.signum() == 0;
+  }
+  
+  /// Determina si esta cantidad es mayor que cero.
+  public boolean esPositivo() {
+    return this.cantidad.signum() > 0;
+  }
+  
+  /// Determina si esta cantidad es menor que cero.
+  public boolean esNegativo() {
+    return this.cantidad.signum() < 0;
+  }
+  
+  /// Compara esta cantidad con otra.
+  /// 
+  /// Permite que los objetos [Dinero] se puedan ordenar.
   ///
-  /// @param otro El otro objeto [Dinero] que se quiere dividir.
-  /// @return La multiplicación de ambos objetos: this × otro.
-  /// @throws IllegalArgumentException Si el objeto `otro` tiene una moneda diferente si
-  ///                                  este objeto.
-  public Dinero dividir(Dinero otro) {
-    return new Dinero(this.cantidad.divide(otro.getCantidad()), this.moneda);
+  /// El objeto `otro` no es nulo y tiene la misma moneda que este objeto.
+  ///
+  /// @return Un número negativo, cero o positivo, si esta cantidad es menor, igual o mayor
+  ///         que la de `otro`.
+  /// @throws IllegalArgumentException Si `otro` es nulo, o si `otro` tiene una
+  ///                                  moneda diferente.
+  @Override
+  public int compareTo(Dinero otro) {
+    validarMoneda(otro);
+    return this.cantidad.compareTo(otro.cantidad);
+  }
+  
+  /// Indica si this &lt; otro.
+  public boolean esMenorQue(Dinero otro) {
+    return compareTo(otro) < 0;
+  }
+  
+  /// Indica si this &lt;= otro.
+  public boolean esMenorOIgualQue(Dinero otro) {
+    return compareTo(otro) <= 0;
+  }
+  
+  /// Indica si this &gt; otro.
+  public boolean esMayorQue(Dinero otro) {
+    return compareTo(otro) > 0;
+  }
+  
+  /// Indica si this &gt;= otro.
+  public boolean esMayorOIgualQue(Dinero otro) {
+    return compareTo(otro) >= 0;
   }
   
   /// Obtiene un representación textual de la cantidad de dinero usando el objeto locale
   /// predeterminado de la moneda.
   public String formatear() {
-    return Dinero.FORMATEADOR_MONEDA.format(this.cantidad);
+    return this.formatear(Dinero.LOCALE_PREDETERMINADO);
   }
   
   /// Obtiene un representación textual de la cantidad de dinero usando el objeto
@@ -198,9 +279,16 @@ public class Dinero {
   /// Valida si el objeto [Dinero] especificado tienen la misma moneda.
   ///
   /// @param otro El otro objeto [Dinero] para validar si son de la misma moneda.
+  /// @throws IllegalArgumentException Si el objeto `otro` es nulo.
   /// @throws IllegalArgumentException Si el objeto `otro` tiene una moneda diferente si
   ///                                  este objeto.
   private void validarMoneda(Dinero otro) {
+    
+    // No se puede hacer una operación si el otro operando es nulo
+    if (otro == null) {
+      throw new IllegalArgumentException("Dinero: el otro valor de dinero no puede ser nulo.");
+    }
+    
     // Si este objeto dinero tiene una moneda diferente al otro objeto dinero se lanza una
     // excepción.
     if (!this.moneda.equals(otro.moneda)) {
@@ -214,65 +302,32 @@ public class Dinero {
     }
   }
   
-  /// Crea un formateador de número apto para un valor [Dinero] cuando el campo no tenga el
-  /// foco. Se incluye el símbolo de la moneda. Ejemplo: $ 20.000,00.
-  public static NumberFormatter crearFormateadorDisplay() {
-    
-    // crear un formato moneda basado en el locale predeterminado con cifras decimales
-    NumberFormat formatoNumero = NumberFormat.getCurrencyInstance(Dinero.LOCALE_PREDETERMINADO);
-    
-    formatoNumero.setMinimumFractionDigits(Dinero.MONEDA.getDefaultFractionDigits());
-    formatoNumero.setMaximumFractionDigits(Dinero.MONEDA.getDefaultFractionDigits());
-    
-    // activar la conversión a BigDecimal
-    if (formatoNumero instanceof DecimalFormat formatoDecimal) {
-      formatoDecimal.setParseBigDecimal(true);
+  /// Determina si este objeto [Dinero] es igual a otro objeto [Dinero] son iguales. Dos
+  /// objetos [Dinero] son iguales si tienen la misma moneda y la misma cantidad.
+  @Override
+  public boolean equals(Object objeto) {
+    if (this == objeto) {
+      return true;
     }
-    
-    // crear un formateador numérico
-    NumberFormatter formateador = new NumberFormatter(formatoNumero);
-    formateador.setValueClass(BigDecimal.class);
-    // el campo siempre muestra una cantidad monetaria
-    formateador.setAllowsInvalid(false);
-    formateador.setCommitsOnValidEdit(false);
-    
-    return formateador;
-  }
-  
-  /// Crea un formateador de número apto para un valor [Dinero] cuando el usuario esté
-  /// editando el campo. No incluye el símbolo de la moneda. Ejemplo: 20000,00.
-  public static NumberFormatter crearFormateadorEdicion() {
-    
-    // crear un formato numérico basado en el locale predeterminado con cifras decimales
-    NumberFormat formatoNumero = NumberFormat.getNumberInstance(Dinero.LOCALE_PREDETERMINADO);
-    
-    formatoNumero.setMinimumFractionDigits(Dinero.MONEDA.getDefaultFractionDigits());
-    formatoNumero.setMaximumFractionDigits(Dinero.MONEDA.getDefaultFractionDigits());
-    
-    // activar la conversión a BigDecimal
-    if (formatoNumero instanceof DecimalFormat formatoDecimal) {
-      formatoDecimal.setParseBigDecimal(true);
+    if (objeto instanceof Dinero otro) {
+      return (this.moneda.equals(otro.getMoneda())) && (this.cantidad.equals(otro.getCantidad()));
     }
-    
-    // crear un formateador numérico
-    NumberFormatter formateador = new NumberFormatter(formatoNumero);
-    formateador.setValueClass(BigDecimal.class);
-    // el usuario edita un valor numérico libremente
-    formateador.setAllowsInvalid(true);
-    formateador.setCommitsOnValidEdit(false);
-    
-    return formateador;
+    return false;
   }
   
-  /// Crea una fábrica de formato predeterminado para los cuatro formateadores: default,
-  /// display, edit, null.
-  public static DefaultFormatterFactory crearFabricaFormatoPredeterminado() {
-    NumberFormatter display = Dinero.crearFormateadorDisplay();
-    NumberFormatter edicion = Dinero.crearFormateadorEdicion();
-    // el orden de los formateadores es: default, display, edit, null
-    return new DefaultFormatterFactory(display, display, edicion, display);
+  /// Calcula el código hash.
+  @Override
+  public int hashCode() {
+    // usar los mismos atributos cantidad y moneda del método equals
+    return Objects.hash(this.cantidad, this.moneda);
   }
   
+  /// Representación textual de este objeto [Dinero]. Ejemplo: `COP 119000.00`.
+  @Override
+  public String toString() {
+    return String.format("%s %s", this.moneda.getCurrencyCode(), this.cantidad.toPlainString());
+  }
+
   /// Crea un objeto [Dinero] a partir de un objeto.
   ///
   /// @param valor Valor que se quiere convertir a [Dinero].
@@ -280,13 +335,21 @@ public class Dinero {
   ///         puede convertir.
   public static Dinero desde(Object valor) {
     // crear un objeto Dinero si el valor es BigDecimal o si es Number
-    if (valor instanceof BigDecimal decimal) {
-      return new Dinero(decimal);
+    // si falla la conversión BigDecimal, devolver cero
+    Dinero elDinero = Dinero.CERO;
+    
+    try {
+      if (valor instanceof BigDecimal decimal) {
+        elDinero = new Dinero(decimal);
+      }
+      else if (valor instanceof Number numero) {
+        elDinero = new Dinero(new BigDecimal(numero.toString()));
+      }
+    } catch (NumberFormatException _excepcion) {
+      // en lugar de lanzar una excepción, devolver un cero
+      return Dinero.CERO;
     }
-    if (valor instanceof Number numero) {
-      return new Dinero(BigDecimal.valueOf(numero.doubleValue()));
-    }
-    // en lugar de lanzar una excepción, devolver un cero
-    return Dinero.CERO;
+    
+    return elDinero;
   }
 }

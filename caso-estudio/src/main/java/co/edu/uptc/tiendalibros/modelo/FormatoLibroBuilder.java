@@ -25,8 +25,8 @@ public class FormatoLibroBuilder extends ElementoBaseBuilder<FormatoLibro> {
   /// Cantidad de páginas del formato comercial del libro.
   private int cantidadPaginas;
   
-  /// Estado del libro en el catálogo.
-  private EstadoLibroCatalogo estadoLibroCatalogo;
+  /// Estado del formato del libro en el catálogo.
+  private EstadoEnCatalogo estadoEnCatalogo;
 
   public FormatoLibroBuilder() {
     id(null);
@@ -36,7 +36,7 @@ public class FormatoLibroBuilder extends ElementoBaseBuilder<FormatoLibro> {
     this.tipoIVA = TipoIVA.IVA_19;
     this.inventario = 0;
     this.cantidadPaginas = 0;
-    this.estadoLibroCatalogo = EstadoLibroCatalogo.PENDIENTE;
+    this.estadoEnCatalogo = EstadoEnCatalogo.PENDIENTE;
   }
   
   @Override
@@ -111,18 +111,18 @@ public class FormatoLibroBuilder extends ElementoBaseBuilder<FormatoLibro> {
     return this;
   }
   
-  /// Obtiene el estado del libro en el catálogo.
+  /// Obtiene el estado del formato del libro en el catálogo.
   ///
-  /// @return Estado del libro en el catálogo.
-  public EstadoLibroCatalogo estadoLibroCatalogo() {
-    return this.estadoLibroCatalogo;
+  /// @return Estado del formato del libro en el catálogo.
+  public EstadoEnCatalogo estadoEnCatalogo() {
+    return this.estadoEnCatalogo;
   }
   
   /// Establece el estado del libro en el catálogo.
   ///
-  /// @param estadoLibroCatalogo Estado del libro en el catálogo.
-  public FormatoLibroBuilder estadoLibroCatalogo(EstadoLibroCatalogo estadoLibroCatalogo) {
-    this.estadoLibroCatalogo = estadoLibroCatalogo;
+  /// @param estadoEnCatalogo Estado del formato del libro en el catálogo.
+  public FormatoLibroBuilder estadoEnCatalogo(EstadoEnCatalogo estadoEnCatalogo) {
+    this.estadoEnCatalogo = estadoEnCatalogo;
     return this;
   }
   

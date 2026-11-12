@@ -90,6 +90,16 @@ public abstract class RepositorioElementoEnCSVBase<T> extends RepositorioArchivo
   /// @returns Un objeto a partir de los campos, o un objeto vacío.
   public abstract Optional<T> convertirCampos(String[] campos);
   
+  /// Convierte el texto nulo y los separadores en un texto apropiado para CSV.
+  protected String textoParaCelda(String texto) {
+    if (texto == null) {
+      return "";
+    }
+    return texto.replace(getSeparador(), " ")
+      .replace("\r", " ")
+      .replace("\n", " ");
+  }
+  
   /// @throws NumberFormatException
   protected static Long convertirALong(String campo) {
     String valor = campo.trim();

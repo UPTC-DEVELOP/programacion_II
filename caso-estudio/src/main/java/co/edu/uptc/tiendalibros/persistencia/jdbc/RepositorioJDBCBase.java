@@ -45,7 +45,8 @@ public abstract class RepositorioJDBCBase<T extends IElemento> implements IRepos
     }
     
     // guardar es una acción que requiere transacción
-    Optional<T> guardado = ejecutarEnTransaccion((conexion) -> guardar(conexion, elemento));
+    Optional<T> guardado = this.conexionBaseDatos
+      .ejecutarEnTransaccion((conexion) -> guardar(conexion, elemento));
     
     // las operaciones insertar y actualizar devuelven un objeto T si fueron exitosas.
     // Un valor vacío significa que se quería actualizar un elemento que ya no existe en el
@@ -66,7 +67,7 @@ public abstract class RepositorioJDBCBase<T extends IElemento> implements IRepos
       throw new IllegalArgumentException("Error: No se puede eliminar con ID nulo");
     }
     // eliminar es una operación que se ejecuta en una transacción
-    return ejecutarEnTransaccion((conexion) -> eliminar(conexion, id));
+    return this.conexionBaseDatos.ejecutarEnTransaccion((conexion) -> eliminar(conexion, id));
   }
   
   @Override
@@ -241,36 +242,6 @@ public abstract class RepositorioJDBCBase<T extends IElemento> implements IRepos
       completos.add(cargarElementosDependientes(comando.getConnection(), elemento));
     }
     return completos;
-  }
-  
-  /// Ejecuta una operación de la base de datos dentro una transacción.
-  /// 
-  /// Si la operación termina bien, confirma los cambios ( `commit`).
-  /// 
-  /// Si la operación falla, deshace los cambios (`rollback`).
-  /// 
-  /// @param operacion Operación que se ejecuta en la transacción.
-  /// @return El resultado de la operación.
-  protected <R> R ejecutarEnTransaccion(IOperacionTransaccional<R> operacion) {
-    // ejecutar la transacción en una conexión
-    try (Connection conexion = abrirConexion()) {
-      // iniciar la transacción: los cambios no se confirman hasta el commit explícito
-      conexion.setAutoCommit(false);
-      
-      try {
-        // ejecutar la operación usando esta misma conexión
-        R resultado = operacion.ejecutar(conexion);
-        // si la operación fue exitosa, se confirman los cambios (`commit`).
-        conexion.commit();
-        return resultado;
-      } catch (SQLException | RuntimeException excepcion) {
-        // algo en la operación falla, se deshacen los cambios (`rollback`)
-        conexion.rollback();
-        throw excepcion;
-      }
-    } catch (SQLException excepcion) {
-      throw traducirExcepcion("transacción", excepcion);
-    }
   }
   
   /// Abre una conexión nueva con la base de datos.

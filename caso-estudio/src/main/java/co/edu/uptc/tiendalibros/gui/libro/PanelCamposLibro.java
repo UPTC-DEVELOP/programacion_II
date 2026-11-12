@@ -321,13 +321,15 @@ public class PanelCamposLibro extends PanelCamposBase<ElementoVistaLibroConForma
       base.clonar()
         .gridy(6)
         .gridx(1)
+        .gridwidth(2)
+        .expandirHorizontal()
     );
     // agregar el botón para el diálogo de la imagen del libro
     agregar(
       btnDialogoImagenLibro,
       base.clonar()
         .gridy(6)
-        .gridx(2)
+        .gridx(3)
     );
     // agregar la nota de error de la imagen del libro
     agregar(

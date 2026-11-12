@@ -18,6 +18,8 @@ UPTC
 
 - Java JDK 25
 - Maven 3.9
+- MariaDB 13
+- DBeaver 
 
 Verificar en una ventana de comandos que los siguientes comandos muestren que la versión de Java JDK es la 25.
 
@@ -31,6 +33,13 @@ mvn -v
 En eclipse, el JDK 25 debe estar registrado en Window → Preferences → Java → Installed JREs.
 
 También se puede trabajar con el Maven de eclipse: Window → Preferences → Maven → Installations: ☑ Maven 3.9 
+
+## Cargar la Base de Datos 
+
+En DBeaver en una conexión activa ejecutar los scripts del directorio `scripts-sql`:
+
+- `crear-base-datos.sql` 
+- `poblar.sql`, o individualmente, `insertar-editorial.sql`, `insertar-libro`, `insertar-formato-libro.sql`.
 
 ## Cómo Abrir el Proyecto en eclipse
 

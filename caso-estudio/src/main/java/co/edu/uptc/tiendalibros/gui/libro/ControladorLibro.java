@@ -7,8 +7,10 @@ import java.util.Optional;
 import co.edu.uptc.tiendalibros.gui.avisos.Aviso;
 import co.edu.uptc.tiendalibros.gui.componentes.ControladorBase;
 import co.edu.uptc.tiendalibros.gui.eventos.EnrutadorEventos;
+import co.edu.uptc.tiendalibros.modelo.FormatoLibroBuilder;
 import co.edu.uptc.tiendalibros.modelo.Libro;
 import co.edu.uptc.tiendalibros.modelo.LibroConFormatos;
+import co.edu.uptc.tiendalibros.modelo.TipoFormatoLibro;
 import co.edu.uptc.tiendalibros.negocio.GestionCategoria;
 import co.edu.uptc.tiendalibros.negocio.Respuesta;
 import co.edu.uptc.tiendalibros.negocio.RespuestaExitosa;
@@ -104,8 +106,21 @@ public class ControladorLibro extends ControladorBase {
   }
   
   /// Muestra el formulario para crear un libro.
+  /// 
+  /// Un libro nuevo inicialmente se ofrece en formato impreso, y el usuario puede agregar o
+  /// quitar formatos.
   public void crear() {
-    this.panelLibros.mostrarFormulario(crearVista(new LibroConFormatos(), new ResultadoValidacion()));
+    // crear el libro inicial con el formato impreso
+    LibroConFormatos libroNuevo = new LibroConFormatos(
+      new Libro(),
+      Optional.of(
+        new FormatoLibroBuilder().tipoFormatoLibro(TipoFormatoLibro.IMPRESO)
+          .construir()
+      ),
+      Optional.empty()
+    );
+    
+    this.panelLibros.mostrarFormulario(crearVista(libroNuevo, new ResultadoValidacion()));
   }
   
   /// Busca el libro con el ID dado y prepara el formulario para editarlo.
@@ -140,9 +155,7 @@ public class ControladorLibro extends ControladorBase {
   /// @return Objeto vista con el libro, sus formatos, las categorías y las editoriales.
   private ElementoVistaLibroConFormatos crearVista(LibroConFormatos libroConFormatos, ResultadoValidacion errores) {
     return new ElementoVistaLibroConFormatos(
-      libroConFormatos.getLibro(),
-      new ElementoVistaFormatoLibro(libroConFormatos.getFormatoImpreso()),
-      new ElementoVistaFormatoLibro(libroConFormatos.getFormatoDigital()),
+      libroConFormatos,
       this.gestorCategoria.listar(),
       this.gestorEditorial.listar(),
       errores

@@ -22,9 +22,9 @@ public class ReglaLibroIsbnNoVacio implements IReglaValidacion<Libro> {
   @Override
   public boolean cumple(Libro libro) {
     // no se permite un isbn de libro vacío
-    return libro.getIsbn() != null && !libro.getIsbn()
+    return (libro.getIsbn() != null) && (!libro.getIsbn()
       .trim()
-      .isEmpty();
+      .isEmpty());
   }
   
   @Override

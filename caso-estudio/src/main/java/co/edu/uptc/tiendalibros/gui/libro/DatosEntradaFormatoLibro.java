@@ -2,7 +2,7 @@
 package co.edu.uptc.tiendalibros.gui.libro;
 
 import co.edu.uptc.tiendalibros.modelo.Dinero;
-import co.edu.uptc.tiendalibros.modelo.EstadoLibroCatalogo;
+import co.edu.uptc.tiendalibros.modelo.EstadoEnCatalogo;
 import co.edu.uptc.tiendalibros.modelo.FormatoLibro;
 import co.edu.uptc.tiendalibros.modelo.FormatoLibroBuilder;
 import co.edu.uptc.tiendalibros.modelo.TipoFormatoLibro;
@@ -17,7 +17,7 @@ public record DatosEntradaFormatoLibro(
   TipoFormatoLibro tipoFormato,
   Integer inventario,
   Integer cantidadPaginas,
-  EstadoLibroCatalogo estadoLibroCatalogo,
+  EstadoEnCatalogo estadoLibroCatalogo,
   Dinero precioBase,
   TipoIVA tipoIVA
 ) {
@@ -34,7 +34,7 @@ public record DatosEntradaFormatoLibro(
       .tipoIVA(this.tipoIVA)
       .inventario(this.inventario)
       .cantidadPaginas(this.cantidadPaginas)
-      .estadoLibroCatalogo(this.estadoLibroCatalogo)
+      .estadoEnCatalogo(this.estadoLibroCatalogo)
       .construir();
   }
   
@@ -61,7 +61,7 @@ public record DatosEntradaFormatoLibro(
     private TipoFormatoLibro tipoFormato;
     private Integer inventario;
     private Integer cantidadPaginas;
-    private EstadoLibroCatalogo estadoLibroCatalogo;
+    private EstadoEnCatalogo estadoLibroCatalogo;
     private Dinero precioBase;
     private TipoIVA tipoIVA;
     
@@ -93,7 +93,7 @@ public record DatosEntradaFormatoLibro(
       return this;
     }
     
-    public Builder estadoLibroCatalogo(EstadoLibroCatalogo estadoLibroCatalogo) {
+    public Builder estadoLibroCatalogo(EstadoEnCatalogo estadoLibroCatalogo) {
       this.estadoLibroCatalogo = estadoLibroCatalogo;
       return this;
     }

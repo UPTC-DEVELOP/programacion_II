@@ -16,7 +16,6 @@ import co.edu.uptc.tiendalibros.negocio.excepciones.ViolacionReglaNegocioExcepti
 ///
 /// Retorna una [ViolacionReglaNegocioAtributoException] si al validar el libro viola la
 /// regla de tener una imagen válida.
-@SuppressWarnings("resource")
 public class ReglaLibroImagenValida implements IReglaValidacion<Libro> {
   
   /// Lista de extensiones de archivos de imagenes soportadas por Java JDK.

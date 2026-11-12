@@ -23,26 +23,26 @@ public class FormatoLibro extends ElementoBase {
   /// Cantidad de páginas del formato comercial del libro.
   private int cantidadPaginas;
   
-  /// Estado del libro en el catálogo.
-  private EstadoLibroCatalogo estadoLibroCatalogo;
+  /// Estado del formato del libro en el catálogo.
+  private EstadoEnCatalogo estadoEnCatalogo;
   
   /// Crea un nuevo objeto [FormatoLibro] sin ID y con valores predetermindos.
   ///
   public FormatoLibro() {
     // invocar al constructor que tiene todos los atributos
-    this(null, TipoFormatoLibro.IMPRESO, Dinero.CERO, TipoIVA.IVA_19, 0, 0, EstadoLibroCatalogo.PENDIENTE);
+    this(null, TipoFormatoLibro.IMPRESO, Dinero.CERO, TipoIVA.IVA_19, 0, 0, EstadoEnCatalogo.PENDIENTE);
   }
   
   /// Crea un nuevo objeto [FormatoLibro] sin ID y los valores especificados.
   ///
-  /// @param idLibro             ID del libro como obra intelectual.
-  /// @param tipoFormato         Tipo de formato del formato comercial del libro.
-  /// @param precioBase          Precio base del formato comercial del libro antes del IVA.
-  /// @param tipoIva             Tipo de IVA que se aplica a la presentación del libro.
-  /// @param inventario          Cantidad de ejemplares disponibles para la venta de la
-  ///                            presentación del libro.
-  /// @param cantidadPaginas     Cantidad de páginas del formato comercial del libro.
-  /// @param estadoLibroCatalogo Estado del libro en el catálogo.
+  /// @param idLibro          ID del libro como obra intelectual.
+  /// @param tipoFormato      Tipo de formato del formato comercial del libro.
+  /// @param precioBase       Precio base del formato comercial del libro antes del IVA.
+  /// @param tipoIva          Tipo de IVA que se aplica a la presentación del libro.
+  /// @param inventario       Cantidad de ejemplares disponibles para la venta de la
+  ///                         presentación del libro.
+  /// @param cantidadPaginas  Cantidad de páginas del formato comercial del libro.
+  /// @param estadoEnCatalogo Estado del formato del libro en el catálogo.
   public FormatoLibro(
     Long idLibro,
     TipoFormatoLibro tipoFormato,
@@ -50,23 +50,23 @@ public class FormatoLibro extends ElementoBase {
     TipoIVA tipoIVA,
     int inventario,
     int cantidadPaginas,
-    EstadoLibroCatalogo estadoLibroCatalogo
+    EstadoEnCatalogo estadoEnCatalogo
   ) {
     // invocar al constructor que tiene todos los atributos
-    this(null, idLibro, tipoFormato, precioBase, tipoIVA, inventario, cantidadPaginas, estadoLibroCatalogo);
+    this(null, idLibro, tipoFormato, precioBase, tipoIVA, inventario, cantidadPaginas, estadoEnCatalogo);
   }
   
   /// Crea un nuevo objeto [FormatoLibro] con su ID y los valores especificados.
   ///
-  /// @param id                  ID del formato comercial del libro.
-  /// @param idLibro             ID del libro como obra intelectual.
-  /// @param tipoFormato         Tipo de formato del formato comercial del libro.
-  /// @param precioBase          Precio base del formato comercial del libro antes del IVA.
-  /// @param tipoIva             Tipo de IVA que se aplica a la presentación del libro.
-  /// @param inventario          Cantidad de ejemplares disponibles para la venta de la
-  ///                            presentación del libro.
-  /// @param cantidadPaginas     Cantidad de páginas del formato comercial del libro.
-  /// @param estadoLibroCatalogo Estado del libro en el catálogo.
+  /// @param id               ID del formato comercial del libro.
+  /// @param idLibro          ID del libro como obra intelectual.
+  /// @param tipoFormato      Tipo de formato del formato comercial del libro.
+  /// @param precioBase       Precio base del formato comercial del libro antes del IVA.
+  /// @param tipoIva          Tipo de IVA que se aplica a la presentación del libro.
+  /// @param inventario       Cantidad de ejemplares disponibles para la venta de la
+  ///                         presentación del libro.
+  /// @param cantidadPaginas  Cantidad de páginas del formato comercial del libro.
+  /// @param estadoEnCatalogo Estado del formato del libro en el catálogo.
   public FormatoLibro(
     Long id,
     Long idLibro,
@@ -75,7 +75,7 @@ public class FormatoLibro extends ElementoBase {
     TipoIVA tipoIVA,
     int inventario,
     int cantidadPaginas,
-    EstadoLibroCatalogo estadoLibroCatalogo
+    EstadoEnCatalogo estadoEnCatalogo
   ) {
     super(id);
     this.idLibro = idLibro;
@@ -84,7 +84,7 @@ public class FormatoLibro extends ElementoBase {
     this.tipoIVA = tipoIVA;
     this.inventario = inventario;
     this.cantidadPaginas = cantidadPaginas;
-    this.estadoLibroCatalogo = estadoLibroCatalogo;
+    this.estadoEnCatalogo = estadoEnCatalogo;
   }
   
   /// Crea un nuevo objeto [FormatoLibroBuilder] a partir del objeto builder especificado.
@@ -99,7 +99,7 @@ public class FormatoLibro extends ElementoBase {
       builder.tipoIVA(),
       builder.inventario(),
       builder.cantidadPaginas(),
-      builder.estadoLibroCatalogo()
+      builder.estadoEnCatalogo()
     );
   }
   
@@ -167,15 +167,15 @@ public class FormatoLibro extends ElementoBase {
   /// @param cantidadPaginas Cantidad de páginas del formato comercial del libro.
   public void setCantidadPaginas(int cantidadPaginas) { this.cantidadPaginas = cantidadPaginas; }
   
-  /// Obtiene el estado del libro en el catálogo.
+  /// Obtiene el estado del formato del libro en el catálogo.
   ///
-  /// @return Estado del libro en el catálogo.
-  public EstadoLibroCatalogo getEstadoLibroCatalogo() { return this.estadoLibroCatalogo; }
+  /// @return Estado del formato del libro en el catálogo.
+  public EstadoEnCatalogo getEstadoEnCatalogo() { return this.estadoEnCatalogo; }
   
-  /// Establece el estado del libro en el catálogo.
+  /// Establece el estado formato del libro en el catálogo.
   ///
-  /// @param estadoLibroCatalogo Estado del libro en el catálogo.
-  public void setEstadoLibroCatalogo(EstadoLibroCatalogo estadoLibroCatalogo) {
-    this.estadoLibroCatalogo = estadoLibroCatalogo;
+  /// @param estadoEnCatalogo Estado del formato del libro en el catálogo.
+  public void setEstadoEnCatalogo(EstadoEnCatalogo estadoEnCatalogo) {
+    this.estadoEnCatalogo = estadoEnCatalogo;
   }
 }

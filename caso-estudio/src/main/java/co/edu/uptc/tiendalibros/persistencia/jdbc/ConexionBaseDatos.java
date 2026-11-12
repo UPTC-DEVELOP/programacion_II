@@ -68,4 +68,36 @@ public class ConexionBaseDatos {
       throw new ErrorTecnicoSistemaException("No se pudo conectar con la base de datos.", excepcion);
     }
   }
+
+  /// Ejecuta una operación de la base de datos dentro una transacción.
+  /// 
+  /// Si la operación termina bien, confirma los cambios ( `commit`).
+  /// 
+  /// Si la operación falla, deshace los cambios (`rollback`).
+  /// 
+  /// @param operacion Operación que se ejecuta en la transacción.
+  /// @return El resultado de la operación.
+  public <R> R ejecutarEnTransaccion(IOperacionTransaccional<R> operacion) {
+    // ejecutar la transacción en una conexión
+    try (Connection conexion = abrir()) {
+      // iniciar la transacción: los cambios no se confirman hasta el commit explícito
+      conexion.setAutoCommit(false);
+      
+      try {
+        // ejecutar la operación usando esta misma conexión
+        R resultado = operacion.ejecutar(conexion);
+        // si la operación fue exitosa, se confirman los cambios (`commit`).
+        conexion.commit();
+        return resultado;
+      } catch (SQLException | RuntimeException excepcion) {
+        // algo en la operación falla, se deshacen los cambios (`rollback`)
+        conexion.rollback();
+        throw excepcion;
+      }
+    } catch (SQLException excepcion) {
+      throw new ErrorTecnicoSistemaException(
+        "Error de la base de datos al ejecutar la operación de transacción.", excepcion
+      );
+    }
+  }
 }
