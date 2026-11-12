@@ -56,7 +56,7 @@ public class PanelLogin extends JPanel {
 		return txtContrasena.getPassword();
 	}
 
-	// Se usa tras un intento fallido: borra la contraseña y deja el cursor listo
+	// Se usa tras un intento fallido: borra la contraseña 
 	public void limpiarContrasena() {
 		txtContrasena.setText("");
 		txtContrasena.requestFocusInWindow();

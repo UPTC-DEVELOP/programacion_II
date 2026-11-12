@@ -4,9 +4,6 @@ import java.util.List;
 
 import co.edu.uptc.tienda.modelo.Libro;
 
-/**
- * Contrato de almacenamiento de libros. El ISBN es la clave única del libro.
- */
 public interface IRepositorioLibro {
 
 	void guardar(Libro libro);

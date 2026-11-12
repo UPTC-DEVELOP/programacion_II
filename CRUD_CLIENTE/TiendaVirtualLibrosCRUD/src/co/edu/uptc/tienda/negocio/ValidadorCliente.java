@@ -2,9 +2,7 @@ package co.edu.uptc.tienda.negocio;
 
 import co.edu.uptc.tienda.modelo.Cliente;
 
-/**
- * Reglas de validación de los datos de un cliente.
- */
+
 public class ValidadorCliente {
 
 	public void validar(Cliente cliente) {

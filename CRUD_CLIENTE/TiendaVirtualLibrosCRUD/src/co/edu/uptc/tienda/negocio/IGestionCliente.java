@@ -4,10 +4,6 @@ import java.util.List;
 
 import co.edu.uptc.tienda.modelo.Cliente;
 
-/**
- * Servicio de clientes que consume la GUI. Las operaciones que incumplen una
- * regla lanzan {@link NegocioException}.
- */
 public interface IGestionCliente {
 
 	void agregarCliente(Cliente cliente);

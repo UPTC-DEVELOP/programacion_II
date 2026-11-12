@@ -12,9 +12,7 @@ import co.edu.uptc.tienda.modelo.Libro;
 import co.edu.uptc.tienda.modelo.enums.TipoLibro;
 import co.edu.uptc.tienda.negocio.IRepositorioLibro;
 
-/**
- * Repositorio de libros en la Base de Datos MySQL (tabla libros).
- */
+
 public class BaseDeDatosLibro implements IRepositorioLibro {
 
 	private static final String SEPARADOR_AUTORES = ", ";

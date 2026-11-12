@@ -6,9 +6,7 @@ import java.util.List;
 import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.negocio.IRepositorioCliente;
 
-/**
- * Repositorio de clientes en memoria.
- */
+
 public class LocalCliente implements IRepositorioCliente {
 
 	private final List<Cliente> clientes;

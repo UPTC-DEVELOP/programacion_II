@@ -1,0 +1,18 @@
+[
+  {
+    "idCliente": 1,
+    "tipoCliente": "PREMIUM",
+    "primerNombre": "jonathan",
+    "otrosNombres": "",
+    "primerApellido": "fuentes",
+    "otrosApellidos": "",
+    "tipoIdentificacion": "cc",
+    "identificacion": "1072706427",
+    "correoElectronico": "jonathan.fuentes01@uptc.edu.co",
+    "celular": "3107627517",
+    "direccion": "cra 37 n 20 a 48",
+    "contrasenia": "12345678",
+    "fechaRegistro": "2026-11-11 22:55:32.272",
+    "intentosFallidos": 0
+  }
+]

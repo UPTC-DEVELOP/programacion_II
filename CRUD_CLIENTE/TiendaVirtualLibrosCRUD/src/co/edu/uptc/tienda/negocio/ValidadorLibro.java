@@ -2,9 +2,7 @@ package co.edu.uptc.tienda.negocio;
 
 import co.edu.uptc.tienda.modelo.Libro;
 
-/**
- * Reglas de validación de los datos de un libro.
- */
+
 public class ValidadorLibro {
 
 	private static final int LONGITUD_MINIMA_ISBN = 8;

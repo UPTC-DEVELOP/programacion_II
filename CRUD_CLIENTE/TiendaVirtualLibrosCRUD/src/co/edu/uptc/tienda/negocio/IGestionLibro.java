@@ -4,10 +4,7 @@ import java.util.List;
 
 import co.edu.uptc.tienda.modelo.Libro;
 
-/**
- * Servicio de libros que consume la GUI. Las operaciones que incumplen una
- * regla lanzan {@link NegocioException}.
- */
+
 public interface IGestionLibro {
 
 	void agregarLibro(Libro libro);

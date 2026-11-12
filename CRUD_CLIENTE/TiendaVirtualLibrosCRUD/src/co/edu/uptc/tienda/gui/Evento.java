@@ -7,11 +7,6 @@ import java.util.Map;
 
 import javax.swing.AbstractButton;
 
-/**
- * Despachador de eventos de la GUI. Cada pantalla registra qué acción ejecutar
- * para cada comando, así agregar un botón nuevo no obliga a modificar esta
- * clase (no hay cadenas de if por comando).
- */
 public class Evento implements ActionListener {
 
 	public static final String LOGIN = "Login";
@@ -37,6 +32,10 @@ public class Evento implements ActionListener {
 	public static final String REGISTRAR_AUTOR_LIBRO = "Registrar Autor";
 	public static final String GUARDAR_LIBRO = "Registrar Libro";
 	public static final String CANCELAR_REGISTRO_LIBRO = "Cancelar Registro";
+
+	public static final String AGREGAR_CARRITO = "Agregar al Carrito";
+	public static final String QUITAR_CARRITO = "Quitar del Carrito";
+	public static final String VACIAR_CARRITO = "Vaciar Carrito";
 
 	public static final String ACTUALIZAR_TABLA = "ACTUALIZAR_TABLA";
 

@@ -4,10 +4,6 @@ import java.util.List;
 
 import co.edu.uptc.tienda.modelo.Cliente;
 
-/**
- * Contrato de almacenamiento de clientes. Lo define el negocio y lo implementa
- * la persistencia (memoria local, MySQL, etc.).
- */
 public interface IRepositorioCliente {
 
 	void guardar(Cliente cliente);

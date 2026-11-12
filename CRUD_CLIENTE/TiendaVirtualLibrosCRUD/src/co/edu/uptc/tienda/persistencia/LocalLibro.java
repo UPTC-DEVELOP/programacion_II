@@ -6,9 +6,7 @@ import java.util.List;
 import co.edu.uptc.tienda.modelo.Libro;
 import co.edu.uptc.tienda.negocio.IRepositorioLibro;
 
-/**
- * Repositorio de libros en memoria.
- */
+
 public class LocalLibro implements IRepositorioLibro {
 
 	private final List<Libro> libros;

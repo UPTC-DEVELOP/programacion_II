@@ -5,10 +5,6 @@ import java.util.regex.Pattern;
 
 import co.edu.uptc.tienda.modelo.Cliente;
 
-/**
- * Valida el inicio de sesión contra los clientes registrados. El usuario es el
- * correo electrónico del cliente.
- */
 public class GestionAutenticacion implements IGestionAutenticacion {
 
 	private static final int LONGITUD_MINIMA_CONTRASENA = 8;

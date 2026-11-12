@@ -19,9 +19,6 @@ import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.negocio.IGestionCliente;
 import co.edu.uptc.tienda.negocio.NegocioException;
 
-/**
- * Panel de presentación para la administración completa (CRUD) de clientes.
- */
 public class PanelCliente extends JPanel {
 
 	private static final long serialVersionUID = 1L;
@@ -139,8 +136,6 @@ public class PanelCliente extends JPanel {
 	public void abrirDialogoCliente(Cliente clienteAEditar) {
 		DialogoCliente dialogo = new DialogoCliente(gestionCliente, clienteAEditar);
 		dialogo.setVisible(true);
-
-		// Al ser modal, la ejecución continúa al cerrarse el diálogo
 		if (dialogo.isGuardadoExitoso()) {
 			cargarClientesEnTabla(gestionCliente.listarClientes());
 		}
