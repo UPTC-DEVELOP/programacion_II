@@ -1,0 +1,6 @@
+[
+  {"nombre":"Administrador","correo":"admin@libreria.com","hash":"3b612c75a7b5048a435fb6ec81e52ff92d6d795a8b5a9c17070f6a63c97a53b2","rol":"ADMINISTRADOR","tipoUsuario":"ADMINISTRADOR"},
+  {"nombre":"Ana Pérez","correo":"ana@correo.com","hash":"48fee0a05ccaa361eac83d23d599f03c4bd339d857fb5a60250e12e3fe18d00a","rol":"CLIENTE","tipoUsuario":"REGULAR","direccion":"Calle 1 # 2-3","telefono":"3001234567"},
+  {"nombre":"Carlos Gómez","correo":"carlos@correo.com","hash":"470ea79e04621c2e126e3a0a560bb1d94878809e7b7df20aa04f1662ecddf102","rol":"CLIENTE","tipoUsuario":"PREMIUM","direccion":"Carrera 4 # 5-6","telefono":"3107654321"},
+  {"nombre":"Edwin","correo":"edwin@correo.com","hash":"d978a6ad0da13ddb621f674e8f1e0558124388f22809548fa9c3369f48032752","rol":"CLIENTE","tipoUsuario":"PREMIUM","direccion":"cll # 0 - 00","telefono":"3214024201"}
+]

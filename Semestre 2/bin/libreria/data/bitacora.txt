@@ -1,0 +1,1 @@
+[2026-10-03 11:57:15] ACTUALIZAR_LIBRO   | ISBN=9789586600001, titulo=Cien años de soledad, formato=Físico, precioBase=50000.0, descuento=0.0%, stock=150

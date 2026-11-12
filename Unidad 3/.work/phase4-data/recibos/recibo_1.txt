@@ -1,0 +1,12 @@
+TIENDA VIRTUAL DE LIBROS
+Pedido #1
+Fecha: 2026-11-10 15:21:28
+Cliente: carlos@correo.com
+Pago: Efectivo
+
+Cien años de soledad | 2 x $ 50.000 | Subtotal: $ 100.000 | IVA: $ 19.000
+
+Subtotal: $ 100.000
+Impuestos: $ 19.000
+Descuento: $ 11.900
+TOTAL: $ 107.100
