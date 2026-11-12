@@ -17,9 +17,9 @@ import co.edu.uptc.model.Libro;
 import co.edu.uptc.persistence.IRepositorioCarrito;
 import co.edu.uptc.persistence.IRepositorioLibros;
 import co.edu.uptc.persistence.IRepositorioUsuario;
-import co.edu.uptc.persistence.RepositorioCarritoJson;
-import co.edu.uptc.persistence.RepositorioLibrosJson;
-import co.edu.uptc.persistence.RepositorioUsuarioJson;
+import co.edu.uptc.persistence.RepositorioCarritoMySQL;
+import co.edu.uptc.persistence.RepositorioLibrosMySQL;
+import co.edu.uptc.persistence.RepositorioUsuarioMySQL;
 
 public class TiendaController {
 
@@ -34,48 +34,25 @@ public class TiendaController {
     public static final String METODO_TARJETA = "Tarjeta de Crédito";
 
     public TiendaController() {
-        this.repositorioLibros = new RepositorioLibrosJson();
-        this.repositorioUsuario = new RepositorioUsuarioJson();
-        this.repositorioCarrito = new RepositorioCarritoJson();
+        this.repositorioLibros = new RepositorioLibrosMySQL();
+        this.repositorioUsuario = new RepositorioUsuarioMySQL();
+        this.repositorioCarrito = new RepositorioCarritoMySQL();
     }
 
     // ---------------- Usuarios ----------------
 
-    /**
-     * Registra un nuevo usuario (operación CREAR del CRUD de Usuarios).
-     * Valida que el ID y el correo no estén repetidos, cifra la contraseña
-     * con SHA-256 y guarda el usuario en usuarios.json a través del repositorio.
-     *
-     * para cliente usuario a registrar; la vista entrega la contraseña en texto
-     *                plano dentro de contrasenaHash y aquí se reemplaza por su hash
-     * @return true si el usuario se guardó; false si los datos son inválidos
-     *         o si el ID o el correo ya están registrados
-     */
     public boolean registrarCliente(Cliente cliente) {
-        // 1. Validación mínima: el objeto y sus datos clave no pueden ser nulos
         if (cliente == null || cliente.getId() == null || cliente.getCorreo() == null) return false;
 
-        // 2. Regla de negocio: el ID debe ser único (no puede haber dos usuarios con el mismo ID)
         if (repositorioUsuario.buscarPorId(cliente.getId()) != null) return false;
 
-        // 3. Regla de negocio: el correo debe ser único (se compara sin distinguir mayúsculas)
         if (repositorioUsuario.buscarPorCorreo(cliente.getCorreo()) != null) return false;
 
-        // 4. Seguridad: nunca se guarda la contraseña en texto plano;
-        //    se reemplaza por su hash SHA-256 antes de persistir
         cliente.setContrasenaHash(sha256(cliente.getContrasenaHash()));
 
-        // 5. Persistencia: el repositorio (interfaz IRepositorioUsuario) escribe en usuarios.json
         return repositorioUsuario.guardarUsuario(cliente);
     }
 
-    /**
-     * Inicia sesión (operación CONSULTAR del CRUD de Usuarios).
-     * Busca el usuario por correo y compara el hash de la contraseña ingresada
-     * con el hash almacenado en usuarios.json.
-     *
-     * @return true si las credenciales son correctas y el usuario queda en sesión
-     */
     public boolean iniciarSesion(String correo, String contrasena) {
         if (correo == null || contrasena == null) return false;
         Cliente c = repositorioUsuario.buscarPorCorreo(correo.trim());
@@ -86,7 +63,6 @@ public class TiendaController {
         return false;
     }
 
-    /** Cierra la sesión: el controlador deja de tener un usuario activo. */
     public void cerrarSesion() {
         this.usuarioLogueado = null;
     }
@@ -95,14 +71,6 @@ public class TiendaController {
         return usuarioLogueado;
     }
 
-    /**
-     * Actualiza los datos del usuario con sesión iniciada (operación ACTUALIZAR del CRUD).
-     * El ID y el correo no se modifican porque identifican al usuario.
-     *
-     * para nuevosDatos     datos nuevos (nombre, dirección, departamento, ciudad, teléfono y tipo)
-     * para nuevaContrasena nueva contraseña en texto plano; si es null o vacía se conserva la actual
-     * @return null si se actualizó correctamente; en caso contrario, el mensaje de error
-     */
     public String actualizarUsuario(Cliente nuevosDatos, String nuevaContrasena) {
         if (usuarioLogueado == null) return "Debe iniciar sesión para actualizar sus datos.";
         if (nuevosDatos == null) return "Los datos del usuario no pueden ser nulos.";
@@ -116,45 +84,33 @@ public class TiendaController {
         String tipo = nuevosDatos.getTipoCliente() != null
                 ? nuevosDatos.getTipoCliente() : usuarioLogueado.getTipoCliente();
 
-        // Se conservan el ID y el correo; el resto de datos viene del formulario
         Cliente actualizado = new Cliente(
             usuarioLogueado.getId(), nuevosDatos.getNombreCompleto(), usuarioLogueado.getCorreo(),
             nuevosDatos.getDireccionEnvio(), nuevosDatos.getDepartamento(), nuevosDatos.getCiudad(),
             nuevosDatos.getTelefono(), tipo);
 
-        // Si no se escribió una contraseña nueva, se conserva el hash actual
         actualizado.setContrasenaHash(cambiaContrasena ? sha256(nuevaContrasena) : usuarioLogueado.getContrasenaHash());
 
-        // Persistencia: reemplaza el registro del usuario en usuarios.json
         if (!repositorioUsuario.actualizarUsuario(actualizado)) return "No se encontró el usuario para actualizar.";
 
         this.usuarioLogueado = actualizado;
         return null;
     }
 
-    /**
-     * Elimina la cuenta del usuario con sesión iniciada (operación ELIMINAR del CRUD).
-     * Exige la contraseña actual como confirmación, devuelve al stock los libros de su carrito,
-     * borra el carrito y cierra la sesión.
-     *
-     * @return true si la cuenta se eliminó; false si no hay sesión, la contraseña es incorrecta
-     *         o no se pudo eliminar
-     */
     public boolean eliminarUsuarioLogueado(String contrasena) {
         if (usuarioLogueado == null || contrasena == null) return false;
 
-        // Confirmación: la contraseña ingresada debe coincidir con la almacenada
         if (!sha256(contrasena).equals(usuarioLogueado.getContrasenaHash())) return false;
+
+        for (ItemCarrito item : obtenerCarritoActual().getItems()) {
+            if (item.getLibro() != null) ajustarStock(item.getLibro().getIsbn(), item.getCantidad());
+        }
+        vaciarCarrito();
 
         String id = usuarioLogueado.getId();
         if (!repositorioUsuario.eliminarUsuario(id)) return false;
 
-        // El stock se descuenta al agregar al carrito: se devuelve antes de vaciar el carrito
-        for (ItemCarrito item : obtenerCarritoActual().getItems()) {
-            if (item.getLibro() != null) ajustarStock(item.getLibro().getIsbn(), item.getCantidad());
-        }
-        vaciarCarrito();                        // el carrito del usuario ya no tiene dueño
-        this.usuarioLogueado = null;            // se cierra la sesión
+        this.usuarioLogueado = null;
         return true;
     }
 
@@ -190,7 +146,7 @@ public class TiendaController {
         if (l.getTitulo() == null || l.getTitulo().isBlank()) return "El título no puede estar vacío.";
         if (l.getAutor() == null || l.getAutor().isBlank()) return "El autor no puede estar vacío.";
         if (l.getCategoria() == null || l.getCategoria().isBlank()) return "Debe seleccionar una categoría.";
-        
+
         int anioActual = Calendar.getInstance().get(Calendar.YEAR);
         if (l.getAnio() < 1450 || l.getAnio() > anioActual) return "Año inválido (entre 1450 y " + anioActual + ").";
         if (l.getPaginas() <= 0) return "El número de páginas debe ser mayor a 0.";
@@ -222,7 +178,7 @@ public class TiendaController {
         repositorioCarrito.guardarCarrito(c);
         ajustarStock(libro.getIsbn(), -cantidad);
     }
-    
+
     public String actualizarCantidadCarrito(String isbn, int nuevaCantidad) {
         if (usuarioLogueado == null) return "Debe iniciar sesión primero.";
         if (nuevaCantidad <= 0) return "La cantidad debe ser mayor a 0.";
@@ -308,18 +264,11 @@ public class TiendaController {
         return true;
     }
 
-    /**
-     * Calcula el hash SHA-256 de un texto y lo devuelve en hexadecimal.
-     * Se usa al registrar (para guardar la contraseña cifrada) y al iniciar
-     * sesión (para compararla con la almacenada).
-     */
     private String sha256(String base) {
         try {
-            // Obtiene el algoritmo SHA-256 y calcula el hash de los bytes del texto (UTF-8)
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(base.getBytes(StandardCharsets.UTF_8));
 
-            // Convierte cada byte a hexadecimal (2 caracteres, con 0 a la izquierda si hace falta)
             StringBuilder hexString = new StringBuilder();
             for (byte b : hash) {
                 String hex = Integer.toHexString(0xff & b);
@@ -328,7 +277,6 @@ public class TiendaController {
             }
             return hexString.toString();
         } catch (NoSuchAlgorithmException ex) {
-            // SHA-256 siempre está disponible en Java; si falla es un error del entorno
             throw new RuntimeException(ex);
         }
     }
