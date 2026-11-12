@@ -30,15 +30,10 @@ public class Aplicacion {
 		}
 
 		// Se inyectan dependencias.
-<<<<<<< HEAD
-		// Un único repositorio de clientes: el login debe ver a los clientes registrados
-		// Los clientes se guardan en data/clientes.json (antes: new LocalCliente(), en memoria)
-		IRepositorioCliente repositorioCliente = new ClienteJSON();
-=======
 		// Un único repositorio de clientes: el login debe ver a los clientes
 		// registrados
-		IRepositorioCliente repositorioCliente = new LocalCliente();
->>>>>>> 8294c679e4e4bcf08af72bf72f54d9fb35ea5840
+		// Los clientes se guardan en data/clientes.json (antes: new LocalCliente(), en memoria)
+		IRepositorioCliente repositorioCliente = new ClienteJSON();
 		IGestionCliente gestionCliente = new GestionCliente(repositorioCliente);
 		IGestionLibro gestionLibro = new GestionLibro(new BaseDeDatosLibro());
 
