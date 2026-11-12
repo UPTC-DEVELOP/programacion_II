@@ -116,13 +116,14 @@ public class VentanaPrincipal extends JFrame {
 
         panelPrincipal.add(panelForm, BorderLayout.CENTER);
 
-        JPanel panelBotonesContainer = new JPanel(new GridLayout(2, 3, 10, 10));
+        JPanel panelBotonesContainer = new JPanel(new GridLayout(2, 4, 10, 10));
         panelBotonesContainer.setPreferredSize(new Dimension(0, 90));
 
         JButton btnRegistrar = new JButton("Registrar Usuario");
         JButton btnIniciarSesion = new JButton("Iniciar Sesión");
         JButton btnActualizar = new JButton("Actualizar Datos del Usuario");
         JButton btnOlvidoPass = new JButton("Se me olvidó la contraseña");
+        JButton btnEliminarCuenta = new JButton("Eliminar mi cuenta");
         JButton btnCerrarSesion = new JButton("Cerrar Sesión");
 
         lblEstadoUsuario = new JLabel("Sin iniciar sesión", SwingConstants.CENTER);
@@ -131,13 +132,16 @@ public class VentanaPrincipal extends JFrame {
 
         btnRegistrar.addActionListener(e -> registrarUsuario());
         btnIniciarSesion.addActionListener(e -> iniciarSesion());
-        btnActualizar.addActionListener(e -> JOptionPane.showMessageDialog(this, "Datos actualizados correctamente."));
-        btnOlvidoPass.addActionListener(e -> JOptionPane.showMessageDialog(this, "Instrucciones enviadas a su correo."));
+        btnActualizar.addActionListener(e -> actualizarDatosUsuario());
+        btnOlvidoPass.addActionListener(e -> JOptionPane.showMessageDialog(this,
+            "La recuperación de contraseña por correo no está disponible en esta versión.\nContacte al administrador de la tienda."));
+        btnEliminarCuenta.addActionListener(e -> eliminarCuentaUsuario());
         btnCerrarSesion.addActionListener(e -> cerrarSesion());
 
         panelBotonesContainer.add(btnRegistrar);
         panelBotonesContainer.add(btnIniciarSesion);
         panelBotonesContainer.add(btnActualizar);
+        panelBotonesContainer.add(btnEliminarCuenta);
         panelBotonesContainer.add(btnOlvidoPass);
         panelBotonesContainer.add(btnCerrarSesion);
         panelBotonesContainer.add(lblEstadoUsuario);
@@ -206,8 +210,8 @@ public class VentanaPrincipal extends JFrame {
 
         if (controller.iniciarSesion(correo, pass)) {
             Cliente log = controller.getUsuarioLogueado();
-            String tipo = (String) cbTipoCliente.getSelectedItem();
-            lblEstadoUsuario.setText("Usuario: " + log.getNombreCompleto() + " (" + tipo + ")");
+            cargarFormularioUsuario(log);   // muestra en el formulario los datos guardados del usuario
+            lblEstadoUsuario.setText("Usuario: " + log.getNombreCompleto() + " (" + log.getTipoCliente() + ")");
             JOptionPane.showMessageDialog(this, "Bienvenido " + log.getNombreCompleto());
             actualizarTablaCarrito();
         } else {
@@ -217,9 +221,91 @@ public class VentanaPrincipal extends JFrame {
 
     private void cerrarSesion() {
         controller.cerrarSesion();
+        limpiarFormularioUsuario();
         lblEstadoUsuario.setText("Sin iniciar sesión");
         actualizarTablaCarrito();
         JOptionPane.showMessageDialog(this, "Sesión cerrada.");
+    }
+
+    /** Muestra en el formulario los datos guardados del usuario; el ID y el correo no se pueden editar. */
+    private void cargarFormularioUsuario(Cliente c) {
+        txtId.setText(c.getId());
+        txtNombre.setText(c.getNombreCompleto());
+        txtCorreo.setText(c.getCorreo());
+        txtDireccion.setText(c.getDireccionEnvio());
+        txtTelefono.setText(c.getTelefono());
+        cbDepto.setSelectedItem(c.getDepartamento());
+        actualizarCiudades();
+        cbCiudad.setSelectedItem(c.getCiudad());
+        cbTipoCliente.setSelectedItem(c.getTipoCliente());
+        txtPass.setText("");
+        txtId.setEditable(false);
+        txtCorreo.setEditable(false);
+    }
+
+    /** Deja el formulario de usuario vacío y vuelve a habilitar el ID y el correo. */
+    private void limpiarFormularioUsuario() {
+        txtId.setText("");
+        txtNombre.setText("");
+        txtCorreo.setText("");
+        txtPass.setText("");
+        txtDireccion.setText("");
+        txtTelefono.setText("");
+        txtId.setEditable(true);
+        txtCorreo.setEditable(true);
+    }
+
+    /** ACTUALIZAR: guarda los cambios del formulario en el usuario con sesión iniciada. */
+    private void actualizarDatosUsuario() {
+        Cliente logueado = controller.getUsuarioLogueado();
+        if (logueado == null) {
+            JOptionPane.showMessageDialog(this, "Debe iniciar sesión para actualizar sus datos.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // El ID y el correo se toman del usuario en sesión (no se pueden cambiar)
+        Cliente datos = new Cliente(
+            logueado.getId(), txtNombre.getText().trim(), logueado.getCorreo(),
+            txtDireccion.getText().trim(), (String) cbDepto.getSelectedItem(), (String) cbCiudad.getSelectedItem(),
+            txtTelefono.getText().trim(), (String) cbTipoCliente.getSelectedItem()
+        );
+
+        // Si el campo de contraseña está vacío, se conserva la contraseña actual
+        String nuevaPass = new String(txtPass.getPassword());
+        String error = controller.actualizarUsuario(datos, nuevaPass);
+        if (error != null) {
+            JOptionPane.showMessageDialog(this, error, "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Cliente actualizado = controller.getUsuarioLogueado();
+        lblEstadoUsuario.setText("Usuario: " + actualizado.getNombreCompleto() + " (" + actualizado.getTipoCliente() + ")");
+        txtPass.setText("");
+        JOptionPane.showMessageDialog(this, "Datos actualizados correctamente.");
+    }
+
+    /** ELIMINAR: borra la cuenta del usuario con sesión iniciada, pidiendo su contraseña como confirmación. */
+    private void eliminarCuentaUsuario() {
+        if (controller.getUsuarioLogueado() == null) {
+            JOptionPane.showMessageDialog(this, "Debe iniciar sesión para eliminar su cuenta.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        JPasswordField campoPass = new JPasswordField();
+        int opcion = JOptionPane.showConfirmDialog(this,
+            new Object[]{"Esta acción eliminará su cuenta de forma permanente.", "Ingrese su contraseña para confirmar:", campoPass},
+            "Eliminar cuenta", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (opcion != JOptionPane.OK_OPTION) return;
+
+        if (controller.eliminarUsuarioLogueado(new String(campoPass.getPassword()))) {
+            limpiarFormularioUsuario();
+            lblEstadoUsuario.setText("Sin iniciar sesión");
+            actualizarTablaCarrito();
+            actualizarTablaLibros();   // el stock de su carrito vuelve al catálogo
+            JOptionPane.showMessageDialog(this, "Su cuenta fue eliminada correctamente.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Contraseña incorrecta. No se eliminó la cuenta.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     // ==========================================
