@@ -45,4 +45,29 @@ public class Carrito {
         }
         return total;
     }
+    
+    public ItemCarrito buscarItem(String isbn) {
+        if (isbn == null || items == null) return null;
+        for (ItemCarrito item : items) {
+            if (item.getLibro() != null && isbn.equals(item.getLibro().getIsbn())) {
+                return item;
+            }
+        }
+        return null;
+    }
+    
+    // actualizar
+    public boolean actualizarCantidad(String isbn, int cantidad) {
+        if (cantidad <= 0) return false;
+        ItemCarrito item = buscarItem(isbn);
+        if (item == null) return false;
+        item.setCantidad(cantidad);
+        return true;
+    }
+    
+    // borrar
+    public boolean eliminarItems(List<String> isbns) {
+        if (isbns == null || items == null) return false;
+        return items.removeIf(item -> item.getLibro() != null && isbns.contains(item.getLibro().getIsbn()));
+    }
 }

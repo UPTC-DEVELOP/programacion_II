@@ -6,7 +6,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.util.List;
-
+import java.util.ArrayList;
 import co.edu.uptc.controller.TiendaController;
 import co.edu.uptc.model.Cliente;
 import co.edu.uptc.model.ItemCarrito;
@@ -490,6 +490,7 @@ public class VentanaPrincipal extends JFrame {
                     actualizarTablaCarrito();
                     JOptionPane.showMessageDialog(this, "Libro añadido al carrito con éxito.");
                 } catch (NumberFormatException e) {
+                	actualizarTablaLibros();
                     JOptionPane.showMessageDialog(this, "Cantidad inválida.");
                 }
             }
@@ -511,6 +512,17 @@ public class VentanaPrincipal extends JFrame {
         };
         tablaCarrito = new JTable(modeloTablaCarrito);
         panel.add(new JScrollPane(tablaCarrito), BorderLayout.CENTER);
+        
+        JPanel panelAccionesCarrito = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton btnActualizarCantidad = new JButton("Actualizar Cantidad");
+        JButton btnEliminarCarrito = new JButton("Eliminar Seleccionados");
+
+        btnActualizarCantidad.addActionListener(e -> actualizarCantidadSeleccionada());
+        btnEliminarCarrito.addActionListener(e -> eliminarSeleccionadosDelCarrito());
+
+        panelAccionesCarrito.add(btnActualizarCantidad);
+        panelAccionesCarrito.add(btnEliminarCarrito);
+        panel.add(panelAccionesCarrito, BorderLayout.NORTH);
 
         JPanel panelInferior = new JPanel(new BorderLayout(10, 10));
         lblTotalCarrito = new JLabel("Total Compra: $0.0", SwingConstants.RIGHT);
@@ -580,6 +592,73 @@ public class VentanaPrincipal extends JFrame {
             }
         }
         lblTotalCarrito.setText("Total Compra: $" + String.format("%.2f", total));
+    }
+    
+    private void actualizarCantidadSeleccionada() {
+        if (controller.getUsuarioLogueado() == null) {
+            JOptionPane.showMessageDialog(this, "Debe iniciar sesión primero en la pestaña 'Usuario'.");
+            return;
+        }
+        int[] filas = tablaCarrito.getSelectedRows();
+        if (filas.length != 1) {
+            JOptionPane.showMessageDialog(this, "Seleccione un solo libro del carrito para actualizar su cantidad.");
+            return;
+        }
+        int filaModelo = tablaCarrito.convertRowIndexToModel(filas[0]);
+        String isbn = (String) modeloTablaCarrito.getValueAt(filaModelo, 0);
+        int cantidadActual = (int) modeloTablaCarrito.getValueAt(filaModelo, 2);
+
+        String cantStr = JOptionPane.showInputDialog(this, "Ingrese la nueva cantidad:", String.valueOf(cantidadActual));
+        if (cantStr != null) {
+            try {
+                int cant = Integer.parseInt(cantStr.trim());
+                String error = controller.actualizarCantidadCarrito(isbn, cant);
+                if (error != null) {
+                    JOptionPane.showMessageDialog(this, error, "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    actualizarTablaCarrito();
+                    actualizarTablaLibros();
+                    JOptionPane.showMessageDialog(this, "Cantidad actualizada correctamente.");
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Cantidad inválida.");
+            }
+        }
+    }
+
+    private void eliminarSeleccionadosDelCarrito() {
+        if (controller.getUsuarioLogueado() == null) {
+            JOptionPane.showMessageDialog(this, "Debe iniciar sesión primero en la pestaña 'Usuario'.");
+            return;
+        }
+        int[] filas = tablaCarrito.getSelectedRows();
+        if (filas.length == 0) {
+            JOptionPane.showMessageDialog(this, "Seleccione al menos un libro del carrito para eliminar.");
+            return;
+        }
+        List<String> isbns = new ArrayList<>();
+        for (int fila : filas) {
+            int filaModelo = tablaCarrito.convertRowIndexToModel(fila);
+            isbns.add((String) modeloTablaCarrito.getValueAt(filaModelo, 0));
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(
+            this,
+            "¿Desea eliminar " + isbns.size() + " libro(s) del carrito? Las unidades regresarán al stock.",
+            "Confirmar Eliminación",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE
+        );
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            if (controller.eliminarDelCarrito(isbns)) {
+                JOptionPane.showMessageDialog(this, "Libro(s) eliminado(s) del carrito correctamente.");
+                actualizarTablaCarrito();
+                actualizarTablaLibros();
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo eliminar del carrito.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     private void realizarCompra() {

@@ -130,6 +130,53 @@ public class TiendaController {
         Carrito c = obtenerCarritoActual();
         c.agregarItem(libro, cantidad);
         repositorioCarrito.guardarCarrito(c);
+        ajustarStock(libro.getIsbn(), -cantidad);
+    }
+    
+    public String actualizarCantidadCarrito(String isbn, int nuevaCantidad) {
+        if (usuarioLogueado == null) return "Debe iniciar sesión primero.";
+        if (nuevaCantidad <= 0) return "La cantidad debe ser mayor a 0.";
+
+        Carrito c = obtenerCarritoActual();
+        ItemCarrito item = c.buscarItem(isbn);
+        if (item == null) return "El libro no se encuentra en el carrito.";
+
+        int diferencia = nuevaCantidad - item.getCantidad();
+        Libro l = repositorioLibros.buscarPorIsbn(isbn);
+        if (l != null && diferencia > l.getStock()) {
+            return "Stock insuficiente. Disponible: " + l.getStock();
+        }
+
+        c.actualizarCantidad(isbn, nuevaCantidad);
+        repositorioCarrito.guardarCarrito(c);
+        ajustarStock(isbn, -diferencia);
+        return null;
+    }
+
+    public boolean eliminarDelCarrito(List<String> isbns) {
+        if (usuarioLogueado == null || isbns == null || isbns.isEmpty()) return false;
+
+        Carrito c = obtenerCarritoActual();
+        for (String isbn : isbns) {
+            ItemCarrito item = c.buscarItem(isbn);
+            if (item != null) {
+                ajustarStock(isbn, item.getCantidad());
+            }
+        }
+
+        boolean eliminado = c.eliminarItems(isbns);
+        if (eliminado) {
+            repositorioCarrito.guardarCarrito(c);
+        }
+        return eliminado;
+    }
+
+    private void ajustarStock(String isbn, int delta) {
+        Libro l = repositorioLibros.buscarPorIsbn(isbn);
+        if (l != null) {
+            l.setStock(Math.max(l.getStock() + delta, 0));
+            repositorioLibros.actualizarLibro(l);
+        }
     }
 
     public void vaciarCarrito() {
@@ -158,17 +205,6 @@ public class TiendaController {
         if (usuarioLogueado == null) return false;
         Carrito c = obtenerCarritoActual();
         if (c.getItems().isEmpty()) return false;
-
-        // Validación de null para evitar NullPointerException si un libro se elimina del repositorio
-        for (ItemCarrito item : c.getItems()) {
-            if (item.getLibro() == null) continue;
-            Libro l = repositorioLibros.buscarPorIsbn(item.getLibro().getIsbn());
-            if (l != null) {
-                int nuevoStock = l.getStock() - item.getCantidad();
-                l.setStock(Math.max(nuevoStock, 0));
-                repositorioLibros.actualizarLibro(l);
-            }
-        }
 
         try (PrintWriter out = new PrintWriter(new FileWriter("operaciones_tienda.txt", true))) {
             out.println("COMPRA - Cliente: " + usuarioLogueado.getNombreCompleto() + " (" + usuarioLogueado.getCorreo() + ")");
