@@ -28,7 +28,7 @@ public class ItemCarrito {
     }
 
     public double obtenerSubtotalItem() {
-        return libro.getPrecioVenta() * cantidad;
+        return libro.getPrecio() * cantidad;
     }
 
     public double obtenerImpuestoItem() {

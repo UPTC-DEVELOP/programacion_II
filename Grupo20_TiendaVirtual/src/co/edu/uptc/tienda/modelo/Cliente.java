@@ -1,4 +1,4 @@
-package modelo;
+package co.edu.uptc.tienda.modelo;
 
 public class Cliente {
 
@@ -18,6 +18,10 @@ public class Cliente {
         this.direccionEnvio = direccionEnvio;
         this.celular = celular;
         this.tipoCliente = tipoCliente;
+    }
+
+    public double obtenerPorcentajeDescuento() {
+        return "Premium".equalsIgnoreCase(tipoCliente == null ? null : tipoCliente.trim()) ? 10 : 0;
     }
 
 	public String getId() {

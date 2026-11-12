@@ -1,0 +1,73 @@
+package co.edu.uptc.tienda.negocio;
+
+import java.util.ArrayList;
+
+import co.edu.uptc.tienda.modelo.Cliente;
+import co.edu.uptc.tienda.persistencia.LocalCliente;
+
+public class GestionCliente implements IGestionCliente {
+
+    private LocalCliente localCliente;
+
+    public GestionCliente() {
+        localCliente = new LocalCliente();
+    }
+
+    @Override
+    public void guardar(Cliente cliente) {
+        validar(cliente);
+        if (localCliente.buscarPorId(cliente.getId()) != null) {
+            throw new IllegalArgumentException("Ya existe un cliente con el ID " + cliente.getId() + ".");
+        }
+        localCliente.guardar(cliente);
+    }
+
+    @Override
+    public ArrayList<Cliente> listar() {
+        return localCliente.listar();
+    }
+
+    @Override
+    public Cliente buscarPorId(String id) {
+        return localCliente.buscarPorId(id);
+    }
+
+    @Override
+    public void actualizar(Cliente cliente) {
+        validar(cliente);
+        if (localCliente.buscarPorId(cliente.getId()) == null) {
+            throw new IllegalArgumentException("No existe un cliente con el ID " + cliente.getId() + ".");
+        }
+        localCliente.actualizar(cliente);
+    }
+
+    @Override
+    public void eliminar(String id) {
+        if (localCliente.buscarPorId(id) == null) {
+            throw new IllegalArgumentException("No existe un cliente con el ID " + id + ".");
+        }
+        localCliente.eliminar(id);
+    }
+
+    private void validar(Cliente cliente) {
+        if (esVacio(cliente.getId())) {
+            throw new IllegalArgumentException("El ID es obligatorio.");
+        }
+        if (esVacio(cliente.getNombreCompleto())) {
+            throw new IllegalArgumentException("El nombre completo es obligatorio.");
+        }
+        if (esVacio(cliente.getCorreoElectronico())) {
+            throw new IllegalArgumentException("El correo es obligatorio.");
+        }
+        if (esVacio(cliente.getDireccionEnvio())) {
+            throw new IllegalArgumentException("La dirección es obligatoria.");
+        }
+        if (esVacio(cliente.getCelular())) {
+            throw new IllegalArgumentException("El celular es obligatorio.");
+        }
+    }
+
+    private boolean esVacio(String texto) {
+        return texto == null || texto.trim().isEmpty();
+    }
+}

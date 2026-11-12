@@ -2,55 +2,67 @@ package co.edu.uptc.tienda.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import co.edu.uptc.tienda.excepcion.CarritoExcepcion;
 import co.edu.uptc.tienda.interfaz.IGestionCarrito;
+import co.edu.uptc.tienda.modelo.Cliente;
+import co.edu.uptc.tienda.modelo.Libro;
 
 public class EventosCarrito implements ActionListener {
 
-    private interface AccionCarrito {
-        void ejecutar() throws CarritoExcepcion;
-    }
+    public final static String AGREGAR = "Agregar";
+    public final static String CAMBIAR = "Cambiar cantidad";
+    public final static String ELIMINAR = "Eliminar";
+    public final static String VACIAR = "Vaciar carrito";
+    public final static String CLIENTE = "Cliente";
 
     private final PanelCarrito panel;
     private final IGestionCarrito gestion;
-    private final Map<String, AccionCarrito> acciones = new HashMap<>();
 
     public EventosCarrito(PanelCarrito panel, IGestionCarrito gestion) {
         this.panel = panel;
         this.gestion = gestion;
-        acciones.put(PanelCarrito.ACCION_AGREGAR, new AccionCarrito() {
-            @Override
-            public void ejecutar() throws CarritoExcepcion {
-                agregar();
-            }
-        });
-        acciones.put(PanelCarrito.ACCION_CAMBIAR, new AccionCarrito() {
-            @Override
-            public void ejecutar() throws CarritoExcepcion {
-                cambiarCantidad();
-            }
-        });
-        acciones.put(PanelCarrito.ACCION_ELIMINAR, new AccionCarrito() {
-            @Override
-            public void ejecutar() throws CarritoExcepcion {
-                eliminar();
-            }
-        });
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        AccionCarrito accion = acciones.get(e.getActionCommand());
+        String evento = e.getActionCommand();
+        String error = null;
         try {
-            if (accion != null) {
-                accion.ejecutar();
+            if (evento.equals(AGREGAR)) {
+                agregar();
+            } else if (evento.equals(CAMBIAR)) {
+                cambiarCantidad();
+            } else if (evento.equals(ELIMINAR)) {
+                eliminar();
+            } else if (evento.equals(VACIAR)) {
+                vaciar();
+            } else if (evento.equals(CLIENTE)) {
+                asignarCliente();
             }
-            actualizarVista();
         } catch (CarritoExcepcion ex) {
-            panel.mostrarAlerta("Carrito", ex.getMessage());
+            error = ex.getMessage();
+        }
+        actualizarVista();
+        if (error != null) {
+            panel.mostrarAlerta("Carrito", error);
+        }
+    }
+
+    public void actualizarDatos(List<Libro> catalogo, List<Cliente> clientes) {
+        List<String> avisos = new ArrayList<>();
+        try {
+            avisos = gestion.sincronizarConCatalogo(catalogo);
+        } catch (CarritoExcepcion ex) {
+            avisos.add(ex.getMessage());
+        }
+        panel.cargarCatalogo(catalogo);
+        panel.cargarClientes(clientes, gestion.obtenerIdCliente());
+        actualizarVista();
+        if (!avisos.isEmpty()) {
+            panel.mostrarAlerta("Carrito", String.join("\n", avisos));
         }
     }
 
@@ -71,13 +83,34 @@ public class EventosCarrito implements ActionListener {
         if (isbn == null) {
             throw new CarritoExcepcion("Seleccione un libro de la tabla.");
         }
-        if (panel.confirmar("Desea quitar el libro del carrito?")) {
+        if (panel.confirmar("¿Desea quitar el libro del carrito?")) {
             gestion.eliminarLibro(isbn);
         }
     }
 
+    private void vaciar() throws CarritoExcepcion {
+        if (gestion.obtenerItems().isEmpty()) {
+            throw new CarritoExcepcion("El carrito ya está vacío.");
+        }
+        if (panel.confirmar("¿Desea vaciar el carrito?")) {
+            gestion.vaciar();
+        }
+    }
+
+    private void asignarCliente() throws CarritoExcepcion {
+        Cliente cliente = panel.getClienteSeleccionado();
+        if (cliente == null) {
+            gestion.asignarCliente(null);
+        } else {
+            gestion.asignarCliente(cliente.getId());
+        }
+    }
+
     private void actualizarVista() {
+        Cliente cliente = panel.getClienteSeleccionado();
+        double porcentaje = cliente == null ? 0 : cliente.obtenerPorcentajeDescuento();
+        double total = gestion.calcularTotal(porcentaje);
         panel.mostrarCarrito(gestion.obtenerItems(), gestion.calcularSubtotal(),
-                gestion.calcularImpuestos(), gestion.calcularTotal());
+                gestion.calcularImpuestos(), gestion.calcularTotal() - total, porcentaje, total);
     }
 }
