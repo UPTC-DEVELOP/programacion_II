@@ -12,7 +12,6 @@ import co.edu.uptc.tienda.negocio.IGestionCarrito;
 import co.edu.uptc.tienda.negocio.IGestionLibro;
 import co.edu.uptc.tienda.negocio.NegocioException;
 
-
 public class VentanaPrincipal extends JFrame {
 
 	private static final long serialVersionUID = 1L;
@@ -24,7 +23,7 @@ public class VentanaPrincipal extends JFrame {
 	private final PanelCentral panelCentral;
 	private final PanelCatalogo panelCatalogo;
 	private final PanelCarritoCompras panelCarrito;
-	
+
 	// Pestañas que ve el cliente después del login: Catálogo | Carrito
 	private final JTabbedPane pestanasCliente;
 	private final PanelCliente panelCliente;
@@ -61,7 +60,8 @@ public class VentanaPrincipal extends JFrame {
 		pestanasCliente = new JTabbedPane();
 		pestanasCliente.addTab("Catálogo", panelCatalogo);
 		pestanasCliente.addTab("Carrito de Compras", panelCarrito);
-		// Al abrir la pestaña del carrito se muestran los libros agregados desde el catálogo
+		// Al abrir la pestaña del carrito se muestran los libros agregados desde el
+		// catálogo
 		pestanasCliente.addChangeListener(e -> panelCarrito.actualizar());
 
 		add(panelLogin);
@@ -82,17 +82,35 @@ public class VentanaPrincipal extends JFrame {
 						+ clienteAutenticado.getPrimerApellido() + ".",
 				"Inicio de sesión exitoso", JOptionPane.INFORMATION_MESSAGE);
 
-		setTitle("Tienda Virtual de Libros - " + clienteAutenticado.getPrimerNombre() + " ("
-				+ clienteAutenticado.getTipoCliente() + ")");
-		getRootPane().setDefaultButton(null);
-		this.panelLogin.setVisible(Boolean.FALSE);
-		this.panelCarrito.setCliente(clienteAutenticado);
-		this.pestanasCliente.setSelectedIndex(0);
-		add(this.pestanasCliente);
-		setResizable(Boolean.TRUE);
-		setSize(1100, 650);
-		setLocationRelativeTo(null);
-		this.pestanasCliente.setVisible(Boolean.TRUE);
+		if (clienteAutenticado.getTipoCliente().name().equals("ADMIN")) {
+
+			setTitle("Tienda Virtual de Libros - " + clienteAutenticado.getPrimerNombre() + " ("
+					+ clienteAutenticado.getTipoCliente() + ")");
+
+			getRootPane().setDefaultButton(null);
+			this.panelLogin.setVisible(Boolean.FALSE);
+			setResizable(Boolean.TRUE);
+			setSize(1100, 650);
+			setLocationRelativeTo(null);
+			add(this.panelCentral);
+			this.panelCentral.setVisible(Boolean.TRUE);
+
+		} else {
+
+			setTitle("Tienda Virtual de Libros - " + clienteAutenticado.getPrimerNombre() + " ("
+					+ clienteAutenticado.getTipoCliente() + ")");
+
+			getRootPane().setDefaultButton(null);
+			this.panelLogin.setVisible(Boolean.FALSE);
+			this.panelCarrito.setCliente(clienteAutenticado);
+			this.pestanasCliente.setSelectedIndex(0);
+			add(this.pestanasCliente);
+			setResizable(Boolean.TRUE);
+			setSize(1100, 650);
+			setLocationRelativeTo(null);
+			this.pestanasCliente.setVisible(Boolean.TRUE);
+		}
+
 	}
 
 	private void cerrarSesion() {
