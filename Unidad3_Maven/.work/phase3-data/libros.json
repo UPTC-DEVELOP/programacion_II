@@ -1,8 +1,0 @@
-[
-  {"isbn":"978-958-00-0001-1","titulo":"Cien años de soledad","autores":"Autor de ejemplo","anio":"2020","categoria":"LITERATURA","editorial":"Editorial de ejemplo","paginas":"300","precio":"50000.0","stock":"10","descuento":"0.0","iva":"19.0","formato":"FISICO"},
-  {"isbn":"978-958-00-0002-8","titulo":"El amor en los tiempos del cólera","autores":"Autor de ejemplo","anio":"2020","categoria":"LITERATURA","editorial":"Editorial de ejemplo","paginas":"300","precio":"45000.0","stock":"8","descuento":"0.0","iva":"5.0","formato":"FISICO"},
-  {"isbn":"978-958-00-0003-5","titulo":"Crónica de una muerte anunciada","autores":"Autor de ejemplo","anio":"2020","categoria":"LITERATURA","editorial":"Editorial de ejemplo","paginas":"300","precio":"28000.0","stock":"2","descuento":"0.0","iva":"5.0","formato":"FISICO"},
-  {"isbn":"978-958-00-0004-2","titulo":"Clean Code","autores":"Autor de ejemplo","anio":"2020","categoria":"TECNOLOGIA","editorial":"Editorial de ejemplo","paginas":"300","precio":"120000.0","stock":"5","descuento":"0.0","iva":"19.0","formato":"FISICO"},
-  {"isbn":"978-958-00-0005-9","titulo":"Dune","autores":"Autor de ejemplo","anio":"2020","categoria":"CIENCIA_FICCION","editorial":"Editorial de ejemplo","paginas":"300","precio":"65000.0","stock":"6","descuento":"0.0","iva":"19.0","formato":"DIGITAL"},
-  {"isbn":"978-958-00-0006-6","titulo":"Sapiens","autores":"Autor de ejemplo","anio":"2020","categoria":"HISTORIA","editorial":"Editorial de ejemplo","paginas":"300","precio":"80000.0","stock":"12","descuento":"0.0","iva":"19.0","formato":"FISICO"}
-]

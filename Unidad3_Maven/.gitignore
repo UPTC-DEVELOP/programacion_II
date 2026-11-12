@@ -3,3 +3,8 @@
 caso-estudio/.settings/
 caso-estudio/target/
 /.metadata/
+/bin/
+/target/
+*.class
+/.work/rebuilt-classes/
+/.work/test-classes/

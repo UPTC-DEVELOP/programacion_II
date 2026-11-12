@@ -1,6 +1,0 @@
-[
-  {"id":"1","fecha":"2026-11-10 15:22:46","correo":"ana@correo.com","subtotal":"50000.0","impuestos":"9500.0","descuentoCliente":"0.0","total":"59500.0","metodo":"EFECTIVO","isbn":"978-958-00-0001-1","titulo":"Cien años de soledad","precio":"50000.0","descuento":"0.0","iva":"19.0","cantidad":"1"},
-  {"id":"2","fecha":"2026-11-10 15:22:46","correo":"ana@correo.com","subtotal":"45000.0","impuestos":"2250.0","descuentoCliente":"0.0","total":"47250.0","metodo":"EFECTIVO","isbn":"978-958-00-0002-8","titulo":"El amor en los tiempos del cólera","precio":"45000.0","descuento":"0.0","iva":"5.0","cantidad":"1"},
-  {"id":"3","fecha":"2026-11-10 15:22:46","correo":"ana@correo.com","subtotal":"45000.0","impuestos":"2250.0","descuentoCliente":"0.0","total":"47250.0","metodo":"EFECTIVO","isbn":"978-958-00-0002-8","titulo":"El amor en los tiempos del cólera","precio":"45000.0","descuento":"0.0","iva":"5.0","cantidad":"1"},
-  {"id":"4","fecha":"2026-11-10 15:22:46","correo":"ana@correo.com","subtotal":"45000.0","impuestos":"2250.0","descuentoCliente":"2363.0","total":"44887.0","metodo":"EFECTIVO","isbn":"978-958-00-0002-8","titulo":"El amor en los tiempos del cólera","precio":"45000.0","descuento":"0.0","iva":"5.0","cantidad":"1"}
-]

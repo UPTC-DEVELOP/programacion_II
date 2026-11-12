@@ -1,5 +1,0 @@
-[2026-11-10 15:22:46] [INFO] ana@correo.com - Pedido #1 registrado por 59500.0
-[2026-11-10 15:22:46] [INFO] ana@correo.com - Reseña registrada
-[2026-11-10 15:22:46] [INFO] ana@correo.com - Pedido #2 registrado por 47250.0
-[2026-11-10 15:22:46] [INFO] ana@correo.com - Pedido #3 registrado por 47250.0
-[2026-11-10 15:22:46] [INFO] ana@correo.com - Pedido #4 registrado por 44887.0

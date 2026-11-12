@@ -1,5 +1,0 @@
-[2026-11-10 15:21:28] [INFO] carlos@correo.com - Pedido #1 registrado por 107100.0
-[2026-11-10 15:21:28] [INFO] carlos@correo.com - Pedido #2 registrado por 42525.0
-[2026-11-10 15:21:28] [INFO] carlos@correo.com - Pedido #3 registrado por 42525.0
-[2026-11-10 15:21:28] [INFO] carlos@correo.com - Pedido #4 registrado por 40162.0
-[2026-11-10 15:21:28] [INFO] carlos@correo.com - Pedido #5 registrado por 40162.0
