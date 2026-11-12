@@ -1,54 +1,9 @@
 [
-  {
-    "isbn": "9789586600001",
-    "titulo": "Cien años de soledad",
-    "autor": "Gabriel García Márquez",
-    "anioPublicacion": 1967,
-    "categoria": "Novela",
-    "editorial": "Editorial Sudamericana",
-    "numeroPaginas": 471,
-    "precioBase": 50000.0,
-    "cantidadDisponible": 150,
-    "porcentajeDescuento": 0.0,
-    "formato": "FISICO"
-  },
-  {
-    "isbn": "9788437604947",
-    "titulo": "Don Quijote de la Mancha",
-    "autor": "Miguel de Cervantes",
-    "anioPublicacion": 1605,
-    "categoria": "Clásico",
-    "editorial": "Cátedra",
-    "numeroPaginas": 1200,
-    "precioBase": 45000.0,
-    "cantidadDisponible": 85,
-    "porcentajeDescuento": 0.0,
-    "formato": "FISICO"
-  },
-  {
-    "isbn": "9780132350884",
-    "titulo": "Clean Code",
-    "autor": "Robert C. Martin",
-    "anioPublicacion": 2008,
-    "categoria": "Tecnología",
-    "editorial": "Prentice Hall",
-    "numeroPaginas": 0,
-    "precioBase": 110000.0,
-    "cantidadDisponible": 45,
-    "porcentajeDescuento": 0.0,
-    "formato": "DIGITAL"
-  },
-  {
-    "isbn": "9789589585141",
-    "titulo": "La María",
-    "autor": "Jorge Isaacs",
-    "anioPublicacion": 1867,
-    "categoria": "Romántica",
-    "editorial": "Editorial Norma",
-    "numeroPaginas": 320,
-    "precioBase": 35000.0,
-    "cantidadDisponible": 210,
-    "porcentajeDescuento": 0.0,
-    "formato": "FISICO"
-  }
+  {"isbn":"978-958-00-0001-1","titulo":"Cien años de soledad","autores":"Autor de ejemplo","anio":"2020","categoria":"LITERATURA","editorial":"Editorial de ejemplo","paginas":"300","precio":"50000.0","stock":"10","descuento":"0.0","iva":"19.0","formato":"FISICO"},
+  {"isbn":"978-958-00-0003-5","titulo":"Crónica de una muerte anunciada","autores":"Autor de ejemplo","anio":"2020","categoria":"LITERATURA","editorial":"Editorial de ejemplo","paginas":"300","precio":"28000.0","stock":"2","descuento":"0.0","iva":"5.0","formato":"FISICO"},
+  {"isbn":"978-958-00-0004-2","titulo":"Clean Code","autores":"Autor de ejemplo","anio":"2020","categoria":"TECNOLOGIA","editorial":"Editorial de ejemplo","paginas":"300","precio":"120000.0","stock":"5","descuento":"0.0","iva":"19.0","formato":"FISICO"},
+  {"isbn":"978-958-00-0005-9","titulo":"Dune","autores":"Autor de ejemplo","anio":"2020","categoria":"CIENCIA_FICCION","editorial":"Editorial de ejemplo","paginas":"300","precio":"65000.0","stock":"6","descuento":"0.0","iva":"19.0","formato":"DIGITAL"},
+  {"isbn":"978-958-00-0006-6","titulo":"Sapiens","autores":"Autor de ejemplo","anio":"2020","categoria":"HISTORIA","editorial":"Editorial de ejemplo","paginas":"300","precio":"80000.0","stock":"12","descuento":"0.0","iva":"19.0","formato":"FISICO"},
+  {"isbn":"978-958-00-0999-9","titulo":"Libro de prueba ","autores":"Autor de ejemplo","anio":"2020","categoria":"OTRA","editorial":"Editorial","paginas":"100","precio":"32000.0","stock":"5","descuento":"0.0","iva":"19.0","formato":"FISICO"},
+  {"isbn":"978-958-00-0002-8","titulo":"El amor en los tiempos del cólera","autores":"Autor de ejemplo","anio":"2020","categoria":"LITERATURA","editorial":"Editorial de ejemplo","paginas":"300","precio":"45000.0","stock":"7","descuento":"0.0","iva":"5.0","formato":"FISICO"}
 ]

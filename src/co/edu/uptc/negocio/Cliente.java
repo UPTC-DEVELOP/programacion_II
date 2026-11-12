@@ -2,6 +2,7 @@ package co.edu.uptc.negocio;
 
 public class Cliente {
 
+    /** Porcentaje de descuento aplicado al total de una compra Premium. */
     public static final double DESCUENTO_PREMIUM = 10.0;
 
     private String nombreCompleto;
