@@ -5,7 +5,6 @@ import co.edu.uptc.libreria.interfaces.IRegistroOperaciones;
 import co.edu.uptc.libreria.persistencia.ArchivoRegistroOperaciones;
 import co.edu.uptc.libreria.persistencia.LocalCliente;
 
-/** Punto unico donde se arman las capas (equivale a NominaConfig). */
 public class TiendaConfig {
 
 	public static final String RUTA_REGISTRO_OPERACIONES = "datos/operaciones.txt";
