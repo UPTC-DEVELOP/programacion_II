@@ -1,5 +1,6 @@
 package co.edu.uptc.libreria.persistencia;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -41,25 +42,22 @@ public class JdbcCliente implements IGestionCliente {
 
 	@Override
 	public Cliente buscar(String correo) {
-		ConexionBD conex = new ConexionBD();
 		Cliente cliente = null;
-		try {
-			Statement estatuto = conex.getConnection().createStatement();
-			ResultSet rs = estatuto.executeQuery(
-					"SELECT * FROM cliente WHERE correo = '" + correo + "'");
-			if (rs.next()) {
-				cliente = armarCliente(rs);
+		try (
+				Connection conex = ConexionBD.getConnection();
+			     Statement estatuto = conex.createStatement();
+			     ResultSet rs = estatuto.executeQuery("SELECT * FROM cliente WHERE correo = '" + correo + "'")) {
+				
+				if (rs.next()) {
+					cliente = armarCliente(rs);
+				}
+	            
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+				throw new IllegalStateException("No se pudo consultar el cliente");
 			}
-			rs.close();
-			estatuto.close();
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-			throw new IllegalStateException("No se pudo consultar el cliente");
-		} finally {
-			conex.desconectar();
+			return cliente;
 		}
-		return cliente;
-	}
 
 	@Override
 	public List<Cliente> listar() {
@@ -77,7 +75,6 @@ public class JdbcCliente implements IGestionCliente {
 			System.out.println(e.getMessage());
 			throw new IllegalStateException("No se pudo listar los clientes");
 		} finally {
-			conex.desconectar();
 		}
 		return clientes;
 	}
@@ -87,12 +84,10 @@ public class JdbcCliente implements IGestionCliente {
 		try {
 			Statement estatuto = conex.getConnection().createStatement();
 			estatuto.executeUpdate(consulta);
-			estatuto.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 			throw new IllegalStateException("No se pudo " + accion + " el cliente");
 		} finally {
-			conex.desconectar();
 		}
 	}
 
