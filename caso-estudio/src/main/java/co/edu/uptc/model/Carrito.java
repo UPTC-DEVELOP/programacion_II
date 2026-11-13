@@ -1,69 +1,51 @@
 package co.edu.uptc.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import co.edu.uptc.model.Libro;
 public class Carrito {
-    private List<Libro> items;
-    private boolean esPremium;
+
+    private String idProducto;
+    private String titulo;
+    private int cantidad;
+    private double precioUnitario;
 
     public Carrito() {
-        this.items = new ArrayList<>();
-        this.esPremium = false;
     }
 
-    public void agregarLibro(Libro libro) {
-        items.add(libro);
+    public Carrito(String idProducto, String titulo, int cantidad, double precioUnitario) {
+        this.idProducto = idProducto;
+        this.titulo = titulo;
+        this.cantidad = cantidad;
+        this.precioUnitario = precioUnitario;
     }
 
-    public void eliminarLibro(int indice) {
-        if (indice >= 0 && indice < items.size()) {
-            items.remove(indice);
-        }
+    public String getIdProducto() {
+        return idProducto;
     }
 
-    public void vaciarCarrito() {
-        items.clear();
+    public void setIdProducto(String idProducto) {
+        this.idProducto = idProducto;
     }
 
-    public double calcularSubtotal() {
-        double subtotal = 0.0;
-        for (Libro l : items) {
-            subtotal += l.getPrecioVenta();
-        }
-        return subtotal;
+    public String getTitulo() {
+        return titulo;
     }
 
-    public double calcularImpuestos() {
-        double totalIVA = 0.0;
-        for (Libro l : items) {
-            totalIVA += l.getPrecioVenta() * 0.19;
-        }
-        return totalIVA;
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
     }
 
-    public double calcularDescuento() {
-        if (!esPremium) {
-            return 0.0;
-        }
-        double totalSinDescuento = calcularSubtotal() + calcularImpuestos();
-        return totalSinDescuento * 0.10;
+    public int getCantidad() {
+        return cantidad;
     }
 
-    public double calcularTotalFinal() {
-        double totalSinDescuento = calcularSubtotal() + calcularImpuestos();
-        return totalSinDescuento - calcularDescuento();
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
     }
 
-    public List<Libro> getItems() {
-        return items;
+    public double getPrecioUnitario() {
+        return precioUnitario;
     }
 
-    public void setEsPremium(boolean esPremium) {
-        this.esPremium = esPremium;
-    }
-
-    public boolean isEsPremium() {
-        return esPremium;
+    public void setPrecioUnitario(double precioUnitario) {
+        this.precioUnitario = precioUnitario;
     }
 }

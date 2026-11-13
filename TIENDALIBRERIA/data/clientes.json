@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "cedula": "6013089",
+    "nombre": "juan",
+    "apellido": "sierra",
+    "telefono": "3054716800",
+    "correo": "juansierra@gmail.com",
+    "direccion": "tunja",
+    "tipoCliente": "Premium"
+  }
+]

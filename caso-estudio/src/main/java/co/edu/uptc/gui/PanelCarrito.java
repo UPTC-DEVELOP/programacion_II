@@ -1,172 +1,221 @@
 package co.edu.uptc.gui;
 
-
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
+import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
 import co.edu.uptc.model.Carrito;
-import co.edu.uptc.model.Libro;
+import co.edu.uptc.repository.CarritoJsonRepositorio;
 
 public class PanelCarrito extends JPanel {
 
     private JTable tablaCarrito;
     private DefaultTableModel modeloTabla;
-    private JLabel labelSubtotal, labelImpuestos, labelDescuento, labelTotal;
-    private JCheckBox chkEsPremium;
-    private JButton btnComprar, btnVaciar, btnEliminar, btnVolver;
-    private Carrito carrito;
+    private JButton btnAgregarManual, btnEliminarItem, btnVaciarCarrito, btnRealizarCompra;
+    private JLabel lblTotal;
     
-    // Referencia al panel de pedidos para comunicar la compra
     private PanelPedido panelPedido;
+    private CarritoJsonRepositorio carritoRepo;
 
     public PanelCarrito() {
+        this.carritoRepo = new CarritoJsonRepositorio();
         setLayout(new BorderLayout(10, 10));
 
-        carrito = new Carrito();
-
-        // --- LÍNEA DE PRUEBA TEMPORAL ---
-        Libro libroPrueba = new Libro("978-958-0", "Cien años de soledad", "Gabriel García Márquez", 1967, null, "Editorial Planeta", 350, 50000.0, 5, null);
-        carrito.getItems().add(libroPrueba);
-        // ---------------------------------
-
-        // Configuración de la tabla del carrito
-        String[] columnas = {"ISBN", "Título", "Autor", "Precio Venta", "Formato"};
+        // 1. Configuración de la tabla del carrito
+        String[] columnas = {"ISBN / ID", "Título", "Cantidad", "Precio Unitario", "Subtotal"};
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Evita la edición directa en las celdas
+                return false;
             }
         };
-        
+
         tablaCarrito = new JTable(modeloTabla);
         add(new JScrollPane(tablaCarrito), BorderLayout.CENTER);
 
-        // Panel superior para opciones de cliente
-        JPanel panelNorte = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        chkEsPremium = new JCheckBox("¿Cliente Premium? (10% de descuento)");
-        chkEsPremium.addActionListener(e -> actualizarTabla());
-        panelNorte.add(chkEsPremium);
-        add(panelNorte, BorderLayout.NORTH);
-
-        // Panel inferior para totales y acciones
-        JPanel panelSur = new JPanel(new GridLayout(2, 1));
-
-        // Subpanel de totales
-        JPanel panelTotales = new JPanel(new GridLayout(4, 1, 2, 2));
-        labelSubtotal = new JLabel("Subtotal: $0.00");
-        labelImpuestos = new JLabel("Impuestos (IVA): $0.00");
-        labelDescuento = new JLabel("Descuento Premium (10%): -$0.00");
-        labelTotal = new JLabel("TOTAL A PAGAR: $0.00");
-        
-        Font fuenteTotal = new Font("Arial", Font.BOLD, 12);
-        labelTotal.setFont(fuenteTotal);
-
-        panelTotales.add(labelSubtotal);
-        panelTotales.add(labelImpuestos);
-        panelTotales.add(labelDescuento);
-        panelTotales.add(labelTotal);
-        panelSur.add(panelTotales);
-
-        // Subpanel de botones de acción
+        // 2. Panel inferior (Total + Botones de Acción)
+        JPanel panelInferior = new JPanel(new BorderLayout());
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        btnEliminar = new JButton("Eliminar del Carrito");
-        btnVaciar = new JButton("Vaciar Carrito");
-        btnComprar = new JButton("Realizar Compra");
-        btnVolver = new JButton("Volver");
 
-        // Asignación de Listeners
-        btnEliminar.addActionListener(e -> eliminarLibroSeleccionado());
-        btnVaciar.addActionListener(e -> {
-            carrito.vaciarCarrito();
-            actualizarTabla();
-        });
-        btnComprar.addActionListener(e -> realizarCompra());
-        btnVolver.addActionListener(e -> volverAlMenu());
+        lblTotal = new JLabel("Total: $0.00");
+        lblTotal.setFont(new Font("Arial", Font.BOLD, 15));
 
-        panelBotones.add(btnEliminar);
-        panelBotones.add(btnVaciar);
-        panelBotones.add(btnComprar);
-        panelBotones.add(btnVolver);
-        panelSur.add(panelBotones);
+        btnAgregarManual = new JButton("Agregar Libro");
+        btnEliminarItem = new JButton("Eliminar Seleccionado");
+        btnVaciarCarrito = new JButton("Vaciar Carrito");
+        btnRealizarCompra = new JButton("Realizar Compra");
 
-        add(panelSur, BorderLayout.SOUTH);
-        
-        actualizarTabla();
+        // ActionCommands para el controlador central (MVC)
+        btnAgregarManual.setActionCommand("AGREGAR_CARRITO");
+        btnEliminarItem.setActionCommand("ELIMINAR_CARRITO");
+        btnVaciarCarrito.setActionCommand("VACIAR_CARRITO");
+        btnRealizarCompra.setActionCommand("COMPRAR_CARRITO");
+
+        // Listeners locales
+        btnAgregarManual.addActionListener(e -> agregarLibroManual());
+        btnEliminarItem.addActionListener(e -> eliminarItemSeleccionado());
+        btnVaciarCarrito.addActionListener(e -> vaciarCarrito());
+        btnRealizarCompra.addActionListener(e -> realizarCompra());
+
+        panelBotones.add(btnAgregarManual);
+        panelBotones.add(btnEliminarItem);
+        panelBotones.add(btnVaciarCarrito);
+        panelBotones.add(btnRealizarCompra);
+
+        panelInferior.add(lblTotal, BorderLayout.WEST);
+        panelInferior.add(panelBotones, BorderLayout.EAST);
+
+        add(panelInferior, BorderLayout.SOUTH);
+
+        // Cargar registros persistidos en data/carrito.json
+        cargarCarrito();
     }
 
-    // Permite comunicar la compra con el módulo de pedidos
     public void setPanelPedido(PanelPedido panelPedido) {
         this.panelPedido = panelPedido;
     }
 
-    // Permite recibir libros seleccionados desde la vista del catálogo
-    public void agregarLibro(Libro libro) {
-        carrito.getItems().add(libro);
-        actualizarTabla();
+    // Carga los elementos guardados desde el archivo JSON al iniciar
+    public void cargarCarrito() {
+        modeloTabla.setRowCount(0);
+        List<Carrito> items = carritoRepo.cargar();
+        for (Carrito item : items) {
+            double subtotal = item.getCantidad() * item.getPrecioUnitario();
+            modeloTabla.addRow(new Object[]{
+                item.getIdProducto(),
+                item.getTitulo(),
+                item.getCantidad(),
+                "$" + item.getPrecioUnitario(),
+                "$" + subtotal
+            });
+        }
+        actualizarTotal();
     }
 
-    private void eliminarLibroSeleccionado() {
-        int filaSeleccionada = tablaCarrito.getSelectedRow();
-        if (filaSeleccionada >= 0) {
-            carrito.getItems().remove(filaSeleccionada);
-            actualizarTabla();
-        } else {
-            JOptionPane.showMessageDialog(this, "Seleccione un libro para eliminar del carrito.", "Aviso", JOptionPane.WARNING_MESSAGE);
+    // Actualiza el archivo data/carrito.json tras cualquier cambio en la tabla
+    private void guardarEnJson() {
+        List<Carrito> lista = new ArrayList<>();
+        for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+            String id = modeloTabla.getValueAt(i, 0).toString();
+            String titulo = modeloTabla.getValueAt(i, 1).toString();
+            int cantidad = Integer.parseInt(modeloTabla.getValueAt(i, 2).toString());
+            String precioStr = modeloTabla.getValueAt(i, 3).toString().replace("$", "").trim();
+            double precio = Double.parseDouble(precioStr);
+
+            lista.add(new Carrito(id, titulo, cantidad, precio));
         }
+        carritoRepo.guardar(lista);
+    }
+
+    // Agregar producto desde un diálogo flotante
+    private void agregarLibroManual() {
+        String id = JOptionPane.showInputDialog(this, "Ingrese el ISBN / ID del libro:");
+        if (id == null || id.trim().isEmpty()) return;
+
+        String titulo = JOptionPane.showInputDialog(this, "Ingrese el título del libro:");
+        if (titulo == null || titulo.trim().isEmpty()) return;
+
+        String cantStr = JOptionPane.showInputDialog(this, "Ingrese la cantidad:");
+        if (cantStr == null || cantStr.trim().isEmpty()) return;
+
+        String precioStr = JOptionPane.showInputDialog(this, "Ingrese el precio unitario:");
+        if (precioStr == null || precioStr.trim().isEmpty()) return;
+
+        try {
+            int cantidad = Integer.parseInt(cantStr.trim());
+            double precio = Double.parseDouble(precioStr.trim());
+            
+            agregarItem(id.trim(), titulo.trim(), cantidad, precio);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Cantidad y precio deben ser numéricos.", "Error de entrada", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // Método público invocado desde el catálogo de libros o desde el controlador
+    public void agregarItem(String id, String titulo, int cantidad, double precioUnitario) {
+        double subtotal = cantidad * precioUnitario;
+        modeloTabla.addRow(new Object[]{id, titulo, cantidad, "$" + precioUnitario, "$" + subtotal});
+        actualizarTotal();
+        guardarEnJson();
+    }
+
+    private void eliminarItemSeleccionado() {
+        int fila = tablaCarrito.getSelectedRow();
+        if (fila >= 0) {
+            modeloTabla.removeRow(fila);
+            actualizarTotal();
+            guardarEnJson();
+        } else {
+            JOptionPane.showMessageDialog(this, "Seleccione un libro del carrito para eliminar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    public void vaciarCarrito() {
+        modeloTabla.setRowCount(0);
+        actualizarTotal();
+        guardarEnJson();
     }
 
     private void realizarCompra() {
-        if (carrito.getItems().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "El carrito está vacío.", "Aviso", JOptionPane.WARNING_MESSAGE);
+        if (modeloTabla.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "El carrito está vacío. Agregue productos antes de realizar la compra.", "Aviso", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        String idPedido = "P-" + (int)(Math.random() * 1000);
-        String fechaActual = "2026-10-24"; 
-        String totalPagar = labelTotal.getText().replace("TOTAL A PAGAR: ", "");
-
-        if (panelPedido != null) {
-            panelPedido.agregarPedido(idPedido, "Cliente General", fechaActual, totalPagar, "Pendiente");
-        }
-
-        JOptionPane.showMessageDialog(this, String.format("¡Compra realizada con éxito!\nPedido registrado: %s", idPedido));
+        String cliente = JOptionPane.showInputDialog(this, "Ingrese el nombre del cliente:", "Realizar Compra", JOptionPane.QUESTION_MESSAGE);
         
-        carrito.vaciarCarrito();
-        actualizarTabla();
-    }
+        if (cliente != null && !cliente.trim().isEmpty()) {
+            double total = obtenerTotalCalculado();
+            String totalFormateado = "$" + String.format("%.2f", total);
+            String fechaActual = LocalDate.now().toString();
 
-    private void volverAlMenu() {
-        // Cierra la ventana actual o conmuta de vista
-        javax.swing.SwingUtilities.getWindowAncestor(this).dispose();
-    }
+            // Si está vinculado con PanelPedido, transferir la compra
+            if (panelPedido != null) {
+                String idPedido = String.format("PED-%04d", (int)(Math.random() * 9000 + 1000));
+                panelPedido.agregarPedido(idPedido, cliente.trim(), fechaActual, totalFormateado, "Pendiente");
+            }
 
-    public void actualizarTabla() {
-        modeloTabla.setRowCount(0);
-        carrito.setEsPremium(chkEsPremium.isSelected());
-
-        for (Libro libro : carrito.getItems()) {
-            Object[] fila = {
-                libro.getIsbn(),
-                libro.getTituloLibro(),
-                libro.getAutor(),
-                "$" + libro.getPrecioVenta(),
-                libro.getFormato()
-            };
-            modeloTabla.addRow(fila);
+            // Vaciar el carrito y actualizar data/carrito.json
+            vaciarCarrito();
+            
+            JOptionPane.showMessageDialog(this, "¡Compra registrada con éxito!\nRevisa la pestaña 'Pedidos' para ver el historial.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         }
+    }
 
-        labelSubtotal.setText(String.format("Subtotal: $%.2f", carrito.calcularSubtotal()));
-        labelImpuestos.setText(String.format("Impuestos (IVA): $%.2f", carrito.calcularImpuestos()));
-        labelDescuento.setText(String.format("Descuento Premium (10%%): -$%.2f", carrito.calcularDescuento()));
-        labelTotal.setText(String.format("TOTAL A PAGAR: $%.2f", carrito.calcularTotalFinal()));
+    private void actualizarTotal() {
+        double total = obtenerTotalCalculado();
+        lblTotal.setText("Total: $" + String.format("%.2f", total));
+    }
+
+    private double obtenerTotalCalculado() {
+        double total = 0;
+        for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+            String subtotalStr = modeloTabla.getValueAt(i, 4).toString().replace("$", "").trim();
+            try {
+                total += Double.parseDouble(subtotalStr);
+            } catch (NumberFormatException e) {
+                // ignorar formato inválido
+            }
+        }
+        return total;
+    }
+
+    // Registro de oyentes externos para el Controlador principal
+    public void agregarOyentes(ActionListener listener) {
+        btnAgregarManual.addActionListener(listener);
+        btnEliminarItem.addActionListener(listener);
+        btnVaciarCarrito.addActionListener(listener);
+        btnRealizarCompra.addActionListener(listener);
     }
 }
