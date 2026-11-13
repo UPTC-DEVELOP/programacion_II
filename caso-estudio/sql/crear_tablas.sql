@@ -13,3 +13,15 @@ CREATE TABLE IF NOT EXISTS libros (
     cantidad_disponible INT NOT NULL DEFAULT 0,
     formato VARCHAR(30) NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS clientes (
+    cedula       VARCHAR(20)  NOT NULL,
+    nombre       VARCHAR(60)  NOT NULL,
+    apellido     VARCHAR(60)  NOT NULL,
+    telefono     VARCHAR(20),
+    correo       VARCHAR(100) NOT NULL,
+    direccion    VARCHAR(150),
+    tipo_cliente VARCHAR(20)  NOT NULL DEFAULT 'No Premium',
+    PRIMARY KEY (cedula),
+    UNIQUE KEY uq_clientes_correo (correo)
+);
