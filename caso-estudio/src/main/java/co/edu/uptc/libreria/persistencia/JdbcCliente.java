@@ -1,6 +1,7 @@
 package co.edu.uptc.libreria.persistencia;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -15,7 +16,7 @@ public class JdbcCliente implements IGestionCliente {
 
 	@Override
 	public void guardar(Cliente cliente) {
-		String consulta = "INSERT INTO cliente (correo, nombre_completo, direccion_envio, telefono, tipo) VALUES ('"
+		String consulta = "INSERT INTO clientes (correo, nombre_completo, direccion_envio, telefono, tipo) VALUES ('"
 				+ cliente.getCorreo() + "', '"
 				+ cliente.getNombreCompleto() + "', '"
 				+ cliente.getDireccionEnvio() + "', '"
@@ -24,9 +25,10 @@ public class JdbcCliente implements IGestionCliente {
 		ejecutarActualizacion(consulta, "registrar");
 	}
 
+	
 	@Override
 	public void actualizar(Cliente cliente) {
-		String consulta = "UPDATE cliente SET nombre_completo = '" + cliente.getNombreCompleto()
+		String consulta = "UPDATE clientes SET nombre_completo = '" + cliente.getNombreCompleto()
 				+ "', direccion_envio = '" + cliente.getDireccionEnvio()
 				+ "', telefono = '" + cliente.getTelefono()
 				+ "', tipo = '" + cliente.getTipo().name()
@@ -36,7 +38,7 @@ public class JdbcCliente implements IGestionCliente {
 
 	@Override
 	public void eliminar(String correo) {
-		String consulta = "DELETE FROM cliente WHERE correo = '" + correo + "'";
+		String consulta = "DELETE FROM clientes WHERE correo = '" + correo + "'";
 		ejecutarActualizacion(consulta, "eliminar");
 	}
 
@@ -46,7 +48,7 @@ public class JdbcCliente implements IGestionCliente {
 		try (
 				Connection conex = ConexionBD.getConnection();
 			     Statement estatuto = conex.createStatement();
-			     ResultSet rs = estatuto.executeQuery("SELECT * FROM cliente WHERE correo = '" + correo + "'")) {
+			     ResultSet rs = estatuto.executeQuery("SELECT * FROM clientes WHERE correo = '" + correo + "'")) {
 				
 				if (rs.next()) {
 					cliente = armarCliente(rs);
@@ -65,7 +67,7 @@ public class JdbcCliente implements IGestionCliente {
 		List<Cliente> clientes = new ArrayList<Cliente>();
 		try {
 			Statement estatuto = conex.getConnection().createStatement();
-			ResultSet rs = estatuto.executeQuery("SELECT * FROM cliente");
+			ResultSet rs = estatuto.executeQuery("SELECT * FROM clientes");
 			while (rs.next()) {
 				clientes.add(armarCliente(rs));
 			}

@@ -115,6 +115,7 @@ public class ventanaPrincipal extends JFrame {
 			System.out.println("COnexion establecida");
 		}
 		
+		
 	}
 
 	// ======================= CONSTRUCCION DE LA VISTA =======================
@@ -426,6 +427,7 @@ public class ventanaPrincipal extends JFrame {
 			config.getGestCliente().registrarCliente(dialogoCliente.capturarDatos());
 			cerrarDialogoCliente();
 			refrescarTabla();
+			
 		} catch (IllegalArgumentException e) {
 			// el dialogo queda abierto para que el usuario corrija los datos
 			JOptionPane.showMessageDialog(dialogoCliente, e.getMessage());

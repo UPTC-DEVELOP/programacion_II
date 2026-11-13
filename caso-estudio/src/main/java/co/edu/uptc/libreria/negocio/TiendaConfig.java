@@ -4,6 +4,7 @@ import co.edu.uptc.libreria.interfaces.IGestionCliente;
 import co.edu.uptc.libreria.interfaces.IRegistroOperaciones;
 import co.edu.uptc.libreria.persistencia.ArchivoRegistroOperaciones;
 import co.edu.uptc.libreria.persistencia.LocalCliente;
+import co.edu.uptc.libreria.persistencia.JdbcCliente;
 
 public class TiendaConfig {
 
@@ -15,7 +16,7 @@ public class TiendaConfig {
 
 	public TiendaConfig() {
 		super();
-		iCliente = new LocalCliente();
+		iCliente = new JdbcCliente();
 		iRegistro = new ArchivoRegistroOperaciones(RUTA_REGISTRO_OPERACIONES);
 		gestCliente = new GestionCliente(iCliente, iRegistro);
 	}

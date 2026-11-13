@@ -56,6 +56,8 @@ public class DialogoCliente extends JDialog {
 		pCampos.add(txTelefono);
 		pCampos.add(new JLabel("Tipo de cliente"));
 		pCampos.add(cbxTipo);
+		
+		
 
 		btnGuardar = new JButton(Evento.GUARDAR);
 		btnCancelar = new JButton(Evento.CANCELAR);
