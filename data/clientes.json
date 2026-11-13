@@ -14,5 +14,21 @@
     "contrasenia": "12345678",
     "fechaRegistro": "2026-11-11 22:55:32.272",
     "intentosFallidos": 0
+  },
+  {
+    "idCliente": 2,
+    "tipoCliente": "PREMIUM",
+    "primerNombre": "liliana",
+    "otrosNombres": "",
+    "primerApellido": "murillo",
+    "otrosApellidos": "",
+    "tipoIdentificacion": "cc",
+    "identificacion": "33347913",
+    "correoElectronico": "lilianamp@hotmail.com",
+    "celular": "3145259681",
+    "direccion": "cra 1 n 10",
+    "contrasenia": "12345678",
+    "fechaRegistro": "2026-11-12 22:46:24.319",
+    "intentosFallidos": 0
   }
 ]

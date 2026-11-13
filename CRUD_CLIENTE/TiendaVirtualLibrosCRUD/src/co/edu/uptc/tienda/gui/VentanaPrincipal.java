@@ -63,6 +63,8 @@ public class VentanaPrincipal extends JFrame {
 		// Al abrir la pestaña del carrito se muestran los libros agregados desde el
 		// catálogo
 		pestanasCliente.addChangeListener(e -> panelCarrito.actualizar());
+		// Desde el carrito, el botón "Agregar libros del catálogo" abre la pestaña Catálogo
+		panelCarrito.setAccionVerCatalogo(() -> pestanasCliente.setSelectedComponent(panelCatalogo));
 
 		add(panelLogin);
 		getRootPane().setDefaultButton(panelLogin.getBotonIngresar());

@@ -36,6 +36,7 @@ public class Evento implements ActionListener {
 	public static final String AGREGAR_CARRITO = "Agregar al Carrito";
 	public static final String QUITAR_CARRITO = "Quitar del Carrito";
 	public static final String VACIAR_CARRITO = "Vaciar Carrito";
+	public static final String VER_CATALOGO = "Ver Catalogo";
 
 	public static final String ACTUALIZAR_TABLA = "ACTUALIZAR_TABLA";
 

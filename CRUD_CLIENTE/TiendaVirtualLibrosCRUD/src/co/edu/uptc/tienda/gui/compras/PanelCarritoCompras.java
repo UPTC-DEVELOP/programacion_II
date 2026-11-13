@@ -37,6 +37,10 @@ public class PanelCarritoCompras extends JPanel {
 	// Cliente de la sesión: define el descuento (null mientras no haya sesión)
 	private Cliente cliente;
 
+	// Qué hacer al pulsar "Agregar libros del catálogo"; la define la ventana que
+	// contiene el panel, así el carrito no depende de cómo se muestra el catálogo
+	private Runnable accionVerCatalogo;
+
 	public PanelCarritoCompras(IGestionCarrito gestionCarrito) {
 		this.gestionCarrito = gestionCarrito;
 
@@ -61,10 +65,12 @@ public class PanelCarritoCompras extends JPanel {
 		JPanel panelInferior = new JPanel(new BorderLayout(10, 10));
 		panelInferior.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
 
+		JButton btnVerCatalogo = new JButton("Agregar libros del catálogo");
 		JButton btnQuitar = new JButton("Quitar seleccionado");
 		JButton btnVaciar = new JButton("Vaciar carrito");
 
 		JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+		panelBotones.add(btnVerCatalogo);
 		panelBotones.add(btnQuitar);
 		panelBotones.add(btnVaciar);
 
@@ -84,8 +90,19 @@ public class PanelCarritoCompras extends JPanel {
 		add(panelInferior, BorderLayout.SOUTH);
 
 		Evento evento = new Evento();
+		evento.registrar(btnVerCatalogo, Evento.VER_CATALOGO, this::verCatalogo);
 		evento.registrar(btnQuitar, Evento.QUITAR_CARRITO, this::quitarSeleccionado);
 		evento.registrar(btnVaciar, Evento.VACIAR_CARRITO, this::vaciarCarrito);
+	}
+
+	public void setAccionVerCatalogo(Runnable accionVerCatalogo) {
+		this.accionVerCatalogo = accionVerCatalogo;
+	}
+
+	private void verCatalogo() {
+		if (accionVerCatalogo != null) {
+			accionVerCatalogo.run();
+		}
 	}
 
 	// Se llama al iniciar y al cerrar sesión para aplicar el descuento correcto
