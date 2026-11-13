@@ -111,13 +111,13 @@ public class PanelRegistrarLibro extends JFrame {
     private void registrarLibro() {
 
         Libro libro = new Libro(
-                campoCodigo.getText(),
+        		Integer.parseInt(campoCodigo.getText()),
                 campoTitulo.getText(),
                 campoAutor.getText(),
                 campoEditorial.getText(),
                 campoAnio.getText(),
                 campoGenero.getSelectedItem().toString(),
-                campoPrecio.getText(),
+                Double.parseDouble(campoPrecio.getText()),
                 campoStock.getText()
         );
 

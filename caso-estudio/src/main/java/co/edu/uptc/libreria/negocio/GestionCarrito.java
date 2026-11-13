@@ -43,7 +43,7 @@ public class GestionCarrito {
 	
 	public void agregarLibro(Libro libro, double precio, int cantidad) {
 		for (ItemCarrito item : items) {
-			if (item.getLibro().getCodigo().equals(libro.getCodigo())) {
+			if (item.getLibro().getCodigo() == (libro.getCodigo())) {
 				item.setCantidad(item.getCantidad() + cantidad);
 				persistencia.guardar(items);
 				
@@ -51,7 +51,7 @@ public class GestionCarrito {
 				return;
 			}
 		}
-		items.add(new ItemCarrito(libro, cantidad, Double.parseDouble(libro.getPrecio())));
+		items.add(new ItemCarrito(libro, cantidad, libro.getPrecio()));
 		persistencia.guardar(items);
 		
 		auditoria.registrarOperacion(usuarioActual, "Agregar Libro", "Agregar al carrito el libro" + libro.getTitulo());
@@ -63,7 +63,7 @@ public class GestionCarrito {
 	
 	public boolean actualizarCantidad(String codigo , int nuevaCantidad) {
 		for (ItemCarrito item : items) {
-			if (item.getLibro().getCodigo().equals(codigo)) {
+			if (item.getLibro().getCodigo() == Integer.parseInt(codigo)) {
 				if (nuevaCantidad <= 0) {
 					return eliminarLibro(codigo);
 				}
@@ -76,7 +76,7 @@ public class GestionCarrito {
 	}
 	
 	public boolean eliminarLibro(String codigo) {
-		boolean eliminado = items.removeIf(item -> item.getLibro().getCodigo().equals(codigo));
+		boolean eliminado = items.removeIf(item -> item.getLibro().getCodigo() == Integer.parseInt(codigo));
 		if (eliminado) {
 			persistencia.guardar(items);
 			

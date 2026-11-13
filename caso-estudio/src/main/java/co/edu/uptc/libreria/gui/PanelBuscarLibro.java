@@ -94,12 +94,12 @@ public class PanelBuscarLibro extends JFrame {
 
         for (Libro libro : gestionLibro.listarLibros()) {
 
-            if (libro.getCodigo().equals(codigo)) {
+            if (libro.getCodigo() == Integer.parseInt(codigo)) {
 
                 campoTitulo.setText(libro.getTitulo());
                 campoAutor.setText(libro.getAutor());
                 campoEditorial.setText(libro.getEditorial());
-                campoPrecio.setText(libro.getPrecio());
+                campoPrecio.setText(String.valueOf(libro.getPrecio()));
                 campoStock.setText(libro.getStock());
 
                 return;

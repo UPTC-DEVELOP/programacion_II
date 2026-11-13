@@ -254,7 +254,7 @@ public class ventanaPrincipal extends JFrame {
 			Cliente clienteSel = (Cliente) cbClientes.getSelectedItem();
 			String correoSel = clienteSel == null ? null : clienteSel.getCorreo();
 			Libro libroSel = (Libro) cbLibros.getSelectedItem();
-			String codigoSel = libroSel == null ? null : libroSel.getCodigo();
+			String codigoSel = libroSel == null ? null : String.valueOf(libroSel.getCodigo());
 
 			cbClientes.removeAllItems();
 			Cliente clienteNuevo = null;
@@ -272,7 +272,7 @@ public class ventanaPrincipal extends JFrame {
 			Libro libroNuevo = null;
 			for (Libro l : gestionLibro.listarLibros()) {
 				cbLibros.addItem(l);
-				if (l.getCodigo().equals(codigoSel)) {
+				if (codigoSel != null && l.getCodigo() == Integer.parseInt(codigoSel)) {
 					libroNuevo = l;
 				}
 			}
@@ -382,7 +382,7 @@ public class ventanaPrincipal extends JFrame {
 
 	private int cantidadEnCarrito(Libro libro) {
 		for (ItemCarrito item : controlador.listarCarrito()) {
-			if (item.getLibro().getCodigo().equals(libro.getCodigo())) {
+			if (item.getLibro().getCodigo() == (libro.getCodigo())) {
 				return item.getCantidad();
 			}
 		}
@@ -391,21 +391,12 @@ public class ventanaPrincipal extends JFrame {
 
 	/** Precio del libro como numero, o null si el texto registrado no es valido. */
 	private Double leerPrecio(Libro libro) {
-		try {
-			double precio = Double.parseDouble(libro.getPrecio().trim());
-			return precio >= 0 ? precio : null;
-		} catch (NumberFormatException | NullPointerException e) {
-			return null;
-		}
+		return libro.getPrecio() >= 0 ? libro.getPrecio() : null;
 	}
 
 	/** Stock del libro como entero, o -1 si el texto registrado no es valido. */
 	private int leerStock(Libro libro) {
-		try {
-			return Math.max(0, Integer.parseInt(libro.getStock().trim()));
-		} catch (NumberFormatException | NullPointerException e) {
-			return -1;
-		}
+		return Math.max(0, Integer.parseInt(libro.getStock()));
 	}
 
 	// ======================= CLIENTE =======================

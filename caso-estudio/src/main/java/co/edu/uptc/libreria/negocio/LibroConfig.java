@@ -2,6 +2,7 @@ package co.edu.uptc.libreria.negocio;
 
 import co.edu.uptc.libreria.interfaces.IGestionLibro;
 import co.edu.uptc.libreria.persistencia.LocalLibro;
+import co.edu.uptc.libreria.persistencia.LibroDAO;
 
 public class LibroConfig {
 
@@ -12,7 +13,7 @@ public class LibroConfig {
 
     private LibroConfig() {
 
-        iLibro = new LocalLibro();
+        iLibro = new LibroDAO();
 
         gestionLibro = new GestionLibro(iLibro);
     }

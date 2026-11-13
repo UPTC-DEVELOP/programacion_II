@@ -7,32 +7,35 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import co.edu.uptc.libreria.interfaces.IGestionLibro;
 import co.edu.uptc.libreria.modelo.Libro;
 
-public class LibroDAO {
+public class LibroDAO implements IGestionLibro{
 
-    public boolean insertar(Libro libro) {
-        String sql = "INSERT INTO libros (id, titulo, autor, precio, editorial, aniopublicacion, stock, genero) VALUES (?, ?, ?, ?)";
-
-        try (Connection con = ConexionBD.getConnection()) {
-            if (con == null) return false;
+	@Override
+	public void guardar(Libro libro) {
+		// TODO Auto-generated method stub
+		String sql = "INSERT INTO libros (codigo, titulo, autor, editorial, anio_publicacion, genero, precio, stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		try (Connection con = ConexionBD.getConnection()) {
+            if (con == null) return;
 
             try (PreparedStatement ps = con.prepareStatement(sql)) {
                 ps.setInt(1, libro.getCodigo());
                 ps.setString(2, libro.getTitulo());
                 ps.setString(3, libro.getAutor());
-                ps.setDouble(4, libro.getPrecio());
-                ps.setString(5, libro.getEditorial());
-                ps.setString(6, libro.getAnioPublicacion());
-                ps.setString(7, libro.getStock());
-                ps.setString(8, libro.getGenero());
-                return ps.executeUpdate() > 0;
+                ps.setString(4, libro.getEditorial());
+                ps.setString(5, libro.getAnioPublicacion());
+                ps.setString(6, libro.getGenero());
+                ps.setDouble(7, libro.getPrecio());
+                ps.setString(8, libro.getStock());
+                
+                ps.executeUpdate();
             }
         } catch (SQLException e) {
             System.err.println("Error al insertar: " + e.getMessage());
-            return false;
+            return;
         }
-    }
+	}
 
     public List<Libro> listar() {
         List<Libro> libros = new ArrayList<>();
@@ -52,43 +55,67 @@ public class LibroDAO {
         return libros;
     }
 
-    private Libro Construirlibros(ResultSet rs) {
+    
+    
+    private Libro Construirlibros(ResultSet rs){
 		// TODO Auto-generated method stub
-		return null;
+    	try {
+    		Libro libro = new Libro();
+    		libro.setCodigo(rs.getInt("codigo"));
+    		libro.setTitulo(rs.getString("titulo"));
+    		libro.setAutor(rs.getString("autor"));
+    		libro.setEditorial(rs.getString("editorial"));
+    		libro.setAnioPublicacion(rs.getString("anio_publicacion"));
+    		libro.setGenero(rs.getString("genero"));
+    		libro.setPrecio(rs.getDouble("precio"));
+    		libro.setStock(rs.getString("stock"));
+    		
+    		return libro;
+    	} catch (SQLException e) {
+    		System.err.println("Error al construir libro" + e.getMessage());
+    		return null;
+    	}
+		
 	}
-
-	public boolean actualizar(Libro libro) {
-        String sql = "UPDATE libros SET titulo = ?, autor = ?, precio = ? WHERE id = ?";
+    
+    @Override
+	public void  actualizar(Libro libro) {
+        String sql = "UPDATE libros SET titulo = ?, autor = ?, precio = ? WHERE codigo = ?";
 
         try (Connection con = ConexionBD.getConnection()) {
-            if (con == null) return false;
+            if (con == null) return;
 
             try (PreparedStatement ps = con.prepareStatement(sql)) {
                 ps.setString(1, libro.getTitulo());
                 ps.setString(2, libro.getAutor());
                 ps.setDouble(3, libro.getPrecio());
                 ps.setInt(4, libro.getCodigo());
-                return ps.executeUpdate() > 0;
+                ps.executeUpdate();
             }
         } catch (SQLException e) {
             System.err.println("Error al actualizar: " + e.getMessage());
-            return false;
+            return;
         }
     }
 
-    public boolean eliminar(int id) {
-        String sql = "DELETE FROM libros WHERE id = ?";
+
+	@Override
+	public void eliminar(String codigo) {
+		// TODO Auto-generated method stub
+		
+		String sql = "DELETE FROM libros WHERE codigo = ?";
 
         try (Connection con = ConexionBD.getConnection()) {
-            if (con == null) return false;
+            if (con == null) return;
 
             try (PreparedStatement ps = con.prepareStatement(sql)) {
-                ps.setInt(1, id);
-                return ps.executeUpdate() > 0;
+                ps.setInt(1,Integer.parseInt(codigo));
+                ps.executeUpdate();
             }
         } catch (SQLException e) {
             System.err.println("Error al eliminar: " + e.getMessage());
-            return false;
+            return;
         }
-    }
+		
+	}
 }

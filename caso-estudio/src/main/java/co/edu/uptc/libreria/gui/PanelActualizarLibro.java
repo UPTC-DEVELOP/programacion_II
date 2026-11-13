@@ -150,11 +150,11 @@ public class PanelActualizarLibro extends JFrame {
 
         for (Libro libro : gestionLibro.listarLibros()) {
 
-            if (libro.getCodigo().equals(codigo)) {
+            if (libro.getCodigo() == Integer.parseInt(codigo)) {
 
                 libroEncontrado = libro;
 
-                campoCodigo.setText(libro.getCodigo());
+                campoCodigo.setText(String.valueOf(libro.getCodigo()));
                 campoTitulo.setText(libro.getTitulo());
                 campoAutor.setText(libro.getAutor());
                 campoEditorial.setText(libro.getEditorial());
@@ -164,7 +164,7 @@ public class PanelActualizarLibro extends JFrame {
                         libro.getGenero()
                 );
 
-                campoPrecio.setText(libro.getPrecio());
+                campoPrecio.setText(String.valueOf(libro.getPrecio()));
                 campoStock.setText(libro.getStock());
 
                 return;
@@ -190,13 +190,13 @@ public class PanelActualizarLibro extends JFrame {
         }
 
         Libro libroActualizado = new Libro(
-                campoCodigo.getText(),
+                Integer.parseInt(campoCodigo.getText()),
                 campoTitulo.getText(),
                 campoAutor.getText(),
                 campoEditorial.getText(),
                 campoAnio.getText(),
                 campoGenero.getSelectedItem().toString(),
-                campoPrecio.getText(),
+                Double.parseDouble(campoPrecio.getText()),
                 campoStock.getText()
         );
 

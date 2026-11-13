@@ -26,8 +26,7 @@ public class LocalLibro implements IGestionLibro {
 
         for (int i = 0; i < libros.size(); i++) {
 
-            if (libros.get(i).getCodigo()
-                    .equals(libro.getCodigo())) {
+            if (libros.get(i).getCodigo() == libro.getCodigo()) {
 
                 libros.set(i, libro);
             }
@@ -39,7 +38,7 @@ public class LocalLibro implements IGestionLibro {
 
         for (Libro libro : libros) {
 
-            if (libro.getCodigo().equals(codigo)) {
+            if (libro.getCodigo() == Integer.parseInt(codigo)) {
 
                 libros.remove(libro);
                 break;

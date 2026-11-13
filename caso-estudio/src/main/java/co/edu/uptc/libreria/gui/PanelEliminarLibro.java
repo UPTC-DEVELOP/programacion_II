@@ -106,15 +106,17 @@ public class PanelEliminarLibro extends JFrame {
         libroEncontrado = null;
 
         for (Libro libro : gestionLibro.listarLibros()) {
+        	
+        	if (libro == null) continue;
 
-            if (libro.getCodigo().equals(codigo)) {
+            if (libro.getCodigo() == Integer.parseInt(codigo)) {
 
                 libroEncontrado = libro;
 
                 campoTitulo.setText(libro.getTitulo());
                 campoAutor.setText(libro.getAutor());
                 campoEditorial.setText(libro.getEditorial());
-                campoPrecio.setText(libro.getPrecio());
+                campoPrecio.setText(String.valueOf(libro.getPrecio()));
                 campoStock.setText(libro.getStock());
 
                 return;
@@ -142,7 +144,7 @@ public class PanelEliminarLibro extends JFrame {
         }
 
         gestionLibro.eliminarLibro(
-                libroEncontrado.getCodigo()
+                String.valueOf(libroEncontrado.getCodigo())
         );
 
         JOptionPane.showMessageDialog(
