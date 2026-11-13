@@ -72,4 +72,64 @@ public class TiendaService {
         carrito.clear();
         CarritoJsonDAO.guardarCarrito(carrito);
     }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//--- MÉTODOS DE ADMINISTRACIÓN DE CATÁLOGO ---
+
+public void registrarLibro(Libro nuevoLibro) throws Exception {
+    for (Libro l : catalogo) {
+        if (l.getIsbn().equalsIgnoreCase(nuevoLibro.getIsbn().trim())) {
+            throw new Exception("Ya existe un libro registrado con el ISBN: " + nuevoLibro.getIsbn());
+        }
+    }
+    catalogo.add(nuevoLibro);
+    ArchivoTxtDAO.registrarOperacion("Admin registró nuevo libro: " + nuevoLibro.getTitulo() + " (ISBN: " + nuevoLibro.getIsbn() + ")");
 }
+
+public void actualizarLibro(String isbnOriginal, Libro datosActualizados) throws Exception {
+    Libro libroExistente = buscarLibroPorIsbn(isbnOriginal);
+    if (libroExistente == null) {
+        throw new Exception("No se encontró el libro a actualizar.");
+    }
+
+    // Si cambió el ISBN, verificar que el nuevo no pertenezca a otro libro
+    if (!isbnOriginal.equalsIgnoreCase(datosActualizados.getIsbn())) {
+        if (buscarLibroPorIsbn(datosActualizados.getIsbn()) != null) {
+            throw new Exception("El nuevo ISBN ya está asignado a otro libro.");
+        }
+    }
+
+    libroExistente.setIsbn(datosActualizados.getIsbn());
+    libroExistente.setTitulo(datosActualizados.getTitulo());
+    libroExistente.setAutor(datosActualizados.getAutor());
+    libroExistente.setAnioPublicacion(datosActualizados.getAnioPublicacion());
+    libroExistente.setCategoria(datosActualizados.getCategoria());
+    libroExistente.setEditorial(datosActualizados.getEditorial());
+    libroExistente.setNumeroPaginas(datosActualizados.getNumeroPaginas());
+    libroExistente.setPrecioVenta(datosActualizados.getPrecioVenta());
+    libroExistente.setPorcentajeIva(datosActualizados.getPorcentajeIva());
+    libroExistente.setCantidadInventario(datosActualizados.getCantidadInventario());
+    libroExistente.setFormato(datosActualizados.getFormato());
+
+    ArchivoTxtDAO.registrarOperacion("Admin actualizó el libro: " + libroExistente.getTitulo() + " (ISBN: " + libroExistente.getIsbn() + ")");
+}
+
+public void eliminarLibro(String isbn) throws Exception {
+    Libro libro = buscarLibroPorIsbn(isbn);
+    if (libro == null) {
+        throw new Exception("Libro no encontrado en el catálogo.");
+    }
+    if (libro.isTieneVentas()) {
+        throw new Exception("No se puede eliminar \"" + libro.getTitulo() + "\" porque ya tiene ventas asociadas.");
+    }
+    catalogo.remove(libro);
+    ArchivoTxtDAO.registrarOperacion("Admin eliminó el libro: " + libro.getTitulo() + " (ISBN: " + isbn + ")");
+}
+
+public Libro buscarLibroPorIsbn(String isbn) {
+    for (Libro l : catalogo) {
+        if (l.getIsbn().equalsIgnoreCase(isbn.trim())) {
+            return l;
+        }
+    }
+    return null;
+}}

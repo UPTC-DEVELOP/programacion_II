@@ -11,10 +11,12 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -33,7 +35,7 @@ public class VentanaPrincipal extends JFrame {
     private TiendaService service;
 
     private JTabbedPane pestanias;
-    private JTextField txtNombre, txtCorreo, txtDireccion, txtTelefono,txtApellido;
+    private JTextField txtNombre, txtCorreo, txtDireccion, txtTelefono, txtApellido;
     private JPasswordField txtClave;
     private JComboBox<String> comboTipoCliente;
     private JTable tablaLibros, tablaCarrito;
@@ -56,6 +58,16 @@ public class VentanaPrincipal extends JFrame {
         pestanias.addTab("Cliente / Registro", crearPanelCliente());
         pestanias.addTab("Catálogo de Libros", crearPanelCatalogo());
         pestanias.addTab("Carrito y Pago", crearPanelCarrito());
+
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.add(Box.createHorizontalGlue());
+
+        JButton btnAdmin = new JButton("Ingreso Administrador");
+        btnAdmin.setFocusable(false);
+        btnAdmin.addActionListener(e -> abrirPanelAdministrador());
+
+        menuBar.add(btnAdmin);
+        setJMenuBar(menuBar);
 
         add(pestanias);
     }
@@ -80,7 +92,6 @@ public class VentanaPrincipal extends JFrame {
         panel.add(new JLabel("Teléfono:")); panel.add(txtTelefono);
         panel.add(new JLabel("Tipo de Cliente:")); panel.add(comboTipoCliente);
 
-        // NUEVO: desde aquí reemplaza el botón anterior
         JButton btnIniciarSesion = new JButton("Iniciar Sesión");
         JButton btnRegistrar = new JButton("Registrarse");
 
@@ -140,7 +151,6 @@ public class VentanaPrincipal extends JFrame {
         panel.add(new JLabel(""));     
         panel.add(panelBotones);
         return panel;
-    
     }
 
     private JPanel crearPanelCatalogo() {
@@ -271,5 +281,15 @@ public class VentanaPrincipal extends JFrame {
         lblImpuestos.setText(String.format("Impuestos: $%.2f", impuestos));
         lblDescuento.setText(String.format("Descuento: $%.2f", descuento));
         lblTotal.setText(String.format("Total: $%.2f", total));
+    }
+
+    private void abrirPanelAdministrador() {
+        DialogoLoginAdmin login = new DialogoLoginAdmin(this);
+        login.setVisible(true);
+
+        if (login.isAutenticado()) {
+            VentanaAdmin adminWindow = new VentanaAdmin(service, this::actualizarTablaLibros);
+            adminWindow.setVisible(true);
+        }
     }
 }

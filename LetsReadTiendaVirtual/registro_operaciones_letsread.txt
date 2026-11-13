@@ -17,3 +17,15 @@
 [2026-10-26T21:47:22.270115] Compra realizada con éxito por Cristtopher David Moreno Zapata
 [2026-10-26T21:47:22.271161700] Carrito guardado en carrito_letsread.json
 >>>>>>> 7a3868910b10cd2c8ad5cc58b1157f750e535340
+[2026-11-12T22:09:29.536210400] Carrito guardado en carrito_letsread.json
+[2026-11-12T22:09:29.539730] Añadido al carrito de Let's Read: Cien años de soledad
+[2026-11-12T22:09:33.335419900] Carrito guardado en carrito_letsread.json
+[2026-11-12T22:09:33.337283600] Añadido al carrito de Let's Read: El Hobbit
+[2026-11-12T22:09:38.675581900] Carrito guardado en carrito_letsread.json
+[2026-11-12T22:09:38.677598] Añadido al carrito de Let's Read: El código Da Vinci
+[2026-11-12T22:42:20.632748100] Intento fallido de acceso Administrador con usuario: admin
+[2026-11-12T22:42:29.527649900] Inicio de sesión exitoso de Administrador (admin).
+[2026-11-12T22:49:05.148788900] Inicio de sesión exitoso de Administrador (admin).
+[2026-11-12T22:49:31.804750500] Inicio de sesión exitoso de Administrador (admin).
+[2026-11-12T22:50:29.655746] Inicio de sesión exitoso de Administrador ().
+[2026-11-12T22:52:29.295416100] Inicio de sesión exitoso de Administrador ().
