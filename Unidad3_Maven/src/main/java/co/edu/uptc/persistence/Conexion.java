@@ -5,19 +5,35 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class Conexion {
-    private static final String URL = "jdbc:mariadb://localhost:3306/basedatosuni3?useSSL=false&serverTimezone=UTC";
-    private static final String USUARIO = "root";
-    private static final String PASSWORD = "02016J";
+    private static final String URL = configuracion(
+            "tienda.db.url", "TIENDA_DB_URL",
+            "jdbc:mariadb://localhost:3306/basedatosuni3?useSSL=false&serverTimezone=UTC");
+    private static final String USUARIO = configuracion("tienda.db.usuario", "TIENDA_DB_USER", null);
+    private static final String PASSWORD = configuracion("tienda.db.password", "TIENDA_DB_PASSWORD", null);
+
+    private static String configuracion(String propiedad, String variableEntorno, String valorPorDefecto) {
+        String valor = System.getProperty(propiedad);
+        if (valor == null || valor.isBlank()) {
+            valor = System.getenv(variableEntorno);
+        }
+        if ((valor == null || valor.isBlank()) && valorPorDefecto != null) {
+            return valorPorDefecto;
+        }
+        return valor;
+    }
 
     public static Connection obtenerConexion() {
         Connection conexion = null;
+        if (USUARIO == null || USUARIO.isBlank() || PASSWORD == null || PASSWORD.isBlank()) {
+            System.err.println("Falta configurar TIENDA_DB_USER y TIENDA_DB_PASSWORD.");
+            return null;
+        }
         try {
             conexion = DriverManager.getConnection(URL, USUARIO, PASSWORD);
         } catch (SQLException e) {
-            System.out.println("Error al conectar: " + e.getMessage());
+            System.err.println("No fue posible conectar con MariaDB: " + e.getMessage());
         }
         return conexion;
     }
@@ -49,18 +65,17 @@ public class Conexion {
                 }
 
                 // 2. Consultar los libros que hay en la base de datos
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT isbn, titulo, precio, stock FROM libro;");
-                
-                System.out.println("\n--- CATÁLOGO DE LIBROS EN LA BASE DE DATOS ---");
-                while (rs.next()) {
-                    System.out.println("ISBN: " + rs.getString("isbn") + 
-                                       " | Título: " + rs.getString("titulo") + 
-                                       " | Precio: $" + rs.getDouble("precio") + 
-                                       " | Stock: " + rs.getInt("stock"));
+                String selectQuery = "SELECT isbn, titulo, precio, stock FROM libro";
+                try (PreparedStatement stmt = conn.prepareStatement(selectQuery);
+                     ResultSet rs = stmt.executeQuery()) {
+                    System.out.println("\n--- CATÁLOGO DE LIBROS EN LA BASE DE DATOS ---");
+                    while (rs.next()) {
+                        System.out.println("ISBN: " + rs.getString("isbn") +
+                                           " | Título: " + rs.getString("titulo") +
+                                           " | Precio: $" + rs.getDouble("precio") +
+                                           " | Stock: " + rs.getInt("stock"));
+                    }
                 }
-                rs.close();
-                stmt.close();
             }
         } catch (SQLException e) {
             System.out.println("Error en la base de datos: " + e.getMessage());

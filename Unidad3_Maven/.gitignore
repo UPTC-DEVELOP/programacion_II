@@ -8,3 +8,6 @@ caso-estudio/target/
 *.class
 /.work/rebuilt-classes/
 /.work/test-classes/
+.env
+*.local.properties
+config/*secret*.properties
