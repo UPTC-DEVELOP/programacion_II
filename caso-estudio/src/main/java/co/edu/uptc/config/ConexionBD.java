@@ -10,7 +10,7 @@ public class ConexionBD {
 			+ "?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
 
 	private static final String USUARIO = "root";
-	private static final String CLAVE = "tu_clave";
+	private static final String CLAVE = "";
 
 	private ConexionBD() {
 	}
