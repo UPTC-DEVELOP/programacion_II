@@ -42,10 +42,28 @@ public class ConexionMySQL {
                 + "PRIMARY KEY (cliente_id, libro_isbn),"
                 + "FOREIGN KEY (cliente_id) REFERENCES usuarios(id) ON DELETE CASCADE,"
                 + "FOREIGN KEY (libro_isbn) REFERENCES libros(isbn) ON DELETE CASCADE)";
+        
+        String sqlCompras = "CREATE TABLE IF NOT EXISTS compras ("
+                + "id INT AUTO_INCREMENT PRIMARY KEY,"
+                + "cliente_id VARCHAR(30) NOT NULL,"
+                + "fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+                + "total DOUBLE NOT NULL,"
+                + "FOREIGN KEY (cliente_id) REFERENCES usuarios(id))";
+
+        String sqlCompraItems = "CREATE TABLE IF NOT EXISTS compra_items ("
+                + "compra_id INT NOT NULL,"
+                + "libro_isbn VARCHAR(30) NOT NULL,"
+                + "cantidad INT NOT NULL,"
+                + "precio_unitario DOUBLE NOT NULL,"
+                + "PRIMARY KEY (compra_id, libro_isbn),"
+                + "FOREIGN KEY (compra_id) REFERENCES compras(id),"
+                + "FOREIGN KEY (libro_isbn) REFERENCES libros(isbn))";
 
         try (Statement st = conn.createStatement()) {
             st.execute(sqlUsuarios);
             st.execute(sqlCarrito);
+            st.execute(sqlCompras);
+            st.execute(sqlCompraItems);
         } catch (SQLException e) {
             e.printStackTrace();
         }

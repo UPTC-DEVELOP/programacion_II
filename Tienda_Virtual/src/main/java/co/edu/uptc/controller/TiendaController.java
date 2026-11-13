@@ -8,7 +8,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.List;
-
+import co.edu.uptc.persistence.IRepositorioCompra;
+import co.edu.uptc.persistence.RepositorioCompraMySQL; 
 import co.edu.uptc.model.Carrito;
 import co.edu.uptc.model.Cliente;
 import co.edu.uptc.model.DatosTransferencia;
@@ -27,6 +28,7 @@ public class TiendaController {
     private final IRepositorioUsuario repositorioUsuario;
     private final IRepositorioCarrito repositorioCarrito;
     private Cliente usuarioLogueado;
+    private final IRepositorioCompra repositorioCompra;
 
     public static final int LONGITUD_MINIMA_CONTRASENA = 6;
     public static final String METODO_TRANSFERENCIA = "Transferencia";
@@ -37,6 +39,7 @@ public class TiendaController {
         this.repositorioLibros = new RepositorioLibrosMySQL();
         this.repositorioUsuario = new RepositorioUsuarioMySQL();
         this.repositorioCarrito = new RepositorioCarritoMySQL();
+        this.repositorioCompra = new RepositorioCompraMySQL();
     }
 
     // ---------------- Usuarios ----------------
@@ -260,7 +263,7 @@ public class TiendaController {
             e.printStackTrace();
         }
 
-        vaciarCarrito();
+        if (!repositorioCompra.registrarCompra(usuarioLogueado.getId(), c)) return false;
         return true;
     }
 
