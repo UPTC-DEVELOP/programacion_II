@@ -2,13 +2,13 @@ package co.edu.uptc.libreria.modelo;
 
 public class Libro {
 
-    private String codigo;
+    private int codigo;
     private String titulo;
     private String autor;
     private String editorial;
     private String anioPublicacion;
     private String genero;
-    private String precio;
+    private double precio;
     private String stock;
 
     private final double porcentajeIva = 0.19;
@@ -17,9 +17,9 @@ public class Libro {
     public Libro() {
     }
 
-    public Libro(String codigo, String titulo, String autor,
+    public Libro(int codigo, String titulo, String autor,
                  String editorial, String anioPublicacion,
-                 String genero, String precio, String stock) {
+                 String genero, double precio, String stock) {
 
         this.codigo = codigo;
         this.titulo = titulo;
@@ -31,11 +31,11 @@ public class Libro {
         this.stock = stock;
     }
 
-    public String getCodigo() {
+    public int getCodigo() {
         return codigo;
     }
 
-    public void setCodigo(String codigo) {
+    public void setCodigo(int codigo) {
         this.codigo = codigo;
     }
 
@@ -79,11 +79,11 @@ public class Libro {
         this.genero = genero;
     }
 
-    public String getPrecio() {
+    public double getPrecio() {
         return precio;
     }
 
-    public void setPrecio(String precio) {
+    public void setPrecio(double precio) {
         this.precio = precio;
     }
 
@@ -105,6 +105,11 @@ public class Libro {
 
     public double calcularTotalconIva(double subtotal, double descuento, double iva) {
 		return subtotal - descuento + iva;
+	}
+
+	public int getId() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }
