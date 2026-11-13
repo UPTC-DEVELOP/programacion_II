@@ -172,7 +172,7 @@ public class DialogoLibro extends JDialog {
 	}
 
 	private void procesarGuardado() {
-		// Paso 1. Conversión de los datos del formulario
+
 		List<String> autores = new ArrayList<>();
 		for (int i = 0; i < modeloListaAutores.getSize(); i++) {
 			autores.add(modeloListaAutores.getElementAt(i));
@@ -193,13 +193,11 @@ public class DialogoLibro extends JDialog {
 			return;
 		}
 
-		// Paso 2. Construcción: cada formato sabe crear su propio libro
 		TipoLibro tipoLibro = (TipoLibro) comboTipoLibro.getSelectedItem();
 		Libro libroProcesado = tipoLibro.crear(campoIsbn.getText().trim(), campoTitulo.getText().trim(), autores,
 				campoFechaPublicacion.getText().trim(), campoGenero.getText().trim(), campoEditorial.getText().trim(),
 				numeroPaginas, precioBase, stockDisponible);
 
-		// Paso 3. El negocio valida y persiste
 		try {
 			if (libro == null) {
 				gestionLibro.agregarLibro(libroProcesado);

@@ -16,8 +16,10 @@ import javax.swing.table.DefaultTableModel;
 import co.edu.uptc.tienda.gui.Evento;
 import co.edu.uptc.tienda.gui.TablaFactory;
 import co.edu.uptc.tienda.modelo.Cliente;
+import co.edu.uptc.tienda.modelo.Factura;
 import co.edu.uptc.tienda.modelo.ItemCarrito;
 import co.edu.uptc.tienda.negocio.IGestionCarrito;
+import co.edu.uptc.tienda.negocio.IGestionCompra;
 import co.edu.uptc.tienda.negocio.NegocioException;
 
 public class PanelCarritoCompras extends JPanel {
@@ -33,16 +35,13 @@ public class PanelCarritoCompras extends JPanel {
 	private JLabel lblTotal;
 
 	private final IGestionCarrito gestionCarrito;
-
-	// Cliente de la sesión: define el descuento (null mientras no haya sesión)
+	private final IGestionCompra gestionCompra;
 	private Cliente cliente;
-
-	// Qué hacer al pulsar "Agregar libros del catálogo"; la define la ventana que
-	// contiene el panel, así el carrito no depende de cómo se muestra el catálogo
 	private Runnable accionVerCatalogo;
 
-	public PanelCarritoCompras(IGestionCarrito gestionCarrito) {
+	public PanelCarritoCompras(IGestionCarrito gestionCarrito, IGestionCompra gestionCompra) {
 		this.gestionCarrito = gestionCarrito;
+		this.gestionCompra = gestionCompra;
 
 		setLayout(new BorderLayout(10, 10));
 
@@ -84,8 +83,14 @@ public class PanelCarritoCompras extends JPanel {
 		panelTotales.add(lblDescuento);
 		panelTotales.add(lblTotal);
 
+		JButton btnFinalizarCompra = new JButton("Finalizar compra");
+		btnFinalizarCompra.setFont(btnFinalizarCompra.getFont().deriveFont(java.awt.Font.BOLD));
+		JPanel panelDerecho = new JPanel(new BorderLayout(10, 6));
+		panelDerecho.add(panelTotales, BorderLayout.CENTER);
+		panelDerecho.add(btnFinalizarCompra, BorderLayout.SOUTH);
+
 		panelInferior.add(panelBotones, BorderLayout.WEST);
-		panelInferior.add(panelTotales, BorderLayout.EAST);
+		panelInferior.add(panelDerecho, BorderLayout.EAST);
 
 		add(panelInferior, BorderLayout.SOUTH);
 
@@ -93,6 +98,7 @@ public class PanelCarritoCompras extends JPanel {
 		evento.registrar(btnVerCatalogo, Evento.VER_CATALOGO, this::verCatalogo);
 		evento.registrar(btnQuitar, Evento.QUITAR_CARRITO, this::quitarSeleccionado);
 		evento.registrar(btnVaciar, Evento.VACIAR_CARRITO, this::vaciarCarrito);
+		evento.registrar(btnFinalizarCompra, Evento.FINALIZAR_COMPRA, this::finalizarCompra);
 	}
 
 	public void setAccionVerCatalogo(Runnable accionVerCatalogo) {
@@ -105,13 +111,11 @@ public class PanelCarritoCompras extends JPanel {
 		}
 	}
 
-	// Se llama al iniciar y al cerrar sesión para aplicar el descuento correcto
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
 		actualizar();
 	}
 
-	// Vuelve a pintar la tabla y los totales con el estado actual del carrito
 	public void actualizar() {
 		modeloTabla.setRowCount(0);
 
@@ -148,6 +152,33 @@ public class PanelCarritoCompras extends JPanel {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Carrito", JOptionPane.WARNING_MESSAGE);
 		}
 		actualizar();
+	}
+
+	private void finalizarCompra() {
+		if (gestionCarrito.estaVacio()) {
+			JOptionPane.showMessageDialog(this, "El carrito está vacío. Agregue libros del catálogo para comprar.",
+					"Carrito", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+
+		int confirmacion = JOptionPane.showConfirmDialog(this,
+				"¿Desea finalizar la compra por $ " + gestionCarrito.calcularTotal(cliente) + "?",
+				"Finalizar Compra", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+		if (confirmacion != JOptionPane.YES_OPTION) {
+			return;
+		}
+
+		Factura factura;
+		try {
+			factura = gestionCompra.finalizarCompra(cliente);
+		} catch (NegocioException e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Compra", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		actualizar();
+		new DialogoFactura(factura).setVisible(true);
 	}
 
 	private void vaciarCarrito() {

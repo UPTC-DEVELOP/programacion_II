@@ -34,7 +34,6 @@ public class PanelCatalogo extends JPanel {
 	private final IGestionLibro gestionLibro;
 	private final IGestionCarrito gestionCarrito;
 
-	// Libros que se ven en la tabla, en el mismo orden de las filas
 	private final List<Libro> librosMostrados = new ArrayList<>();
 
 	public PanelCatalogo(IGestionLibro gestionLibro, IGestionCarrito gestionCarrito, Evento evento) {

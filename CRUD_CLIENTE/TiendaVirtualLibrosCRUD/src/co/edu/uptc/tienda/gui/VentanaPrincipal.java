@@ -9,6 +9,7 @@ import co.edu.uptc.tienda.gui.compras.PanelCatalogo;
 import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.negocio.IGestionAutenticacion;
 import co.edu.uptc.tienda.negocio.IGestionCarrito;
+import co.edu.uptc.tienda.negocio.IGestionCompra;
 import co.edu.uptc.tienda.negocio.IGestionLibro;
 import co.edu.uptc.tienda.negocio.NegocioException;
 
@@ -34,7 +35,8 @@ public class VentanaPrincipal extends JFrame {
 	private Cliente clienteAutenticado;
 
 	public VentanaPrincipal(IGestionAutenticacion gestionAutenticacion, PanelCentral panelCentral,
-			PanelCliente panelCliente, IGestionLibro gestionLibro, IGestionCarrito gestionCarrito) {
+			PanelCliente panelCliente, IGestionLibro gestionLibro, IGestionCarrito gestionCarrito,
+			IGestionCompra gestionCompra) {
 		this.gestionAutenticacion = gestionAutenticacion;
 		this.gestionLibro = gestionLibro;
 		this.gestionCarrito = gestionCarrito;
@@ -55,7 +57,7 @@ public class VentanaPrincipal extends JFrame {
 
 		evento.registrarAccion(Evento.CERRAR_SESION, this::cerrarSesion);
 		panelCatalogo = new PanelCatalogo(gestionLibro, gestionCarrito, evento);
-		panelCarrito = new PanelCarritoCompras(gestionCarrito);
+		panelCarrito = new PanelCarritoCompras(gestionCarrito, gestionCompra);
 
 		pestanasCliente = new JTabbedPane();
 		pestanasCliente.addTab("Catálogo", panelCatalogo);

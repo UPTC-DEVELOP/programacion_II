@@ -10,10 +10,12 @@ import co.edu.uptc.tienda.gui.libros.PanelLibro;
 import co.edu.uptc.tienda.negocio.GestionAutenticacion;
 import co.edu.uptc.tienda.negocio.GestionCarrito;
 import co.edu.uptc.tienda.negocio.GestionCliente;
+import co.edu.uptc.tienda.negocio.GestionCompra;
 import co.edu.uptc.tienda.negocio.GestionLibro;
 import co.edu.uptc.tienda.negocio.IGestionAutenticacion;
 import co.edu.uptc.tienda.negocio.IGestionCarrito;
 import co.edu.uptc.tienda.negocio.IGestionCliente;
+import co.edu.uptc.tienda.negocio.IGestionCompra;
 import co.edu.uptc.tienda.negocio.IGestionLibro;
 import co.edu.uptc.tienda.negocio.IRepositorioCliente;
 import co.edu.uptc.tienda.persistencia.BaseDeDatosLibro;
@@ -43,13 +45,16 @@ public class Aplicacion {
 		// Carrito de compras de la sesión (en memoria)
 		IGestionCarrito gestionCarrito = new GestionCarrito();
 
+		// Compra: convierte el carrito en factura
+		IGestionCompra gestionCompra = new GestionCompra(gestionCarrito);
+
 		// Se corre el programa en otro Hilo.
 		SwingUtilities.invokeLater(() -> {
 
 			PanelCentral panelCentral = new PanelCentral(new PanelCliente(gestionCliente),
 					new PanelLibro(gestionLibro));
 			VentanaPrincipal ventana = new VentanaPrincipal(gestionAutenticacion, panelCentral,
-					new PanelCliente(gestionCliente), gestionLibro, gestionCarrito);
+					new PanelCliente(gestionCliente), gestionLibro, gestionCarrito, gestionCompra);
 			ventana.setVisible(Boolean.TRUE);
 
 		});

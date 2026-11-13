@@ -113,12 +113,10 @@ public abstract class Libro {
 		this.stockDisponible = stockDisponible;
 	}
 
-	// Se calcula bajo demanda para que siempre refleje el precio base actual
 	public double getPrecioFinal() {
 		return Math.round(calcularPrecioFinal() * 100.0) / 100.0;
 	}
 
-	// Las subclases pueden sobrescribirlo si su formato tiene costos adicionales
 	protected double calcularPrecioFinal() {
 		return precioBase + (precioBase * IVA);
 	}
