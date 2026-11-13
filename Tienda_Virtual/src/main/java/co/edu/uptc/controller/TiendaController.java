@@ -8,25 +8,32 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.List;
-import co.edu.uptc.persistence.IRepositorioCompra;
-import co.edu.uptc.persistence.RepositorioCompraMySQL; 
+
 import co.edu.uptc.model.Carrito;
 import co.edu.uptc.model.Cliente;
 import co.edu.uptc.model.DatosTransferencia;
 import co.edu.uptc.model.ItemCarrito;
 import co.edu.uptc.model.Libro;
 import co.edu.uptc.persistence.IRepositorioCarrito;
+import co.edu.uptc.persistence.IRepositorioCompra;
 import co.edu.uptc.persistence.IRepositorioLibros;
 import co.edu.uptc.persistence.IRepositorioUsuario;
+import co.edu.uptc.persistence.RepositorioCarritoJson;
 import co.edu.uptc.persistence.RepositorioCarritoMySQL;
+import co.edu.uptc.persistence.RepositorioCompraMySQL;
+import co.edu.uptc.persistence.RepositorioLibrosJson;
 import co.edu.uptc.persistence.RepositorioLibrosMySQL;
+import co.edu.uptc.persistence.RepositorioUsuarioJson;
 import co.edu.uptc.persistence.RepositorioUsuarioMySQL;
 
 public class TiendaController {
 
     private final IRepositorioLibros repositorioLibros;
+    private final IRepositorioLibros repositorioLibrosJson;
     private final IRepositorioUsuario repositorioUsuario;
+    private final IRepositorioUsuario repositorioUsuarioJson;
     private final IRepositorioCarrito repositorioCarrito;
+    private final IRepositorioCarrito repositorioCarritoJson;
     private Cliente usuarioLogueado;
     private final IRepositorioCompra repositorioCompra;
 
@@ -37,8 +44,11 @@ public class TiendaController {
 
     public TiendaController() {
         this.repositorioLibros = new RepositorioLibrosMySQL();
+        this.repositorioLibrosJson = new RepositorioLibrosJson();
         this.repositorioUsuario = new RepositorioUsuarioMySQL();
+        this.repositorioUsuarioJson = new RepositorioUsuarioJson();
         this.repositorioCarrito = new RepositorioCarritoMySQL();
+        this.repositorioCarritoJson = new RepositorioCarritoJson();
         this.repositorioCompra = new RepositorioCompraMySQL();
     }
 
@@ -53,7 +63,11 @@ public class TiendaController {
 
         cliente.setContrasenaHash(sha256(cliente.getContrasenaHash()));
 
-        return repositorioUsuario.guardarUsuario(cliente);
+        boolean guardado = repositorioUsuario.guardarUsuario(cliente);
+        if (guardado) {
+            repositorioUsuarioJson.guardarUsuario(cliente);
+        }
+        return guardado;
     }
 
     public boolean iniciarSesion(String correo, String contrasena) {
@@ -95,6 +109,7 @@ public class TiendaController {
         actualizado.setContrasenaHash(cambiaContrasena ? sha256(nuevaContrasena) : usuarioLogueado.getContrasenaHash());
 
         if (!repositorioUsuario.actualizarUsuario(actualizado)) return "No se encontró el usuario para actualizar.";
+        repositorioUsuarioJson.actualizarUsuario(actualizado);
 
         this.usuarioLogueado = actualizado;
         return null;
@@ -112,6 +127,7 @@ public class TiendaController {
 
         String id = usuarioLogueado.getId();
         if (!repositorioUsuario.eliminarUsuario(id)) return false;
+        repositorioUsuarioJson.eliminarUsuario(id);
 
         this.usuarioLogueado = null;
         return true;
@@ -132,6 +148,9 @@ public class TiendaController {
         if (error != null) return error;
 
         boolean ok = repositorioLibros.guardarLibro(l);
+        if (ok) {
+            repositorioLibrosJson.guardarLibro(l);
+        }
         return ok ? null : "No se pudo guardar el libro en el repositorio.";
     }
 
@@ -140,6 +159,9 @@ public class TiendaController {
         if (error != null) return error;
 
         boolean ok = repositorioLibros.actualizarLibro(l);
+        if (ok) {
+            repositorioLibrosJson.actualizarLibro(l);
+        }
         return ok ? null : "No se encontró el libro para actualizar.";
     }
 
@@ -164,7 +186,11 @@ public class TiendaController {
     }
 
     public boolean eliminarLibro(String isbn) {
-        return repositorioLibros.eliminarLibro(isbn);
+        boolean ok = repositorioLibros.eliminarLibro(isbn);
+        if (ok) {
+            repositorioLibrosJson.eliminarLibro(isbn);
+        }
+        return ok;
     }
 
     // ---------------- Carrito & Compra ----------------
@@ -179,6 +205,7 @@ public class TiendaController {
         Carrito c = obtenerCarritoActual();
         c.agregarItem(libro, cantidad);
         repositorioCarrito.guardarCarrito(c);
+        repositorioCarritoJson.guardarCarrito(c);
         ajustarStock(libro.getIsbn(), -cantidad);
     }
 
@@ -198,6 +225,7 @@ public class TiendaController {
 
         c.actualizarCantidad(isbn, nuevaCantidad);
         repositorioCarrito.guardarCarrito(c);
+        repositorioCarritoJson.guardarCarrito(c);
         ajustarStock(isbn, -diferencia);
         return null;
     }
@@ -216,6 +244,7 @@ public class TiendaController {
         boolean eliminado = c.eliminarItems(isbns);
         if (eliminado) {
             repositorioCarrito.guardarCarrito(c);
+            repositorioCarritoJson.guardarCarrito(c);
         }
         return eliminado;
     }
@@ -225,12 +254,14 @@ public class TiendaController {
         if (l != null) {
             l.setStock(Math.max(l.getStock() + delta, 0));
             repositorioLibros.actualizarLibro(l);
+            repositorioLibrosJson.actualizarLibro(l);
         }
     }
 
     public void vaciarCarrito() {
         if (usuarioLogueado != null) {
             repositorioCarrito.vaciarCarrito(usuarioLogueado.getId());
+            repositorioCarritoJson.vaciarCarrito(usuarioLogueado.getId());
         }
     }
 
