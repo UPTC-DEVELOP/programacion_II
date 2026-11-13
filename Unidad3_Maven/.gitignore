@@ -9,5 +9,7 @@ caso-estudio/target/
 /.work/rebuilt-classes/
 /.work/test-classes/
 .env
+src/main/resources/db.properties
+*.env
 *.local.properties
 config/*secret*.properties
