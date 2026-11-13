@@ -141,7 +141,7 @@ public class ControladorEditorial extends ControladorBase {
     
     // avisar al usuario el resultado de la operación de guardar
     switch (respuesta) {
-      case RespuestaExitosa<Editorial> _       -> {
+      case RespuestaExitosa<Editorial> exitosa -> {
         // se terminó de guardar: cerrar el formulario
         this.panelEditoriales.cerrarFormulario();
         // actualizar la tabla de datos
@@ -176,7 +176,7 @@ public class ControladorEditorial extends ControladorBase {
     Respuesta<Editorial> respuesta = this.gestorEditorial.eliminar(id);
     
     switch (respuesta) {
-      case RespuestaExitosa<Editorial> _       -> {
+      case RespuestaExitosa<Editorial> exitosa -> {
         // si la respuesta devuelve la editorial eliminada, entonces se puede mostrar el nombre de
         // la editorial eliminada
         String nombre = respuesta.getElemento()

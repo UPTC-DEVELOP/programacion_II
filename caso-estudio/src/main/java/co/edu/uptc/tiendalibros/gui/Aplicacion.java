@@ -25,8 +25,7 @@ import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioFormatoLibroJDBC;
 import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioLibroConFormatosJDBC;
 import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioLibroJDBC;
 import co.edu.uptc.tiendalibros.persistencia.memoria.RepositorioAutorenMemoria;
-import co.edu.uptc.tiendalibros.persistencia.memoria.RepositorioCategoriaEnMemoria;
-
+import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioCategoriaJDBC;
 /// Representa la aplicación.
 public class Aplicacion {
   
@@ -76,7 +75,8 @@ public class Aplicacion {
     
     IRepositorioAutor repositorioAutor = new RepositorioAutorenMemoria();
     
-    IRepositorioCategoria repositorioCategoria = new RepositorioCategoriaEnMemoria();
+    IRepositorioCategoria repositorioCategoria =
+      new RepositorioCategoriaJDBC(this.conexionBaseDatos);
     
     IRepositorioAutorLibro repositorioAutorLibro = new RepositorioAutorLibroEnCSV("datos/autores_libros.csv");
     
