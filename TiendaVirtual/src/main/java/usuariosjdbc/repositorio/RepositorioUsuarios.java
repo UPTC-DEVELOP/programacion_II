@@ -31,4 +31,20 @@ public class RepositorioUsuarios {
             ps.setString(1,correo);ps.executeUpdate();
         } catch(SQLException ex) {throw new IllegalStateException("Error al eliminar usuario: "+ex.getMessage(),ex);}
     }
+    public java.util.ArrayList<Usuario> listarUsuarios() {
+        java.util.ArrayList<Usuario> usuarios = new java.util.ArrayList<>();
+        String sql = "SELECT nombre,correo,direccion,telefono,tipo_cliente,contrasena FROM usuarios ORDER BY nombre,correo";
+        try (Connection c = db.obtenerConexion();
+             PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                usuarios.add(new Usuario(rs.getString("nombre"), rs.getString("correo"),
+                    rs.getString("direccion"), rs.getString("telefono"),
+                    rs.getString("tipo_cliente"), rs.getString("contrasena")));
+            }
+        } catch (SQLException ex) {
+            throw new IllegalStateException("Error al listar usuarios: " + ex.getMessage(), ex);
+        }
+        return usuarios;
+    }
 }

@@ -1,21 +1,13 @@
 package modelo;
 
-import java.io.IOException;
 import java.util.ArrayList;
-
 import excepciones.ExcepcionValidacion;
-import persistencia.PersistenciaUsuarios;
 
 public class RepositorioUsuarios {
-    private ArrayList<Usuario> usuarios;
+    private final usuariosjdbc.repositorio.RepositorioUsuarios repoJdbc;
 
     public RepositorioUsuarios() {
-        try {
-            usuarios = PersistenciaUsuarios.cargarUsuarios();
-        } catch (IOException e) {
-            usuarios = new ArrayList<Usuario>();
-            System.err.println("No fue posible cargar usuarios.txt.");
-        }
+        this.repoJdbc = new usuariosjdbc.repositorio.RepositorioUsuarios();
     }
 
     public void registrar(Usuario usuario) throws ExcepcionValidacion {
@@ -26,10 +18,17 @@ public class RepositorioUsuarios {
         }
 
         try {
-            PersistenciaUsuarios.guardarUsuario(usuario);
-            usuarios.add(usuario);
-        } catch (IOException e) {
-            throw new ExcepcionValidacion("No fue posible guardar el usuario en el archivo de datos.");
+            usuariosjdbc.modelo.Usuario usuarioJdbc = new usuariosjdbc.modelo.Usuario(
+                usuario.getNombre(),
+                usuario.getCorreo().trim(),
+                usuario.getDireccion(),
+                usuario.getTelefono(),
+                usuario.getTipoCliente(),
+                SeguridadContrasenas.generar(usuario.getContrasena())
+            );
+            repoJdbc.guardarUsuario(usuarioJdbc);
+        } catch (Exception e) {
+            throw new ExcepcionValidacion("No fue posible guardar el usuario en MySQL: " + e.getMessage());
         }
     }
 
@@ -42,10 +41,20 @@ public class RepositorioUsuarios {
 
         Usuario usuario = buscarPorCorreo(correo);
 
-        if (usuario == null || !usuario.getContrasena().equals(contrasena)) {
+        if (usuario == null || !SeguridadContrasenas.verificar(contrasena, usuario.getContrasena())) {
             throw new ExcepcionValidacion("El correo o la contraseña no son correctos.");
         }
 
+        // Actualiza automaticamente las cuentas antiguas que usaban texto plano.
+        if (!SeguridadContrasenas.esHash(usuario.getContrasena())) {
+            try {
+                repoJdbc.actualizarUsuario(new usuariosjdbc.modelo.Usuario(
+                    usuario.getNombre(), usuario.getCorreo(), usuario.getDireccion(),
+                    usuario.getTelefono(), usuario.getTipoCliente(), SeguridadContrasenas.generar(contrasena)));
+            } catch (RuntimeException e) {
+                throw new ExcepcionValidacion("No fue posible actualizar la seguridad de la cuenta: " + e.getMessage());
+            }
+        }
         return usuario;
     }
 
@@ -58,14 +67,18 @@ public class RepositorioUsuarios {
             throw new ExcepcionValidacion("No existe un usuario registrado con ese correo.");
         }
 
-        String anterior = usuario.getContrasena();
-        usuario.setContrasena(nuevaContrasena);
-
         try {
-            PersistenciaUsuarios.guardarTodos(usuarios);
-        } catch (IOException e) {
-            usuario.setContrasena(anterior);
-            throw new ExcepcionValidacion("No fue posible actualizar la contraseña en el archivo de datos.");
+            usuariosjdbc.modelo.Usuario usuarioJdbc = new usuariosjdbc.modelo.Usuario(
+                usuario.getNombre(),
+                usuario.getCorreo(),
+                usuario.getDireccion(),
+                usuario.getTelefono(),
+                usuario.getTipoCliente(),
+                SeguridadContrasenas.generar(nuevaContrasena)
+            );
+            repoJdbc.actualizarUsuario(usuarioJdbc);
+        } catch (Exception e) {
+            throw new ExcepcionValidacion("No fue posible actualizar la contraseña en MySQL: " + e.getMessage());
         }
     }
 
@@ -112,48 +125,69 @@ public class RepositorioUsuarios {
     }
 
     private Usuario buscarPorCorreo(String correo) {
-        for (Usuario usuario : usuarios) {
-            if (usuario.getCorreo().equalsIgnoreCase(correo.trim())) {
-                return usuario;
-            }
+        if (correo == null) {
+            return null;
         }
-        return null;
+        try {
+            usuariosjdbc.modelo.Usuario u = repoJdbc.buscarUsuario(correo.trim());
+            if (u == null) {
+                return null;
+            }
+            return new Usuario(
+                u.getNombre(),
+                u.getCorreo(),
+                u.getDireccion(),
+                u.getTelefono(),
+                u.getTipoCliente(),
+                u.getContrasena()
+            );
+        } catch (RuntimeException e) {
+            throw new IllegalStateException("No fue posible consultar usuarios en la base de datos: " + e.getMessage(), e);
+        }
     }
+
     public Usuario buscarUsuario(String correo) {
         return buscarPorCorreo(correo);
     }
+
     public ArrayList<Usuario> listarUsuarios() {
-        return new ArrayList<Usuario>(usuarios);
-        
+        ArrayList<Usuario> resultado = new ArrayList<>();
+        for (usuariosjdbc.modelo.Usuario u : repoJdbc.listarUsuarios()) {
+            resultado.add(new Usuario(u.getNombre(), u.getCorreo(), u.getDireccion(),
+                u.getTelefono(), u.getTipoCliente(), u.getContrasena()));
+        }
+        return resultado;
     }
+
     public void actualizarUsuario(Usuario usuarioActualizado) throws ExcepcionValidacion {
         Usuario usuarioExistente = buscarPorCorreo(usuarioActualizado.getCorreo());
         if (usuarioExistente == null) {
             throw new ExcepcionValidacion("No existe un usuario registrado con ese correo.");
         }
-        usuarioExistente.setNombre(usuarioActualizado.getNombre());
-        usuarioExistente.setDireccion(usuarioActualizado.getDireccion());
-        usuarioExistente.setTelefono(usuarioActualizado.getTelefono());
-        usuarioExistente.setTipoCliente(usuarioActualizado.getTipoCliente());
         try {
-            PersistenciaUsuarios.guardarTodos(usuarios);
-        } catch (IOException e) {
-            throw new ExcepcionValidacion("No fue posible actualizar el usuario.");
+            usuariosjdbc.modelo.Usuario usuarioJdbc = new usuariosjdbc.modelo.Usuario(
+                usuarioActualizado.getNombre(),
+                usuarioActualizado.getCorreo(),
+                usuarioActualizado.getDireccion(),
+                usuarioActualizado.getTelefono(),
+                usuarioActualizado.getTipoCliente(),
+                usuarioExistente.getContrasena()
+            );
+            repoJdbc.actualizarUsuario(usuarioJdbc);
+        } catch (Exception e) {
+            throw new ExcepcionValidacion("No fue posible actualizar el usuario en MySQL: " + e.getMessage());
         }
     }
+
     public void eliminarUsuario(String correo) throws ExcepcionValidacion {
         Usuario usuario = buscarPorCorreo(correo);
         if (usuario == null) {
             throw new ExcepcionValidacion("No existe un usuario registrado con ese correo.");
         }
-        usuarios.remove(usuario);
         try {
-            PersistenciaUsuarios.guardarTodos(usuarios);
-        } catch (IOException e) {
-            throw new ExcepcionValidacion("No fue posible eliminar el usuario.");
+            repoJdbc.eliminarUsuario(correo.trim());
+        } catch (Exception e) {
+            throw new ExcepcionValidacion("No fue posible eliminar el usuario en MySQL: " + e.getMessage());
         }
     }
 }
-
-
-

@@ -62,10 +62,10 @@ public class ControladorInicio implements ActionListener {
     }
 
     private void abrirGestionPedidos() {
-        VistaGestionPedidos vistaEvaluacion = new VistaGestionPedidos();
+        VistaGestionPedidos vistaPedidos = new VistaGestionPedidos();
         RepositorioProductos repositorioProductos = new RepositorioProductos();
-        new ControladorGestionPedidos(vistaEvaluacion, repositorioProductos);
-        vistaEvaluacion.setVisible(true);
+        new ControladorGestionPedidos(vistaPedidos, repositorioProductos);
+        vistaPedidos.setVisible(true);
     }
 
     private void abrirGestionClientes() {

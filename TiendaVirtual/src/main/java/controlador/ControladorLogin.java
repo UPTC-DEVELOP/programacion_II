@@ -59,7 +59,7 @@ public class ControladorLogin implements ActionListener {
             new ControladorInicio(inicio, vista, repositorioLibros, usuario);
             vista.setVisible(false);
             inicio.setVisible(true);
-        } catch (ExcepcionValidacion e) {
+        } catch (ExcepcionValidacion | IllegalStateException e) {
             vista.limpiarContrasena();
             JOptionPane.showMessageDialog(vista, e.getMessage(),
                     "Datos de acceso", JOptionPane.WARNING_MESSAGE);
@@ -74,12 +74,15 @@ public class ControladorLogin implements ActionListener {
 
     private void recuperarContrasena() {
         JTextField campoCorreo = new JTextField(vista.getCorreo(), 20);
+        JPasswordField campoActual = new JPasswordField(20);
         JPasswordField campoNuevaContrasena = new JPasswordField(20);
         JPasswordField campoConfirmacion = new JPasswordField(20);
 
-        JPanel panel = new JPanel(new GridLayout(3, 2, 8, 8));
+        JPanel panel = new JPanel(new GridLayout(4, 2, 8, 8));
         panel.add(new JLabel("Correo:"));
         panel.add(campoCorreo);
+        panel.add(new JLabel("Contraseña actual:"));
+        panel.add(campoActual);
         panel.add(new JLabel("Nueva contraseña:"));
         panel.add(campoNuevaContrasena);
         panel.add(new JLabel("Confirmar contraseña:"));
@@ -103,13 +106,14 @@ public class ControladorLogin implements ActionListener {
         }
 
         try {
+            repositorioUsuarios.autenticar(campoCorreo.getText().trim(), new String(campoActual.getPassword()));
             repositorioUsuarios.cambiarContrasena(campoCorreo.getText().trim(), nuevaContrasena);
             vista.setCorreo(campoCorreo.getText().trim());
             vista.limpiarContrasena();
             JOptionPane.showMessageDialog(vista,
                     "La contraseña fue actualizada. Ya puede iniciar sesión.",
                     "Contraseña actualizada", JOptionPane.INFORMATION_MESSAGE);
-        } catch (ExcepcionValidacion e) {
+        } catch (ExcepcionValidacion | IllegalStateException e) {
             JOptionPane.showMessageDialog(vista, e.getMessage(),
                     "Revise los datos", JOptionPane.WARNING_MESSAGE);
         }

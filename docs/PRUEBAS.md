@@ -1,63 +1,43 @@
-# Pruebas — TiendaVirtual
+# Pruebas y evidencias
 
-Ejecutar los comandos desde la carpeta `TiendaVirtual/`.
+Pruebas realizadas en CachyOS con Java 17 y MariaDB. Las capturas corresponden a la versión previa a la corrección visual del título de Gestión de pedidos.
 
-## Compilación
+## 1. Compilación
 
-```bash
-mvn clean verify
-```
+`mvn clean verify` — `BUILD SUCCESS` (35 archivos fuente compilados).
 
-Resultado esperado: `BUILD SUCCESS`. Esto comprueba la compilación y las pruebas configuradas en Maven, no todas las acciones de la interfaz.
+![Compilación Maven](imagenes/01-compilacion-maven.png)
 
-## Prueba del carrito JSON — CachyOS/Linux
+## 2. Carrito JSON
 
-```bash
-mvn -q dependency:build-classpath -Dmdep.outputFile=target/dependencias.txt
-CP="target/classes:target/test-classes:$(cat target/dependencias.txt)"
-CARRITO_STORAGE=json java -cp "$CP" pruebas.PruebaCarrito
-```
+`PRUEBA_CARRITO_OK` al ejecutar `pruebas.PruebaCarrito` con `CARRITO_STORAGE=json`.
 
-Resultado esperado: `PRUEBA_CARRITO_OK`.
+![Prueba del carrito JSON](imagenes/02-carrito-json.png)
 
-## Conexión JDBC de usuarios
+## 3. Conexión JDBC
 
-Con MariaDB activo y `config/database.properties` configurado:
+La consulta de prueba al módulo de usuarios devuelve `Conexion OK`.
 
-```bash
-java -cp "$CP" usuariosjdbc.pruebas.PruebasUsuarios
-```
+![Conexión MariaDB](imagenes/03-conexion-jdbc.png)
 
-Resultado esperado: un mensaje que comienza por `Conexion OK`. Esta clase comprueba la consulta JDBC, no el CRUD completo desde Swing.
+## 4. Usuarios: consulta, actualización y eliminación
 
-## Prueba visual y persistencia
+Consultas SQL y mensajes de la interfaz Swing con registros de prueba.
 
-```bash
-java -cp "$CP" util.aplicacion.Main
-```
+![Consulta y listado de usuarios](imagenes/04-consulta-listado-usuarios.png)
 
-Comprobar inicio de sesión, catálogo, Gestión de pedidos y operaciones del carrito. Agregar un libro, cerrar y abrir el programa, y verificar que el carrito lo conserva. Cambiar de usuario para comprobar que no comparte sus artículos.
+![Actualización de usuarios](imagenes/05-actualizacion-usuarios.png)
 
-Con el carrito en modo JDBC, consultar desde MariaDB:
+![Eliminación de usuarios](imagenes/06-eliminacion-usuarios.png)
 
-```sql
-USE tienda_virtual;
-SELECT carrito_id, titulo, cantidad, precio FROM carrito_items ORDER BY carrito_id;
-```
+## 5. Carrito de compras
 
-Para el CRUD de usuarios de Elke deben verificarse insertar, consultar, actualizar y eliminar con **registros de prueba**, sin utilizar cuentas reales. El CRUD JDBC de usuarios todavía no está unido a las ventanas de registro y login.
+Cálculo de cantidades y total en Swing; en una prueba posterior se activó `carrito.storage=jdbc` y se observaron identificadores separados por correo en MariaDB.
 
-## PowerShell — Windows 10/11
+![Carrito en Swing](imagenes/07-carrito-interfaz.png)
 
-```powershell
-mvn clean verify
-mvn dependency:build-classpath "-Dmdep.outputFile=target/dependencias.txt"
-$CP = "target\classes;target\test-classes;$(Get-Content .\target\dependencias.txt -Raw)"
-$env:CARRITO_STORAGE="json"
-java -cp "$CP" pruebas.PruebaCarrito
-Remove-Item Env:CARRITO_STORAGE
-java -cp "$CP" usuariosjdbc.pruebas.PruebasUsuarios
-java -cp "$CP" util.aplicacion.Main
-```
+![Carritos JDBC diferenciados](imagenes/08-carritos-jdbc-por-usuario.png)
 
-La prueba JDBC requiere que cada equipo tenga configurada su base de datos local.
+La separación de contenido al iniciar sesión con dos usuarios fue reportada tras activar JDBC; las filas SQL respaldan el uso de identificadores independientes. Las capturas no sustituyen una prueba automatizada de extremo a extremo.
+
+[![Volver al README](imagenes/volver-readme.svg)](../README.md)

@@ -31,6 +31,7 @@ public class ControladorCliente implements ActionListener {
         }
     }
     private void buscarUsuario() {
+      try {
         Usuario usuario = repositorio.buscarUsuario(
                 vista.getCorreo());
         if (usuario == null) {
@@ -43,6 +44,9 @@ public class ControladorCliente implements ActionListener {
         vista.setDireccion(usuario.getDireccion());
         vista.setTelefono(usuario.getTelefono());
         vista.setTipoCliente(usuario.getTipoCliente());
+      } catch (RuntimeException e) {
+        JOptionPane.showMessageDialog(vista, e.getMessage(), "Error de conexion", JOptionPane.ERROR_MESSAGE);
+      }
     }
     private void actualizarUsuario() {
         try {
@@ -59,7 +63,7 @@ public class ControladorCliente implements ActionListener {
             JOptionPane.showMessageDialog(
                     vista,
                     "Usuario actualizado correctamente.");
-        } catch (ExcepcionValidacion e) {
+        } catch (ExcepcionValidacion | IllegalStateException e) {
             JOptionPane.showMessageDialog(
                     vista,
                     e.getMessage());
@@ -79,13 +83,14 @@ public class ControladorCliente implements ActionListener {
                         vista,
                         "Usuario eliminado correctamente.");
             }
-        } catch (ExcepcionValidacion e) {
+        } catch (ExcepcionValidacion | IllegalStateException e) {
             JOptionPane.showMessageDialog(
                     vista,
                     e.getMessage());
         }
     }
     private void listarUsuarios() {
+      try {
         StringBuilder listado = new StringBuilder();
         for (Usuario usuario :
                 repositorio.listarUsuarios()) {
@@ -106,5 +111,8 @@ public class ControladorCliente implements ActionListener {
                 listado.toString(),
                 "Listado de Usuarios",
                 JOptionPane.INFORMATION_MESSAGE);
+      } catch (RuntimeException e) {
+        JOptionPane.showMessageDialog(vista, e.getMessage(), "Error de conexion", JOptionPane.ERROR_MESSAGE);
+      }
     }
 }

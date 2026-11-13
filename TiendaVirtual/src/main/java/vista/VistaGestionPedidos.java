@@ -48,7 +48,7 @@ public class VistaGestionPedidos extends JFrame {
         encabezado.setBackground(Estilos.AZUL_MARINO);
         encabezado.setBorder(BorderFactory.createEmptyBorder(16, 20, 16, 20));
 
-        JLabel titulo = new JLabel("EVALUACIÓN PARTE 2 - GESTIÓN DE PEDIDOS");
+        JLabel titulo = new JLabel("GESTIÓN DE PEDIDOS");
         titulo.setForeground(Color.WHITE);
         titulo.setFont(new Font("SansSerif", Font.BOLD, 20));
 

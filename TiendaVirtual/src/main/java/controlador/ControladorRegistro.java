@@ -64,7 +64,7 @@ public class ControladorRegistro implements ActionListener {
                     "Registro exitoso", JOptionPane.INFORMATION_MESSAGE);
 
             vista.dispose();
-        } catch (ExcepcionValidacion e) {
+        } catch (ExcepcionValidacion | IllegalStateException e) {
             JOptionPane.showMessageDialog(vista, e.getMessage(),
                     "Revise los datos", JOptionPane.WARNING_MESSAGE);
         }
