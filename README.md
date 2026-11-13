@@ -25,3 +25,4 @@ La configuración de MariaDB se realiza mediante `TiendaVirtual/config/database.
 
 - [Instalación](docs/INSTALACION.md)
 - [Pruebas y evidencias](docs/PRUEBAS.md)
+- [Comandos de MariaDB, JDBC y pruebas](docs/COMANDOS_MARIADB_JDBC_Y_PRUEBAS.md)
