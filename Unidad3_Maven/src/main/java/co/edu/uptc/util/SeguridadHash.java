@@ -12,7 +12,9 @@ public final class SeguridadHash {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] bytes = digest.digest(texto.getBytes(StandardCharsets.UTF_8));
             StringBuilder resultado = new StringBuilder();
-            for (byte b : bytes) resultado.append(String.format("%02x", b));
+            for (byte b : bytes) {
+				resultado.append(String.format("%02x", b));
+			}
             return resultado.toString();
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("SHA-256 no está disponible en el JDK.", e);

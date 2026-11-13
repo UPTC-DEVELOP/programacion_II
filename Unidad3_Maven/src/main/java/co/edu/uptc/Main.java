@@ -1,15 +1,32 @@
 package co.edu.uptc;
 
+import javax.swing.SwingUtilities;
+
 import co.edu.uptc.controller.ControladorPrincipal;
 import co.edu.uptc.controller.LoginController;
-import co.edu.uptc.persistence.*;
-import co.edu.uptc.persistence.json.*;
+import co.edu.uptc.persistence.CarritoRepository;
+import co.edu.uptc.persistence.LibroRepository;
+import co.edu.uptc.persistence.PedidoRepository;
+import co.edu.uptc.persistence.RegistroOperaciones;
+import co.edu.uptc.persistence.ResenaRepository;
+import co.edu.uptc.persistence.UsuarioRepository;
+import co.edu.uptc.persistence.json.CarritoJsonRepository;
+import co.edu.uptc.persistence.json.LibroJsonRepository;
+import co.edu.uptc.persistence.json.PedidoJsonRepository;
+import co.edu.uptc.persistence.json.ResenaJsonRepository;
+import co.edu.uptc.persistence.json.UsuarioJsonRepository;
 import co.edu.uptc.persistence.txt.RegistroOperacionesTxt;
-import co.edu.uptc.service.*;
+import co.edu.uptc.service.AutenticacionService;
+import co.edu.uptc.service.CarritoService;
+import co.edu.uptc.service.CatalogoService;
+import co.edu.uptc.service.CompraService;
+import co.edu.uptc.service.DescuentoClienteFrecuente;
+import co.edu.uptc.service.ReciboService;
+import co.edu.uptc.service.ResenaService;
+import co.edu.uptc.service.Sesion;
 import co.edu.uptc.util.Rutas;
 import co.edu.uptc.view.LoginFrame;
 import co.edu.uptc.view.VentanaPrincipal;
-import javax.swing.SwingUtilities;
 
 // Main es la raíz de composición: aquí se conectan implementaciones y contratos.
 public class Main {

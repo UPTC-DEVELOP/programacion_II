@@ -1,11 +1,12 @@
 package co.edu.uptc.controller;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import co.edu.uptc.exception.TiendaException;
 import co.edu.uptc.service.AutenticacionService;
 import co.edu.uptc.view.Mensajes;
 import co.edu.uptc.view.RegistroDialog;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 // RegistroController recoge campos del diálogo y delega todas las reglas al servicio.
 public class RegistroController implements ActionListener {

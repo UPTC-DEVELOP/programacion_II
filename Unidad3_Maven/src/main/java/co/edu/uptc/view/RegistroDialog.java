@@ -1,7 +1,17 @@
 package co.edu.uptc.view;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Frame;
+import java.awt.GridLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 // RegistroDialog recoge datos de entrada, pero la validación final queda en AutenticacionService.
 public class RegistroDialog extends JDialog {

@@ -1,9 +1,10 @@
 package co.edu.uptc.persistence;
 
-import co.edu.uptc.exception.PersistenciaException;
-import co.edu.uptc.model.Libro;
 import java.util.List;
 import java.util.Optional;
+
+import co.edu.uptc.exception.PersistenciaException;
+import co.edu.uptc.model.Libro;
 
 public interface LibroRepository {
     List<Libro> listar() throws PersistenciaException;

@@ -1,8 +1,9 @@
 package co.edu.uptc.persistence;
 
+import java.util.List;
+
 import co.edu.uptc.exception.PersistenciaException;
 import co.edu.uptc.model.Pedido;
-import java.util.List;
 
 public interface PedidoRepository {
     List<Pedido> listar() throws PersistenciaException;

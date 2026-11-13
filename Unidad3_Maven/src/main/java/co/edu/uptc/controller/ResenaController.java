@@ -1,12 +1,14 @@
 package co.edu.uptc.controller;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import co.edu.uptc.exception.TiendaException;
 import co.edu.uptc.model.Cliente;
 import co.edu.uptc.persistence.ResenaRepository;
 import co.edu.uptc.service.ResenaService;
 import co.edu.uptc.view.Mensajes;
 import co.edu.uptc.view.PanelResenas;
-import java.awt.event.*;
 
 // ResenaController atiende el formulario y deja las reglas de compra previa al servicio.
 public class ResenaController implements ActionListener {

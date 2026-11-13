@@ -21,21 +21,29 @@ public class AutenticacionService {
                                     String telefono, boolean premium) {
         Validador.nombre(nombre); Validador.correo(correo); Validador.contrasena(contrasena); Validador.telefono(telefono); Validador.obligatorio(direccion, "dirección");
         String normalizado = correo.trim().toLowerCase();
-        if (usuarios.buscarPorCorreo(normalizado).isPresent()) throw new ValidacionException("Ya existe un usuario con ese correo.");
+        if (usuarios.buscarPorCorreo(normalizado).isPresent()) {
+			throw new ValidacionException("Ya existe un usuario con ese correo.");
+		}
         Cliente cliente = premium ? new ClientePremium(nombre.trim(), normalizado, SeguridadHash.hash(contrasena), direccion.trim(), telefono.trim())
                 : new ClienteRegular(nombre.trim(), normalizado, SeguridadHash.hash(contrasena), direccion.trim(), telefono.trim());
         usuarios.guardar(cliente); registro.registrar("INFO", normalizado, "Cliente registrado"); return cliente;
     }
     public Usuario iniciarSesion(String correo, String contrasena) {
         Usuario usuario = usuarios.buscarPorCorreo(correo.trim().toLowerCase()).orElseThrow(() -> new CredencialesInvalidasException("Correo o contraseña incorrectos."));
-        if (!usuario.getContrasenaHash().equals(SeguridadHash.hash(contrasena))) throw new CredencialesInvalidasException("Correo o contraseña incorrectos.");
+        if (!usuario.getContrasenaHash().equals(SeguridadHash.hash(contrasena))) {
+			throw new CredencialesInvalidasException("Correo o contraseña incorrectos.");
+		}
         registro.registrar("INFO", usuario.getCorreo(), "Inicio de sesión"); return usuario;
     }
     public Cliente actualizarCliente(Cliente cliente, String nombre, String direccion, String telefono, String nuevaContrasena) {
         Validador.nombre(nombre); Validador.telefono(telefono); Validador.obligatorio(direccion, "dirección");
-        if (nuevaContrasena != null && !nuevaContrasena.isEmpty()) Validador.contrasena(nuevaContrasena);
+        if (nuevaContrasena != null && !nuevaContrasena.isEmpty()) {
+			Validador.contrasena(nuevaContrasena);
+		}
         cliente.setNombreCompleto(nombre.trim()); cliente.setDireccionEnvio(direccion.trim()); cliente.setTelefono(telefono.trim());
-        if (nuevaContrasena != null && !nuevaContrasena.isEmpty()) cliente.setContrasenaHash(SeguridadHash.hash(nuevaContrasena));
+        if (nuevaContrasena != null && !nuevaContrasena.isEmpty()) {
+			cliente.setContrasenaHash(SeguridadHash.hash(nuevaContrasena));
+		}
         usuarios.guardar(cliente); registro.registrar("INFO", cliente.getCorreo(), "Datos personales actualizados"); return cliente;
     }
 }

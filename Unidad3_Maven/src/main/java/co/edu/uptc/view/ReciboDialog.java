@@ -1,7 +1,13 @@
 package co.edu.uptc.view;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.Frame;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 // ReciboDialog presenta el texto generado por ReciboService sin modificarlo.
 public class ReciboDialog extends JDialog {

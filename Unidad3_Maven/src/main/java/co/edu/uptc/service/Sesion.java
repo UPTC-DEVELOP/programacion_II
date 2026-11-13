@@ -11,7 +11,9 @@ public class Sesion {
     public boolean estaLogueado() { return usuarioActual != null; }
     public Usuario getUsuarioActual() { return usuarioActual; }
     public Usuario exigirUsuario() {
-        if (!estaLogueado()) throw new SesionNoIniciadaException("Debe iniciar sesión para continuar.");
+        if (!estaLogueado()) {
+			throw new SesionNoIniciadaException("Debe iniciar sesión para continuar.");
+		}
         return usuarioActual;
     }
 }

@@ -9,19 +9,29 @@ public class Carrito {
 
     public Carrito(String correoCliente) {
         this.correoCliente = correoCliente;
-        this.items = new ArrayList<ItemCarrito>();
+        this.items = new ArrayList<>();
     }
     public void agregar(ItemCarrito item) { items.add(item); }
     public ItemCarrito buscar(String isbn) {
-        for (ItemCarrito item : items) if (item.getIsbn().equals(isbn)) return item;
+        for (ItemCarrito item : items) {
+			if (item.getIsbn().equals(isbn)) {
+				return item;
+			}
+		}
         return null;
     }
     public void eliminar(String isbn) {
-        ItemCarrito item = buscar(isbn); if (item != null) items.remove(item);
+        ItemCarrito item = buscar(isbn); if (item != null) {
+			items.remove(item);
+		}
     }
     public void vaciar() { items.clear(); }
-    public double getSubtotalGeneral() { double total = 0; for (ItemCarrito i : items) total += i.calcularSubtotal(); return total; }
-    public double getTotalImpuestos() { double total = 0; for (ItemCarrito i : items) total += i.calcularImpuesto(); return total; }
+    public double getSubtotalGeneral() { double total = 0; for (ItemCarrito i : items) {
+		total += i.calcularSubtotal();
+	} return total; }
+    public double getTotalImpuestos() { double total = 0; for (ItemCarrito i : items) {
+		total += i.calcularImpuesto();
+	} return total; }
     public double getTotalBruto() { return getSubtotalGeneral() + getTotalImpuestos(); }
     public String getCorreoCliente() { return correoCliente; }
     public ArrayList<ItemCarrito> getItems() { return items; }

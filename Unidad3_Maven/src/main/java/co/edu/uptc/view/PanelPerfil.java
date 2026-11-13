@@ -1,7 +1,13 @@
 package co.edu.uptc.view;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.GridLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 // PanelPerfil permite editar datos personales; el controlador delega la validación al servicio.
 public class PanelPerfil extends JPanel {

@@ -8,6 +8,8 @@ public class ItemCarrito extends LineaCompra {
     }
     public void aumentar() { setCantidad(getCantidad() + 1); }
     public void disminuir() {
-        if (getCantidad() > 1) setCantidad(getCantidad() - 1);
+        if (getCantidad() > 1) {
+			setCantidad(getCantidad() - 1);
+		}
     }
 }

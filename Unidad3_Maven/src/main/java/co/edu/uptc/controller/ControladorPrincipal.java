@@ -5,8 +5,19 @@ import co.edu.uptc.model.Rol;
 import co.edu.uptc.model.Usuario;
 import co.edu.uptc.persistence.LibroRepository;
 import co.edu.uptc.persistence.ResenaRepository;
-import co.edu.uptc.service.*;
-import co.edu.uptc.view.*;
+import co.edu.uptc.service.AutenticacionService;
+import co.edu.uptc.service.CarritoService;
+import co.edu.uptc.service.CatalogoService;
+import co.edu.uptc.service.CompraService;
+import co.edu.uptc.service.ResenaService;
+import co.edu.uptc.service.Sesion;
+import co.edu.uptc.view.PanelCarrito;
+import co.edu.uptc.view.PanelCatalogoAdmin;
+import co.edu.uptc.view.PanelHistorial;
+import co.edu.uptc.view.PanelPerfil;
+import co.edu.uptc.view.PanelResenas;
+import co.edu.uptc.view.PanelTienda;
+import co.edu.uptc.view.VentanaPrincipal;
 
 // ControladorPrincipal arma las pantallas del usuario autenticado y coordina sus refrescos.
 public class ControladorPrincipal {

@@ -15,7 +15,7 @@ public abstract class Libro extends Producto {
                     Categoria categoria, String editorial, int numeroPaginas, double precioBase,
                     int stock, double porcentajeDescuento, double impuestoIVA) {
         super(isbn, titulo, precioBase, stock, porcentajeDescuento, impuestoIVA);
-        this.autores = new ArrayList<String>(autores);
+        this.autores = new ArrayList<>(autores);
         this.anioPublicacion = anioPublicacion;
         this.categoria = categoria;
         this.editorial = editorial;
@@ -25,8 +25,8 @@ public abstract class Libro extends Producto {
     public String getIsbn() { return getCodigo(); }
     public String getTitulo() { return getNombre(); }
     public abstract FormatoLibro getFormato();
-    public ArrayList<String> getAutores() { return new ArrayList<String>(autores); }
-    public void setAutores(ArrayList<String> autores) { this.autores = new ArrayList<String>(autores); }
+    public ArrayList<String> getAutores() { return new ArrayList<>(autores); }
+    public void setAutores(ArrayList<String> autores) { this.autores = new ArrayList<>(autores); }
     public int getAnioPublicacion() { return anioPublicacion; }
     public void setAnioPublicacion(int anioPublicacion) { this.anioPublicacion = anioPublicacion; }
     public Categoria getCategoria() { return categoria; }

@@ -1,7 +1,8 @@
 package co.edu.uptc.view;
 
-import javax.swing.JOptionPane;
 import java.awt.Component;
+
+import javax.swing.JOptionPane;
 
 // Mensajes concentra los diálogos para que los controladores no repitan código visual.
 public final class Mensajes {
