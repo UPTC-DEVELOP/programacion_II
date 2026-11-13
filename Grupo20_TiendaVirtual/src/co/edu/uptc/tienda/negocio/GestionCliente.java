@@ -8,9 +8,11 @@ import co.edu.uptc.tienda.persistencia.LocalCliente;
 public class GestionCliente implements IGestionCliente {
 
     private LocalCliente localCliente;
+    private Cliente clienteLogueado;
 
     public GestionCliente() {
         localCliente = new LocalCliente();
+        clienteLogueado = null;
     }
 
     @Override
@@ -47,6 +49,31 @@ public class GestionCliente implements IGestionCliente {
             throw new IllegalArgumentException("No existe un cliente con el ID " + id + ".");
         }
         localCliente.eliminar(id);
+    }
+
+    public boolean iniciarSesion(String correo) {
+        for (Cliente cliente : listar()) {
+            if (cliente.getCorreoElectronico().equalsIgnoreCase(correo)) {
+                clienteLogueado = cliente;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void cerrarSesion() {
+        clienteLogueado = null;
+    }
+
+    public Cliente getClienteLogueado() {
+        return clienteLogueado;
+    }
+
+    public boolean esClientePremium() {
+        if (clienteLogueado != null) {
+            return "Premium".equalsIgnoreCase(clienteLogueado.getTipoCliente());
+        }
+        return false;
     }
 
     private void validar(Cliente cliente) {
