@@ -16,7 +16,6 @@ public class Factura {
 
 	// Pendiente agregar los datos de la factura que faltan, por ejemplo:
 
-
 	public Factura(int numero, LocalDateTime fecha, Cliente cliente, List<ItemCarrito> items, double subtotal,
 			double descuento, double total) {
 		this.numero = numero;

@@ -18,6 +18,7 @@ import co.edu.uptc.tienda.gui.TablaFactory;
 import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.modelo.Factura;
 import co.edu.uptc.tienda.modelo.ItemCarrito;
+import co.edu.uptc.tienda.negocio.GestorFactura;
 import co.edu.uptc.tienda.negocio.IGestionCarrito;
 import co.edu.uptc.tienda.negocio.IGestionCompra;
 import co.edu.uptc.tienda.negocio.NegocioException;
@@ -162,8 +163,8 @@ public class PanelCarritoCompras extends JPanel {
 		}
 
 		int confirmacion = JOptionPane.showConfirmDialog(this,
-				"¿Desea finalizar la compra por $ " + gestionCarrito.calcularTotal(cliente) + "?",
-				"Finalizar Compra", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				"¿Desea finalizar la compra por $ " + gestionCarrito.calcularTotal(cliente) + "?", "Finalizar Compra",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
 		if (confirmacion != JOptionPane.YES_OPTION) {
 			return;
@@ -175,6 +176,16 @@ public class PanelCarritoCompras extends JPanel {
 		} catch (NegocioException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Compra", JOptionPane.WARNING_MESSAGE);
 			return;
+		}
+
+		// Guardar automáticamente la factura en la Base de Datos
+		GestorFactura gestorFactura = new GestorFactura();
+		boolean guardadoExitoso = gestorFactura.procesarYGuardarFactura(factura);
+
+		if (!guardadoExitoso) {
+			JOptionPane.showMessageDialog(this,
+					"La compra se procesó, pero hubo un error al guardar la factura en la base de datos.",
+					"Advertencia de Base de Datos", JOptionPane.WARNING_MESSAGE);
 		}
 
 		actualizar();
