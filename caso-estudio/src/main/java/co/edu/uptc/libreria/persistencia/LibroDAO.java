@@ -90,6 +90,10 @@ public class LibroDAO implements IGestionLibro{
                 ps.setString(2, libro.getAutor());
                 ps.setDouble(3, libro.getPrecio());
                 ps.setInt(4, libro.getCodigo());
+                ps.setString(5, libro.getStock());
+                ps.setString(6, libro.getEditorial());
+                ps.setString(7, libro.getAnioPublicacion());
+                ps.setString(8, libro.getGenero());
                 ps.executeUpdate();
             }
         } catch (SQLException e) {
