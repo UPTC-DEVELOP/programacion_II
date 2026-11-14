@@ -41,7 +41,7 @@ import co.edu.uptc.modelo.dto.VentaResumenDto;
  *  - OCP: para agregar una nueva vista al sidebar basta con agregar un
  *    botón + una tarjeta en el CardLayout, sin modificar las existentes.
  *
- * ¿Por que CardLayout en el area de  CONTENIDO?
+ * 
  *  - Permite alternar entre "vista dashboard", "vista gestión de carritos" y
  *    "vista reportes" SIN recargar toda la ventana: es el mismo patrón que
  *    usa VentanaPrincipal.
@@ -52,7 +52,7 @@ public class PanelDashboard extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
-    // --- Comandos de acción (deben coincidir con los de Evento.java) ---
+    // --- Comandos de acción 
     public static final String CMD_VISTA_DASHBOARD = "VISTA_DASHBOARD";
     public static final String CMD_GESTIONAR_LIBROS = "GESTION_LIBROS";
     // botón para la gestión de carritos del admin
@@ -120,9 +120,9 @@ public class PanelDashboard extends JPanel {
         // Botones de navegación (se agrega "Manage Carts")
         sidebar.add(botonSidebar("Dashboard", CMD_VISTA_DASHBOARD, manejadorEventos));
         sidebar.add(Box.createVerticalStrut(12));
-        sidebar.add(botonSidebar("Manage Books", CMD_GESTIONAR_LIBROS, manejadorEventos));
+        sidebar.add(botonSidebar("Gestionar Libros", CMD_GESTIONAR_LIBROS, manejadorEventos));
         sidebar.add(Box.createVerticalStrut(12));
-        sidebar.add(botonSidebar("Manage Carts", CMD_GESTIONAR_CARRITOS, manejadorEventos));
+        sidebar.add(botonSidebar("Gestionar Carritos", CMD_GESTIONAR_CARRITOS, manejadorEventos));
         sidebar.add(Box.createVerticalStrut(12));
         sidebar.add(botonSidebar("Reportes", CMD_REPORTES, manejadorEventos));
         sidebar.add(Box.createVerticalStrut(12));
