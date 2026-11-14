@@ -1,24 +1,19 @@
-
-package persistencia;
+package co.edu.uptc.tienda.persistencia;
 
 import java.util.List;
-import negocio.Libro;
+
+import co.edu.uptc.tienda.excepcion.LibroExcepcion;
+import co.edu.uptc.tienda.modelo.Libro;
 
 public interface LibroDAO {
 
-    // Registrar un libro
-    boolean registrar(Libro libro);
+    boolean registrar(Libro libro) throws LibroExcepcion;
 
-    // Buscar un libro por ISBN
-    Libro buscarPorIsbn(String isbn);
+    Libro buscarPorIsbn(String isbn) throws LibroExcepcion;
 
-    // Listar todos los libros
-    List<Libro> listar();
+    List<Libro> listar() throws LibroExcepcion;
 
-    // Actualizar un libro
-    boolean actualizar(Libro libro);
+    boolean actualizar(Libro libro) throws LibroExcepcion;
 
-    // Eliminar un libro
-    boolean eliminar(String isbn);
+    boolean eliminar(String isbn) throws LibroExcepcion;
 }
-

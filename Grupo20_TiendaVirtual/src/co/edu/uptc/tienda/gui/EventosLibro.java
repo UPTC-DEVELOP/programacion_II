@@ -1,5 +1,6 @@
 package co.edu.uptc.tienda.gui;
 
+import co.edu.uptc.tienda.excepcion.LibroExcepcion;
 import co.edu.uptc.tienda.negocio.ControlLibro;
 import co.edu.uptc.tienda.modelo.Libro;
 
@@ -32,6 +33,27 @@ public class EventosLibro implements ActionListener {
         ventana.getBtnEliminar().addActionListener(this);
         ventana.getBtnListar().addActionListener(this);
         ventana.getBtnLimpiar().addActionListener(this);
+
+        if (controlLibro.getAvisoCarga() != null) {
+            JOptionPane.showMessageDialog(
+                    ventana,
+                    controlLibro.getAvisoCarga(),
+                    "Libros",
+                    JOptionPane.WARNING_MESSAGE
+            );
+        }
+    }
+
+    private void avisarPersistencia(LibroExcepcion ex) {
+
+        JOptionPane.showMessageDialog(
+                ventana,
+                ex.getMessage(),
+                "Libros",
+                JOptionPane.WARNING_MESSAGE
+        );
+
+        ventana.limpiarCampos();
     }
 
     
@@ -79,7 +101,6 @@ public class EventosLibro implements ActionListener {
                     .getSelectedItem()
                     .toString();
 
-            // Validar campos de texto obligatorios
             if (isbn.isEmpty() || titulo.isEmpty() || autor.isEmpty()
                     || editorial.isEmpty() || anioTexto.isEmpty()
                     || paginasTexto.isEmpty() || precioTexto.isEmpty()
@@ -95,7 +116,6 @@ public class EventosLibro implements ActionListener {
                 return;
             }
 
-            // Validar ISBN
             if (isbn.length() != 13) {
 
                 JOptionPane.showMessageDialog(
@@ -108,7 +128,6 @@ public class EventosLibro implements ActionListener {
                 return;
             }
 
-            // Validar que el ISBN no exista
             if (controlLibro.buscarLibro(isbn) != null) {
 
                 JOptionPane.showMessageDialog(
@@ -127,7 +146,6 @@ public class EventosLibro implements ActionListener {
             double iva = Double.parseDouble(ivaTexto);
             int stock = Integer.parseInt(stockTexto);
 
-            // Validar año
             if (anio < 1 || anio > 9999) {
 
                 JOptionPane.showMessageDialog(
@@ -140,7 +158,6 @@ public class EventosLibro implements ActionListener {
                 return;
             }
 
-            // Validar páginas
             if (paginas <= 0) {
 
                 JOptionPane.showMessageDialog(
@@ -153,7 +170,6 @@ public class EventosLibro implements ActionListener {
                 return;
             }
 
-            // Validar precio
             if (precio <= 0) {
 
                 JOptionPane.showMessageDialog(
@@ -166,7 +182,6 @@ public class EventosLibro implements ActionListener {
                 return;
             }
 
-            // Validar IVA
             if (iva != 5 && iva != 19) {
 
                 JOptionPane.showMessageDialog(
@@ -179,7 +194,6 @@ public class EventosLibro implements ActionListener {
                 return;
             }
 
-            // Validar stock
             if (stock < 0) {
 
                 JOptionPane.showMessageDialog(
@@ -192,7 +206,6 @@ public class EventosLibro implements ActionListener {
                 return;
             }
 
-            // Crear objeto Libro
             Libro libro = new Libro(
                     isbn,
                     titulo,
@@ -206,7 +219,6 @@ public class EventosLibro implements ActionListener {
                     formato
             );
 
-            // Registrar
             boolean registrado = controlLibro.registrarLibro(libro);
 
             if (registrado) {
@@ -239,6 +251,10 @@ public class EventosLibro implements ActionListener {
                     "Error de datos",
                     JOptionPane.ERROR_MESSAGE
             );
+
+        } catch (LibroExcepcion ex) {
+
+            avisarPersistencia(ex);
         }
     }
 
@@ -278,7 +294,6 @@ public class EventosLibro implements ActionListener {
         String stockTexto = ventana.getTxtStock().getText().trim();
         String formato = (String) ventana.getCmbFormato().getSelectedItem();
 
-        // Validar campos vacíos
         if (titulo.isEmpty() || autor.isEmpty() || anioTexto.isEmpty()
                 || editorial.isEmpty() || paginasTexto.isEmpty()
                 || precioTexto.isEmpty() || ivaTexto.isEmpty()
@@ -301,7 +316,6 @@ public class EventosLibro implements ActionListener {
             double iva = Double.parseDouble(ivaTexto);
             int stock = Integer.parseInt(stockTexto);
 
-            // Validar año
             if (anio < 1 || anio > 9999) {
                 JOptionPane.showMessageDialog(
                         ventana,
@@ -312,7 +326,6 @@ public class EventosLibro implements ActionListener {
                 return;
             }
 
-            // Validar páginas
             if (paginas <= 0) {
                 JOptionPane.showMessageDialog(
                         ventana,
@@ -323,7 +336,6 @@ public class EventosLibro implements ActionListener {
                 return;
             }
 
-            // Validar precio
             if (precio <= 0) {
                 JOptionPane.showMessageDialog(
                         ventana,
@@ -334,7 +346,6 @@ public class EventosLibro implements ActionListener {
                 return;
             }
 
-            // Validar IVA
             if (iva != 5 && iva != 19) {
                 JOptionPane.showMessageDialog(
                         ventana,
@@ -345,7 +356,6 @@ public class EventosLibro implements ActionListener {
                 return;
             }
 
-            // Validar stock
             if (stock < 0) {
                 JOptionPane.showMessageDialog(
                         ventana,
@@ -398,6 +408,10 @@ public class EventosLibro implements ActionListener {
                     "Error",
                     JOptionPane.ERROR_MESSAGE
             );
+
+        } catch (LibroExcepcion e) {
+
+            avisarPersistencia(e);
         }
     }
     private void eliminar() {
@@ -437,7 +451,6 @@ public class EventosLibro implements ActionListener {
             return;
         }
 
-        // Verificar que el título coincida
         if (!libro.getTitulo().equalsIgnoreCase(titulo)) {
             JOptionPane.showMessageDialog(
                     ventana,
@@ -460,27 +473,34 @@ public class EventosLibro implements ActionListener {
 
         if (respuesta == JOptionPane.YES_OPTION) {
 
-            boolean eliminado = controlLibro.eliminarLibro(isbn);
+            try {
 
-            if (eliminado) {
+                boolean eliminado = controlLibro.eliminarLibro(isbn);
 
-                JOptionPane.showMessageDialog(
-                        ventana,
-                        "Libro eliminado correctamente.",
-                        "Eliminación exitosa",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
+                if (eliminado) {
 
-                ventana.limpiarCampos();
+                    JOptionPane.showMessageDialog(
+                            ventana,
+                            "Libro eliminado correctamente.",
+                            "Eliminación exitosa",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
 
-            } else {
+                    ventana.limpiarCampos();
 
-                JOptionPane.showMessageDialog(
-                        ventana,
-                        "No fue posible eliminar el libro.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE
-                );
+                } else {
+
+                    JOptionPane.showMessageDialog(
+                            ventana,
+                            "No fue posible eliminar el libro.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                }
+
+            } catch (LibroExcepcion e) {
+
+                avisarPersistencia(e);
             }
         }
     }
@@ -498,7 +518,6 @@ public class EventosLibro implements ActionListener {
             return;
         }
 
-        // Ordenar los libros por ISBN
         libros.sort(Comparator.comparing(Libro::getIsbn));
 
         String[] columnas = {
@@ -517,7 +536,6 @@ public class EventosLibro implements ActionListener {
             }
         };
 
-        // Agregar los libros a la tabla
         for (Libro libro : libros) {
 
             Object[] fila = {

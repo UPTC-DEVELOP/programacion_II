@@ -2,6 +2,20 @@ CREATE DATABASE IF NOT EXISTS tienda_virtual;
 
 USE tienda_virtual;
 
+CREATE TABLE IF NOT EXISTS libros (
+    isbn VARCHAR(13) NOT NULL,
+    titulo VARCHAR(150) NOT NULL,
+    autor VARCHAR(100) NOT NULL,
+    anio_publicacion INT NOT NULL,
+    editorial VARCHAR(100) NOT NULL,
+    num_paginas INT NOT NULL,
+    precio DOUBLE NOT NULL,
+    iva_porcentaje DOUBLE NOT NULL,
+    stock INT NOT NULL,
+    formato VARCHAR(20),
+    PRIMARY KEY (isbn)
+);
+
 CREATE TABLE IF NOT EXISTS cliente (
     id VARCHAR(20) NOT NULL,
     nombre_completo VARCHAR(100) NOT NULL,

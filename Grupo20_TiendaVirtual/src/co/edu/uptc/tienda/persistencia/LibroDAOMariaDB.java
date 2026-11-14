@@ -1,5 +1,4 @@
-
-package persistencia;
+package co.edu.uptc.tienda.persistencia;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,19 +7,20 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import negocio.Libro;
+import co.edu.uptc.tienda.excepcion.LibroExcepcion;
+import co.edu.uptc.tienda.modelo.Libro;
 
 public class LibroDAOMariaDB implements LibroDAO {
 
     @Override
-    public boolean registrar(Libro libro) {
+    public boolean registrar(Libro libro) throws LibroExcepcion {
 
         String sql = "INSERT INTO libros "
                 + "(isbn, titulo, autor, anio_publicacion, editorial, "
                 + "num_paginas, precio, iva_porcentaje, stock, formato) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement ps = conexion.prepareStatement(sql)) {
 
             ps.setString(1, libro.getIsbn());
@@ -37,17 +37,17 @@ public class LibroDAOMariaDB implements LibroDAO {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.out.println("Error al registrar libro: " + e.getMessage());
-            return false;
+            throw new LibroExcepcion("No se pudo registrar el libro en la base de datos: "
+                    + ConexionBD.explicarError(e));
         }
     }
 
     @Override
-    public Libro buscarPorIsbn(String isbn) {
+    public Libro buscarPorIsbn(String isbn) throws LibroExcepcion {
 
         String sql = "SELECT * FROM libros WHERE isbn = ?";
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement ps = conexion.prepareStatement(sql)) {
 
             ps.setString(1, isbn);
@@ -59,20 +59,21 @@ public class LibroDAOMariaDB implements LibroDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error al buscar libro: " + e.getMessage());
+            throw new LibroExcepcion("No se pudo buscar el libro en la base de datos: "
+                    + ConexionBD.explicarError(e));
         }
 
         return null;
     }
 
     @Override
-    public List<Libro> listar() {
+    public List<Libro> listar() throws LibroExcepcion {
 
         List<Libro> lista = new ArrayList<>();
 
         String sql = "SELECT * FROM libros";
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement ps = conexion.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
@@ -81,21 +82,22 @@ public class LibroDAOMariaDB implements LibroDAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error al listar libros: " + e.getMessage());
+            throw new LibroExcepcion("No se pudieron leer los libros de la base de datos: "
+                    + ConexionBD.explicarError(e));
         }
 
         return lista;
     }
 
     @Override
-    public boolean actualizar(Libro libro) {
+    public boolean actualizar(Libro libro) throws LibroExcepcion {
 
         String sql = "UPDATE libros SET titulo = ?, autor = ?, "
                 + "anio_publicacion = ?, editorial = ?, num_paginas = ?, "
                 + "precio = ?, iva_porcentaje = ?, stock = ?, formato = ? "
                 + "WHERE isbn = ?";
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement ps = conexion.prepareStatement(sql)) {
 
             ps.setString(1, libro.getTitulo());
@@ -112,17 +114,17 @@ public class LibroDAOMariaDB implements LibroDAO {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.out.println("Error al actualizar libro: " + e.getMessage());
-            return false;
+            throw new LibroExcepcion("No se pudo actualizar el libro en la base de datos: "
+                    + ConexionBD.explicarError(e));
         }
     }
 
     @Override
-    public boolean eliminar(String isbn) {
+    public boolean eliminar(String isbn) throws LibroExcepcion {
 
         String sql = "DELETE FROM libros WHERE isbn = ?";
 
-        try (Connection conexion = ConexionBD.conectar();
+        try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement ps = conexion.prepareStatement(sql)) {
 
             ps.setString(1, isbn);
@@ -130,8 +132,8 @@ public class LibroDAOMariaDB implements LibroDAO {
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.out.println("Error al eliminar libro: " + e.getMessage());
-            return false;
+            throw new LibroExcepcion("No se pudo eliminar el libro de la base de datos: "
+                    + ConexionBD.explicarError(e));
         }
     }
 

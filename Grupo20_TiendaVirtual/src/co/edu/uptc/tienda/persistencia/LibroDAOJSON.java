@@ -1,38 +1,40 @@
-
-package persistencia;
+package co.edu.uptc.tienda.persistencia;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
-
-import negocio.Libro;
+import co.edu.uptc.tienda.excepcion.LibroExcepcion;
+import co.edu.uptc.tienda.modelo.Libro;
 
 public class LibroDAOJSON implements LibroDAO {
 
-    private final String archivo = "libros.json";
+    private final File archivo;
 
     private final Gson gson = new GsonBuilder()
             .setPrettyPrinting()
             .create();
 
-    private List<Libro> cargarLibros() {
+    public LibroDAOJSON(String ruta) {
+        archivo = new File(ruta);
+    }
 
-        File fichero = new File(archivo);
+    private List<Libro> cargarLibros() throws LibroExcepcion {
 
-        if (!fichero.exists()) {
+        if (!archivo.exists()) {
             return new ArrayList<>();
         }
 
-        try (FileReader reader = new FileReader(fichero)) {
+        try (FileReader reader = new FileReader(archivo)) {
 
             Type tipoLista = new TypeToken<ArrayList<Libro>>() {}.getType();
 
@@ -41,12 +43,18 @@ public class LibroDAOJSON implements LibroDAO {
             return libros == null ? new ArrayList<>() : libros;
 
         } catch (IOException e) {
-            System.out.println("Error al leer JSON: " + e.getMessage());
-            return new ArrayList<>();
+            throw new LibroExcepcion("No se pudieron leer los libros del archivo " + archivo.getPath() + ".");
+        } catch (JsonSyntaxException e) {
+            throw new LibroExcepcion("El archivo " + archivo.getPath() + " no tiene un formato JSON válido.");
         }
     }
 
-    private boolean guardarLibros(List<Libro> libros) {
+    private boolean guardarLibros(List<Libro> libros) throws LibroExcepcion {
+
+        File carpeta = archivo.getParentFile();
+        if (carpeta != null) {
+            carpeta.mkdirs();
+        }
 
         try (FileWriter writer = new FileWriter(archivo)) {
 
@@ -54,13 +62,12 @@ public class LibroDAOJSON implements LibroDAO {
             return true;
 
         } catch (IOException e) {
-            System.out.println("Error al guardar JSON: " + e.getMessage());
-            return false;
+            throw new LibroExcepcion("No se pudieron guardar los libros en el archivo " + archivo.getPath() + ".");
         }
     }
 
     @Override
-    public boolean registrar(Libro libro) {
+    public boolean registrar(Libro libro) throws LibroExcepcion {
 
         List<Libro> libros = cargarLibros();
 
@@ -74,7 +81,7 @@ public class LibroDAOJSON implements LibroDAO {
     }
 
     @Override
-    public Libro buscarPorIsbn(String isbn) {
+    public Libro buscarPorIsbn(String isbn) throws LibroExcepcion {
 
         List<Libro> libros = cargarLibros();
 
@@ -88,12 +95,12 @@ public class LibroDAOJSON implements LibroDAO {
     }
 
     @Override
-    public List<Libro> listar() {
+    public List<Libro> listar() throws LibroExcepcion {
         return cargarLibros();
     }
 
     @Override
-    public boolean actualizar(Libro libroActualizado) {
+    public boolean actualizar(Libro libroActualizado) throws LibroExcepcion {
 
         List<Libro> libros = cargarLibros();
 
@@ -112,7 +119,7 @@ public class LibroDAOJSON implements LibroDAO {
     }
 
     @Override
-    public boolean eliminar(String isbn) {
+    public boolean eliminar(String isbn) throws LibroExcepcion {
 
         List<Libro> libros = cargarLibros();
 
