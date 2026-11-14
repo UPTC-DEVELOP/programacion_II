@@ -28,3 +28,5 @@ El archivo `database.properties` es privado y está excluido de Git.
 En Eclipse, ejecutar `util.aplicacion.Main` como **Java Application**, utilizando `caso-estudio/` como directorio de trabajo.
 
 [![Volver al README](imagenes/volver-readme.svg)](../../README.md)
+
+[🏠 Inicio Grupo 14](https://github.com/UPTC-DEVELOP/programacion_II/tree/feature/grupo14)
