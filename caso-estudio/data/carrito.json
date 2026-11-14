@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "idProducto": "123-456",
+    "titulo": "Cien años de soledad",
+    "cantidad": 7,
+    "precioUnitario": 50000.0
+  },
+  {
+    "idProducto": "978-057",
+    "titulo": "Don Quijote de la Mancha",
+    "cantidad": 9,
+    "precioUnitario": 72000.0
+  },
+  {
+    "idProducto": "978-068",
+    "titulo": "1984",
+    "cantidad": 18,
+    "precioUnitario": 42000.0
+  }
+]

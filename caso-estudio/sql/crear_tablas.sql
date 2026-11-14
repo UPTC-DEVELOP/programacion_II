@@ -1,27 +1,8 @@
-CREATE DATABASE IF NOT EXISTS caso_estudio;
 USE caso_estudio;
 
-CREATE TABLE IF NOT EXISTS libros (
-    isbn VARCHAR(20) PRIMARY KEY,
-    titulo_libro VARCHAR(150) NOT NULL,
-    autor VARCHAR(100) NOT NULL,
-    fecha_publicacion INT NOT NULL,
-    categoria VARCHAR(30) NOT NULL,
-    editorial VARCHAR(100),
-    paginas INT NOT NULL,
-    precio_venta DECIMAL(10,2) NOT NULL,
-    cantidad_disponible INT NOT NULL DEFAULT 0,
-    formato VARCHAR(30) NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS clientes (
-    cedula       VARCHAR(20)  NOT NULL,
-    nombre       VARCHAR(60)  NOT NULL,
-    apellido     VARCHAR(60)  NOT NULL,
-    telefono     VARCHAR(20),
-    correo       VARCHAR(100) NOT NULL,
-    direccion    VARCHAR(150),
-    tipo_cliente VARCHAR(20)  NOT NULL DEFAULT 'No Premium',
-    PRIMARY KEY (cedula),
-    UNIQUE KEY uq_clientes_correo (correo)
+CREATE TABLE IF NOT EXISTS carrito (
+    id_producto VARCHAR(50) PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    cantidad INT NOT NULL,
+    precio_unitario DOUBLE NOT NULL
 );
