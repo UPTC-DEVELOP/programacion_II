@@ -88,6 +88,9 @@ public class PantallaRegistro extends JPanel implements Refrescable {
         } catch (IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Datos inválidos", JOptionPane.ERROR_MESSAGE);
             return;
+        } catch (IllegalStateException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error al guardar", JOptionPane.ERROR_MESSAGE);
+            return;
         }
         JOptionPane.showMessageDialog(this, "Registro exitoso. Ya puedes iniciar sesión.",
                 "Cuenta creada", JOptionPane.INFORMATION_MESSAGE);

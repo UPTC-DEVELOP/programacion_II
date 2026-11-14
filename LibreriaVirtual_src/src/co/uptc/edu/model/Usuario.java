@@ -40,6 +40,29 @@ public class Usuario {
         cambiarContrasena(contrasena);
     }
 
+    private Usuario() {}
+
+    /**
+     * Reconstruye un usuario que ya estaba guardado (archivo JSON o base de datos)
+     * a partir de sus datos y del hash de su contraseña.
+     */
+    public static Usuario reconstruir(String nombre, String apellido, String correo, String direccion,
+                                      String telefono, Rol tipoUsuario, byte[] salt, byte[] hashContrasena) {
+        if (salt == null || hashContrasena == null) {
+            throw new IllegalArgumentException("El usuario guardado no tiene contraseña.");
+        }
+        Usuario u = new Usuario();
+        u.nombre = ValidadorUsuario.nombre(nombre, "El nombre");
+        u.apellido = ValidadorUsuario.nombre(apellido, "El apellido");
+        u.correo = ValidadorUsuario.correo(correo);
+        u.direccion = ValidadorUsuario.direccion(direccion);
+        u.telefono = ValidadorUsuario.telefono(telefono);
+        u.tipoUsuario = ValidadorUsuario.tipoUsuario(tipoUsuario);
+        u.salt = salt.clone();
+        u.hashContrasena = hashContrasena.clone();
+        return u;
+    }
+
     // ---------- Consulta ----------
     public String getNombre() { return nombre; }
     public String getApellido() { return apellido; }
@@ -48,6 +71,10 @@ public class Usuario {
     public String getTelefono() { return telefono; }
     public Rol getTipoUsuario() { return tipoUsuario; }
     public String getNombreCompleto() { return nombre + " " + apellido; }
+
+    // Solo para la capa de persistencia: se entregan copias para que no se puedan alterar.
+    public byte[] getSalt() { return salt.clone(); }
+    public byte[] getHashContrasena() { return hashContrasena.clone(); }
 
     // ---------- Comportamiento del diagrama ----------
 

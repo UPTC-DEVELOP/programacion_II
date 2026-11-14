@@ -100,11 +100,16 @@ public class PantallaPerfil extends JPanel implements Refrescable {
             return;
         }
         try {
-            tienda.getGestionUsuarios().actualizarPerfil(u.getCorreo(), txtNombre.getText(), txtApellido.getText(),
+            Usuario actualizado = tienda.getGestionUsuarios().actualizarPerfil(u.getCorreo(),
+                    txtNombre.getText(), txtApellido.getText(),
                     txtCorreo.getText(), txtDireccion.getText(), txtTelefono.getText(),
                     new String(txtPassActual.getPassword()), nueva);
+            tienda.actualizarUsuarioSesion(actualizado);
         } catch (IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Datos inválidos", JOptionPane.ERROR_MESSAGE);
+            return;
+        } catch (IllegalStateException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error al guardar", JOptionPane.ERROR_MESSAGE);
             return;
         }
         refrescar();

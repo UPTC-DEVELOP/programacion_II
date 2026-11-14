@@ -64,7 +64,15 @@ public class PantallaLogin extends JPanel implements Refrescable {
         btnRegistro.addActionListener(e -> nav.irA(Vista.REGISTRO));
         java.awt.event.ActionListener entrar = e -> {
             String contrasena = new String(txtPass.getPassword());
-            if (tienda.iniciarSesion(txtCorreo.getText(), contrasena)) {
+            boolean sesionIniciada;
+            try {
+                sesionIniciada = tienda.iniciarSesion(txtCorreo.getText(), contrasena);
+            } catch (IllegalStateException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(),
+                        "No se pudo iniciar sesión", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (sesionIniciada) {
                 txtPass.setText("");
                 nav.irA(tienda.getRolActual() == Rol.ADMIN ? Vista.ADMIN_HOME : Vista.USUARIO_HOME);
             } else {

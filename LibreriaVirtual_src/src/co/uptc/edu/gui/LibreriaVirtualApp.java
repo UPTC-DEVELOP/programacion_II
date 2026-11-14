@@ -1,5 +1,6 @@
 package co.uptc.edu.gui;
 
+import co.uptc.edu.config.TiendaConfig;
 import co.uptc.edu.pantallas.*;
 import co.uptc.edu.model.Tienda;
 import co.uptc.edu.pantallas.PantallaInventario;
@@ -15,7 +16,7 @@ public class LibreriaVirtualApp extends JFrame implements Navegador {
     private final CardLayout cardLayout = new CardLayout();
     private final JPanel mainPanel = new JPanel(cardLayout);
     private final Map<Vista, JPanel> pantallas = new EnumMap<>(Vista.class);
-    private final Tienda tienda = new Tienda();
+    private final Tienda tienda = new TiendaConfig().getTienda();
 
     public LibreriaVirtualApp() {
         setTitle("Sistemas de Gestión - Librería Virtual 'BiblioTech'");

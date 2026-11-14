@@ -178,7 +178,12 @@ public class PantallaCarrito extends JPanel implements Refrescable {
             return;
         }
 
-        tienda.finalizarCompra();
+        try {
+            tienda.finalizarCompra();
+        } catch (IllegalStateException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "No se pudo finalizar la compra", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         JOptionPane.showMessageDialog(this,
                 "🎉 ¡Gracias por tu compra simulada!\nSe ha generado el recibo digital a nombre de: " + tienda.getUsuarioActual(),

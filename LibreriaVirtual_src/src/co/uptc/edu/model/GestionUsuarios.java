@@ -1,20 +1,30 @@
 package co.uptc.edu.model;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import co.uptc.edu.interfaces.IGestionUsuario;
+
 /**
  * CRUD y reglas de negocio de los usuarios (RF-02, RF-04, RF-11).
- * No depende de Swing. Todos los errores de validación se informan con IllegalArgumentException.
+ * No depende de Swing ni de dónde se guardan los datos: la persistencia se recibe
+ * por el constructor (memoria, archivo JSON o base de datos).
+ * Los errores de validación se informan con IllegalArgumentException.
  */
 public class GestionUsuarios {
 
-    private final List<Usuario> usuarios = new ArrayList<>();
+    private final IGestionUsuario persistencia;
+
+    public GestionUsuarios(IGestionUsuario persistencia) {
+        if (persistencia == null) {
+            throw new IllegalArgumentException("La persistencia de usuarios es obligatoria.");
+        }
+        this.persistencia = persistencia;
+    }
 
     // ---------- Read ----------
     public List<Usuario> listarUsuarios() {
-        return Collections.unmodifiableList(usuarios);
+        return Collections.unmodifiableList(persistencia.listar());
     }
 
     /** Busca por correo sin distinguir mayúsculas. Devuelve null si no existe. */
@@ -22,18 +32,12 @@ public class GestionUsuarios {
         if (correo == null) {
             return null;
         }
-        String buscado = correo.trim().toLowerCase();
-        for (Usuario u : usuarios) {
-            if (u.getCorreo().equals(buscado)) {
-                return u;
-            }
-        }
-        return null;
+        return persistencia.buscar(correo.trim().toLowerCase());
     }
 
     public int contarAdministradores() {
         int total = 0;
-        for (Usuario u : usuarios) {
+        for (Usuario u : persistencia.listar()) {
             if (u.getTipoUsuario() == Rol.ADMIN) {
                 total++;
             }
@@ -50,7 +54,7 @@ public class GestionUsuarios {
         if (buscarPorCorreo(usuario.getCorreo()) != null) {
             throw new IllegalArgumentException("Ya existe un usuario registrado con el correo " + usuario.getCorreo() + ".");
         }
-        usuarios.add(usuario);
+        persistencia.guardar(usuario);
     }
 
     /** Registro público (RF-02): siempre crea un usuario con rol Cliente. */
@@ -69,6 +73,7 @@ public class GestionUsuarios {
     public Usuario actualizarUsuario(String correoActual, String nombre, String apellido, String correoNuevo,
                                      String direccion, String telefono, Rol tipoUsuario, String nuevaContrasena) {
         Usuario u = requerir(correoActual);
+        String correoAnterior = u.getCorreo();
         String correoValidado = validarCorreoDisponible(u, correoNuevo);
         ValidadorUsuario.tipoUsuario(tipoUsuario);
         if (u.getTipoUsuario() == Rol.ADMIN && tipoUsuario != Rol.ADMIN && contarAdministradores() <= 1) {
@@ -84,6 +89,7 @@ public class GestionUsuarios {
         if (cambiaClave) {
             u.cambiarContrasena(nuevaContrasena);
         }
+        persistencia.actualizar(correoAnterior, u);
         return u;
     }
 
@@ -95,6 +101,7 @@ public class GestionUsuarios {
                                     String direccion, String telefono,
                                     String contrasenaActual, String nuevaContrasena) {
         Usuario u = requerir(correoActual);
+        String correoAnterior = u.getCorreo();
         String correoValidado = validarCorreoDisponible(u, correoNuevo);
         boolean cambiaClave = nuevaContrasena != null && !nuevaContrasena.isEmpty();
         if (cambiaClave) {
@@ -108,6 +115,7 @@ public class GestionUsuarios {
         if (cambiaClave) {
             u.cambiarContrasena(nuevaContrasena);
         }
+        persistencia.actualizar(correoAnterior, u);
         return u;
     }
 
@@ -120,7 +128,7 @@ public class GestionUsuarios {
         if (u.getTipoUsuario() == Rol.ADMIN && contarAdministradores() <= 1) {
             throw new IllegalArgumentException("No se puede eliminar al único administrador del sistema.");
         }
-        usuarios.remove(u);
+        persistencia.eliminar(u.getCorreo());
     }
 
     // ---------- Autenticación (RF-01) ----------
@@ -131,8 +139,11 @@ public class GestionUsuarios {
     }
 
     // ---------- Datos iniciales ----------
+    /** Crea las cuentas de demostración solo cuando todavía no hay ningún usuario guardado. */
     public void cargarDatosSimulados() {
-        usuarios.clear();
+        if (!persistencia.listar().isEmpty()) {
+            return;
+        }
         agregarUsuario(new Usuario("Administrador", "Sistema", "admin@bibliotech.com",
                 "Calle 1 # 1-01, Tunja", "3000000001", Rol.ADMIN, "Admin123"));
         agregarUsuario(new Usuario("Cliente", "Demo", "cliente@bibliotech.com",
@@ -151,7 +162,7 @@ public class GestionUsuarios {
     private String validarCorreoDisponible(Usuario actual, String correoNuevo) {
         String correo = ValidadorUsuario.correo(correoNuevo);
         Usuario otro = buscarPorCorreo(correo);
-        if (otro != null && otro != actual) {
+        if (otro != null && !otro.getCorreo().equals(actual.getCorreo())) {
             throw new IllegalArgumentException("Ya existe un usuario registrado con el correo " + correo + ".");
         }
         return correo;

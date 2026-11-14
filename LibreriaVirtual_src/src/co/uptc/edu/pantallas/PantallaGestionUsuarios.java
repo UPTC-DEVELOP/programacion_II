@@ -107,12 +107,21 @@ public class PantallaGestionUsuarios extends JPanel implements Refrescable {
                         txtCorreo.getText(), txtDireccion.getText(), txtTelefono.getText(), rol, pass));
                 mensaje("Usuario creado con éxito.");
             } else {
-                tienda.getGestionUsuarios().actualizarUsuario(correoEditando, txtNombre.getText(), txtApellido.getText(),
+                Usuario sesion = tienda.getUsuarioSesion();
+                boolean editaSuCuenta = sesion != null && sesion.getCorreo().equals(correoEditando);
+                Usuario actualizado = tienda.getGestionUsuarios().actualizarUsuario(correoEditando,
+                        txtNombre.getText(), txtApellido.getText(),
                         txtCorreo.getText(), txtDireccion.getText(), txtTelefono.getText(), rol, pass);
+                if (editaSuCuenta) {
+                    tienda.actualizarUsuarioSesion(actualizado);
+                }
                 mensaje("Usuario actualizado con éxito.");
             }
         } catch (IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Datos inválidos", JOptionPane.ERROR_MESSAGE);
+            return;
+        } catch (IllegalStateException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error al guardar", JOptionPane.ERROR_MESSAGE);
             return;
         }
         refrescar();
@@ -131,7 +140,7 @@ public class PantallaGestionUsuarios extends JPanel implements Refrescable {
         try {
             Usuario sesion = tienda.getUsuarioSesion();
             tienda.getGestionUsuarios().eliminarUsuario(correoEditando, sesion == null ? null : sesion.getCorreo());
-        } catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException | IllegalStateException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "No se pudo eliminar", JOptionPane.ERROR_MESSAGE);
             return;
         }
