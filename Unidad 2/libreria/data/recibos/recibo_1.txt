@@ -1,0 +1,12 @@
+TIENDA VIRTUAL DE LIBROS
+Pedido #1
+Fecha: 2026-11-11 15:54:42
+Cliente: carlos@correo.com
+Pago: Efectivo
+
+El amor en los tiempos del cólera | 1 x $ 45.000 | Subtotal: $ 45.000 | IVA: $ 2.250
+
+Subtotal: $ 45.000
+Impuestos: $ 2.250
+Descuento: $ 4.725
+TOTAL: $ 42.525
