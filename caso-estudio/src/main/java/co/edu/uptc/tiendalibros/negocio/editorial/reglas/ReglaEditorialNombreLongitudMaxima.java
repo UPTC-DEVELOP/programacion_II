@@ -15,6 +15,9 @@ import co.edu.uptc.tiendalibros.negocio.excepciones.ViolacionReglaNegocioExcepti
 /// 
 public class ReglaEditorialNombreLongitudMaxima implements IReglaValidacion<Editorial> {
   
+  /// Longitud máxima del nombre de la editorial.
+  public static final int LONGITUD_MAXIMA_NOMBRE = 60;
+  
   /// Crea una nueva regla de nombre de editorial con la longitud máxima.
   public ReglaEditorialNombreLongitudMaxima() {
     
@@ -25,7 +28,7 @@ public class ReglaEditorialNombreLongitudMaxima implements IReglaValidacion<Edit
     // solo se cumple si el nombre de la editorial no excede la longitud máxima.
     return (editorial.getNombre() == null) || (editorial.getNombre()
       .trim()
-      .length() <= Editorial.LONGITUD_MAXIMA_NOMBRE);
+      .length() <= ReglaEditorialNombreLongitudMaxima.LONGITUD_MAXIMA_NOMBRE);
   }
   
   @Override
@@ -38,7 +41,10 @@ public class ReglaEditorialNombreLongitudMaxima implements IReglaValidacion<Edit
     // aquí el elemento viola la regla
     
     String mensajeError = String
-      .format("El nombre de la editorial no puede tener más de %d caracteres", Editorial.LONGITUD_MAXIMA_NOMBRE);
+      .format(
+        "El nombre de la editorial no puede tener más de %d caracteres",
+        ReglaEditorialNombreLongitudMaxima.LONGITUD_MAXIMA_NOMBRE
+      );
     
     // reportar el error (atributo, mensajeError)
     errores.agregarAtributo("nombre", mensajeError);
