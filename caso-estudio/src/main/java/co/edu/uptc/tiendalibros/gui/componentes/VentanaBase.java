@@ -20,16 +20,12 @@ public abstract class VentanaBase extends JFrame {
   /// 
   /// @param titulo Título que se desea poner en la ventana.
   public VentanaBase(String titulo) {
-    super(titulo, obtenerConfiguracion());
-
+    GraphicsConfiguration gc = MouseInfo.getPointerInfo()
+      .getDevice()
+      .getDefaultConfiguration();
+    super(titulo, gc);
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-}
-
-private static GraphicsConfiguration obtenerConfiguracion() {
-    return MouseInfo.getPointerInfo()
-        .getDevice()
-        .getDefaultConfiguration();
-}
+  }
   
   /// Inicializa todos los componentes de este componente.
   protected abstract void inicializarComponente();

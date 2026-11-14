@@ -110,28 +110,26 @@ public class Dinero implements Comparable<Dinero> {
   public Dinero(
     String cantidad,
     Currency moneda
-) {
-    this(convertirCantidad(cantidad), moneda);
-}
-
-private static BigDecimal convertirCantidad(String cantidad) {
+  ) {
+    // verificar que el texto cantidad no sea nulo.
     if (cantidad == null) {
-        throw new IllegalArgumentException(
-            "Dinero: el texto de cantidad no puede ser nulo."
-        );
+      throw new IllegalArgumentException("Dinero: el texto de cantidad no puede ser nulo.");
     }
-
+    
+    // primero intentar crear un número BigDecimal a partir de la representación textual.
+    BigDecimal laCantidad = BigDecimal.ZERO;
     try {
-        return new BigDecimal(cantidad);
+      laCantidad = new BigDecimal(cantidad);
     } catch (NumberFormatException excepcion) {
-        throw new NumberFormatException(
-            String.format(
-                "Dinero: el valor de cantidad '%s' debe ser una representación válida de BigDecimal.",
-                cantidad
-            )
-        );
+      throw new NumberFormatException(
+        String.format(
+          "Dinero: el valor de cantidad '%s' debe ser un representación válida de BigDecimal.",
+          cantidad
+        )
+      );
     }
-}
+    this(laCantidad, moneda);
+  }
   
   /// Obtiene la cantidad de dinero.
   ///
