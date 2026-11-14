@@ -30,5 +30,21 @@
     "contrasenia": "12312312",
     "fechaRegistro": "2026-11-13 22:42:16.486",
     "intentosFallidos": 0
+  },
+  {
+    "idCliente": 3,
+    "tipoCliente": "PREMIUM",
+    "primerNombre": "C",
+    "otrosNombres": "",
+    "primerApellido": "C",
+    "otrosApellidos": "",
+    "tipoIdentificacion": "CC",
+    "identificacion": "199",
+    "correoElectronico": "c@gmail.com",
+    "celular": "",
+    "direccion": "",
+    "contrasenia": "12312312",
+    "fechaRegistro": "2026-11-14 09:30:29.259",
+    "intentosFallidos": 0
   }
 ]

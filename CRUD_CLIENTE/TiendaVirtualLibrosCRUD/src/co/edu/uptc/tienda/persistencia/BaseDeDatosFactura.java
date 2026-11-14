@@ -21,7 +21,6 @@ public class BaseDeDatosFactura {
 
 		try (Connection conn = conexion.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-			// Recorremos los ítems (libros) que están en la factura
 			for (ItemCarrito item : factura.getItems()) {
 				pstmt.setInt(1, factura.getNumero());
 				pstmt.setTimestamp(2, Timestamp.valueOf(factura.getFecha()));
@@ -37,10 +36,10 @@ public class BaseDeDatosFactura {
 				pstmt.setInt(11, item.getCantidad());
 				pstmt.setDouble(12, item.getLibro().getPrecioFinal());
 
-				pstmt.addBatch(); // Agregamos a lote para eficiencia
+				pstmt.addBatch();
 			}
 
-			pstmt.executeBatch(); // Ejecuta todas las inserciones juntas
+			pstmt.executeBatch();
 			return true;
 
 		} catch (SQLException e) {
