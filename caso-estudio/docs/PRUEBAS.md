@@ -40,4 +40,4 @@ Cálculo de cantidades y total en Swing; en una prueba posterior se activó `car
 
 La separación de contenido al iniciar sesión con dos usuarios fue reportada tras activar JDBC; las filas SQL respaldan el uso de identificadores independientes. Las capturas no sustituyen una prueba automatizada de extremo a extremo.
 
-[![Volver al README](imagenes/volver-readme.svg)](../README.md)
+[![Volver al README](imagenes/volver-readme.svg)](../../README.md)

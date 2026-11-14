@@ -60,7 +60,7 @@ SHOW GRANTS FOR 'tienda_app'@'127.0.0.1';
 EXIT;
 ```
 
-**No ejecutes dos veces la importación por obligación:** el esquema usa `IF NOT EXISTS`. Si ya ejecutaste `sudo mariadb < sql/esquema.sql` en Linux, omite `SOURCE sql/esquema.sql;` en esa misma configuración. Para `SOURCE` en Windows, si la ruta relativa no funciona, usa una ruta absoluta con `/`, por ejemplo `SOURCE C:/proyectos/TiendaVirtual/sql/esquema.sql;`.
+**No ejecutes dos veces la importación por obligación:** el esquema usa `IF NOT EXISTS`. Si ya ejecutaste `sudo mariadb < sql/esquema.sql` en Linux, omite `SOURCE sql/esquema.sql;` en esa misma configuración. Para `SOURCE` en Windows, si la ruta relativa no funciona, usa una ruta absoluta con `/`, por ejemplo `SOURCE C:/proyectos/caso-estudio/sql/esquema.sql;`.
 
 Si `tienda_app` ya existía con otra contraseña, `CREATE USER IF NOT EXISTS` **no la cambia**. En ese caso, establece la nueva contraseña desde la sesión administradora:
 
@@ -285,10 +285,10 @@ DROP USER IF EXISTS 'tienda_app'@'localhost';
 
 ## 9. Ubicación de los archivos y documentación
 
-- `TiendaVirtual/pom.xml`: dependencias y compilación Java 17.
-- `TiendaVirtual/sql/esquema.sql`: definición de base y tablas.
-- `TiendaVirtual/config/database.properties.example`: plantilla pública de configuración.
-- `TiendaVirtual/config/database.properties`: configuración **privada** de cada equipo.
+- `caso-estudio/pom.xml`: dependencias y compilación Java 17.
+- `caso-estudio/sql/esquema.sql`: definición de base y tablas.
+- `caso-estudio/config/database.properties.example`: plantilla pública de configuración.
+- `caso-estudio/config/database.properties`: configuración **privada** de cada equipo.
 - `docs/PRUEBAS.md`: evidencias y capturas de la ejecución.
 
-[Volver al README principal](../README.md)
+[Volver al README principal](../../README.md)

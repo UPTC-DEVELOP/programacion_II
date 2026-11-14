@@ -11,18 +11,18 @@ Proyecto de Programación II desarrollado con Java 17, Swing, Maven y MariaDB.
 
 ## Ejecución
 
-Desde `TiendaVirtual/`:
+Desde `caso-estudio/`:
 
 ```bash
 mvn clean verify
 ```
 
-En Eclipse, importar `TiendaVirtual/` mediante **Maven > Existing Maven Projects** y ejecutar la clase `util.aplicacion.Main`.
+En Eclipse, importar `caso-estudio/` mediante **Maven > Existing Maven Projects** y ejecutar la clase `util.aplicacion.Main`.
 
-La configuración de MariaDB se realiza mediante `TiendaVirtual/config/database.properties.example`. Para que cada usuario tenga un carrito independiente, utilizar `carrito.storage=jdbc`.
+La configuración de MariaDB se realiza mediante `caso-estudio/config/database.properties.example`. Para que cada usuario tenga un carrito independiente, utilizar `carrito.storage=jdbc`.
 
 ## Documentación
 
-- [Instalación](docs/INSTALACION.md)
-- [Pruebas y evidencias](docs/PRUEBAS.md)
-- [Comandos de MariaDB, JDBC y pruebas](docs/COMANDOS_MARIADB_JDBC_Y_PRUEBAS.md)
+- [Instalación](caso-estudio/docs/INSTALACION.md)
+- [Pruebas y evidencias](caso-estudio/docs/PRUEBAS.md)
+- [Comandos de MariaDB, JDBC y pruebas](caso-estudio/docs/COMANDOS_MARIADB_JDBC_Y_PRUEBAS.md)
