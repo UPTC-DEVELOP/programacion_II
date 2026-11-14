@@ -42,6 +42,19 @@ CREATE TABLE IF NOT EXISTS editorial (
     CHECK (CHAR_LENGTH(TRIM(nombre)) > 0)
 );
 
+--         Crear la tabla Categoria
+
+CREATE TABLE IF NOT EXISTS categoria (
+  id_categoria BIGINT NOT NULL AUTO_INCREMENT,
+  nombre VARCHAR(60) NOT NULL,
+  descripcion VARCHAR(255) NOT NULL,
+  codigo VARCHAR(20) NOT NULL,
+
+  PRIMARY KEY (id_categoria),
+
+  CONSTRAINT uq_categoria_codigo UNIQUE (codigo),
+  CONSTRAINT uq_categoria_nombre UNIQUE (nombre)
+);
 
 --         Crear la tabla Libro
 
@@ -61,6 +74,12 @@ CREATE TABLE IF NOT EXISTS libro (
   CONSTRAINT uq_libro_isbn_unico UNIQUE (isbn),
 
   -- restricciones de clave foránea
+  CONSTRAINT fk_libro_id_categoria
+    FOREIGN KEY (id_categoria)
+    REFERENCES categoria (id_categoria)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+    
   CONSTRAINT fk_libro_id_editorial 
     FOREIGN KEY (id_editorial)
     REFERENCES editorial (id_editorial) 
