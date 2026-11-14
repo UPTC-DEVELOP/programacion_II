@@ -52,6 +52,6 @@ public class ControladorVentanaPrincipal extends ControladorBase {
     getEnrutador().registrarEvento(ControladorVentanaPrincipal.MOSTRAR_AVISO, (aviso) -> mostrarAviso(aviso));
     
     // asociar el evento de cerrar un aviso
-    getEnrutador().registrarEvento(ControladorVentanaPrincipal.CERRAR_AVISO, (_) -> cerrarAviso());
+    getEnrutador().registrarEvento(ControladorVentanaPrincipal.CERRAR_AVISO, (evento) -> cerrarAviso());
   }
 }

@@ -6,8 +6,7 @@
 -- Colación es_0900_ai_ci: insensible a tildes y mayúsculas
 CREATE DATABASE IF NOT EXISTS tienda_libros_gr9
   CHARACTER SET utf8mb4
-  COLLATE utf8mb4_es_0900_ai_ci;
-
+COLLATE utf8mb4_spanish_ci;
 
 /********* 2. CREAR LOS USUARIOS *********/
 

@@ -222,7 +222,7 @@ public class ControladorLibro extends ControladorBase {
     switch (respuesta) {
       // si la respuesta devuelve el libro eliminado, entonces se puede mostrar el título del
       // libro eliminado
-      case RespuestaExitosa<Libro> _       -> {
+      case RespuestaExitosa<Libro> exitosa -> {
         String titulo = respuesta.getElemento()
           .isPresent()
             ? respuesta.getElemento()
