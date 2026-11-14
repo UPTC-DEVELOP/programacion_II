@@ -12,11 +12,6 @@ import co.uptc.edu.persistencia.LocalCarrito;
 import co.uptc.edu.persistencia.LocalCompra;
 import co.uptc.edu.persistencia.LocalLibro;
 
-/**
- * Arma la tienda completa: usuarios, inventario de libros, carrito e historial de compras.
- * Con MariaDB disponible todo queda en la base de datos; sin conexión, la aplicación
- * funciona en memoria (y los usuarios en el archivo JSON).
- */
 public class TiendaConfig {
 
     private final Tienda tienda;

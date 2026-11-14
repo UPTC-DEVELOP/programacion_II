@@ -41,7 +41,7 @@ public class ValidarLibro {
         this(CATEGORIAS_POR_DEFECTO);
     }
 
-    /** Permite registrar otro conjunto de categorías sin modificar esta clase (OCP). */
+    //Permite registrar otro conjunto de categorías sin modificar esta clase (OCP)
     public ValidarLibro(Collection<String> categorias) {
         this.categorias = Collections.unmodifiableList(new ArrayList<>(categorias));
     }

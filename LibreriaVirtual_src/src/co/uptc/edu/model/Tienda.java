@@ -9,10 +9,6 @@ import co.uptc.edu.interfaces.IGestionCarrito;
 import co.uptc.edu.interfaces.IGestionCompra;
 import co.uptc.edu.interfaces.IGestionLibro;
 
-/**
- * Lógica de negocio y estado compartido: sesión, inventario y carrito.
- * No depende de Swing, por lo que las pantallas solo se encargan de mostrar datos.
- */
 public class Tienda {
 
     public enum ResultadoCarrito { AGREGADO, CANTIDAD_INCREMENTADA, SIN_STOCK }
@@ -25,7 +21,7 @@ public class Tienda {
     private final IGestionCarrito persistenciaCarrito;
     private Usuario usuarioSesion;
 
-    /** Recibe la gestión de usuarios y la persistencia de libros, compras y carrito ya configuradas. */
+    //Recibe la gestión de usuarios y la persistencia de libros, compras y carrito ya configuradas
     public Tienda(GestionUsuarios gestionUsuarios, IGestionLibro persistenciaLibros,
                   IGestionCompra persistenciaCompras, IGestionCarrito persistenciaCarrito) {
         this.gestionUsuarios = gestionUsuarios;
@@ -34,10 +30,9 @@ public class Tienda {
         this.persistenciaCarrito = persistenciaCarrito;
     }
 
-    // ---------- Sesión y usuarios ----------
     public GestionUsuarios getGestionUsuarios() { return gestionUsuarios; }
 
-    /** Inicia sesión con correo y contraseña (RF-01). Devuelve false si las credenciales no son válidas. */
+    // Inicia sesión con correo y contraseña (RF-01). Devuelve false si las credenciales no son válidas
     public boolean iniciarSesion(String correo, String contrasena) {
         Usuario u = gestionUsuarios.autenticar(correo, contrasena);
         usuarioSesion = u;
@@ -47,13 +42,13 @@ public class Tienda {
         return u != null;
     }
 
-    /** Al salir se limpia el carrito en pantalla; el carrito guardado del usuario se conserva. */
+    // Al salir se limpia el carrito en pantalla; el carrito guardado del usuario se conserva
     public void cerrarSesion() {
         usuarioSesion = null;
         carrito.vaciarCarrito();
     }
 
-    /** Mantiene al día los datos del usuario en sesión después de editarlos. */
+    // Mantiene al día los datos del usuario en sesión después de editarlos
     public void actualizarUsuarioSesion(Usuario usuario) {
         if (usuarioSesion != null && usuario != null) {
             usuarioSesion = usuario;
@@ -64,10 +59,9 @@ public class Tienda {
     public String getUsuarioActual() { return usuarioSesion == null ? "" : usuarioSesion.getNombreCompleto(); }
     public Rol getRolActual() { return usuarioSesion == null ? Rol.INVITADO : usuarioSesion.getTipoUsuario(); }
 
-    // ---------- Inventario ----------
     public List<Libro> getInventario() { return Collections.unmodifiableList(inventario); }
 
-    /** Guarda el libro en la persistencia y lo agrega al inventario. */
+    //Guarda el libro en la persistencia y lo agrega al inventario. 
     public void agregarLibro(Libro libro) {
         persistenciaLibros.guardar(libro);
         inventario.add(libro);
@@ -91,7 +85,7 @@ public class Tienda {
         agregarLibro(new Libro("9780000000106", "Don Quijote de la Mancha", "Miguel de Cervantes","1605", "Clásico", "Francisco de Robles", 863, 60000, 7, "Digital"));
     }
 
-    // ---------- Carrito (RF-05) ----------
+
     public CarritoDeCompras getCarritoDeCompras() { return carrito; }
 
     public List<ItemCarrito> getCarrito() { return carrito.getItems(); }
@@ -133,14 +127,14 @@ public class Tienda {
 
     public double getIvaCarrito() { return carrito.calcularImpuestoTotal(); }
 
-    /** Total a pagar: subtotal + IVA. */
+    //Total a pagar: subtotal + IVA
     public double getTotalCarrito() { return carrito.calcularTotalPagar(); }
 
     public void finalizarCompra() {
         if (carrito.estaVacio()) {
             return;
         }
-        // Primero se registra la compra: si falla, no se descuenta nada.
+        // Primero se registra la compra: si falla, no se descuenta nada
         persistenciaCompras.registrar(usuarioSesion, carrito.getItems(),
                 carrito.calcularSubtotal(), carrito.calcularImpuestoTotal(), carrito.calcularTotalPagar());
         for (ItemCarrito item : carrito.getItems()) {
@@ -152,8 +146,7 @@ public class Tienda {
         guardarCarrito();
     }
 
-    // ---------- Carrito guardado por usuario ----------
-    /** Guarda el carrito del usuario en sesión. Si falla, el carrito sigue funcionando en pantalla. */
+    //Guarda el carrito del usuario en sesión. Si falla, el carrito sigue funcionando en pantalla
     private void guardarCarrito() {
         if (usuarioSesion == null) {
             return;
@@ -165,7 +158,7 @@ public class Tienda {
         }
     }
 
-    /** Recupera el carrito que el usuario dejó en su sesión anterior, sin superar el stock actual. */
+    //Recupera el carrito que el usuario dejó en su sesión anterior, sin superar el stock actual
     private void cargarCarritoGuardado() {
         carrito.vaciarCarrito();
         Map<String, Integer> guardado;

@@ -6,7 +6,7 @@ import co.uptc.edu.interfaces.IGestionCompra;
 import co.uptc.edu.model.ItemCarrito;
 import co.uptc.edu.model.Usuario;
 
-/** Sin base de datos no se conserva historial: la compra solo descuenta el stock en memoria. */
+// Sin base de datos no se conserva historial: la compra solo descuenta el stock en memoria
 public class LocalCompra implements IGestionCompra {
 
     @Override

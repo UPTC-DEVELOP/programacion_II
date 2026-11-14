@@ -8,7 +8,7 @@ import java.util.Map;
 import co.uptc.edu.interfaces.IGestionLibro;
 import co.uptc.edu.model.Libro;
 
-/** Inventario en memoria: los libros se pierden al cerrar la aplicación. */
+// Inventario en memoria: los libros se pierden al cerrar la aplicación
 public class LocalLibro implements IGestionLibro {
 
     private final Map<String, Libro> libros = new LinkedHashMap<>();

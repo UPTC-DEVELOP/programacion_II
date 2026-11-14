@@ -8,7 +8,7 @@ import java.util.Map;
 import co.uptc.edu.interfaces.IGestionCarrito;
 import co.uptc.edu.model.ItemCarrito;
 
-/** Carritos en memoria: se conservan mientras la aplicación esté abierta. */
+// Carritos en memoria: se conservan mientras la aplicación esté abierta
 public class LocalCarrito implements IGestionCarrito {
 
     private final Map<String, Map<String, Integer>> carritos = new HashMap<>();

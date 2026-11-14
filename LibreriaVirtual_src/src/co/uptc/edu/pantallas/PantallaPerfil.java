@@ -12,7 +12,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-/** Actualización de datos personales del usuario en sesión (RF-11). */
+//Actualización de datos personales del usuario en sesión (RF-11)
 public class PantallaPerfil extends JPanel implements Refrescable {
 
     private final Tienda tienda;

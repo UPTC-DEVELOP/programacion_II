@@ -10,10 +10,6 @@ import java.util.Base64;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
-/**
- * Usuario del sistema (cliente o administrador).
- * Valida sus datos al construirse y al modificarse; la contraseña nunca se guarda en texto plano.
- */
 public class Usuario {
 
     private static final int ITERACIONES = 65536;
@@ -42,10 +38,8 @@ public class Usuario {
 
     private Usuario() {}
 
-    /**
-     * Reconstruye un usuario que ya estaba guardado (archivo JSON o base de datos)
-     * a partir de sus datos y del hash de su contraseña.
-     */
+    //Reconstruye un usuario que ya estaba guardado (archivo JSON o base de datos) a partir de sus datos y del hash de su contraseña.
+     
     public static Usuario reconstruir(String nombre, String apellido, String correo, String direccion,
                                       String telefono, Rol tipoUsuario, byte[] salt, byte[] hashContrasena) {
         if (salt == null || hashContrasena == null) {
@@ -63,7 +57,6 @@ public class Usuario {
         return u;
     }
 
-    // ---------- Consulta ----------
     public String getNombre() { return nombre; }
     public String getApellido() { return apellido; }
     public String getCorreo() { return correo; }
@@ -72,13 +65,11 @@ public class Usuario {
     public Rol getTipoUsuario() { return tipoUsuario; }
     public String getNombreCompleto() { return nombre + " " + apellido; }
 
-    // Solo para la capa de persistencia: se entregan copias para que no se puedan alterar.
     public byte[] getSalt() { return salt.clone(); }
     public byte[] getHashContrasena() { return hashContrasena.clone(); }
 
-    // ---------- Comportamiento del diagrama ----------
 
-    /** Verifica la contraseña ingresada contra la almacenada. */
+    // Verifica la contraseña ingresada contra la almacenada
     public boolean iniciarSesion(String contrasena) {
         if (contrasena == null) {
             return false;
@@ -86,7 +77,7 @@ public class Usuario {
         return MessageDigest.isEqual(hashContrasena, calcularHash(contrasena, salt));
     }
 
-    /** Actualiza los datos personales (RF-11). Si algún dato es inválido no se modifica nada. */
+    //Actualiza los datos personales (RF-11). Si algún dato es inválido no se modifica nada
     public void actualizarDatos(String nombre, String apellido, String direccion, String telefono) {
         String n = ValidadorUsuario.nombre(nombre, "El nombre");
         String a = ValidadorUsuario.nombre(apellido, "El apellido");
@@ -98,7 +89,7 @@ public class Usuario {
         this.telefono = t;
     }
 
-    /** Valida y guarda una contraseña nueva (solo se almacena su hash con sal). */
+    //Valida y guarda una contraseña nueva (solo se almacena su hash con sal)
     public void cambiarContrasena(String nuevaContrasena) {
         ValidadorUsuario.contrasena(nuevaContrasena);
         byte[] nuevaSal = new byte[16];
@@ -107,7 +98,7 @@ public class Usuario {
         this.salt = nuevaSal;
     }
 
-    // Solo GestionUsuarios puede cambiar el correo y el rol, para garantizar unicidad y reglas de negocio.
+    // Solo GestionUsuarios puede cambiar el correo y el rol, para garantizar unicidad y reglas de negocio
     void cambiarCorreo(String nuevoCorreo) { this.correo = ValidadorUsuario.correo(nuevoCorreo); }
     void cambiarTipoUsuario(Rol nuevoTipo) { this.tipoUsuario = ValidadorUsuario.tipoUsuario(nuevoTipo); }
 

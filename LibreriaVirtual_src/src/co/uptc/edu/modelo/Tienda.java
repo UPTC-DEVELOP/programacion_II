@@ -26,10 +26,9 @@ public class Tienda {
         this.servicioLibros = servicioLibros;
     }
 
-    // ---------- Sesión y usuarios ----------
     public GestionUsuarios getGestionUsuarios() { return gestionUsuarios; }
 
-    /** Inicia sesión con correo y contraseña . Devuelve false si las credenciales no son válidas. */
+    // Inicia sesión con correo y contraseña . Devuelve false si las credenciales no son válidas
     public boolean iniciarSesion(String correo, String contrasena) {
         Usuario u = gestionUsuarios.autenticar(correo, contrasena);
         usuarioSesion = u;
@@ -44,7 +43,6 @@ public class Tienda {
     public String getUsuarioActual() { return usuarioSesion == null ? "" : usuarioSesion.getNombreCompleto(); }
     public Rol getRolActual() { return usuarioSesion == null ? Rol.INVITADO : usuarioSesion.getTipoUsuario(); }
 
-    // ---------- Inventario ----------
     public ServicioLibro getServicioLibros() { return servicioLibros; }
 
     public List<Libro> getInventario() { return servicioLibros.listar(); }
@@ -64,7 +62,6 @@ public class Tienda {
         servicioLibros.registrar(new Libro("9780000000106", "Don Quijote de la Mancha", "Miguel de Cervantes","1605", "Clásico", "Francisco de Robles", 863, 60000, 7, "Digital"));
     }
 
-    // ---------- Carrito ----------
     public List<ItemCarrito> getCarrito() { return Collections.unmodifiableList(carrito); }
 
     public ResultadoCarrito agregarAlCarrito(Libro libro) {

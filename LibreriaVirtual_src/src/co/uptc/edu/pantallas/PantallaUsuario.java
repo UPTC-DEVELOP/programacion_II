@@ -10,7 +10,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-/** Panel principal del cliente. */
 public class PantallaUsuario extends JPanel implements Refrescable {
 
     private final Tienda tienda;

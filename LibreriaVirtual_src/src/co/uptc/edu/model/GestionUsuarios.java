@@ -5,12 +5,6 @@ import java.util.List;
 
 import co.uptc.edu.interfaces.IGestionUsuario;
 
-/**
- * CRUD y reglas de negocio de los usuarios (RF-02, RF-04, RF-11).
- * No depende de Swing ni de dónde se guardan los datos: la persistencia se recibe
- * por el constructor (memoria, archivo JSON o base de datos).
- * Los errores de validación se informan con IllegalArgumentException.
- */
 public class GestionUsuarios {
 
     private final IGestionUsuario persistencia;
@@ -22,12 +16,12 @@ public class GestionUsuarios {
         this.persistencia = persistencia;
     }
 
-    // ---------- Read ----------
+
     public List<Usuario> listarUsuarios() {
         return Collections.unmodifiableList(persistencia.listar());
     }
 
-    /** Busca por correo sin distinguir mayúsculas. Devuelve null si no existe. */
+    //Busca por correo sin distinguir mayúsculas. Devuelve null si no existe
     public Usuario buscarPorCorreo(String correo) {
         if (correo == null) {
             return null;
@@ -45,8 +39,7 @@ public class GestionUsuarios {
         return total;
     }
 
-    // ---------- Create ----------
-    /** Alta de un usuario ya construido (valida unicidad del correo). */
+    // Alta de un usuario ya construido (valida unicidad del correo)
     public void agregarUsuario(Usuario usuario) {
         if (usuario == null) {
             throw new IllegalArgumentException("El usuario no puede ser nulo.");
@@ -57,7 +50,7 @@ public class GestionUsuarios {
         persistencia.guardar(usuario);
     }
 
-    /** Registro público (RF-02): siempre crea un usuario con rol Cliente. */
+    // Registro público (RF-02): siempre crea un usuario con rol Cliente
     public Usuario registrarCliente(String nombre, String apellido, String correo, String direccion,
                                     String telefono, String contrasena) {
         Usuario nuevo = new Usuario(nombre, apellido, correo, direccion, telefono, Rol.CLIENTE, contrasena);
@@ -65,11 +58,6 @@ public class GestionUsuarios {
         return nuevo;
     }
 
-    // ---------- Update ----------
-    /**
-     * Edición hecha por un administrador (RF-04): permite cambiar datos, correo y rol.
-     * @param nuevaContrasena si es null o vacía se conserva la contraseña actual.
-     */
     public Usuario actualizarUsuario(String correoActual, String nombre, String apellido, String correoNuevo,
                                      String direccion, String telefono, Rol tipoUsuario, String nuevaContrasena) {
         Usuario u = requerir(correoActual);
@@ -93,10 +81,6 @@ public class GestionUsuarios {
         return u;
     }
 
-    /**
-     * Actualización de los datos propios (RF-11). No permite cambiar el rol.
-     * Para cambiar la contraseña se exige la contraseña actual.
-     */
     public Usuario actualizarPerfil(String correoActual, String nombre, String apellido, String correoNuevo,
                                     String direccion, String telefono,
                                     String contrasenaActual, String nuevaContrasena) {
@@ -119,7 +103,6 @@ public class GestionUsuarios {
         return u;
     }
 
-    // ---------- Delete ----------
     public void eliminarUsuario(String correo, String correoSolicitante) {
         Usuario u = requerir(correo);
         if (correoSolicitante != null && u.getCorreo().equals(correoSolicitante.trim().toLowerCase())) {
@@ -131,15 +114,13 @@ public class GestionUsuarios {
         persistencia.eliminar(u.getCorreo());
     }
 
-    // ---------- Autenticación (RF-01) ----------
-    /** Devuelve el usuario si las credenciales son correctas; null en caso contrario. */
+    //Devuelve el usuario si las credenciales son correctas; null en caso contrario
     public Usuario autenticar(String correo, String contrasena) {
         Usuario u = buscarPorCorreo(correo);
         return (u != null && u.iniciarSesion(contrasena)) ? u : null;
     }
 
-    // ---------- Datos iniciales ----------
-    /** Crea las cuentas de demostración solo cuando todavía no hay ningún usuario guardado. */
+    // Crea las cuentas de demostración solo cuando todavía no hay ningún usuario guardado
     public void cargarDatosSimulados() {
         if (!persistencia.listar().isEmpty()) {
             return;
@@ -150,7 +131,6 @@ public class GestionUsuarios {
                 "Carrera 2 # 2-02, Tunja", "3000000002", Rol.CLIENTE, "Cliente123"));
     }
 
-    // ---------- Auxiliares ----------
     private Usuario requerir(String correo) {
         Usuario u = buscarPorCorreo(correo);
         if (u == null) {

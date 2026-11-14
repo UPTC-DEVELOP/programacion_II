@@ -13,10 +13,10 @@ import co.uptc.edu.interfaces.IGestionCompra;
 import co.uptc.edu.model.ItemCarrito;
 import co.uptc.edu.model.Usuario;
 
-/**
- * Historial de compras en las tablas "compras" y "detalle_compra" de MariaDB.
- * La compra y sus renglones se guardan en una sola transacción: o queda todo o no queda nada.
- */
+
+ //Historial de compras en las tablas "compras" y "detalle_compra" de MariaDB
+ //La compra y sus renglones se guardan en una sola transacción: o queda todo o no queda nada
+ 
 public class JdbcCompra implements IGestionCompra {
 
     private static final String METODO_PAGO = "Pago simulado";

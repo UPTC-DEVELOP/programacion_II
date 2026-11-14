@@ -115,7 +115,7 @@ public class PantallaCarrito extends JPanel implements Refrescable {
         lblTotal.setText("Total a pagar: " + formatter.format(tienda.getTotalCarrito()));
     }
 
-    /** Devuelve el ISBN del ítem seleccionado o null (y avisa) si no hay selección. */
+    //Devuelve el ISBN del ítem seleccionado o null (y avisa) si no hay selección
     private String isbnSeleccionado() {
         int fila = tabla.getSelectedRow();
         if (fila < 0) {
@@ -186,7 +186,7 @@ public class PantallaCarrito extends JPanel implements Refrescable {
         }
 
         JOptionPane.showMessageDialog(this,
-                "🎉 ¡Gracias por tu compra simulada!\nSe ha generado el recibo digital a nombre de: " + tienda.getUsuarioActual(),
+                "¡Gracias por tu compra simulada!\nSe ha generado el recibo digital a nombre de: " + tienda.getUsuarioActual(),
                 "Compra Finalizada", JOptionPane.INFORMATION_MESSAGE);
 
         refrescar();

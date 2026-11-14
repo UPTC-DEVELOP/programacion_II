@@ -11,10 +11,10 @@ import co.uptc.edu.interfaces.IGestionUsuario;
 import co.uptc.edu.model.Rol;
 import co.uptc.edu.model.Usuario;
 
-/**
- * Persistencia de usuarios en la tabla "usuarios" de MariaDB.
- * Todas las consultas usan parámetros (PreparedStatement) para evitar inyección SQL.
- */
+
+ // Persistencia de usuarios en la tabla "usuarios" de MariaDB.
+ //Todas las consultas usan parámetros (PreparedStatement) para evitar inyección SQL.
+
 public class JdbcUsuario implements IGestionUsuario {
 
     private static final String COLUMNAS =
@@ -88,7 +88,6 @@ public class JdbcUsuario implements IGestionUsuario {
         return usuarios;
     }
 
-    // ---------- Auxiliares ----------
     private static void asignarDatos(PreparedStatement sentencia, Usuario u) throws SQLException {
         sentencia.setString(1, u.getNombre());
         sentencia.setString(2, u.getApellido());

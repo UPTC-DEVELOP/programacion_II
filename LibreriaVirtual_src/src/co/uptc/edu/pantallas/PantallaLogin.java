@@ -11,7 +11,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-/** Pantalla de inicio de sesión con correo y contraseña (RF-01). */
+//Pantalla de inicio de sesión con correo y contraseña (RF-01)
 public class PantallaLogin extends JPanel implements Refrescable {
 
     private final Tienda tienda;
@@ -86,7 +86,7 @@ public class PantallaLogin extends JPanel implements Refrescable {
         add(card);
     }
 
-    /** Cada vez que se muestra el login se cierra la sesión anterior y se limpian los campos. */
+    //Cada vez que se muestra el login se cierra la sesión anterior y se limpian los campos
     @Override
     public void refrescar() {
         tienda.cerrarSesion();

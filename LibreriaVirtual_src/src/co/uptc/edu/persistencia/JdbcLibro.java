@@ -11,7 +11,7 @@ import java.util.List;
 import co.uptc.edu.interfaces.IGestionLibro;
 import co.uptc.edu.model.Libro;
 
-/** Inventario de libros en la tabla "libros" de MariaDB. */
+//Inventario de libros en la tabla "libros" de MariaDB
 public class JdbcLibro implements IGestionLibro {
 
     private static final String COLUMNAS = "isbn, titulo_libro, autor_libro, anio_publicacion, categoria, "

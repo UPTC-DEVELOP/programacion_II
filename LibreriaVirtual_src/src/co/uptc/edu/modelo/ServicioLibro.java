@@ -18,7 +18,6 @@ public class ServicioLibro {
         this.validador = validador;
     }
 
-    // ---------- Create ----------
     public Libro registrar(Libro libro) {
         Libro limpio = normalizar(libro);
         validador.validar(limpio);
@@ -55,7 +54,6 @@ public class ServicioLibro {
         return resultado;
     }
 
-    // ---------- Update ----------
     public Libro actualizar(Libro libro) {
         Libro limpio = normalizar(libro);
         validador.validar(limpio);
@@ -66,13 +64,11 @@ public class ServicioLibro {
         return limpio;
     }
 
-    // ---------- Delete  ----------
     public void eliminar(String isbn) {
         Libro l = obtener(isbn);
         repositorio.eliminar(l.getIsbn());
     }
 
-    // --
     public List<String> getCategorias() { return validador.getCategorias(); }
 
     public List<String> getFormatos() { return validador.getFormatos(); }

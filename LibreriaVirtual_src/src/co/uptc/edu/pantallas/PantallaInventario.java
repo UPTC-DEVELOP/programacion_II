@@ -14,7 +14,7 @@ import java.awt.*;
 import java.text.NumberFormat;
 import java.time.Year;
 
-/** Administración del inventario: tabla de libros y formulario de alta. */
+//Administración del inventario: tabla de libros y formulario de alta
 public class PantallaInventario extends JPanel implements Refrescable {
 
     private final Tienda tienda;
@@ -127,7 +127,7 @@ public class PantallaInventario extends JPanel implements Refrescable {
         }
     }
 
-    /** Reglas de la especificación de datos del libro (DAD). Lanza IllegalArgumentException si algo no cumple. */
+    //Reglas de la especificación de datos del libro (DAD). Lanza IllegalArgumentException si algo no cumple
     private void validar(String isbn, String titulo, String autor, String anio, String editorial,
                          int paginas, double precio, int stock) {
         if (!isbn.matches("97[89]\\d{10}")) {

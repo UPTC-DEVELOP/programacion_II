@@ -10,7 +10,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-/** Registro de nuevos clientes (RF-02). */
 public class PantallaRegistro extends JPanel implements Refrescable {
 
     private final Tienda tienda;

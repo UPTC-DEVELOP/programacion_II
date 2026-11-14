@@ -7,7 +7,7 @@ import co.uptc.edu.gui.Vista;
 import javax.swing.*;
 import java.awt.*;
 
-/** Pantalla de bienvenida. */
+
 public class PantallaPresentacion extends JPanel {
 
     public PantallaPresentacion(Navegador nav) {

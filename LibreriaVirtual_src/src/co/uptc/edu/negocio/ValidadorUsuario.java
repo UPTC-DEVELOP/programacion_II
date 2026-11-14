@@ -31,7 +31,7 @@ final class ValidadorUsuario {
         return v;
     }
 
-    /** Devuelve el correo en minúsculas, que es como se guarda y se compara. */
+    //Devuelve el correo en minúsculas, que es como se guarda y se compara
     static String correo(String valor) {
         String v = limpiar(valor).toLowerCase();
         if (v.isEmpty()) {
@@ -69,7 +69,7 @@ final class ValidadorUsuario {
         return rol;
     }
 
-    /** Mínimo 8 caracteres, al menos una letra y un número. */
+    // Mínimo 8 caracteres, al menos una letra y un número
     static void contrasena(String valor) {
         if (valor == null || valor.length() < MIN_CONTRASENA) {
             throw new IllegalArgumentException("La contraseña debe tener al menos " + MIN_CONTRASENA + " caracteres.");

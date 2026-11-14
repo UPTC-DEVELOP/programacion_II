@@ -6,9 +6,7 @@ import java.awt.*;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-/** Colores y componentes reutilizables para mantener un estilo uniforme. */
 public final class EstiloUI {
-
     public static final Color PRIMARIO = new Color(207, 105, 85);
     public static final Color INDIGO = new Color(79, 70, 229);
     public static final Color FONDO_PRESENTACION = new Color(245, 247, 250);

@@ -10,11 +10,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-/**
- * Conexión a la base de datos MariaDB de la librería.
- * Usa los valores por defecto de una instalación local; si existe el archivo
- * db.properties en la carpeta del proyecto, se toman de ahí (url, usuario, contrasena).
- */
+ //Conexión a la base de datos MariaDB de la librería.
+ // Usa los valores por defecto de una instalación local; si existe el archivo
+ // db.properties en la carpeta del proyecto, se toman de ahí (url, usuario, contrasena).
+
 public final class ConexionBD {
 
     private static final String ARCHIVO_CONFIGURACION = "db.properties";
@@ -39,7 +38,7 @@ public final class ConexionBD {
         }
     }
 
-    /** Indica si se puede abrir una conexión con la base de datos. */
+    // Indica si se puede abrir una conexión con la base de datos
     public static boolean disponible() {
         try (Connection conexion = getConnection()) {
             return true;

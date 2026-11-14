@@ -1,6 +1,6 @@
 package co.uptc.edu.negocio;
 
-/** Elemento del carrito: un libro y la cantidad seleccionada. */
+// Elemento del carrito: un libro y la cantidad seleccionada
 public class ItemCarrito {
     private final Libro libro;
     private int cantidad;

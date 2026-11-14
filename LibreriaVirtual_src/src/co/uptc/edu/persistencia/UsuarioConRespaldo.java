@@ -5,11 +5,10 @@ import java.util.List;
 import co.uptc.edu.interfaces.IGestionUsuario;
 import co.uptc.edu.model.Usuario;
 
-/**
- * Guarda los usuarios en la persistencia principal (la base de datos) y mantiene
- * una copia de respaldo en el archivo JSON después de cada cambio.
- * Las consultas siempre se hacen sobre la persistencia principal.
- */
+
+//Guarda los usuarios en la persistencia principal (la base de datos) y mantiene una copia de respaldo en el archivo JSON después de cada cambio.
+//Las consultas siempre se hacen sobre la persistencia principal.
+ 
 public class UsuarioConRespaldo implements IGestionUsuario {
 
     private final IGestionUsuario principal;

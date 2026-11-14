@@ -13,7 +13,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
-/** Administración de usuarios y roles (RF-04): listar, crear, editar y eliminar. */
+// Administración de usuarios y roles (RF-04): listar, crear, editar y eliminar
 public class PantallaGestionUsuarios extends JPanel implements Refrescable {
 
     private static final String CLIENTE = "Cliente";
@@ -32,7 +32,7 @@ public class PantallaGestionUsuarios extends JPanel implements Refrescable {
     private final JComboBox<String> comboRol = new JComboBox<>(new String[]{CLIENTE, ADMINISTRADOR});
     private final JPasswordField txtPass = new JPasswordField();
 
-    /** Correo del usuario que se está editando; null cuando el formulario es de alta. */
+    //Correo del usuario que se está editando; null cuando el formulario es de alta
     private String correoEditando = null;
     private boolean cargando = false;
 
@@ -96,7 +96,6 @@ public class PantallaGestionUsuarios extends JPanel implements Refrescable {
         nuevo();
     }
 
-    // ---------- Acciones ----------
     private void guardar() {
         if (!esAdmin()) return;
         String pass = new String(txtPass.getPassword());
@@ -148,7 +147,6 @@ public class PantallaGestionUsuarios extends JPanel implements Refrescable {
         refrescar();
     }
 
-    // ---------- Formulario ----------
     private void cargarSeleccion() {
         int fila = tabla.getSelectedRow();
         if (fila < 0) return;
@@ -162,7 +160,7 @@ public class PantallaGestionUsuarios extends JPanel implements Refrescable {
         txtTelefono.setText(u.getTelefono());
         comboRol.setSelectedItem(u.getTipoUsuario() == Rol.ADMIN ? ADMINISTRADOR : CLIENTE);
         txtPass.setText("");
-        // Un administrador no puede cambiarse el rol a sí mismo desde aquí.
+        // Un administrador no puede cambiarse el rol a sí mismo desde aquí
         Usuario sesion = tienda.getUsuarioSesion();
         comboRol.setEnabled(sesion == null || !sesion.getCorreo().equals(u.getCorreo()));
         bordeFormulario.setTitle("Editando: " + u.getCorreo());
@@ -198,7 +196,6 @@ public class PantallaGestionUsuarios extends JPanel implements Refrescable {
         cargando = false;
     }
 
-    // ---------- Auxiliares ----------
     private boolean esAdmin() {
         if (tienda.getRolActual() != Rol.ADMIN) {
             JOptionPane.showMessageDialog(this, "Solo un administrador puede gestionar usuarios.",

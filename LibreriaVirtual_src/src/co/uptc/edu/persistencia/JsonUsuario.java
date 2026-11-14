@@ -21,11 +21,10 @@ import co.uptc.edu.interfaces.IGestionUsuario;
 import co.uptc.edu.model.Rol;
 import co.uptc.edu.model.Usuario;
 
-/**
- * Persistencia de usuarios en un archivo JSON.
- * El archivo se lee una vez al crear el objeto y se reescribe completo en cada cambio.
- * La contraseña nunca se escribe: solo su hash y su sal, codificados en Base64.
- */
+ //Persistencia de usuarios en un archivo JSON.
+ //El archivo se lee una vez al crear el objeto y se reescribe completo en cada cambio.
+ //La contraseña nunca se escribe: solo su hash y su sal, codificados en Base64.
+ 
 public class JsonUsuario implements IGestionUsuario {
 
     private final Path archivo;
@@ -77,7 +76,6 @@ public class JsonUsuario implements IGestionUsuario {
         escribir();
     }
 
-    // ---------- Lectura y escritura del archivo ----------
     private void cargar() {
         if (!Files.exists(archivo)) {
             return;
@@ -113,7 +111,7 @@ public class JsonUsuario implements IGestionUsuario {
         }
     }
 
-    /** Forma en que se escribe cada usuario dentro del archivo JSON. */
+    // Forma en que se escribe cada usuario dentro del archivo JSON
     private static class RegistroUsuario {
         String nombre;
         String apellido;

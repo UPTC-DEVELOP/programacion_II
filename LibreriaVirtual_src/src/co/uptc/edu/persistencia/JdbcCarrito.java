@@ -11,7 +11,7 @@ import java.util.Map;
 import co.uptc.edu.interfaces.IGestionCarrito;
 import co.uptc.edu.model.ItemCarrito;
 
-/** Carrito de cada usuario en la tabla "items_carrito" de MariaDB. */
+//Carrito de cada usuario en la tabla "items_carrito" de MariaDB
 public class JdbcCarrito implements IGestionCarrito {
 
     private static final String ID_USUARIO = "(SELECT id FROM usuarios WHERE correo = ?)";

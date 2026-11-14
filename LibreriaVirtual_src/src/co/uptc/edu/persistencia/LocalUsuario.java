@@ -8,10 +8,10 @@ import java.util.Map;
 import co.uptc.edu.interfaces.IGestionUsuario;
 import co.uptc.edu.model.Usuario;
 
-/** Persistencia en memoria: los usuarios se pierden al cerrar la aplicación. */
+// Persistencia en memoria: los usuarios se pierden al cerrar la aplicación
 public class LocalUsuario implements IGestionUsuario {
 
-    /** La llave es el correo; LinkedHashMap conserva el orden de registro. */
+    //La llave es el correo; LinkedHashMap conserva el orden de registro
     private final Map<String, Usuario> usuarios = new LinkedHashMap<>();
 
     @Override
