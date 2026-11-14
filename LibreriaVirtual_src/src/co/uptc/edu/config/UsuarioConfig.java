@@ -8,11 +8,6 @@ import co.uptc.edu.persistencia.JdbcUsuario;
 import co.uptc.edu.persistencia.JsonUsuario;
 import co.uptc.edu.persistencia.UsuarioConRespaldo;
 
-/**
- * Arma el CRUD de usuarios: decide dónde se guardan y entrega la capa de negocio ya lista.
- * Con MariaDB disponible se guarda en la base de datos y se respalda en JSON;
- * sin conexión, la aplicación sigue funcionando solo con el archivo JSON.
- */
 public class UsuarioConfig {
 
     public static final String RUTA_USUARIOS_JSON = "data/usuarios.json";
@@ -38,7 +33,6 @@ public class UsuarioConfig {
         if (ConexionBD.disponible()) {
             try {
                 JdbcUsuario jdbc = new JdbcUsuario();
-                // Base de datos recién creada: se recuperan los usuarios del respaldo JSON.
                 if (jdbc.listar().isEmpty()) {
                     for (Usuario u : json.listar()) {
                         jdbc.guardar(u);
