@@ -4,17 +4,28 @@ import java.util.ArrayList;
 import java.util.List;
 import co.edu.uptc.model.Carrito;
 import co.edu.uptc.repository.CarritoJsonRepositorio;
+import co.edu.uptc.repository.CarritoMySqlRepository;
 
 public class GestionCarrito {
 
     private List<Carrito> itemsCarrito;
     private CarritoJsonRepositorio repositorio;
+    private CarritoMySqlRepository mysqlRepositorio;
 
     public GestionCarrito() {
         this.repositorio = new CarritoJsonRepositorio();
-        this.itemsCarrito = repositorio.cargar();
-        if (this.itemsCarrito == null) {
-            this.itemsCarrito = new ArrayList<>();
+        this.mysqlRepositorio = new CarritoMySqlRepository();
+        try {
+            this.itemsCarrito = mysqlRepositorio.listar();
+            if (this.itemsCarrito == null) {
+                this.itemsCarrito = new ArrayList<>();
+            }
+            repositorio.guardar(this.itemsCarrito);
+        } catch (Exception e) {
+            this.itemsCarrito = repositorio.cargar();
+            if (this.itemsCarrito == null) {
+                this.itemsCarrito = new ArrayList<>();
+            }
         }
     }
 
@@ -45,13 +56,16 @@ public class GestionCarrito {
         // Verificar si el producto ya está en el carrito para acumular cantidad
         for (Carrito item : itemsCarrito) {
             if (item.getIdProducto().equalsIgnoreCase(idProducto.trim())) {
-                item.setCantidad(item.getCantidad() + cantidad);
+                int nuevaCantidad = item.getCantidad() + cantidad;
+                mysqlRepositorio.actualizarCantidad(item.getIdProducto(), nuevaCantidad);
+                item.setCantidad(nuevaCantidad);
                 repositorio.guardar(itemsCarrito);
                 return;
             }
         }
 
         Carrito nuevoItem = new Carrito(idProducto.trim(), titulo.trim(), cantidad, precioUnitario);
+        mysqlRepositorio.guardar(nuevoItem);
         itemsCarrito.add(nuevoItem);
         repositorio.guardar(itemsCarrito);
     }
@@ -73,26 +87,31 @@ public class GestionCarrito {
             throw new Exception("La cantidad debe ser mayor a cero.");
         }
 
-        itemsCarrito.get(indice).setCantidad(nuevaCantidad);
+        Carrito item = itemsCarrito.get(indice);
+        mysqlRepositorio.actualizarCantidad(item.getIdProducto(), nuevaCantidad);
+        item.setCantidad(nuevaCantidad);
         repositorio.guardar(itemsCarrito);
     }
 
-    //  Eliminar un ítem específico (Delete)
+    // Eliminar un ítem específico (Delete)
     public void eliminarItem(int indice) throws Exception {
         if (indice < 0 || indice >= itemsCarrito.size()) {
             throw new Exception("Seleccione un ítem válido para eliminar.");
         }
+        Carrito item = itemsCarrito.get(indice);
+        mysqlRepositorio.eliminar(item.getIdProducto());
         itemsCarrito.remove(indice);
         repositorio.guardar(itemsCarrito);
     }
 
-    //  Vaciar todo el carrito (Delete)
+    // Vaciar todo el carrito (Delete)
     public void vaciarCarrito() {
+        mysqlRepositorio.vaciar();
         itemsCarrito.clear();
         repositorio.guardar(itemsCarrito);
     }
 
-    //  Calcular total acumulado
+    // Calcular total acumulado
     public double calcularTotal() {
         double total = 0.0;
         for (Carrito item : itemsCarrito) {
@@ -101,7 +120,7 @@ public class GestionCarrito {
         return total;
     }
 
-    //  Validar si hay productos antes de confirmar el pedido
+    // Validar si hay productos antes de confirmar el pedido
     public boolean estaVacio() {
         return itemsCarrito == null || itemsCarrito.isEmpty();
     }
