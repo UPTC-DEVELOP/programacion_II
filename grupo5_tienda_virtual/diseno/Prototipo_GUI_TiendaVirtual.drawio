@@ -1,0 +1,760 @@
+<mxfile host="app.diagrams.net" agent="draw.io" version="24.7.17" type="device">
+  <diagram id="prototipo" name="Prototipo GUI - Tienda Virtual de Libros">
+    <mxGraphModel dx="1340" dy="1440" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1340" pageHeight="1440" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="titulo" value="PROTOTIPO DE INTERFAZ GRÁFICA - Tienda Virtual de Libros (Java Swing)" style="text;html=1;align=center;verticalAlign=middle;fontSize=17;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="8" width="1300" height="34" as="geometry" />
+        </mxCell>
+
+        <!-- ================= SCREEN 1: LOGIN ================= -->
+        <mxCell id="s1win" value="" style="whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="20" y="50" width="420" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="s1bar" value="Iniciar Sesión" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontStyle=1;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="20" y="50" width="420" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s1x" value="X" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C0392B;strokeColor=none;fontColor=#FFFFFF;fontSize=9;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="418" y="53" width="20" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s1l1" value="Correo electrónico:" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="30" y="96" width="120" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s1f1" value="ejemplo@uptc.edu.co" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#666666;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="160" y="94" width="240" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s1l2" value="Contraseña:" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="30" y="126" width="120" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s1f2" value="••••••••" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#666666;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="160" y="124" width="240" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s1b1" value="Iniciar sesión" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontSize=10;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="160" y="160" width="140" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s1b2" value="Registrarse" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#666666;fontSize=10;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="310" y="160" width="90" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s1b3" value="Entrar como Administrador" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#666666;fontSize=10;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="160" y="200" width="240" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="s1sep" value="" style="whiteSpace=wrap;html=1;fillColor=#CCCCCC;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="30" y="232" width="380" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s1note" value="Correo y contraseña obligatorios.&#10;Error en JOptionPane si las credenciales no son válidas (RF06, RF14)." style="text;html=1;align=center;verticalAlign=middle;fontSize=9;fontColor=#777777;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="243" width="380" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ================= SCREEN 2: REGISTRO ================= -->
+        <mxCell id="s2win" value="" style="whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="450" y="50" width="420" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="s2bar" value="Registro de Cliente" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontStyle=1;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="450" y="50" width="420" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s2x" value="X" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C0392B;strokeColor=none;fontColor=#FFFFFF;fontSize=9;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="848" y="53" width="20" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s2l1" value="Nombre completo:" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="460" y="96" width="120" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s2f1" value="Juan Pérez" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#333333;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="590" y="94" width="240" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s2l2" value="Correo electrónico:" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="460" y="126" width="120" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s2f2" value="juan@uptc.edu.co" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#333333;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="590" y="124" width="240" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s2l3" value="Dirección:" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="460" y="156" width="120" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s2f3" value="Cra 11 #15-20, Tunja" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#333333;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="590" y="154" width="240" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s2l4" value="Teléfono:" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="460" y="186" width="120" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s2f4" value="311 555 2233" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#333333;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="590" y="184" width="240" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s2l5" value="Tipo de cliente:" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="460" y="216" width="120" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s2f5" value="Regular  ▼" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#333333;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="590" y="214" width="240" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s2b1" value="Registrarse" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontSize=10;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="590" y="252" width="140" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="s2note" value="Validaciones: campos obligatorios, correo único y tipo de cliente Regular/Premium (RF05)." style="text;html=1;align=center;verticalAlign=middle;fontSize=9;fontColor=#777777;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="460" y="292" width="390" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- ================= SCREEN 3: CATALOGO ================= -->
+        <mxCell id="s3win" value="" style="whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="880" y="50" width="420" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="s3bar" value="Catálogo de Libros" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontStyle=1;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="880" y="50" width="420" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s3x" value="X" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C0392B;strokeColor=none;fontColor=#FFFFFF;fontSize=9;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1278" y="53" width="20" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s3sl" value="Buscar:" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="900" y="88" width="55" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3sf" value="ISBN, título o autor..." style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#999999;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="960" y="86" width="210" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s3sb" value="Buscar" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontSize=10;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="84" width="80" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="s3tbl" value="" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="900" y="118" width="360" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="s3hdr" value="" style="whiteSpace=wrap;html=1;fillColor=#D9D9D9;strokeColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="900" y="118" width="360" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s3h1" value="ISBN" style="text;html=1;fontSize=9;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="908" y="120" width="52" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3h1b" value="Título" style="text;html=1;fontSize=9;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="968" y="120" width="102" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3h2" value="Autor" style="text;html=1;fontSize=9;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="120" width="70" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3h3" value="Precio" style="text;html=1;fontSize=9;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="120" width="60" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3h4" value="Stock" style="text;html=1;fontSize=9;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="120" width="60" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3r1isbn" value="978-84-01" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="908" y="142" width="52" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3r1a" value="Cien años de soledad" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="968" y="142" width="102" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3r1b" value="G. Márquez" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="142" width="70" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3r1c" value="$50.000" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="142" width="60" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3r1d" value="12" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="142" width="60" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3r2isbn" value="978-05-06" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="908" y="166" width="52" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3r2a" value="1984" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="968" y="166" width="102" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3r2b" value="G. Orwell" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="166" width="70" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3r2c" value="$35.000" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="166" width="60" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3r2d" value="5" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="166" width="60" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3r3isbn" value="978-01-12" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="908" y="190" width="52" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3r3a" value="Clean Code" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="968" y="190" width="102" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3r3b" value="R. Martin" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="190" width="70" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3r3c" value="$60.000" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="190" width="60" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3r3d" value="3" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="190" width="60" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3sep1" value="" style="whiteSpace=wrap;html=1;fillColor=#CCCCCC;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="900" y="160" width="360" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s3sep2" value="" style="whiteSpace=wrap;html=1;fillColor=#CCCCCC;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="900" y="184" width="360" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s3sep3" value="" style="whiteSpace=wrap;html=1;fillColor=#CCCCCC;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="900" y="208" width="360" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s3l1" value="Cantidad:" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="900" y="248" width="70" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s3spin" value="1" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=10;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="975" y="246" width="55" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s3b1" value="Agregar al carrito" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontSize=10;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="244" width="130" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s3b2" value="Ver carrito" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#666666;fontSize=10;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="244" width="80" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s3note" value="El botón Buscar abre la ventana de búsqueda por ISBN, título o autor. Agregar muestra subtotal (RF09)." style="text;html=1;align=center;verticalAlign=middle;fontSize=9;fontColor=#777777;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="900" y="278" width="380" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- ================= SCREEN 4: CARRITO ================= -->
+        <mxCell id="s4win" value="" style="whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="450" y="400" width="420" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="s4bar" value="Carrito de Compras" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontStyle=1;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="450" y="400" width="420" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s4x" value="X" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C0392B;strokeColor=none;fontColor=#FFFFFF;fontSize=9;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="848" y="403" width="20" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s4tbl" value="" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="470" y="440" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="s4hdr" value="" style="whiteSpace=wrap;html=1;fillColor=#D9D9D9;strokeColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="470" y="440" width="260" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s4h0" value="ISBN" style="text;html=1;fontSize=9;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="480" y="442" width="55" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4h1" value="Libro" style="text;html=1;fontSize=9;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="535" y="442" width="95" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4h2" value="Cant" style="text;html=1;fontSize=9;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="630" y="442" width="40" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4h3" value="Subtotal" style="text;html=1;fontSize=9;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="670" y="442" width="60" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4r1isbn" value="978-84-01" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="480" y="464" width="55" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4r1a" value="Cien años de soledad" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="535" y="464" width="95" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4r1b" value="2" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="630" y="464" width="40" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4r1c" value="$100.000" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="670" y="464" width="60" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4r2isbn" value="978-05-06" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="480" y="488" width="55" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4r2a" value="1984" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="535" y="488" width="95" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4r2b" value="1" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="630" y="488" width="40" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4r2c" value="$35.000" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="670" y="488" width="60" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4sep1" value="" style="whiteSpace=wrap;html=1;fillColor=#CCCCCC;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="470" y="462" width="260" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s4sep2" value="" style="whiteSpace=wrap;html=1;fillColor=#CCCCCC;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="470" y="486" width="260" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s4sep3" value="" style="whiteSpace=wrap;html=1;fillColor=#CCCCCC;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="470" y="510" width="260" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s4bplus" value="+" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#666666;fontSize=11;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="742" y="444" width="28" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s4bminus" value="−" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#666666;fontSize=11;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="742" y="470" width="28" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s4bdel" value="Eliminar" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#666666;fontSize=9;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="742" y="496" width="66" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="s4panel" value="" style="whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="470" y="555" width="380" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="s4t1a" value="Subtotal:" style="text;html=1;fontSize=10;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="480" y="562" width="160" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4t1b" value="$135.000" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="680" y="562" width="160" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4t2a" value="IVA 19%:" style="text;html=1;fontSize=10;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="480" y="582" width="160" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4t2b" value="$25.650" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="680" y="582" width="160" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4t3a" value="IVA 5%:" style="text;html=1;fontSize=10;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="480" y="602" width="160" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4t3b" value="$0" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="680" y="602" width="160" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4t4a" value="Descuento Premium:" style="text;html=1;fontSize=10;fontStyle=1;align=left;verticalAlign=middle;fontColor=#2E7D32;" vertex="1" parent="1">
+          <mxGeometry x="480" y="622" width="190" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4t4b" value="−$13.500" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;fontStyle=1;fontColor=#2E7D32;" vertex="1" parent="1">
+          <mxGeometry x="680" y="622" width="160" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4t5a" value="TOTAL:" style="text;html=1;fontSize=11;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="480" y="645" width="100" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4t5b" value="$147.150" style="text;html=1;align=right;verticalAlign=middle;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="680" y="645" width="160" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s4bfin" value="Finalizar compra" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontSize=10;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="580" y="668" width="140" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s4note" value="Botones +/− actualizan totales (RF10, RF12). Descuento solo Premium (RF13)." style="text;html=1;align=center;verticalAlign=middle;fontSize=9;fontColor=#777777;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="470" y="700" width="380" height="14" as="geometry" />
+        </mxCell>
+
+        <!-- ================= SCREEN 5: FINALIZAR COMPRA ================= -->
+        <mxCell id="s5win" value="" style="whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="880" y="400" width="420" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="s5bar" value="Finalizar Compra" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontStyle=1;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="880" y="400" width="420" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s5x" value="X" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C0392B;strokeColor=none;fontColor=#FFFFFF;fontSize=9;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1278" y="403" width="20" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s5l1" value="Resumen del pedido:" style="text;html=1;fontSize=10;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="900" y="442" width="200" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5tbl" value="" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="900" y="462" width="380" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="s5hdr" value="" style="whiteSpace=wrap;html=1;fillColor=#D9D9D9;strokeColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="900" y="462" width="380" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s5h0" value="ISBN" style="text;html=1;fontSize=9;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="910" y="464" width="65" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5h1" value="Libro" style="text;html=1;fontSize=9;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="975" y="464" width="130" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5h2" value="Cant" style="text;html=1;fontSize=9;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1105" y="464" width="40" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5h3" value="Subtotal" style="text;html=1;fontSize=9;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1145" y="464" width="125" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5r1isbn" value="978-84-01" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="910" y="486" width="65" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5r1a" value="Cien años de soledad" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="975" y="486" width="130" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5r1b" value="2" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1105" y="486" width="40" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5r1c" value="$100.000" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1145" y="486" width="125" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5r2isbn" value="978-05-06" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="910" y="508" width="65" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5r2a" value="1984" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="975" y="508" width="130" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5r2b" value="1" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1105" y="508" width="40" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5r2c" value="$35.000" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1145" y="508" width="125" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5sep1" value="" style="whiteSpace=wrap;html=1;fillColor=#CCCCCC;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="900" y="484" width="380" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s5sep2" value="" style="whiteSpace=wrap;html=1;fillColor=#CCCCCC;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="900" y="506" width="380" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s5desca" value="Descuento Premium:" style="text;html=1;fontSize=10;fontStyle=1;align=left;verticalAlign=middle;fontColor=#2E7D32;" vertex="1" parent="1">
+          <mxGeometry x="900" y="546" width="140" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5descb" value="−$13.500" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;fontStyle=1;fontColor=#2E7D32;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="546" width="160" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5tota" value="TOTAL A PAGAR:" style="text;html=1;fontSize=11;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="900" y="564" width="140" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5totb" value="$147.150" style="text;html=1;align=right;verticalAlign=middle;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="564" width="160" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5l2" value="Método de pago:" style="text;html=1;fontSize=10;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="900" y="584" width="130" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5r1" value="◉  Tarjeta (simulado)" style="text;html=1;fontSize=10;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="910" y="606" width="200" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5r2" value="○  PSE (simulado)" style="text;html=1;fontSize=10;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="910" y="626" width="200" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5r3" value="○  Efectivo (contra entrega)" style="text;html=1;fontSize=10;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="910" y="646" width="220" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s5b1" value="Confirmar compra" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontSize=10;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="900" y="668" width="150" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="s5note" value="Aplica descuento Premium (RF13). Valida sesión (RF14) y stock (RF17)." style="text;html=1;align=center;verticalAlign=middle;fontSize=9;fontColor=#777777;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="900" y="700" width="380" height="14" as="geometry" />
+        </mxCell>
+
+        <!-- ================= SCREEN 6: RECIBO ================= -->
+        <mxCell id="s6win" value="" style="whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="20" y="750" width="420" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="s6bar" value="Recibo de Compra" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontStyle=1;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="20" y="750" width="420" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s6x" value="X" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C0392B;strokeColor=none;fontColor=#FFFFFF;fontSize=9;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="418" y="753" width="20" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s6area" value="" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="40" y="790" width="380" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="s6text" value="&lt;b&gt;TIENDA VIRTUAL DE LIBROS&lt;/b&gt;&#10;N° de compra: C-001    Fecha: 22/08/2026&#10;Cliente: Juan Pérez (Premium)&#10;----------------------------------------&#10;2x  Cien años de soledad (978-84-01) .. $100.000&#10;1x  1984 (978-05-06) ................ $35.000&#10;----------------------------------------&#10;Subtotal: ........... $135.000&#10;IVA 19%: ............. $25.650&#10;Descuento Premium: .. −$13.500&#10;&lt;b&gt;TOTAL: ............. $147.150&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="50" y="800" width="360" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="s6b1" value="Imprimir" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#666666;fontSize=10;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="120" y="1000" width="100" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s6b2" value="Aceptar" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontSize=10;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="250" y="1000" width="100" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s6note" value="El botón Imprimir se simula con JOptionPane (RF19)." style="text;html=1;align=center;verticalAlign=middle;fontSize=9;fontColor=#777777;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1040" width="380" height="14" as="geometry" />
+        </mxCell>
+
+        <!-- ================= SCREEN 7: HISTORIAL ================= -->
+        <mxCell id="s7win" value="" style="whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="450" y="750" width="420" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="s7bar" value="Historial de Compras" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontStyle=1;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="450" y="750" width="420" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s7x" value="X" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C0392B;strokeColor=none;fontColor=#FFFFFF;fontSize=9;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="848" y="753" width="20" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s7tbl" value="" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="470" y="790" width="320" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="s7hdr" value="" style="whiteSpace=wrap;html=1;fillColor=#D9D9D9;strokeColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="470" y="790" width="320" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s7h1" value="N° Compra" style="text;html=1;fontSize=9;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="480" y="792" width="80" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s7h2" value="Fecha" style="text;html=1;fontSize=9;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="560" y="792" width="100" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s7h3" value="Total" style="text;html=1;fontSize=9;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="660" y="792" width="120" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s7r1a" value="C-001" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="480" y="814" width="80" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s7r1b" value="22/08/2026" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="560" y="814" width="100" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s7r1c" value="$147.150" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="660" y="814" width="120" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s7r2a" value="C-002" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="480" y="838" width="80" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s7r2b" value="10/08/2026" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="560" y="838" width="100" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s7r2c" value="$85.000" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="660" y="838" width="120" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s7r3a" value="C-003" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="480" y="862" width="80" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s7r3b" value="01/08/2026" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="560" y="862" width="100" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s7r3c" value="$120.000" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="660" y="862" width="120" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s7sep1" value="" style="whiteSpace=wrap;html=1;fillColor=#CCCCCC;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="470" y="812" width="320" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s7sep2" value="" style="whiteSpace=wrap;html=1;fillColor=#CCCCCC;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="470" y="836" width="320" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s7sep3" value="" style="whiteSpace=wrap;html=1;fillColor=#CCCCCC;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="470" y="860" width="320" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s7b1" value="Ver detalle" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#666666;fontSize=10;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="470" y="930" width="110" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s7note" value="Abre el recibo de la compra seleccionada (RF08).&#10;Aquí puede integrarse el desafío: calificar libros comprados." style="text;html=1;align=center;verticalAlign=middle;fontSize=9;fontColor=#777777;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="470" y="968" width="380" height="28" as="geometry" />
+        </mxCell>
+
+        <!-- ================= SCREEN 8: MI CUENTA ================= -->
+        <mxCell id="s8win" value="" style="whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="880" y="750" width="420" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="s8bar" value="Mi Cuenta" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontStyle=1;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="880" y="750" width="420" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s8x" value="X" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C0392B;strokeColor=none;fontColor=#FFFFFF;fontSize=9;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1278" y="753" width="20" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s8l1" value="Nombre completo:" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="890" y="796" width="120" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s8f1" value="Juan Pérez" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#333333;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="794" width="240" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s8l2" value="Correo electrónico:" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="890" y="826" width="120" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s8f2" value="juan@uptc.edu.co" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#333333;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="824" width="240" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s8l3" value="Dirección:" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="890" y="856" width="120" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s8f3" value="Cra 11 #15-20, Tunja" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#333333;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="854" width="240" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s8l4" value="Teléfono:" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="890" y="886" width="120" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s8f4" value="311 555 2233" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#333333;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="884" width="240" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s8b1" value="Guardar cambios" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontSize=10;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="925" width="140" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="s8note" value="Los campos se validan antes de guardar (RF07)." style="text;html=1;align=center;verticalAlign=middle;fontSize=9;fontColor=#777777;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="890" y="968" width="380" height="14" as="geometry" />
+        </mxCell>
+
+        <!-- ================= SCREEN 9: ADMINISTRACION ================= -->
+        <mxCell id="s9win" value="" style="whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1100" width="420" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="s9bar" value="Gestión de Libros (Administrador)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontStyle=1;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1100" width="420" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s9x" value="X" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C0392B;strokeColor=none;fontColor=#FFFFFF;fontSize=9;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="418" y="1103" width="20" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s9tbl" value="" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1140" width="210" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="s9hdr" value="" style="whiteSpace=wrap;html=1;fillColor=#D9D9D9;strokeColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1140" width="210" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s9h1" value="ISBN" style="text;html=1;fontSize=9;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="50" y="1142" width="70" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s9h2" value="Título" style="text;html=1;fontSize=9;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="120" y="1142" width="120" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s9r1a" value="978-84-01" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="50" y="1164" width="70" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s9r1b" value="Cien años de soledad" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="120" y="1164" width="120" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s9r2a" value="978-05-06" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="50" y="1188" width="70" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s9r2b" value="1984" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="120" y="1188" width="120" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s9r3a" value="978-01-12" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="50" y="1212" width="70" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s9r3b" value="Clean Code" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="120" y="1212" width="120" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s9sep1" value="" style="whiteSpace=wrap;html=1;fillColor=#CCCCCC;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1162" width="210" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s9sep2" value="" style="whiteSpace=wrap;html=1;fillColor=#CCCCCC;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1186" width="210" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s9sep3" value="" style="whiteSpace=wrap;html=1;fillColor=#CCCCCC;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1210" width="210" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s9panel" value="" style="whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="260" y="1140" width="160" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="s9ptitle" value="Datos del libro" style="text;html=1;fontSize=10;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="265" y="1144" width="150" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s9f1" value="ISBN" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#999999;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="265" y="1166" width="150" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s9f2" value="Título" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#999999;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="265" y="1192" width="150" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s9f3" value="Precio" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#999999;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="265" y="1218" width="150" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s9f4" value="Cantidad" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#999999;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="265" y="1244" width="150" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s9f5" value="Formato: Físico ▼" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#333333;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="265" y="1270" width="150" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s9b1" value="Registrar" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontSize=10;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1300" width="100" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s9b2" value="Actualizar" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#666666;fontSize=10;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="150" y="1300" width="100" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s9b3" value="Eliminar" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#666666;fontSize=10;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="260" y="1300" width="100" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s9note" value="Eliminar solo si el libro no tiene ventas asociadas (RF03).&#10;Los datos cargan en el formulario para actualizar (RF02)." style="text;html=1;align=center;verticalAlign=middle;fontSize=9;fontColor=#777777;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1338" width="380" height="28" as="geometry" />
+        </mxCell>
+
+        <!-- ================= MENSAJES DE VALIDACION (JOptionPane) ================= -->
+        <mxCell id="caption" value="Mensajes de validación mostrados con JOptionPane: sesión obligatoria (RF14) y stock insuficiente (RF17)" style="text;html=1;align=center;verticalAlign=middle;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="450" y="1090" width="700" height="26" as="geometry" />
+        </mxCell>
+
+        <mxCell id="p1win" value="" style="whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="450" y="1130" width="320" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="p1bar" value="Error" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C0392B;strokeColor=#333333;fontColor=#FFFFFF;fontStyle=1;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="450" y="1130" width="320" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p1x" value="X" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C0392B;strokeColor=none;fontColor=#FFFFFF;fontSize=9;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="748" y="1133" width="20" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="p1icon" value="!" style="ellipse;whiteSpace=wrap;html=1;fillColor=#C0392B;strokeColor=#8B1A1A;fontColor=#FFFFFF;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="472" y="1168" width="28" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="p1msg" value="Debe iniciar sesión para finalizar la compra.&#10;&lt;font style=&quot;font-size:9px&quot;&gt;(RF14 - Validar sesión iniciada)&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="510" y="1165" width="250" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="p1btn" value="Aceptar" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#666666;fontSize=10;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="560" y="1215" width="100" height="26" as="geometry" />
+        </mxCell>
+
+        <mxCell id="p2win" value="" style="whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="830" y="1130" width="320" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="p2bar" value="Error" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C0392B;strokeColor=#333333;fontColor=#FFFFFF;fontStyle=1;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="830" y="1130" width="320" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="p2x" value="X" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C0392B;strokeColor=none;fontColor=#FFFFFF;fontSize=9;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1128" y="1133" width="20" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="p2icon" value="!" style="ellipse;whiteSpace=wrap;html=1;fillColor=#C0392B;strokeColor=#8B1A1A;fontColor=#FFFFFF;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="852" y="1168" width="28" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="p2msg" value="No hay suficientes unidades disponibles del libro.&#10;&lt;font style=&quot;font-size:9px&quot;&gt;(RF17 - Validar disponibilidad)&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;fontSize=11;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="890" y="1165" width="250" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="p2btn" value="Aceptar" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#666666;fontSize=10;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="940" y="1215" width="100" height="26" as="geometry" />
+        </mxCell>
+
+        <!-- ================= SCREEN 10: BUSCAR LIBRO ================= -->
+        
+        <mxCell id="s10win" value="" style="whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="20" y="400" width="420" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="s10bar" value="Buscar Libro" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontStyle=1;fontSize=13;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="20" y="400" width="420" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s10x" value="X" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#C0392B;strokeColor=none;fontColor=#FFFFFF;fontSize=9;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="418" y="403" width="20" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s10panel" value="" style="whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="440" width="380" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="s10ptitle" value="Criterios de búsqueda" style="text;html=1;fontSize=10;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="444" width="380" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s10l1" value="ISBN:" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="50" y="468" width="50" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s10f1" value="978-84-01" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#333333;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="105" y="466" width="140" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s10b1" value="Buscar" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontSize=10;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="280" y="464" width="100" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s10l2" value="Título:" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="50" y="496" width="50" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s10f2" value="Cien años..." style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#333333;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="105" y="494" width="140" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s10b2" value="Limpiar" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#666666;fontSize=10;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="280" y="492" width="100" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s10l3" value="Autor:" style="text;html=1;align=right;verticalAlign=middle;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="50" y="524" width="50" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s10f3" value="G. Márquez" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#888888;fontSize=9;fontColor=#333333;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="105" y="522" width="140" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s10tbl" value="" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="40" y="560" width="380" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="s10hdr" value="" style="whiteSpace=wrap;html=1;fillColor=#D9D9D9;strokeColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="40" y="560" width="380" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="s10h1" value="ISBN" style="text;html=1;fontSize=9;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="50" y="562" width="70" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s10h2" value="Título" style="text;html=1;fontSize=9;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="120" y="562" width="140" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s10h3" value="Autor" style="text;html=1;fontSize=9;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="260" y="562" width="90" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s10h4" value="Precio" style="text;html=1;fontSize=9;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="350" y="562" width="70" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s10r1a" value="978-84-01" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="50" y="586" width="70" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s10r1b" value="Cien años de soledad" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="120" y="586" width="140" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s10r1c" value="G. Márquez" style="text;html=1;fontSize=9;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="260" y="586" width="90" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s10r1d" value="$50.000" style="text;html=1;fontSize=9;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="350" y="586" width="70" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="s10sep1" value="" style="whiteSpace=wrap;html=1;fillColor=#CCCCCC;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="584" width="380" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s10sep2" value="" style="whiteSpace=wrap;html=1;fillColor=#CCCCCC;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="608" width="380" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s10bagregar" value="Agregar al carrito" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4E7CA6;strokeColor=#333333;fontColor=#FFFFFF;fontSize=10;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="90" y="670" width="130" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s10bcerrar" value="Cerrar" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFEFEF;strokeColor=#666666;fontSize=10;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="235" y="670" width="90" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="s10note" value="Busca por ISBN, título o autor, combinando criterios. Desde el resultado se puede agregar al carrito." style="text;html=1;align=center;verticalAlign=middle;fontSize=9;fontColor=#777777;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="40" y="702" width="380" height="14" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
