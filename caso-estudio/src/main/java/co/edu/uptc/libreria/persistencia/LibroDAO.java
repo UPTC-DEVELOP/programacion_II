@@ -80,7 +80,7 @@ public class LibroDAO implements IGestionLibro{
     
     @Override
 	public void  actualizar(Libro libro) {
-        String sql = "UPDATE libros SET titulo = ?, autor = ?, precio = ?, stock = ?,  editorial = ?, aniopublicacion = ?, genero = ? WHERE codigo = ?";
+        String sql = "UPDATE libros SET titulo = ?, autor = ?, precio = ?, codigo = ?, stock = ?,  editorial = ?, anio_publicacion = ?, genero = ? WHERE codigo = ?";
 
         try (Connection con = ConexionBD.getConnection()) {
             if (con == null) return;
