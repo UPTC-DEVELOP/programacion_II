@@ -3,22 +3,15 @@ package view;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import config.ProjectConfig;
 import controller.ControladorCliente;
 import controller.ControladorCompras;
 import controller.ControladorLibro;
 import model.Cliente;
 import model.ClientePremium;
-import model.Compra;
 import model.FormatoLibro;
 import model.Libro;
-import persistencia.IRepositorio;
 import persistencia.PersistenciaException;
-import persistencia.RepositorioClientesBD;
-import persistencia.RepositorioClientesJson;
-import persistencia.RepositorioComprasBD;
-import persistencia.RepositorioComprasJson;
-import persistencia.RepositorioLibrosBD;
-import persistencia.RepositorioLibrosJson;
 import service.IServicioClientes;
 import service.IServicioCompras;
 import service.IServicioLibros;
@@ -36,29 +29,14 @@ public class Main {
             @Override
             public void run() {
                 try {
-                    // CAPA 1: PERSISTENCIA
-                    // Los datos se guardan en base de datos si se arranca con
-                    // -Dtienda.bd=true; si no, en archivo JSON.
+                    // CAPA 1 y 2: persistencia y lógica de negocio
                 	
-                    boolean usarBD = Boolean.getBoolean("tienda.bd");
-
-                    IRepositorio<Cliente> repositorioClientes = usarBD
-                            ? new RepositorioClientesBD()
-                            : new RepositorioClientesJson();
-
-                    IRepositorio<Libro> repositorioLibros = usarBD
-                            ? new RepositorioLibrosBD()
-                            : new RepositorioLibrosJson();
-
-                    IRepositorio<Compra> repositorioCompras = usarBD
-                            ? new RepositorioComprasBD()
-                            : new RepositorioComprasJson();
-
-                    // CAPA 2: LÓGICA DE NEGOCIO (solo se usa la interfaz)
-                    
-                    IServicioClientes controladorClientes = new ControladorCliente(repositorioClientes);
-                    IServicioLibros controladorLibros = new ControladorLibro(repositorioLibros);
-                    IServicioCompras controladorCompras = new ControladorCompras(repositorioCompras);
+                    IServicioClientes controladorClientes =
+                            new ControladorCliente(ProjectConfig.clientes());
+                    IServicioLibros controladorLibros =
+                            new ControladorLibro(ProjectConfig.libros());
+                    IServicioCompras controladorCompras =
+                            new ControladorCompras(ProjectConfig.compras());
 
                     cargarDatosDePrueba(controladorClientes);
                     cargarLibrosDePrueba(controladorLibros);
