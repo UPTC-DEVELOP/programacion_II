@@ -291,6 +291,6 @@ DROP USER IF EXISTS 'tienda_app'@'localhost';
 - `caso-estudio/config/database.properties`: configuración **privada** de cada equipo.
 - `docs/PRUEBAS.md`: evidencias y capturas de la ejecución.
 
-[Volver al README principal](../../README.md)
+[Volver al README principal](../README.md)
 
 [🏠 Inicio Grupo 14](https://github.com/UPTC-DEVELOP/programacion_II/tree/feature/grupo14)
