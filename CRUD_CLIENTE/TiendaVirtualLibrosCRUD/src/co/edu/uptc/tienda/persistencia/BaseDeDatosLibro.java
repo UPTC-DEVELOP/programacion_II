@@ -12,7 +12,6 @@ import co.edu.uptc.tienda.modelo.Libro;
 import co.edu.uptc.tienda.modelo.enums.TipoLibro;
 import co.edu.uptc.tienda.negocio.IRepositorioLibro;
 
-
 public class BaseDeDatosLibro implements IRepositorioLibro {
 
 	private static final String SEPARADOR_AUTORES = ", ";
@@ -136,7 +135,7 @@ public class BaseDeDatosLibro implements IRepositorioLibro {
 			pstmt.setString(1, isbn);
 			pstmt.executeUpdate();
 
-			isOperacionExitosa = pstmt.executeUpdate() > 0;
+			isOperacionExitosa = true;
 
 		} catch (SQLException e) {
 			System.err.println("Error al Eliminar el libro: " + e.getMessage());

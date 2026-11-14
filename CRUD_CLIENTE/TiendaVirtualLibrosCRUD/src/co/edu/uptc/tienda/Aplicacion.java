@@ -25,7 +25,7 @@ public class Aplicacion {
 
 	public static void main(String[] args) {
 
-		//  Interfaz Gráfica 
+		// Interfaz Gráfica
 		try {
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (Exception e) {
@@ -33,8 +33,7 @@ public class Aplicacion {
 			e.printStackTrace();
 		}
 
-		
-		// Los clientes se guardan en data/clientes.json 
+		// Los clientes se guardan en data/clientes.json
 		IRepositorioCliente repositorioCliente = new ClienteJSON();
 		IGestionCliente gestionCliente = new GestionCliente(repositorioCliente);
 		IGestionLibro gestionLibro = new GestionLibro(new BaseDeDatosLibro());

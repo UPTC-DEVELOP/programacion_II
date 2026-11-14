@@ -146,6 +146,7 @@ public class PanelLibro extends JPanel {
 				"¿Está seguro de eliminar el Libro? " + libroEliminar.getTitulo() + " ", "Confirmar Eliminación",
 				JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 
+
 		if (confirmacion == JOptionPane.YES_OPTION) {
 			try {
 				gestionLibro.eliminarLibro(libroEliminar.getIsbn());
