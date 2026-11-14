@@ -21,15 +21,6 @@ public class GestorFactura {
 			return false;
 		}
 
-		// Llamamos al DAO que hace el INSERT masivo (Batch) en MySQL
-		boolean resultado = facturaBD.registrarFactura(factura);
-
-		if (resultado) {
-			System.out.println("¡Factura procesada y guardada con éxito en la BD!");
-		} else {
-			System.out.println("Hubo un error al registrar la factura en la BD.");
-		}
-
-		return resultado;
+		return facturaBD.registrarFactura(factura);
 	}
 }
