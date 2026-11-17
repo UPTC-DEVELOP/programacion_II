@@ -50,6 +50,7 @@ public class VentanaCompras extends JFrame {
     private JLabel lblSubtotal;
     private JLabel lblIva19;
     private JLabel lblIva5;
+    private JLabel lblOtrosIva;
     private JLabel lblDescuentoPremium;
     private JLabel lblTotal;
 
@@ -284,6 +285,10 @@ public class VentanaCompras extends JFrame {
         lblIva5.setText(
                 String.format("$%,.2f", carrito.calcularIVA5())
         );
+
+        lblOtrosIva.setText(
+                String.format("$%,.2f", carrito.calcularOtrosIva())
+        );
      
         // MOSTRAR DESCUENTO PREMIUM
         double descuento = cliente != null ? cliente.calcularDescuento() : 0.0;
@@ -487,11 +492,12 @@ public class VentanaCompras extends JFrame {
         JPanel panelPrincipal = new JPanel(new BorderLayout(6, 6));
 
      // CREAR PANEL DE TOTALES
-        JPanel panelTotales = new JPanel(new GridLayout(5, 2, 6, 6));
+        JPanel panelTotales = new JPanel(new GridLayout(6, 2, 6, 6));
 
         lblSubtotal = new JLabel("$0.00");
         lblIva19 = new JLabel("$0.00");
         lblIva5 = new JLabel("$0.00");
+        lblOtrosIva = new JLabel("$0.00");
         lblDescuentoPremium = new JLabel("$0.00");
         lblTotal = new JLabel("$0.00");
 
@@ -503,6 +509,9 @@ public class VentanaCompras extends JFrame {
 
         panelTotales.add(new JLabel("IVA 5%:"));
         panelTotales.add(lblIva5);
+
+        panelTotales.add(new JLabel("Otros IVA:"));
+        panelTotales.add(lblOtrosIva);
         
      // MOSTRAR DESCUENTO PREMIUM
         panelTotales.add(new JLabel("Descuento Premium:"));
@@ -571,6 +580,10 @@ public class VentanaCompras extends JFrame {
 
     public JLabel getLblIva5() {
         return lblIva5;
+    }
+
+    public JLabel getLblOtrosIva() {
+        return lblOtrosIva;
     }
     
     public JLabel getLblDescuentoPremium() {

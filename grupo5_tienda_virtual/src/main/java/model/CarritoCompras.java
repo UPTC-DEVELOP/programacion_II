@@ -79,21 +79,39 @@ public class CarritoCompras {
         double total = 0;
         for (Map.Entry<Libro, Integer> e : items.entrySet()) {
             Libro libro = e.getKey();
-            if (Math.abs(libro.getPorcentajeIva() - porcentaje) < TOLERANCIA_IVA) {
+            if (esPorcentaje(libro, porcentaje)) {
                 total += libro.getPrecio() * e.getValue() * (libro.getPorcentajeIva() / 100.0);
             }
         }
         return total;
     }
 
-    public double calcularTotal() {
+    public double calcularOtrosIva() {
         double total = 0;
         for (Map.Entry<Libro, Integer> e : items.entrySet()) {
             Libro libro = e.getKey();
-            double subtotal = libro.getPrecio() * e.getValue();
-            total += subtotal + subtotal * (libro.getPorcentajeIva() / 100.0);
+            if (!esPorcentaje(libro, 19.0) && !esPorcentaje(libro, 5.0)) {
+                total += libro.getPrecio() * e.getValue() * (libro.getPorcentajeIva() / 100.0);
+            }
         }
         return total;
+    }
+
+    public double calcularIVA() {
+        double total = 0;
+        for (Map.Entry<Libro, Integer> e : items.entrySet()) {
+            Libro libro = e.getKey();
+            total += libro.getPrecio() * e.getValue() * (libro.getPorcentajeIva() / 100.0);
+        }
+        return total;
+    }
+
+    private boolean esPorcentaje(Libro libro, double porcentaje) {
+        return Math.abs(libro.getPorcentajeIva() - porcentaje) < TOLERANCIA_IVA;
+    }
+
+    public double calcularTotal() {
+        return calcularSubtotal() + calcularIVA();
     }
 
  // CALCULAR TOTAL APLICANDO DESCUENTO SOBRE EL SUBTOTAL
@@ -103,9 +121,7 @@ public class CarritoCompras {
 
         double valorDescuento = subtotal * descuento;
 
-        double impuestos = calcularIVA19() + calcularIVA5();
-
-        return subtotal - valorDescuento + impuestos;
+        return subtotal - valorDescuento + calcularIVA();
     }
 
     public Map<Libro, Integer> getItems() {
