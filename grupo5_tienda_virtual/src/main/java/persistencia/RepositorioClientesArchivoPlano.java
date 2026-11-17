@@ -68,13 +68,17 @@ public class RepositorioClientesArchivoPlano implements IRepositorio<Cliente> {
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(new FileInputStream(archivo), StandardCharsets.UTF_8))) {
             String linea;
+            int numeroLinea = 0;
             while ((linea = reader.readLine()) != null) {
+                numeroLinea++;
                 if (linea.trim().isEmpty()) {
                     continue;
                 }
-                Cliente cliente = parsearLinea(linea);
-                if (cliente != null) {
-                    clientes.add(cliente);
+                try {
+                    clientes.add(parsearLinea(linea));
+                } catch (IllegalArgumentException e) {
+                    throw new PersistenciaException(
+                            "Linea " + numeroLinea + " invalida en " + rutaArchivo, e);
                 }
             }
         } catch (IOException e) {
@@ -87,11 +91,15 @@ public class RepositorioClientesArchivoPlano implements IRepositorio<Cliente> {
      */
     private Cliente parsearLinea(String linea) {
         String[] partes = linea.split(SEPARADOR, -1);
-        if (partes.length < 4) {
-            return null;
+        if (partes.length != 6) {
+            throw new IllegalArgumentException("Se esperaban 6 campos y llegaron " + partes.length);
         }
 
         String tipo = partes[0].trim();
+        if (!"PREMIUM".equalsIgnoreCase(tipo) && !"REGULAR".equalsIgnoreCase(tipo)) {
+            throw new IllegalArgumentException("Tipo de cliente desconocido: " + tipo);
+        }
+
         String nombre = partes[1];
         String correo = partes[2];
         String contrasena = partes[3];
@@ -100,10 +108,10 @@ public class RepositorioClientesArchivoPlano implements IRepositorio<Cliente> {
                 ? new ClientePremium(nombre, correo, contrasena)
                 : new ClienteRegular(nombre, correo, contrasena);
 
-        if (partes.length > 4 && !partes[4].isEmpty()) {
+        if (!partes[4].isEmpty()) {
             cliente.setDireccion(partes[4]);
         }
-        if (partes.length > 5 && !partes[5].isEmpty()) {
+        if (!partes[5].isEmpty()) {
             cliente.setTelefono(partes[5]);
         }
         return cliente;
