@@ -7,6 +7,7 @@ import persistencia.IRepositorio;
 import persistencia.RepositorioClientesArchivoPlano;
 import persistencia.RepositorioClientesBD;
 import persistencia.RepositorioClientesJson;
+import persistencia.RepositorioComprasArchivoPlano;
 import persistencia.RepositorioComprasBD;
 import persistencia.RepositorioComprasJson;
 import persistencia.RepositorioLibrosBD;
@@ -47,6 +48,10 @@ public final class ProjectConfig {
 
     public static IRepositorio<Compra> compras() {
         return comprasBD();
+    }
+
+    public static IRepositorio<Compra> comprasArchivoPlano() {
+        return new RepositorioComprasArchivoPlano();
     }
 
     public static IRepositorio<Compra> comprasJson() {
