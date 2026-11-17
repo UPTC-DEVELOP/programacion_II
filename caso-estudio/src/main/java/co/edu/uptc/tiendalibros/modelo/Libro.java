@@ -16,11 +16,11 @@ public class Libro extends ElementoBase {
   /// Año de publicación del libro.
   private int anioPublicacion;
   
-  /// ID de la categoría que sirve para clasificar el libro.
-  private Long idCategoria;
+  /// Categoría que sirve para clasificar el libro.
+  private Categoria categoria;
   
-  /// ID de la editorial responsable de publicar el libro.
-  private Long idEditorial;
+  /// Editorial responsable de publicar el libro.
+  private Editorial editorial;
   
   /// Lista que asocia el libro con sus autores.
   private List<AutorLibro> listaAutoria;
@@ -39,33 +39,31 @@ public class Libro extends ElementoBase {
   /// @param isbn            ISBN del del libro.
   /// @param titulo          Título del libro.
   /// @param anioPublicacion Año de publicación del libro.
-  /// @param idCategoria     ID de la categoría que sirve para clasificar el libro.
-  /// @param idEditorial     ID de la editorial responsable de publicar el libro.
-  
-  /// @param listaAutoria Lista que asocia el libro con sus autores.
-  /// @param imagenLibro  Nombre del archivo que sirve como imagen del libro.
-  
+  /// @param categoria       Categoría que sirve para clasificar el libro.
+  /// @param editorial       Editorial responsable de publicar el libro.
+  /// @param listaAutoria    Lista que asocia el libro con sus autores.
+  /// @param imagenLibro     Nombre del archivo que sirve como imagen del libro.
   public Libro(
     String isbn,
     String titulo,
     int anioPublicacion,
-    Long idCategoria,
-    Long idEditorial,
+    Categoria categoria,
+    Editorial editorial,
     List<AutorLibro> listaAutoria,
     String imagenLibro
   ) {
     // invocar al constructor que tiene todos los atributos
-    this(null, isbn, titulo, anioPublicacion, idCategoria, idEditorial, listaAutoria, imagenLibro);
+    this(null, isbn, titulo, anioPublicacion, categoria, editorial, listaAutoria, imagenLibro);
   }
   
-  /// Crea un nuevo objeto [Libro] los con valores especificados.
+  /// Crea un nuevo objeto [Libro] con los valores especificados.
   ///
   /// @param id              ID del libro.
-  /// @param isbn            ISBN del del libro.
+  /// @param isbn            ISBN del libro.
   /// @param titulo          Título del libro.
   /// @param anioPublicacion Año de publicación del libro.
-  /// @param idCategoria     ID de la categoría que sirve para clasificar el libro.
-  /// @param idEditorial     ID de la editorial responsable de publicar el libro.
+  /// @param categoria       Categoría que sirve para clasificar el libro.
+  /// @param editorial       Editorial responsable de publicar el libro.
   /// @param listaAutoria    Lista que asocia el libro con sus autores.
   /// @param imagenLibro     Nombre del archivo que sirve como imagen del libro.
   public Libro(
@@ -73,18 +71,18 @@ public class Libro extends ElementoBase {
     String isbn,
     String titulo,
     int anioPublicacion,
-    Long idCategoria,
-    Long idEditorial,
+    Categoria categoria,
+    Editorial editorial,
     List<AutorLibro> listaAutoria,
-    String nombreImagenLibro
+    String imagenLibro
   ) {
     super(id);
     this.isbn = isbn;
     this.titulo = titulo;
     this.anioPublicacion = anioPublicacion;
-    this.idCategoria = idCategoria;
-    this.idEditorial = idEditorial;
-    this.imagenLibro = nombreImagenLibro;
+    this.categoria = categoria;
+    this.editorial = editorial;
+    this.imagenLibro = imagenLibro;
     
     // evitar listas nulas
     if (listaAutoria == null) {
@@ -103,8 +101,8 @@ public class Libro extends ElementoBase {
       builder.isbn(),
       builder.titulo(),
       builder.anioPublicacion(),
-      builder.idCategoria(),
-      builder.idEditorial(),
+      builder.categoria(),
+      builder.editorial(),
       builder.listaAutoria(),
       builder.imagenLibro()
     );
@@ -140,25 +138,25 @@ public class Libro extends ElementoBase {
   /// @param anioPublicacion Año del publicación del libro.
   public void setAnioPublicacion(int anioPublicacion) { this.anioPublicacion = anioPublicacion; }
   
-  /// Obtiene el ID de la editorial responsable de publicar el libro.
+  /// Obtiene la editorial responsable de publicar el libro.
   ///
-  /// @return ID de la editorial responsable de publicar el libro.
-  public Long getIdEditorial() { return this.idEditorial; }
+  /// @return Editorial responsable de publicar el libro.
+  public Editorial getEditorial() { return this.editorial; }
   
-  /// Establece el ID de la editorial responsable de publicar el libro.
+  /// Establece la editorial responsable de publicar el libro.
   ///
-  /// @param idEditorial ID de la editorial responsable de publicar el libro.
-  public void setIdEditorial(Long idEditorial) { this.idEditorial = idEditorial; }
+  /// @param editorial Editorial responsable de publicar el libro.
+  public void setEditorial(Editorial editorial) { this.editorial = editorial; }
   
-  /// Obtiene el ID de la categoría del libro.
+  /// Obtiene la categoría del libro.
   ///
-  /// @return ID de la categoría del libro.
-  public Long getIdCategoria() { return this.idCategoria; }
+  /// @return Categoría del libro.
+  public Categoria getCategoria() { return this.categoria; }
   
-  /// Establece el ID de la categoría del libro.
+  /// Establece la categoría del libro.
   ///
-  /// @param idCategoria ID de la categoría del libro.
-  public void setIdCategoria(Long idCategoria) { this.idCategoria = idCategoria; }
+  /// @param categoria Categoría del libro.
+  public void setCategoria(Categoria categoria) { this.categoria = categoria; }
   
   /// Obtiene la lista que asocia el libro con sus autores.
   ///

@@ -1,7 +1,8 @@
-///
+//
 package co.edu.uptc.tiendalibros.persistencia.memoria;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -35,19 +36,18 @@ public class RepositorioEditorialEnMemoria implements IRepositorioEditorial {
       guardar(new Editorial("Pearson"));
       guardar(new Editorial("ECOE"));
       guardar(new Editorial("McGraw-Hill"));
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (ViolacionElementoNoExisteException excepcion) {
+      // no debería ocurrir este error porque son editoriales nuevas, sin ID
+      throw new IllegalStateException("No se pudieron crear las editoriales de ejemplo.", excepcion);
     }
   }
   
-
   @Override
   public Editorial guardar(Editorial editorial) throws ViolacionElementoNoExisteException {
     // si el elemento es nulo, no se puede guardar nada
     if (editorial == null) {
       throw new IllegalArgumentException("Error: No se puede guardar una editorial nula.");
     }
-
     
     // todo depende del id
     // si el id es nulo, la editorial no se ha guardado en la base de datos
@@ -60,7 +60,7 @@ public class RepositorioEditorialEnMemoria implements IRepositorioEditorial {
       this.editoriales.add(editorialNueva);
       return editorialNueva;
     }
-
+    
     // el id no es nulo, luego se busca la editorial que se quiere guardar
     for (int i = 0; i < this.editoriales.size(); i++) {
       if (this.editoriales.get(i)
@@ -68,7 +68,7 @@ public class RepositorioEditorialEnMemoria implements IRepositorioEditorial {
         .equals(editorial.getId())) {
         // reemplazar el objeto editorial
         this.editoriales.set(i, editorial);
-     // retornar la editorial
+        // retornar la editorial
         return editorial;
       }
     }
@@ -85,7 +85,6 @@ public class RepositorioEditorialEnMemoria implements IRepositorioEditorial {
     if (id == null) {
       throw new IllegalArgumentException("Error: No se puede eliminar con un ID nulo.");
     }
-
     
     /*
      * Este bucle generó una excepción java.util.ConcurrentModificationException y no se puede
@@ -117,18 +116,16 @@ public class RepositorioEditorialEnMemoria implements IRepositorioEditorial {
   public Optional<Editorial> buscarPorId(Long id) {
     // si el id es nulo, se devuelve un objeto vacío
     if (id == null) {
-      // TODO: qué mal devolver un nulo solo por pasar el compilador
       return Optional.empty();
     }
-   
     
     // buscar la editorial que coincida con el id
     for (Editorial actual : this.editoriales) {
       if (actual.getId()
         .equals(id)) {
         // se encontró una coincidencia, entonces retornarla como resultado
-       return Optional.of(actual);
-       }
+        return Optional.of(actual);
+      }
     }
     
     // no hubo resultados
@@ -137,10 +134,8 @@ public class RepositorioEditorialEnMemoria implements IRepositorioEditorial {
   
   @Override
   public List<Editorial> listar() {
-    // TODO: Investigar cómo hacer que esta lista que se retorna quede "congelada" para evitar
-    // que le agreguen más editoriales sin pasar primero por el método guardar
-    // por ahora, devolver una copia de la lista
-    return new ArrayList<Editorial>(this.editoriales);
+    // devolver una copia inmodificable de la lista de editoriales
+    return Collections.unmodifiableList(this.editoriales);
   }
   
   @Override
@@ -156,7 +151,5 @@ public class RepositorioEditorialEnMemoria implements IRepositorioEditorial {
     
     return resultados;
   }
-
-
-
+  
 }

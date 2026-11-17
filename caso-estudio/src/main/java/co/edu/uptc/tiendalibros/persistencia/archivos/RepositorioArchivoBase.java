@@ -1,10 +1,7 @@
 //
 package co.edu.uptc.tiendalibros.persistencia.archivos;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,11 +15,17 @@ import java.util.concurrent.atomic.AtomicLong;
 import co.edu.uptc.tiendalibros.negocio.ErrorTecnicoSistemaException;
 import co.edu.uptc.tiendalibros.negocio.excepciones.ViolacionElementoNoExisteException;
 
-/// Representa la clase base para guardar elementos en archivos.
+/// Representa la clase base de los repositorios que guardan sus elementos en un archivo.
+///
+/// Esta clase no sabe en qué formato está escrito el archivo (CSV, JSON, otro).
+/// 
+/// Mantiene los registros en la memoria, asigna los IDs, y lee y escribe el archivo.
+/// 
+/// Las clases derivadas definen el formato implementando los métodos
+/// [#crearArchivoVacio(Path)], [#leerRegistros(Path)] y [#escribirRegistros(Path, List)].
+///
+/// @param <T> Tipo de elemento que se guarda en el archivo.
 public abstract class RepositorioArchivoBase<T> {
-  
-  /// Separador de las líneas que representan registros en el archivo.
-  private static final String SEPARADOR_LINEA = "\r\n";
   
   /// Lista de los registros cargados en la memoria.
   private final List<T> registros;
@@ -32,6 +35,9 @@ public abstract class RepositorioArchivoBase<T> {
   
   /// Rutal del archivo donde se guardan los elementos.
   private final Path rutaArchivo;
+  
+  /// Indica si los datos del archivo ya se cargaron en la memoria.
+  private boolean inicializado;
   
   /// Crea un nuevo repositorio de datos cargando los datos del archivo en la ruta
   /// especificada. Si el archivo no existe, lo crea con el encabezado correspondiente.
@@ -46,6 +52,9 @@ public abstract class RepositorioArchivoBase<T> {
   
   /// Inicializa el repositorio cargando los datos desde el archivo. También crea el archivo
   /// si no existe.
+  /// 
+  /// Una clase derivada debe invocar a este método al final de su constructor para quedar
+  /// completamente listo.
   ///
   /// @throws ErrorTecnicoSistemaException Si ocurre un error de entrada y salida al cargar
   ///                                      el archivo de datos.
@@ -54,8 +63,15 @@ public abstract class RepositorioArchivoBase<T> {
     try {
       // si el archivo no existe, se debe crear el archivo
       if (Files.exists(this.rutaArchivo) == false) {
-        crearArchivo();
+        // Si no existen los directorios padre, se deben crear
+        if (this.rutaArchivo.getParent() != null) {
+          Files.createDirectories(this.rutaArchivo.getParent());
+        }
+        
+        // crearel nuevo archivo dependiendo del formato
+        crearArchivoVacio(this.rutaArchivo);
       }
+      
       // cargar los registros del archivo
       cargarRegistros();
     } catch (IOException excepcion) {
@@ -65,128 +81,68 @@ public abstract class RepositorioArchivoBase<T> {
         String.format("No se pudo cargar el archivo de datos '%s'", this.rutaArchivo), excepcion
       );
     }
+    this.inicializado = true;
   }
   
-  /// Crea el archivo con su línea de encabezado
-  ///
-  /// @throws IOException Si ocurre un error de entrada y salida.
-  protected void crearArchivo() throws IOException {
-    // Si no existen los directorios padre, se deben crear
-    if (this.rutaArchivo.getParent() != null) {
-      Files.createDirectories(this.rutaArchivo.getParent());
+  /// Verifica si el repositorio ya cargó los datos del archivo.
+  /// 
+  /// @throws IllegalStateException Si el repositorio no se inicializó.
+  private void verificarInicializado() {
+    if (this.inicializado == false) {
+      throw new IllegalStateException(
+        "El repositorio no se inicializó. La clase derivada debe invocar inicializar() al final de su constructor."
+      );
     }
-    
-    // crea el archivo al escribir la primera línea que es el encabezado
-    Files.writeString(
-      this.rutaArchivo,
-      getEncabezado() + RepositorioArchivoBase.SEPARADOR_LINEA,
-      StandardCharsets.UTF_8
-    );
   }
   
-  /// Carga los registros que existen en el archivo.
+  /// Carga en la memoria los registros que existen en el archivo.
+  /// 
+  /// Ajusta el generador de IDs para que continúe después del ID más grande.
   ///
   /// @throws ErrorTecnicoSistemaException Si ocurre un error técnico del sistema al cargar
   ///                                      los registros.
   protected void cargarRegistros() {
+    // leer los registros dependiendo del formato
+    List<T> leidos;
+    
+    try {
+      leidos = leerRegistros(this.rutaArchivo);
+    } catch (IOException excepcion) {
+      throw new ErrorTecnicoSistemaException(
+        String.format("Error al leer el archivo de datos: '%s'", this.rutaArchivo), excepcion
+      );
+    }
+    
     // limpiar los registros cargados anteriormente
     this.registros.clear();
     // valor del ID más grande que se ha encontrado hasta el momento
     long idMasGrande = 0;
     
-    // intentar leer cada línea del archivo usando la gestión del recurso
-    try (BufferedReader lector = Files.newBufferedReader(this.rutaArchivo, StandardCharsets.UTF_8)) {
+    // recorrer los registros leídos para determinar cuál es el ID más grande
+    for (T registro : leidos) {
+      this.registros.add(registro);
+      Long idRegistro = getId(registro);
       
-      // contenido de la línea
-      String linea;
-      String lineaEncabezado = null;
-      
-      // contador de la línea actual
-      int numeroLinea = 0;
-      
-      // leer todas las líneas del archivo hasta que no quede ninguna
-      while ((linea = lector.readLine()) != null) {
-        numeroLinea++;
-        
-        // saltarse las líneas vacías
-        if (linea.isBlank()) {
-          continue;
-        }
-        
-        // la primera línea que no esté vacía se considera de encabezado
-        if (lineaEncabezado == null) {
-          lineaEncabezado = linea;
-          continue;
-        }
-        
-        // la línea puede tener datos por lo que se debe convertir
-        Optional<T> registro = convertirLinea(linea);
-        
-        // si la línea no pudo ser convertida, se detiene la ejecución, y se le avisa al usuario
-        if (registro.isEmpty()) {
-          throw new ErrorTecnicoSistemaException(
-            String.format(
-              "La línea %d del archivo de datos '%s' no tiene el formato esperado.",
-              numeroLinea,
-              this.rutaArchivo
-            ),
-            null
-          );
-        }
-        
-        // si se obtuvo un registro, se debe procesar
-        if (registro.isPresent()) {
-          // agregar el registro a la lista
-          this.registros.add(registro.get());
-          // obtener el id del registro
-          Long idRegistro = getId(registro.get());
-          // revisar si el id del registro es mayor que el id más grande que se ha encontrado hasta
-          // ahora
-          if ((idRegistro != null) && idRegistro > idMasGrande) {
-            idMasGrande = idRegistro;
-          }
-        }
+      // revisar si el id del registro es mayor que el id más grande que se ha encontrado
+      if ((idRegistro != null) && (idRegistro > idMasGrande)) {
+        idMasGrande = idRegistro;
       }
-      
-    } catch (IOException excepcion) {
-      throw new ErrorTecnicoSistemaException(
-        String.format(
-          "Error al leer el archivo de datos: '%s'",
-          this.rutaArchivo
-        ),
-        excepcion
-      );
     }
-    
     // al terminar de cargar todos los registros, se le asigna al contador el valor del id más
     // grande encontrado
     this.contador.set(idMasGrande);
   }
   
   /// Escribe todos los registros en el archivo. Se reemplaza todo el contenido anterior.
+  /// 
+  /// @throws ErrorTecnicoSistemaException Si ocurre un error de entrada y salida.
   protected void guardarArchivo() {
-    // intentar guardar el archivo con gestión de recurso
-    try (BufferedWriter escritor = Files.newBufferedWriter(
-      this.rutaArchivo,
-      StandardCharsets.UTF_8
-    )) {
-      // primero escribir el encabezado del archivo
-      escritor.write(getEncabezado());
-      escritor.newLine();
-      
-      // escribir cada registro
-      for (T registro : this.registros) {
-        escritor.write(convertirRegistro(registro));
-        escritor.newLine();
-      }
-      
+    try {
+      // escribir los registros en el archivo dependiendo del formato
+      escribirRegistros(this.rutaArchivo, this.registros);
     } catch (IOException excepcion) {
       throw new ErrorTecnicoSistemaException(
-        String.format(
-          "Error al escribir el archivo de datos: '%s'",
-          this.rutaArchivo
-        ),
-        excepcion
+        String.format("Error al escribir el archivo de datos: '%s'", this.rutaArchivo), excepcion
       );
     }
   }
@@ -217,13 +173,30 @@ public abstract class RepositorioArchivoBase<T> {
   /// interna de registros.
   ///
   /// @return Copia de la lista de registros.
-  public List<T> getRegistros() { return Collections.unmodifiableList(this.registros); }
+  /// @throws IllegalStateException Si el repositorio no se inicializó.
+  public List<T> getRegistros() {
+    // verificar que el repositorio haya cargado los datos del archivo
+    verificarInicializado();
+    return Collections.unmodifiableList(this.registros);
+  }
+  
+  /// Obtiene la lista de registros guardados en el archivo.
+  /// 
+  /// @return Lista de solo lectura con los registros. O, vacía si no hay registros.
+  /// @throws IllegalStateException Si el repositorio no se inicializó.
+  public List<T> listar() {
+    return getRegistros();
+  }
   
   /// Busca el registro con el ID especificado.
   ///
   /// @param id ID del registro que se quiere buscar.
   /// @return El registro encontrado, o vacío si no existe.
+  /// @throws IllegalStateException Si el repositorio no se inicializó.
   public Optional<T> buscarPorId(Long id) {
+    // verificar que el repositorio haya cargado los datos del archivo
+    verificarInicializado();
+    
     if (id == null) {
       return Optional.empty();
     }
@@ -246,7 +219,11 @@ public abstract class RepositorioArchivoBase<T> {
   /// @throws IllegalArgumentException           Si `registro` es un objeto nulo.
   /// @throws ViolacionElementoNoExisteException Si se intenta actualizar un registro cuyo ID
   ///                                            ya no existe en el repositorio.
+  /// @throws IllegalStateException              Si el repositorio no se inicializó.
   public T guardar(T registro) throws ViolacionElementoNoExisteException {
+    // verificar que el repositorio haya cargado los datos del archivo
+    verificarInicializado();
+    
     if (registro == null) {
       throw new IllegalArgumentException(
         "No se puede guardar un registro nulo."
@@ -274,7 +251,11 @@ public abstract class RepositorioArchivoBase<T> {
   /// @param id ID del registro que se quiere eliminar.
   /// @return `true` si se eliminó, `false` si no se encontró.
   /// @throws IllegalArgumentException Si `id` es nulo.
+  /// @throws IllegalStateException    Si el repositorio no se inicializó.
   public boolean eliminar(Long id) {
+    // verificar que el repositorio haya cargado los datos del archivo
+    verificarInicializado();
+    
     if (id == null) {
       throw new IllegalArgumentException("Error: No se puede eliminar con ID nulo");
     }
@@ -293,15 +274,7 @@ public abstract class RepositorioArchivoBase<T> {
     return false;
   }
   
-  /// Obtiene la línea de encabezado del archivo (o sea, la primera línea).
-  ///
-  /// @return Línea de encabezado del archivo.
-  protected abstract String getEncabezado();
-  
-  /// Establece la línea de encabezado del archivo.
-  ///
-  /// @param encabezado Línea de encabezado del archivo.
-  protected abstract void setEncabezado(String encabezado);
+
   
   /// Obtiene el ID del registro dado.
   ///
@@ -317,17 +290,28 @@ public abstract class RepositorioArchivoBase<T> {
   /// @return Nuevo registro con el ID asignado (es decir, una copia junto a su ID).
   protected abstract T asignarId(T registro, Long id);
   
-  /// Convierte una línea de texto del archivo en un objeto del tipo T. Si la línea tiene
-  /// errores devuelve vacío.
-  ///
-  /// @param linea Línea de texto leída del archivo.
-  /// @return El objeto convertido, o vacío si la línea es inválida.
-  protected abstract Optional<T> convertirLinea(String linea);
+  /// Crea un archivo nuevo que representa un repositorio vacío según el formato.
+  /// 
+  /// @param ruta Ruta del archivo que se quiere crear.
+  /// @throws IOException Si ocurre un error de entrada y salida.
+  protected abstract void crearArchivoVacio(Path ruta) throws IOException;
   
-  /// Convierte un objeto del tipo T en una línea de texto para guardar en el archivo.
-  ///
-  /// @param registro Objeto que se quiere convertir.
-  /// @return Línea de texto que representa el objeto.
-  protected abstract String convertirRegistro(T registro);
+  /// Lee todos los registros del archivo según el formato.
+  /// 
+  /// @param ruta Ruta del archivo que se quiere leer.
+  /// @return Lista con los registros leídos.
+  /// @throws IOException                  Si ocurre un error de entrada y salida.
+  /// @throws ErrorTecnicoSistemaException Si el contenido del archivo no tiene el
+  ///                                      formato esperado.
+  protected abstract List<T> leerRegistros(Path ruta) throws IOException;
+  
+  /// Escribe todos los registros en el archivo según el formato.
+  /// 
+  /// Todo el contenido del archivo se reemplaza.
+  /// 
+  /// @param ruta      Ruta del archivo donde se escriben los registros.
+  /// @param registros Registros que se quieren escribir.
+  /// @throws IOException Si ocurre un error de entrada y salida.
+  protected abstract void escribirRegistros(Path ruta, List<T> registros) throws IOException;
   
 }

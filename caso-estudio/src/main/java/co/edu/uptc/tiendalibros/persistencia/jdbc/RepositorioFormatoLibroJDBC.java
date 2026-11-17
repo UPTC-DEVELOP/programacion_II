@@ -170,40 +170,57 @@ public class RepositorioFormatoLibroJDBC extends RepositorioJDBCBase<FormatoLibr
     }
   }
   
-  /// Busca los formatos de un libro usando una conexión que ya está abierta. Sirve para
-  /// consultar dentro de la misma conexión (o transacción) de otro repositorio.
+  /// Busca los formatos de un libro usando una conexión compartida.
   ///
-  /// @param conexion Conexión abierta con la base de datos.
+  /// **Conexión compartida:** este método no abre ni cierra la conexión con la base de
+  /// datos. La recibe del método que lo invoca, que es responsable de cerrarla. Más detalles
+  /// en [co.edu.uptc.tiendalibros.persistencia.jdbc].
+  /// 
+  /// @param conexion Conexión abierta y compartida con la base de datos. Sigue abierta al
+  ///                 terminar este método.
   /// @param idLibro  ID del libro. No es nulo.
   /// @return Lista con los formatos del libro. Vacía si no tiene.
   /// @throws SQLException Si ocurre un error técnico al consultar.
-  public List<FormatoLibro> buscarPorIdLibro(Connection conexion, Long idLibro) throws SQLException {
+  protected List<FormatoLibro> buscarPorIdLibro(Connection conexion, Long idLibro) throws SQLException {
     try (PreparedStatement comando = conexion.prepareStatement(RepositorioFormatoLibroJDBC.SQL_BUSCAR_POR_ID_LIBRO)) {
       comando.setLong(1, idLibro);
       return convertirFilas(comando);
     }
   }
   
-  /// Elimina todos los formatos de un libro usando una conexión que ya está abierta.
+  /// Elimina todos los formatos de un libro usando una conexión compartida
   ///
-  /// @param conexion Conexión abierta con la base de datos.
+  /// **Conexión compartida:** este método no abre ni cierra la conexión con la base de
+  /// datos. La recibe del método que lo invoca, que es responsable de confirmar o deshacer
+  /// la transacción y de cerrarla. Más detalles en
+  /// [co.edu.uptc.tiendalibros.persistencia.jdbc].
+  /// 
+  /// @param conexion Conexión abierta y compartida con la base de datos. Sigue abierta al
+  ///                 terminar este método.
   /// @param idLibro  ID del libro. No es nulo.
   /// @throws SQLException Si ocurre un error técnico al eliminar.
-  void eliminarPorIdLibro(Connection conexion, Long idLibro) throws SQLException {
+  protected void eliminarPorIdLibro(Connection conexion, Long idLibro) throws SQLException {
     try (PreparedStatement comando = conexion.prepareStatement(RepositorioFormatoLibroJDBC.SQL_ELIMINAR_POR_ID_LIBRO)) {
       comando.setLong(1, idLibro);
       comando.executeUpdate();
     }
   }
   
-  /// Elimina el formato de un tipo específico de un libro usando una conexión que ya está
-  /// abierta. Si el libro no tiene ese formato, no hace nada.
+  /// Elimina el formato de un tipo específico de un libro usando una conexión compartida.
+  /// Si el libro no tiene ese formato, no hace nada.
   /// 
-  /// @param conexion    Conexión abierta con la base de datos.
+  /// **Conexión compartida:** este método no abre ni cierra la conexión con la base de
+  /// datos. La recibe del método que lo invoca, que es responsable de confirmar o deshacer
+  /// la transacción y de cerrarla. Más detalles en
+  /// [co.edu.uptc.tiendalibros.persistencia.jdbc].
+  /// 
+  /// @param conexion    Conexión abierta y compartida con la base de datos. Sigue abierta al
+  ///                    terminar este método.
   /// @param idLibro     ID del libro. No es nulo.
   /// @param tipoFormato Tipo del formato que se quiere eliminar. No es nulo.
   /// @throws SQLException Si ocurre un error técnico al eliminar.
-  void eliminarPorIdLibroYTipo(Connection conexion, Long idLibro, TipoFormatoLibro tipoFormato) throws SQLException {
+  protected void eliminarPorIdLibroYTipo(Connection conexion, Long idLibro, TipoFormatoLibro tipoFormato)
+    throws SQLException {
     try (PreparedStatement comando = conexion
       .prepareStatement(RepositorioFormatoLibroJDBC.SQL_ELIMINAR_POR_ID_LIBRO_Y_TIPO)) {
       comando.setLong(1, idLibro);

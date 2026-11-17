@@ -1,8 +1,8 @@
-///
+//
 package co.edu.uptc.tiendalibros.modelo;
 
-///
-public class FormatoLibroBuilder extends ElementoBaseBuilder<FormatoLibro> {
+//
+public class FormatoLibroBuilder {
   
   /// ID del formato libro builder
   private Long id;
@@ -27,7 +27,7 @@ public class FormatoLibroBuilder extends ElementoBaseBuilder<FormatoLibro> {
   
   /// Estado del formato del libro en el catálogo.
   private EstadoEnCatalogo estadoEnCatalogo;
-
+  
   public FormatoLibroBuilder() {
     id(null);
     this.idLibro = null;
@@ -39,23 +39,18 @@ public class FormatoLibroBuilder extends ElementoBaseBuilder<FormatoLibro> {
     this.estadoEnCatalogo = EstadoEnCatalogo.PENDIENTE;
   }
   
-  @Override
   public FormatoLibro construir() {
     return new FormatoLibro(this);
   }
   
-  @Override
   public FormatoLibroBuilder id(Long id) {
     this.id = id;
     return this;
   }
   
-  @Override
   public Long id() {
     return this.id;
   }
-
-  
   
   public Long idLibro() {
     return this.idLibro;

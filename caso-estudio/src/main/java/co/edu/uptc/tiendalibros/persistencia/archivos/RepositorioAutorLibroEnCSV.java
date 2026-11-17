@@ -31,6 +31,7 @@ public class RepositorioAutorLibroEnCSV extends RepositorioElementoEnCSVBase<Aut
   ///                    no existe, se crea automáticamente.
   public RepositorioAutorLibroEnCSV(String rutaArchivo) {
     super(rutaArchivo, "|", 4, 0, RepositorioAutorLibroEnCSV.ENCABEZADO);
+    inicializar();
   }
   
   @Override

@@ -3,10 +3,12 @@ package co.edu.uptc.tiendalibros.persistencia.memoria;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioCategoria;
 import co.edu.uptc.tiendalibros.modelo.Categoria;
+import co.edu.uptc.tiendalibros.negocio.excepciones.ViolacionElementoNoExisteException;
 
 public class RepositorioCategoriaEnMemoria implements IRepositorioCategoria {
   
@@ -19,41 +21,24 @@ public class RepositorioCategoriaEnMemoria implements IRepositorioCategoria {
     this.contador = new AtomicLong(0);
     
     // Datos de ejemplo
-    guardar(
-      new Categoria(
-        "Novela",
-        "Libros de ficción narrativa",
-        "CAT001"
-      )
-    );
-    
-    guardar(
-      new Categoria(
-        "Ciencia",
-        "Libros relacionados con ciencia y conocimiento",
-        "CAT002"
-      )
-    );
-    
-    guardar(
-      new Categoria(
-        "Historia",
-        "Libros sobre hechos históricos",
-        "CAT003"
-      )
-    );
+    try {
+      guardar(new Categoria("Novela", "Libros de ficción narrativa", "CAT001"));
+      guardar(new Categoria("Ciencia", "Libros relacionados con ciencia y conocimiento", "CAT002"));
+      guardar(new Categoria("Historia", "Libros sobre hechos históricos", "CAT003"));
+    } catch (ViolacionElementoNoExisteException excepcion) {
+      // no debería ocurrir este error porque son categorías nuevas, sin ID
+      throw new IllegalStateException("No se pudieron crear las categorías de ejemplo.", excepcion);
+    }
   }
   
   @Override
-  public Categoria guardar(Categoria elemento) {
-    
-    if (elemento == null) {
-      return null;
+  public Categoria guardar(Categoria categoria) throws ViolacionElementoNoExisteException {
+    // si el elemento es nulo, no se puede guardar nada
+    if (categoria == null) {
+      throw new IllegalArgumentException("Error: No se puede guardar una categoría nula.");
     }
     
-    Categoria categoria = elemento;
-    
-    // Crear
+    // todo depende del id. Si el id es nulo, la categoría aún no se ha guardado
     if (categoria.getId() == null) {
       Long idNuevo = this.contador.incrementAndGet();
       
@@ -65,22 +50,20 @@ public class RepositorioCategoriaEnMemoria implements IRepositorioCategoria {
       return categoriaNueva;
     }
     
-    // Editar
-    else {
-      for (int i = 0; i < this.categorias.size(); i++) {
-        
-        if (this.categorias.get(i)
-          .getId()
-          .equals(categoria.getId())) {
-          
-          this.categorias.set(i, categoria);
-          return categoria;
-        }
+    // el id no es nulo: se busca la categoría que se quiere actualizar
+    for (int i = 0; i < this.categorias.size(); i++) {
+      if (this.categorias.get(i)
+        .getId()
+        .equals(categoria.getId())) {
+        // reemplazar el objeto categoría
+        this.categorias.set(i, categoria);
+        return categoria;
       }
     }
     
-    throw new IllegalArgumentException(
-      "No se encontró la categoría con ID: " + categoria.getId()
+    // en este punto no se encontró la categoría que se quería actualizar
+    throw new ViolacionElementoNoExisteException(
+      String.format("No se pudo encontrar la categoría '%s' que se quería editar y guardar", categoria.getNombre())
     );
   }
   
@@ -88,7 +71,7 @@ public class RepositorioCategoriaEnMemoria implements IRepositorioCategoria {
   public boolean eliminar(Long id) {
     
     if (id == null) {
-      return false;
+      throw new IllegalArgumentException("Error: No se puede eliminar con un ID nulo.");
     }
     
     Iterator<Categoria> iterador = this.categorias.iterator();
@@ -108,23 +91,21 @@ public class RepositorioCategoriaEnMemoria implements IRepositorioCategoria {
   }
   
   @Override
-  public List<Categoria> buscarPorId(Long id) {
-    
-    List<Categoria> resultados = new ArrayList<Categoria>();
+  public Optional<Categoria> buscarPorId(Long id) {
     
     if (id == null) {
-      return resultados;
+      return Optional.empty();
     }
     
     for (Categoria categoriaActual : this.categorias) {
       
       if (categoriaActual.getId()
         .equals(id)) {
-        resultados.add(categoriaActual);
+        return Optional.of(categoriaActual);
       }
     }
     
-    return resultados;
+    return Optional.empty();
   }
   
   @Override

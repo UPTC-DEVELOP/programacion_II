@@ -21,7 +21,9 @@ import co.edu.uptc.tiendalibros.modelo.TipoIVA;
 ///
 /// Una fila del archivo CSV representa un formato de libro en esta forma:
 ///
-///    id|idLibro|tipoFormato|precioBase|tipoIVA|inventario|cantidadPaginas|estadoLibroCatalogo
+/// ```
+/// id | idLibro | tipoFormato | precioBase | tipoIVA | inventario | cantidadPaginas | estadoLibroCatalogo
+/// ```
 ///
 /// La primera fila del archivo CSV contiene los encabezados.
 ///
@@ -64,6 +66,7 @@ public class RepositorioFormatoLibroEnCSV extends RepositorioElementoEnCSVBase<F
   public RepositorioFormatoLibroEnCSV(String rutaArchivo) {
     // total atributos = id + atributos
     super(rutaArchivo, "|", 1 + 7, 0, RepositorioFormatoLibroEnCSV.ENCABEZADO);
+    inicializar();
   }
   
   @Override
@@ -130,6 +133,21 @@ public class RepositorioFormatoLibroEnCSV extends RepositorioElementoEnCSVBase<F
   }
   
   @Override
+  public List<FormatoLibro> buscarPorIdLibro(Long idLibro) {
+    if (idLibro == null) {
+      return new ArrayList<>();
+    }
+    // buscar los formatos de libros que tengan el mismo ID
+    List<FormatoLibro> resultados = new ArrayList<>();
+    for (FormatoLibro edicion : getRegistros()) {
+      if (idLibro.equals(edicion.getIdLibro())) {
+        resultados.add(edicion);
+      }
+    }
+    return resultados;
+  }
+  
+  @Override
   public String convertirRegistro(FormatoLibro formatoLibro) {
     return String.join(
       getSeparador(),
@@ -151,21 +169,6 @@ public class RepositorioFormatoLibroEnCSV extends RepositorioElementoEnCSVBase<F
       formatoLibro.getEstadoEnCatalogo()
         .getAbreviatura()
     );
-  }
-  
-  @Override
-  public List<FormatoLibro> buscarPorIdLibro(Long idLibro) {
-    if (idLibro == null) {
-      return new ArrayList<>();
-    }
-    // buscar los formatos de libros que tengan el mismo ID
-    List<FormatoLibro> resultados = new ArrayList<>();
-    for (FormatoLibro edicion : getRegistros()) {
-      if (idLibro.equals(edicion.getIdLibro())) {
-        resultados.add(edicion);
-      }
-    }
-    return resultados;
   }
   
 }

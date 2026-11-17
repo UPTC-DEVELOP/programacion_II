@@ -97,18 +97,25 @@ public abstract class RepositorioJDBCBase<T extends IElemento> implements IRepos
     }
   }
   
-  /// Guarda el elemento y sus dependientes.
+  /// Guarda el elemento y sus elementos dependientes usando una conexión compartida.
   /// 
-  /// @param conexion Objeto que mantiene la conexión con la base de datos. El elemento
-  ///                 guardado, o un valor vacío si se quería actualizar un elemento que ya
-  ///                 no existe en la base de datos.
-  /// @throws SQLException Si ocurre un error técnico durante la operació
-  /// @throws SQLException Si ocurre un error técnico a la operación
-  //
+  /// Si el elemento no tiene ID, se inserta. Si tiene ID, se actualiza.
+  /// 
+  /// **Conexión compartida:** este método no abre ni cierra la conexión con la base de
+  /// datos. La recibe del método que lo invoca, que es responsable de confirmar o deshacer
+  /// la transacción y de cerrarla. Más detalles en
+  /// [co.edu.uptc.tiendalibros.persistencia.jdbc].
+  /// 
+  /// @param conexion Conexión abierta y compartida con la base de datos. Sigue abierta al
+  ///                 terminar este método.
+  /// @param elemento Elemento que se quiere guardar.
+  /// @return El elemento guardado, o un valor vacío si se quería actualizar un elemento que
+  ///         ya no existe en la base de datos.
+  /// @throws SQLException Si ocurre un error técnico durante la operación.
   protected Optional<T> guardar(Connection conexion, T elemento) throws SQLException {
     // todo depende del ID:
     // - si el elemento no tiene ID, el elemento se inserta
-    // - si el elemento sí tiene ID, el elmento se actualiza
+    // - si el elemento sí tiene ID, el elemento se actualiza
     T elementoGuardado;
     
     if (elemento.getId() == null) {
@@ -126,9 +133,15 @@ public abstract class RepositorioJDBCBase<T extends IElemento> implements IRepos
     return Optional.of(guardarElementosDependientes(conexion, elementoGuardado));
   }
   
-  /// Inserta el elemento en la base de datos.
+  /// Inserta el elemento en la base de datos usando una conexión compartida.
   /// 
-  /// @param conexion Objeto que mantiene la conexión con la base de datos.
+  /// **Conexión compartida:** este método no abre ni cierra la conexión con la base de
+  /// datos. La recibe del método que lo invoca, que es responsable de confirmar o deshacer
+  /// la transacción y de cerrarla. Más detalles en
+  /// [co.edu.uptc.tiendalibros.persistencia.jdbc].
+  /// 
+  /// @param conexion Conexión abierta y compartida con la base de datos. Sigue abierta al
+  ///                 terminar este método.
   /// @param elemento Elemento que se quiere insertar.
   /// @return El elemento insertado con su ID generado en la base de datos.
   /// @throws SQLException                 Si ocurre un error técnico a la operación de
@@ -158,9 +171,15 @@ public abstract class RepositorioJDBCBase<T extends IElemento> implements IRepos
     }
   }
   
-  /// Actualiza el elemento en la base de datos.
+  /// Actualiza el elemento en la base de datos usando una conexión compartida.
   /// 
-  /// @param conexion Objeto que mantiene la conexión con la base de datos.
+  /// **Conexión compartida:** este método no abre ni cierra la conexión con la base de
+  /// datos. La recibe del método que lo invoca, que es responsable de confirmar o deshacer
+  /// la transacción y de cerrarla. Más detalles en
+  /// [co.edu.uptc.tiendalibros.persistencia.jdbc].
+  /// 
+  /// @param conexion Conexión abierta y compartida con la base de datos. Sigue abierta al
+  ///                 terminar este método.
   /// @param elemento Elemento que se quiere actualizar.
   /// @return El elemento actualizado. O un valor vacío si no existe una fila en la base de
   ///         datos con ese ID.
@@ -180,9 +199,15 @@ public abstract class RepositorioJDBCBase<T extends IElemento> implements IRepos
     }
   }
   
-  /// Elimina el elemento y sus elementos dependientes.
+  /// Elimina el elemento y sus elementos dependientes usando una conexión compartida.
   /// 
-  /// @param conexion Objeto que mantiene la conexión con la base de datos.
+  /// **Conexión compartida:** este método no abre ni cierra la conexión con la base de
+  /// datos. La recibe del método que lo invoca, que es responsable de confirmar o deshacer
+  /// la transacción y de cerrarla. Más detalles en
+  /// [co.edu.uptc.tiendalibros.persistencia.jdbc].
+  /// 
+  /// @param conexion Conexión abierta y compartida con la base de datos. Sigue abierta al
+  ///                 terminar este método.
   /// @param id       ID del elemento que se quiere eliminar.
   /// @return `true` si el elemento se eliminó. `false` si no se encontró.
   /// @throws SQLException Si ocurre un error técnico en la operación de eliminar.
@@ -198,9 +223,14 @@ public abstract class RepositorioJDBCBase<T extends IElemento> implements IRepos
     }
   }
   
-  /// Busca el elemento con el ID especificado.
+  /// Busca el elemento con el ID especificado usando la conexión compartida.
   /// 
-  /// @param conexion Objeto que mantiene la conexión con la base de datos.
+  /// **Conexión compartida:** este método no abre ni cierra la conexión con la base de
+  /// datos. La recibe del método que lo invoca, que es responsable de cerrarla. Más detalles
+  /// en [co.edu.uptc.tiendalibros.persistencia.jdbc].
+  /// 
+  /// @param conexion Conexión abierta y compartida con la base de datos. Sigue abierta al
+  ///                 terminar este método.
   /// @param id       ID del elemento que se quiere buscar.
   /// @return El elemento que se econtró. O vacío si el elemento no se encontró.
   /// @throws SQLException Si ocurre un error técnico en la operación de buscar.
@@ -222,9 +252,13 @@ public abstract class RepositorioJDBCBase<T extends IElemento> implements IRepos
   /// Ejecuta el comando SQL preparado con una cláusula `SELECT` y convierte cada fila del
   /// resultado en un elemento con sus dependencias.
   /// 
-  /// Se usa la misma conexión para cargar el elemento y sus dependencias.
+  /// **Conexión compartida:** el objeto `comando` comparte su conexión con este método y con
+  /// el método [#cargarElementosDependientes(Connection, IElemento)]. Este método no cierra
+  /// el comando SQL ni la conexión con la base de datos.
   /// 
   /// @param comando Comando SQL preparado con la cláusula `SELECT`.
+  /// @return Lista de elementos completos, con sus dependientes cargados. Vacía si la
+  ///         consulta no devolvió filas.
   /// @throws SQLException Si ocurre un error técnico durante la conversión.
   protected List<T> convertirFilas(PreparedStatement comando) throws SQLException {
     // paso 1: leer y convertir todas las filas de la consulta
@@ -254,7 +288,8 @@ public abstract class RepositorioJDBCBase<T extends IElemento> implements IRepos
     return this.conexionBaseDatos.abrir();
   }
   
-  /// Crea un comando SQL preparado para insertar el elemento especificado.
+  /// Crea un comando SQL preparado para insertar el elemento especificado usando una
+  /// conexión compartida.
   /// 
   /// Internamente, crea un objeto [PreparedStatement] con una sentencia SQL `INSERT` con los
   /// parámetros *`?`* asignados a sus atributos.
@@ -269,53 +304,81 @@ public abstract class RepositorioJDBCBase<T extends IElemento> implements IRepos
   /// );
   /// ```
   /// 
-  /// @param conexion Conexión con la base de datos.
+  /// **Conexión compartida:** este método crea el comando SQL con la conexión que recibe: no
+  /// abre una conexión nueva, no ejecuta el comando, no cierra el comando ni cierra la
+  /// conexión. El método invocador ejecuta el comando y es responsable de cerrar el comando
+  /// y la conexión. Más detalles en [co.edu.uptc.tiendalibros.persistencia.jdbc].
+  /// 
+  /// @param conexion Conexión abierta y compartida. Sigue abierta al terminar este método.
   /// @param elemento Elemento que se quiere insertar en la base de datos.
   /// @return Comando SQL preparado para insertar.
   /// @throws SQLException Si ocurre un error de tipo SQL en la base de datos.
   protected abstract PreparedStatement crearComandoSQLInsertar(Connection conexion, T elemento)
     throws SQLException;
   
-  /// Crea un comando SQL preparado para actualizar el elemento especificado.
+  /// Crea un comando SQL preparado para actualizar el elemento especificado usando una
+  /// conexión compartida.
   /// 
   /// Internamente, crea un objeto [PreparedStatement] con una sentencia SQL `UPDATE` con los
   /// parámetros *`?`* asignados a sus atributos.
   /// 
-  /// @param conexion Conexión con la base de datos.
+  /// **Conexión compartida:** este método crea el comando SQL con la conexión que recibe: no
+  /// abre una conexión nueva, no ejecuta el comando, no cierra el comando ni cierra la
+  /// conexión. El método invocador ejecuta el comando y es responsable de cerrar el comando
+  /// y la conexión. Más detalles en [co.edu.uptc.tiendalibros.persistencia.jdbc].
+  /// 
+  /// @param conexion Conexión abierta y compartida. Sigue abierta al terminar este método.
   /// @param elemento Elemento que se quiere actualizar en la base de datos.
   /// @return Comando SQL preparado para actualizar.
   /// @throws SQLException Si ocurre un error de tipo SQL en la base de datos.
   protected abstract PreparedStatement crearComandoSQLActualizar(Connection conexion, T elemento) throws SQLException;
   
-  /// Crea un comando SQL preparado para eliminar el elemento especificado.
+  /// Crea un comando SQL preparado para eliminar el elemento especificado usando una
+  /// conexión compartida.
   /// 
   /// Internamente, crea un objeto [PreparedStatement] con una sentencia SQL `DELETE` con los
   /// parámetros *`?`* asignados a sus atributos.
   /// 
-  /// @param conexion Conexión con la base de datos.
+  /// **Conexión compartida:** este método crea el comando SQL con la conexión que recibe: no
+  /// abre una conexión nueva, no ejecuta el comando, no cierra el comando ni cierra la
+  /// conexión. El método invocador ejecuta el comando y es responsable de cerrar el comando
+  /// y la conexión. Más detalles en [co.edu.uptc.tiendalibros.persistencia.jdbc].
+  /// 
+  /// @param conexion Conexión abierta y compartida. Sigue abierta al terminar este método.
   /// @param id       ID del elemento que se quiere eliminar en la base de datos.
   /// @return Comando SQL preparado para eliminar.
   /// @throws SQLException Si ocurre un error de tipo SQL en la base de datos.
   protected abstract PreparedStatement crearComandoSQLEliminar(Connection conexion, Long id) throws SQLException;
   
-  /// Crea un comando SQL preparado para buscar el elemento con el ID especificado.
+  /// Crea un comando SQL preparado para buscar el elemento con el ID especificado usando
+  /// una conexión compartida.
   /// 
   /// Internamente, crea un objeto [PreparedStatement] con una sentencia SQL `SELECT` con los
   /// parámetros *`?`* asignados a sus atributos.
   /// 
-  /// @param conexion Conexión con la base de datos.
+  /// **Conexión compartida:** este método crea el comando SQL con la conexión que recibe: no
+  /// abre una conexión nueva, no ejecuta el comando, no cierra el comando ni cierra la
+  /// conexión. El método invocador ejecuta el comando y es responsable de cerrar el comando
+  /// y la conexión. Más detalles en [co.edu.uptc.tiendalibros.persistencia.jdbc].
+  /// 
+  /// @param conexion Conexión abierta y compartida. Sigue abierta al terminar este método.
   /// @param id       ID del elemento que se quiere buscar en la base de datos.
   /// @return Comando SQL preparado para buscar por ID.
   /// @throws SQLException Si ocurre un error de tipo SQL en la base de datos.
   protected abstract PreparedStatement crearComandoSQLBuscarPorId(Connection conexion, Long id) throws SQLException;
   
   /// Crea un comando SQL preparado para obtener la lista de elementos guardados en la base
-  /// de datos.
+  /// de datos, usando una conexión compartida.
   /// 
   /// Internamente, crea un objeto [PreparedStatement] con una sentencia SQL `SELECT` con los
   /// parámetros *`?`* asignados a sus atributos.
   /// 
-  /// @param conexion Conexión con la base de datos.
+  /// **Conexión compartida:** este método crea el comando SQL con la conexión que recibe: no
+  /// abre una conexión nueva, no ejecuta el comando, no cierra el comando ni cierra la
+  /// conexión. El método invocador ejecuta el comando y es responsable de cerrar el comando
+  /// y la conexión. Más detalles en [co.edu.uptc.tiendalibros.persistencia.jdbc].
+  /// 
+  /// @param conexion Conexión abierta y compartida. Sigue abierta al terminar este método.
   /// @return Comando SQL preparado para obtener la lista de elementos guardados en la base
   ///         de datos.
   /// @throws SQLException Si ocurre un error de tipo SQL en la base de datos.
@@ -347,8 +410,8 @@ public abstract class RepositorioJDBCBase<T extends IElemento> implements IRepos
   /// @param guardado El elemento con ID del que quiere guardar sus dependientes.
   /// @return El elemento con los IDs de sus hijos asignados.
   /// @throws SQLException Si ocurre un error al guardar los elementos dependientes.
-  protected T guardarElementosDependientes(Connection conexion, T elementoGuardado) throws SQLException {
-    return elementoGuardado;
+  protected T guardarElementosDependientes(Connection conexion, T guardado) throws SQLException {
+    return guardado;
   }
   
   /// Elimina los elementos dependientes del elemento principal en la misma transacción que
@@ -365,12 +428,19 @@ public abstract class RepositorioJDBCBase<T extends IElemento> implements IRepos
     // las subclases que tengan elementos dependientes definen qué hacer en este método
   }
   
-  /// Carga los elementos dependientes del elemento principal.
+  /// Carga los elementos dependientes del elemento principal usando la conexión compartida
+  /// con la que [#convertirFilas(PreparedStatement)] leyó el elemento.
   /// 
-  /// Se debe invocar cada vez que se cargue el elemento principal de la base de datos.
+  /// Se invoca una vez por cada elemento leído de la base de datos. Las subclases pueden
+  /// redefinir este método si `elemento` tiene objetos asociados que se deben cargar.
   /// 
-  /// @param conexion Conexión con la transacción abierta.
-  /// @param id       ID del elemento principal del que se cargar sus dependientes.
+  /// **Conexión compartida:** este método no debe cerrar la conexión con la base de datos.
+  /// La cierra el método que la abrió. Más detalles en
+  /// [co.edu.uptc.tiendalibros.persistencia.jdbc]
+  /// 
+  /// @param conexion Conexión abierta y compartida con la base de datos. Sigue abierta al
+  ///                 terminar este método.
+  /// @param elemento Elemento principal del que se desea cargar sus dependientes.
   /// @return El mismo elemento con sus dependientes cargados.
   /// @throws SQLException Si ocurre un error al cargar los elementos dependientes.
   protected T cargarElementosDependientes(Connection conexion, T elemento) throws SQLException {
@@ -381,7 +451,7 @@ public abstract class RepositorioJDBCBase<T extends IElemento> implements IRepos
   /// 
   /// @param operacion Nombre de la operación que tuvo el error.
   /// @param excepcion Excepción de SQL que se generó.
-  /// @return Un objeto [ErrorTecnicoSistemaExcepcion] con el error traducido.
+  /// @return Un objeto [ErrorTecnicoSistemaException] con el error traducido.
   protected ErrorTecnicoSistemaException traducirExcepcion(String operacion, SQLException excepcion) {
     return new ErrorTecnicoSistemaException(
       String.format("Error de la base de datos al ejecutar la operación de %s.", operacion), excepcion

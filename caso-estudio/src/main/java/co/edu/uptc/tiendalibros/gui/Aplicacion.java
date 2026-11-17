@@ -20,12 +20,12 @@ import co.edu.uptc.tiendalibros.negocio.editorial.GestionEditorial;
 import co.edu.uptc.tiendalibros.negocio.libro.GestionLibro;
 import co.edu.uptc.tiendalibros.persistencia.archivos.RepositorioAutorLibroEnCSV;
 import co.edu.uptc.tiendalibros.persistencia.jdbc.ConexionBaseDatos;
+import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioCategoriaJDBC;
 import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioEditorialJDBC;
 import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioFormatoLibroJDBC;
 import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioLibroConFormatosJDBC;
 import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioLibroJDBC;
-import co.edu.uptc.tiendalibros.persistencia.memoria.RepositorioAutorenMemoria;
-import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioCategoriaJDBC;
+import co.edu.uptc.tiendalibros.persistencia.memoria.RepositorioAutorEnMemoria;
 /// Representa la aplicación.
 public class Aplicacion {
   
@@ -71,16 +71,23 @@ public class Aplicacion {
     PanelContenidoPrincipal contenidoPrincipal = this.ventanaPrincipal.getPanelContenidoPrincipal();
     
     // crear los repositorios de datos.
-    IRepositorioEditorial repositorioEditorial = new RepositorioEditorialJDBC(this.conexionBaseDatos);
     
-    IRepositorioAutor repositorioAutor = new RepositorioAutorenMemoria();
+    // como el repositorio JDBC de libros construye los objetos categoría y editorial de cada
+    // libro, se necesita tener los repositorios JDBC.
+    RepositorioEditorialJDBC repositorioEditorialJDBC = new RepositorioEditorialJDBC(this.conexionBaseDatos);
+
+    RepositorioCategoriaJDBC repositorioCategoriaJDBC = new RepositorioCategoriaJDBC(this.conexionBaseDatos);
     
-    IRepositorioCategoria repositorioCategoria =
-      new RepositorioCategoriaJDBC(this.conexionBaseDatos);
+    IRepositorioEditorial repositorioEditorial = repositorioEditorialJDBC;
+    IRepositorioCategoria repositorioCategoria = repositorioCategoriaJDBC;
     
+    IRepositorioAutor repositorioAutor = new RepositorioAutorEnMemoria();
+
     IRepositorioAutorLibro repositorioAutorLibro = new RepositorioAutorLibroEnCSV("datos/autores_libros.csv");
     
-    RepositorioLibroJDBC repositorioLibroJDBC = new RepositorioLibroJDBC(this.conexionBaseDatos);
+    RepositorioLibroJDBC repositorioLibroJDBC = new RepositorioLibroJDBC(
+      this.conexionBaseDatos, repositorioCategoriaJDBC, repositorioEditorialJDBC
+    );
     
     RepositorioFormatoLibroJDBC repositorioFormatoLibroJDBC = new RepositorioFormatoLibroJDBC(this.conexionBaseDatos);
     

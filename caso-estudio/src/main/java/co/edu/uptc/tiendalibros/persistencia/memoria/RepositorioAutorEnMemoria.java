@@ -3,12 +3,14 @@ package co.edu.uptc.tiendalibros.persistencia.memoria;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioAutor;
 import co.edu.uptc.tiendalibros.modelo.Autor;
+import co.edu.uptc.tiendalibros.negocio.excepciones.ViolacionElementoNoExisteException;
 
-public class RepositorioAutorenMemoria implements IRepositorioAutor {
+public class RepositorioAutorEnMemoria implements IRepositorioAutor {
   
   private final List<Autor> autores;
   
@@ -16,56 +18,55 @@ public class RepositorioAutorenMemoria implements IRepositorioAutor {
   private final AtomicLong contador;
   
   /// Crea un nuevo objeto [RepositorioAutorEnMemoria][RepositorioAutorEnMemoria].
-  public RepositorioAutorenMemoria() {
+  public RepositorioAutorEnMemoria() {
     this.autores = new ArrayList<Autor>();
     // el contador se inicia en 0
     this.contador = new AtomicLong(0);
     
     // datos de ejemplo para probar la interfaz gráfica
-    guardar(new Autor("Silvia", "Vásquez-Lavado"));
-    guardar(new Autor("camilo", "sexto"));
-    guardar(new Autor("lilia", "dueñas"));
-    
+    try {
+      guardar(new Autor("Silvia", "Vásquez-Lavado"));
+      guardar(new Autor("camilo", "sexto"));
+      guardar(new Autor("lilia", "dueñas"));
+    } catch (ViolacionElementoNoExisteException excepcion) {
+      // no debería ocurrir este error porque son autores nuevos, sin ID
+      throw new IllegalStateException("No se pudieron crear los autores de ejemplo.", excepcion);
+    }
   }
   
   @Override
-  public Autor guardar(Autor elemento) {
+  public Autor guardar(Autor autor) throws ViolacionElementoNoExisteException {
     // si el elemento es nulo, no se puede guardar nada
-    if (elemento == null) {
-      return null;
+    if (autor == null) {
+      throw new IllegalArgumentException("Error: No se puede guardar un autor nulo.");
     }
     
-    // obtener el autor que se quiere guardar
-    Autor autor = elemento;
-    
-    // todo depende del id
-    // si el id es nulo, el autor no se ha guardado en la base de datos
+    // todo depende del id. Si el id es nulo, el autor aún no se ha guardado
     if (autor.getId() == null) {
       // usar el truco para generar un id único
       Long idNuevo = this.contador.incrementAndGet();
       
       Autor autorNuevo = new Autor(idNuevo, autor.getNombre(), autor.getApellidos());
       
-      // agregar el autor a la base de datos
+      // agregar el autor al repositorio
       this.autores.add(autorNuevo);
       return autorNuevo;
     }
-    // el id no es nulo, luego toca reemplazar el autor en la base de datos
-    else {
-      for (int i = 0; i < this.autores.size(); i++) {
-        if (this.autores.get(i)
-          .getId()
-          .equals(autor.getId())) {
-          // reemplazar el objeto autor
-          this.autores.set(i, autor);
-          return autor;
-        }
+    
+    // el id no es nulo: se busca el autor que se quiere actualizar
+    for (int i = 0; i < this.autores.size(); i++) {
+      if (this.autores.get(i)
+        .getId()
+        .equals(autor.getId())) {
+        // reemplazar el objeto autor
+        this.autores.set(i, autor);
+        return autor;
       }
     }
     
-    // TODO: analizar si se puede encontrar una mejor alternativa a lanzar una excepción
-    throw new IllegalArgumentException(
-      "No se encontró el autor con ID: " + autor.getId()
+    // en este punto no se encontró el autor que se quería actualizar
+    throw new ViolacionElementoNoExisteException(
+      String.format("No se pudo encontrar el autor '%s' que se quería editar y guardar", autor.getNombre())
     );
   }
   
@@ -73,7 +74,7 @@ public class RepositorioAutorenMemoria implements IRepositorioAutor {
   public boolean eliminar(Long id) {
     // si el id es nulo, no se puede eliminar nada
     if (id == null) {
-      return false;
+      throw new IllegalArgumentException("Error: No se puede eliminar con un ID nulo.");
     }
     
     // Eliminar el autor con el ID dado, pero esta vez usando la técnica de iterador
@@ -93,33 +94,27 @@ public class RepositorioAutorenMemoria implements IRepositorioAutor {
   }
   
   @Override
-  public List<Autor> buscarPorId(Long id) {
-    // se incializa una lista vacía
-    List<Autor> resultados = new ArrayList<Autor>();
-    
-    // si el id es nulo, se devuelve la lista vacía
+  public Optional<Autor> buscarPorId(Long id) {
+    // si el id es nulo, se devuelve un valor vacío
     if (id == null) {
-      return resultados;
+      return Optional.empty();
     }
     
-    // buscarel autor que concida con el id
+    // buscar el autor que coincida con el id
     for (Autor autorActual : this.autores) {
       if (autorActual.getId()
         .equals(id)) {
-        // se encontró una coincidencia, entonces agregarla a la lista de resultados
-        resultados.add(autorActual);
+        // se encontró una coincidencia, entonces retornarla como resultado
+        return Optional.of(autorActual);
       }
     }
     
-    // devolver los resultados de la búsqueda
-    return resultados;
+    // no hubo resultados
+    return Optional.empty();
   }
   
   @Override
   public List<Autor> listar() {
-    // TODO: Investigar cómo hacer que esta lista que se retorna quede "congelada" para evitar
-    // que le agreguen más autores sin pasar primero por el método guardar
-    // por ahora, devolver una copia de la lista
     return new ArrayList<Autor>(this.autores);
   }
 }

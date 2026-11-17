@@ -11,11 +11,21 @@ import java.util.List;
 import java.util.Optional;
 
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioLibro;
+import co.edu.uptc.tiendalibros.modelo.Categoria;
+import co.edu.uptc.tiendalibros.modelo.Editorial;
 import co.edu.uptc.tiendalibros.modelo.Libro;
 import co.edu.uptc.tiendalibros.modelo.LibroBuilder;
+import co.edu.uptc.tiendalibros.negocio.ErrorTecnicoSistemaException;
 
 /// Representa el repositorio que guarda los libros en una base de datos relacional usando
 /// la tecnología JDBC.
+/// 
+/// Al leer desde la base de datos, todo libro construido por este repositorio sale con su
+/// categoría y su editorial completas.
+/// 
+/// El método [RepositorioJDBCBase#convertirFilas(PreparedStatement)] se asegura de
+/// convertir las filas [ResultSet] en libros, y de que luego cada libro carge sus objetos
+/// dependientes categoría y editorial.
 ///
 /// Por ahora no guarda las asociaciones autor-libro (`Libro.listaAutoria`): al cargar un
 /// libro su lista de autoría queda vacía.
@@ -50,11 +60,28 @@ public class RepositorioLibroJDBC extends RepositorioJDBCBase<Libro> implements 
   private static final String SQL_BUSCAR_POR_TITULO = "SELECT " + COLUMNAS_SELECT
     + " FROM libro WHERE titulo LIKE ? ORDER BY titulo";
   
+  /// Repositorio que se usa para cargar la categoría de cada libro.
+  private final RepositorioCategoriaJDBC repositorioCategoria;
+  
+  /// Repositorio que se usa para cargar la editorial de cada libro.
+  private final RepositorioEditorialJDBC repositorioEditorial;
+  
   /// Crea un nuevo repositorio de libros conectado a una base de datos relacional.
+  /// 
+  /// Utiliza repositorios JDBC para compartir la conexión que lee los libros, y permitir
+  /// leer y asociar la categoría y la editorial de cada libro.
   ///
-  /// @param conexionBaseDatos Objeto que mantiene la conexión con la base de datos.
-  public RepositorioLibroJDBC(ConexionBaseDatos conexionBaseDatos) {
+  /// @param conexionBaseDatos    Objeto que mantiene la conexión con la base de datos.
+  /// @param repositorioCategoria Repositorio JDBC de las categorías.
+  /// @param repositorioEditorial Repositorio JDBC de las editoriales.
+  public RepositorioLibroJDBC(
+    ConexionBaseDatos conexionBaseDatos,
+    RepositorioCategoriaJDBC repositorioCategoria,
+    RepositorioEditorialJDBC repositorioEditorial
+  ) {
     super(conexionBaseDatos);
+    this.repositorioCategoria = repositorioCategoria;
+    this.repositorioEditorial = repositorioEditorial;
   }
   
   /// Asigna los atributos del libro en el comando SQL. Aplica el mismo orden para los
@@ -65,8 +92,40 @@ public class RepositorioLibroJDBC extends RepositorioJDBCBase<Libro> implements 
     comando.setString(2, libro.getTitulo());
     comando.setInt(3, libro.getAnioPublicacion());
     comando.setString(4, libro.getImagenLibro());
-    ValoresSQL.escribirLongNulo(comando, 5, libro.getIdCategoria());
-    ValoresSQL.escribirLongNulo(comando, 6, libro.getIdEditorial());
+    // recordemos que la tabla libro solo almacena las claves foráneas y, por eso se necesitan
+    // los IDs de categoría y editorial
+    ValoresSQL.escribirLongNulo(comando, 5, obtenerIdCategoriaDe(libro));
+    ValoresSQL.escribirLongNulo(comando, 6, obtenerIdEditorialDe(libro));
+  }
+  
+  /// Obtiene el ID de la categoría del libro.
+  /// 
+  /// @param libro Libro del que quiere obtener el ID de la categoría.
+  /// @return El ID de la categoría del libro. O, `null` si el libro no tiene una
+  ///         categoría asociada.
+  private Long obtenerIdCategoriaDe(Libro libro) {
+    // o sea, se obtiene el ID de la categoría, pero si la categoría no es nula
+    if (libro.getCategoria() == null) {
+      return null;
+    } else {
+      return libro.getCategoria()
+        .getId();
+    }
+  }
+  
+  /// Obtiene el ID de la editorial del libro.
+  /// 
+  /// @param libro Libro del que quiere obtener el ID de la editorial.
+  /// @return El ID de la editorial del libro. O, `null` si el libro no tiene una
+  ///         editorial asociada.
+  private Long obtenerIdEditorialDe(Libro libro) {
+    // o sea, se obtiene el ID de la editorial, pero si la editorial no es nula
+    if (libro.getEditorial() == null) {
+      return null;
+    } else {
+      return libro.getEditorial()
+        .getId();
+    }
   }
   
   @Override
@@ -114,8 +173,8 @@ public class RepositorioLibroJDBC extends RepositorioJDBCBase<Libro> implements 
       .isbn(libro.getIsbn())
       .titulo(libro.getTitulo())
       .anioPublicacion(libro.getAnioPublicacion())
-      .idCategoria(libro.getIdCategoria())
-      .idEditorial(libro.getIdEditorial())
+      .categoria(libro.getCategoria())
+      .editorial(libro.getEditorial())
       .listaAutoria(libro.getListaAutoria())
       .imagenLibro(libro.getImagenLibro())
       .construir();
@@ -123,17 +182,72 @@ public class RepositorioLibroJDBC extends RepositorioJDBCBase<Libro> implements 
   
   @Override
   protected Libro convertirFila(ResultSet fila) throws SQLException {
+    // se crean objetos categoría y editorial con solo su ID quedando como objetos
+    // provisionales. El método cargarElementosDependientes() cargará
+    // completamente los objetos categoría y editorial
+    Categoria categoria = new Categoria(fila.getLong("id_categoria"), null, null, null);
+    Editorial editorial = new Editorial(fila.getLong("id_editorial"), null);
+    
     // convertir la fila SQL a un objeto libro
     return new LibroBuilder()
       .id(fila.getLong("id_libro"))
       .isbn(fila.getString("isbn"))
       .titulo(fila.getString("titulo"))
       .anioPublicacion(fila.getInt("anio_publicacion"))
-      .idCategoria(ValoresSQL.leerLongNulo(fila, "id_categoria"))
-      .idEditorial(ValoresSQL.leerLongNulo(fila, "id_editorial"))
+      .categoria(categoria)
+      .editorial(editorial)
       .listaAutoria(new ArrayList<>())
       .imagenLibro(fila.getString("imagen_libro"))
       .construir();
+  }
+  
+  @Override
+  protected Libro cargarElementosDependientes(Connection conexion, Libro libro) throws SQLException {
+    // aquí, se construyen los componentes u objetos asociados de un libro.
+    // en el método convertirFilas() se crearon objetos categoría y editorial provisionales
+    // que solo tienen el ID respectivo.
+    // ahora, usando la misma conexión que lee el libro, se leerán y se construirán los
+    // objetos categoría y editorial
+    
+    Long idCategoria = libro.getCategoria()
+      .getId();
+    Optional<Categoria> categoria = this.repositorioCategoria.buscarPorId(conexion, idCategoria);
+    
+    Long idEditorial = libro.getEditorial()
+      .getId();
+    Optional<Editorial> editorial = this.repositorioEditorial.buscarPorId(conexion, idEditorial);
+    
+    // en la base de datos, la clave foránea garantiza que el libro tenga una categoría y una
+    // editorial. Si la consulta de categoría o editorial produjeron objetos vacíos, significa
+    // que la base de datos está inconsistente.
+    // Ni el programa ni el usuario pueden corregir esta inconsistencia, y por eso se lanza un
+    // error técnico
+    
+    if (categoria.isEmpty()) {
+      throw new ErrorTecnicoSistemaException(
+        String.format(
+          "El libro %d referencia la categoría %d, que no existe en la base de datos.",
+          libro.getId(),
+          idCategoria
+        ), null
+      );
+    }
+    
+    if (editorial.isEmpty()) {
+      throw new ErrorTecnicoSistemaException(
+        String.format(
+          "El libro %d referencia la editorial %d, que no existe en la base de datos.",
+          libro.getId(),
+          idEditorial
+        ), null
+      );
+    }
+    
+    // aquí, construir la categoría y la editorial fue exitoso, y ahora se asocian al libro
+    // que se devolverá
+    libro.setCategoria(categoria.get());
+    libro.setEditorial(editorial.get());
+    return libro;
   }
   
   @Override
