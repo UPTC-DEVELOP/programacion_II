@@ -1,6 +1,7 @@
 package persistencia;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -129,6 +130,65 @@ public class RepositorioComprasArchivoPlano implements IRepositorio<Compra> {
 
     @Override
     public void guardar() {
+        try {
+            Path carpeta = archivo.getParent();
+            if (carpeta != null) {
+                Files.createDirectories(carpeta);
+            }
+
+            try (BufferedWriter escritor = Files.newBufferedWriter(archivo, StandardCharsets.UTF_8)) {
+                for (Compra compra : compras) {
+                    if (compra == null) {
+                        continue;
+                    }
+                    if (compra.getId() == 0) {
+                        compra.setId(siguienteId());
+                    }
+
+                    escribirLinea(escritor,
+                            "C",
+                            Long.toString(compra.getId()),
+                            compra.getFecha() != null ? compra.getFecha().toString() : "",
+                            limpiarCampo(compra.getMetodoPago()),
+                            limpiarCampo(compra.getCorreoCliente()),
+                            Double.toString(compra.getTotal()));
+
+                    if (compra.getItems() == null) {
+                        continue;
+                    }
+
+                    for (ItemCompra item : compra.getItems()) {
+                        if (item == null || item.getLibro() == null) {
+                            continue;
+                        }
+                        Libro libro = item.getLibro();
+                        escribirLinea(escritor,
+                                "I",
+                                Long.toString(compra.getId()),
+                                limpiarCampo(libro.getIsbn()),
+                                limpiarCampo(libro.getTitulo()),
+                                Integer.toString(item.getCantidad()),
+                                Double.toString(libro.getPrecio()),
+                                Double.toString(libro.getPorcentajeIva()));
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new PersistenciaException(
+                    "No se pudo escribir " + archivo.toAbsolutePath(), e);
+        }
+    }
+
+    private void escribirLinea(BufferedWriter escritor, String... campos) throws IOException {
+        escritor.write(String.join("\t", campos));
+        escritor.newLine();
+    }
+
+    private String limpiarCampo(String valor) {
+        if (valor == null) {
+            return "";
+        }
+        return valor.replace("\t", " ").replace("\r", " ").replace("\n", " ");
     }
 
     public Path getArchivo() {
