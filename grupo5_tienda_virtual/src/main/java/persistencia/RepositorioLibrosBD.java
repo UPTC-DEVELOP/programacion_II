@@ -11,6 +11,7 @@ import java.sql.Statement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 // CLASE QUE GESTIONA LA PERSISTENCIA DE LIBROS EN LA BASE DE DATOS SQLITE
 
@@ -123,15 +124,17 @@ public class RepositorioLibrosBD implements IRepositorio<Libro> {
 
                 // SE CONVIERTE EL TEXTO DEL FORMATO A SU TIPO ENUM CORRESPONDIENTE
                 
-                FormatoLibro formato = null;
-                if (formatoStr != null && !formatoStr.isBlank()) {
-                    try {
-                        formato = FormatoLibro.valueOf(formatoStr);
-                    } catch (IllegalArgumentException e) {
-                        formato = FormatoLibro.FISICO; 
-                        
-                        // EN CASO DE ERROR, SE ASIGNA EL VALOR FISICO POR DEFECTO
-                    }
+                if (formatoStr == null || formatoStr.isBlank()) {
+                    throw new PersistenciaException(
+                            "El libro " + isbn + " no tiene formato en la BD");
+                }
+
+                FormatoLibro formato;
+                try {
+                    formato = FormatoLibro.valueOf(formatoStr.trim().toUpperCase(Locale.ROOT));
+                } catch (IllegalArgumentException e) {
+                    throw new PersistenciaException(
+                            "Formato invalido para el libro " + isbn + ": " + formatoStr, e);
                 }
 
                 // SE CONSTRUYE EL OBJETO LIBRO MEDIANTE SETTERS Y SE AÑADE A LA LISTA
