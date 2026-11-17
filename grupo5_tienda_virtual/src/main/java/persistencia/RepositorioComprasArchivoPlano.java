@@ -9,9 +9,11 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import model.Compra;
 import model.ItemCompra;
@@ -86,6 +88,10 @@ public class RepositorioComprasArchivoPlano implements IRepositorio<Compra> {
                         compra.setMetodoPago(partes[3]);
                         compra.setCorreoCliente(partes[4]);
                         compra.setTotal(Double.parseDouble(partes[5]));
+                        if (comprasPorId.containsKey(compra.getId())) {
+                            throw new IllegalArgumentException(
+                                    "Compra duplicada con id " + compra.getId());
+                        }
                         comprasPorId.put(compra.getId(), compra);
                     } else if ("I".equals(partes[0])) {
                         if (partes.length != 7) {
@@ -136,13 +142,24 @@ public class RepositorioComprasArchivoPlano implements IRepositorio<Compra> {
                 Files.createDirectories(carpeta);
             }
 
+            Set<Long> ids = new HashSet<Long>();
+            for (Compra compra : compras) {
+                if (compra == null) {
+                    continue;
+                }
+                if (compra.getId() == 0) {
+                    compra.setId(siguienteId());
+                }
+                if (!ids.add(compra.getId())) {
+                    throw new PersistenciaException(
+                            "Id de compra duplicado: " + compra.getId());
+                }
+            }
+
             try (BufferedWriter escritor = Files.newBufferedWriter(archivo, StandardCharsets.UTF_8)) {
                 for (Compra compra : compras) {
                     if (compra == null) {
                         continue;
-                    }
-                    if (compra.getId() == 0) {
-                        compra.setId(siguienteId());
                     }
 
                     escribirLinea(escritor,
