@@ -19,7 +19,7 @@ public class ReglaLibroExiste implements IReglaValidacion<Libro> {
   /// Repositorio de libros.
   private final IRepositorioLibro repositorio;
   
-  /// Crea una neuva regla que verifica que el libro existe en el repositorio.
+  /// Crea una nueva regla que verifica que el libro existe en el repositorio.
   ///
   /// @param repositorio Repositorio de libros para saber si el libro existe.
   public ReglaLibroExiste(IRepositorioLibro repositorio) {
@@ -28,15 +28,14 @@ public class ReglaLibroExiste implements IReglaValidacion<Libro> {
   
   @Override
   public boolean cumple(Libro libro) {
-    // buscar un libro que tenga el mismo ID
-    Optional<Libro> existente = this.repositorio.buscarPorId(libro.getId());
-    
-    // no puede ocurrir que se quiera actualizar la editorial con un ID que ya no existe
-    if (libro.getId() != null && (existente.isEmpty())) {
-      return false;
+    // un libro nuevo sin ID
+    if (libro.getId() == null) {
+      return true;
     }
-    // aquí, se cumple que la editorial sí existe en el repositorio
-    return true;
+    
+    // un libro con ID cumple solo si todavía existe en el repositorio
+    return this.repositorio.buscarPorId(libro.getId())
+      .isPresent();
   }
   
   @Override

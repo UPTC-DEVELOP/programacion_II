@@ -98,7 +98,7 @@ public class PanelEditoriales extends PanelGestionElementoBase<ElementoVistaEdit
     // crear la información de las columnas del modelo de tabla de datos
     InfoColumnaTabla[] infoColumnas = new InfoColumnaTabla[] {
       // Infocolumna: (indice, encabezado, identificador, esEditable, esVisible)
-      new InfoColumnaTabla(0, "ID", "id", false, true),
+      new InfoColumnaTabla(0, "ID", "id", false, false),
       new InfoColumnaTabla(1, "Nombre", "nombre", false, true),
     };
     

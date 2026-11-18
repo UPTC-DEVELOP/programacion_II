@@ -32,14 +32,17 @@ public class ReglaLibroEditorialExiste implements IReglaValidacion<Libro> {
   
   @Override
   public boolean cumple(Libro libro) {
-    // no cumple si el id de la editorial que el libro tiene es nulo
-    if (libro.getIdEditorial() == null) {
+    // no cumple si el libro no tiene editorial, o si la editorial no tiene ID
+    if ((libro.getEditorial() == null) && (libro.getEditorial()
+      .getId() == null)) {
       return false;
     }
     
-    // cumple si la búsqueda de editorial por id devuelve un resultado
-    // no cumple si la búsqueda de editorial por id devuelve vacío
-    return this.repositorioEditorial.buscarPorId(libro.getIdEditorial())
+    // cumple si la búsqueda de la editorial por ID encuentra un resultado
+    return this.repositorioEditorial.buscarPorId(
+      libro.getEditorial()
+        .getId()
+    )
       .isPresent();
   }
   

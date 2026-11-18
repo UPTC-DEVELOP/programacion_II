@@ -1,12 +1,10 @@
 //
 package co.edu.uptc.tiendalibros.negocio.editorial.reglas;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioLibro;
 import co.edu.uptc.tiendalibros.modelo.Editorial;
-import co.edu.uptc.tiendalibros.modelo.Libro;
 import co.edu.uptc.tiendalibros.negocio.IReglaValidacion;
 import co.edu.uptc.tiendalibros.negocio.ResultadoValidacion;
 import co.edu.uptc.tiendalibros.negocio.excepciones.ViolacionReglaNegocioException;
@@ -30,17 +28,8 @@ public class ReglaEditorialSinLibrosAsociados implements IReglaValidacion<Editor
   
   @Override
   public boolean cumple(Editorial editorial) {
-    // cumple (se puede eliminar) si NO hay ningún libro con su ID
-    
-    for (Libro libro : this.repositorioLibro.listar()) {
-      if (Objects.equals(libro.getIdEditorial(), editorial.getId())) {
-        // el libro tiene el id de la editorial y, por tanto, no se puede eliminar la editorial
-        return false;
-      }
-    }
-    
-    // aquí, ningún libro tiene el id de la editorial
-    return true;
+    // cumple (se puede eliminar) solo si ningún libro tiene esta editorial
+    return this.repositorioLibro.existeLibroConEditorial(editorial) == false;
   }
   
   @Override
@@ -53,7 +42,7 @@ public class ReglaEditorialSinLibrosAsociados implements IReglaValidacion<Editor
     // aquí, el elemento viola la regla
     
     String mensajeError = String.format(
-      "No se puede eliminar la editorial '%s' porque tiene libros asociados.%nPrimero, reasigne o elimine esos libros.",
+      "No se puede eliminar la editorial '%s' porque tiene libros asociados.%nReasigne o elimine esos libros.",
       editorial.getNombre()
     );
     

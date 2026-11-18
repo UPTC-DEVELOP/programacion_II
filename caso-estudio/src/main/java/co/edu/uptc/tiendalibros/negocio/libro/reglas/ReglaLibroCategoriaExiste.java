@@ -13,7 +13,7 @@ import co.edu.uptc.tiendalibros.negocio.excepciones.ViolacionReglaNegocioExcepti
 /// Regla de validación para determinar que la categoría asignada al libro exista en el
 /// repositorio de datos.
 ///
-/// Retorna una [ViolacionReglaNegocioAtributoException] si al validar el el libro la
+/// Retorna una [ViolacionReglaNegocioAtributoException] si al validar el libro la
 /// categoría no existe.
 public class ReglaLibroCategoriaExiste implements IReglaValidacion<Libro> {
   
@@ -32,14 +32,18 @@ public ReglaLibroCategoriaExiste(
   
   @Override
   public boolean cumple(Libro libro) {
-    // no cumple si el id de la categoría que el libro tiene es nulo
-    if (libro.getIdCategoria() == null) {
+    // no cumple si el libro no tiene categoría, o si la categoría no tiene ID
+    if ((libro.getCategoria() == null) || (libro.getCategoria()
+      .getId() == null)) {
       return false;
     }
     
-    // cumple si la búsqueda de categorías por id devuelve un resultado
-    return (this.repositorioCategoria.buscarPorId(libro.getIdCategoria())
-      .size() > 0);
+    // cumple si la búsqueda de categorías por ID encuentra un resultado
+    return this.repositorioCategoria.buscarPorId(
+      libro.getCategoria()
+        .getId()
+    )
+      .isPresent();
   }
   
   @Override
@@ -51,7 +55,7 @@ public ReglaLibroCategoriaExiste(
     
     // aquí, el elemento viola la regla
     
-    String mensajeError = "Debe seleccionar una  categoría existente para el libro.";
+    String mensajeError = "Debe seleccionar una categoría existente para el libro.";
     
     // primero, reportar el error (atributo, mensajeError)
     errores.agregarAtributo("categoria", mensajeError);

@@ -1,6 +1,7 @@
 package co.edu.uptc.tiendalibros.gui.autor;
 
 import java.util.List;
+import java.util.Optional;
 
 import co.edu.uptc.tiendalibros.gui.avisos.Aviso;
 import co.edu.uptc.tiendalibros.gui.componentes.ControladorBase;
@@ -80,11 +81,11 @@ public class ControladorAutor extends ControladorBase {
       return;
     }
     
-    List<Autor> autores = this.gestorAutor.buscarPorId(idAutor);
+    Optional<Autor> autor = this.gestorAutor.buscarPorId(idAutor);
     
-    if (!autores.isEmpty()) {
+    if (autor.isPresent()) {
       ElementoVistaAutor elementoVista = new ElementoVistaAutor(
-        autores.get(0),
+        autor.get(),
         new ResultadoValidacion()
       );
       this.panelAutores.mostrarFormulario(elementoVista);

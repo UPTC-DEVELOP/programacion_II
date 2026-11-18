@@ -94,9 +94,12 @@ public class PanelLibros extends PanelGestionElementoBase<ElementoVistaLibroConF
     // crear la información de las columnas del modelo de tabla de datos
     InfoColumnaTabla[] infoColumnas = new InfoColumnaTabla[] {
       // Infocolumna: (indice, encabezado, identificador, esEditable, esVisible)
-      new InfoColumnaTabla(0, "ID", "id", false, true),
+      new InfoColumnaTabla(0, "ID", "id", false, false),
       new InfoColumnaTabla(1, "Título", "titulo", false, true),
       new InfoColumnaTabla(2, "ISBN", "isbn", false, true),
+      new InfoColumnaTabla(3, "Año", "anioPublicacion", false, true),
+      new InfoColumnaTabla(4, "Categoría", "categoria", false, true),
+      new InfoColumnaTabla(5, "Editorial", "editorial", false, true),
     };
     
     return infoColumnas;

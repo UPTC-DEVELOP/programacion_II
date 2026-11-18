@@ -32,15 +32,14 @@ public class ReglaEditorialExiste implements IReglaValidacion<Editorial> {
   
   @Override
   public boolean cumple(Editorial editorial) {
-    // buscar si hay una editorial con ese ID previamente existente en el repositorio
-    Optional<Editorial> editorialExistente = this.repositorio.buscarPorId(editorial.getId());
-    
-    // no puede ocurrir que se quiera actualizar la editorial con un ID que ya no existe
-    if (editorial.getId() != null && (editorialExistente.isEmpty())) {
-      return false;
+    // una editorial nueva (sin ID) no tiene nada previo que deba existir
+    if (editorial.getId() == null) {
+      return true;
     }
-    // aquí, se cumple que la editorial sí existe en el repositorio
-    return true;
+    
+    // una editorial con ID cumple solo si todavía existe en el repositorio
+    return this.repositorio.buscarPorId(editorial.getId())
+      .isPresent();
   }
 
   

@@ -20,9 +20,11 @@ import co.edu.uptc.tiendalibros.negocio.RespuestaFallida;
 import co.edu.uptc.tiendalibros.negocio.ResultadoValidacion;
 import co.edu.uptc.tiendalibros.negocio.excepciones.ViolacionElementoNoExisteException;
 import co.edu.uptc.tiendalibros.negocio.formatoLibro.reglas.ReglaFormatoLibroCantidadPaginasPositivas;
+import co.edu.uptc.tiendalibros.negocio.formatoLibro.reglas.ReglaFormatoLibroEstadoNoNulo;
 import co.edu.uptc.tiendalibros.negocio.formatoLibro.reglas.ReglaFormatoLibroInventarioPositivo;
 import co.edu.uptc.tiendalibros.negocio.formatoLibro.reglas.ReglaFormatoLibroPrecioPositivo;
 import co.edu.uptc.tiendalibros.negocio.formatoLibro.reglas.ReglaFormatoLibroTipoIVANoNulo;
+import co.edu.uptc.tiendalibros.negocio.libro.reglas.ReglaLibroAnioPublicacionValido;
 import co.edu.uptc.tiendalibros.negocio.libro.reglas.ReglaLibroCategoriaExiste;
 import co.edu.uptc.tiendalibros.negocio.libro.reglas.ReglaLibroConFormatosAlMenosUnFormato;
 import co.edu.uptc.tiendalibros.negocio.libro.reglas.ReglaLibroEditorialExiste;
@@ -31,12 +33,16 @@ import co.edu.uptc.tiendalibros.negocio.libro.reglas.ReglaLibroImagenLongitudMax
 import co.edu.uptc.tiendalibros.negocio.libro.reglas.ReglaLibroImagenValida;
 import co.edu.uptc.tiendalibros.negocio.libro.reglas.ReglaLibroIsbnLongitudMaxima;
 import co.edu.uptc.tiendalibros.negocio.libro.reglas.ReglaLibroIsbnNoVacio;
+import co.edu.uptc.tiendalibros.negocio.libro.reglas.ReglaLibroIsbnSoloDigitosYGuiones;
 import co.edu.uptc.tiendalibros.negocio.libro.reglas.ReglaLibroIsbnUnico;
 import co.edu.uptc.tiendalibros.negocio.libro.reglas.ReglaLibroTituloLongitudMaxima;
 import co.edu.uptc.tiendalibros.negocio.libro.reglas.ReglaLibroTituloNoVacio;
 
-/// Representa un gestor de la lógica de negocio para los libros como obras intelectuales.
+/// Representa un gestor de la lógica de negocio para los libros como obras intelectuales,
+/// junto con sus formatos comerciales impreso y digital.
 ///
+/// Un libro se registra, se actualiza y se elimina siempre como un todo con sus formatos,
+/// por eso la clase [LibroConFormatos].
 public class GestionLibro {
   
   /// Repositorio de datos de los libros.
@@ -68,6 +74,9 @@ public class GestionLibro {
   /// Lista de reglas de validación que se aplican al guardar un formato de libro digital.
   private final List<IReglaValidacion<FormatoLibro>> reglasValidacionGuardarFormatoLibroDigital;
   
+  /// Lista de reglas de validación que se aplican al eliminar un libro.
+  private final List<IReglaValidacion<Libro>> reglasValidacionEliminarLibro;
+  
   /// Crea un nuevo objeto [GestionLibro].
   ///
   /// @param repositorioLibro            Repositorio de datos de los libros.
@@ -97,13 +106,19 @@ public class GestionLibro {
         new ReglaLibroTituloLongitudMaxima(),
         new ReglaLibroIsbnNoVacio(),
         new ReglaLibroIsbnLongitudMaxima(),
+        new ReglaLibroIsbnSoloDigitosYGuiones(),
         new ReglaLibroIsbnUnico(this.repositorioLibro),
+        new ReglaLibroAnioPublicacionValido(),
         new ReglaLibroEditorialExiste(this.repositorioEditorial),
         new ReglaLibroCategoriaExiste(this.repositorioCategoria),
         new ReglaLibroImagenValida(),
         new ReglaLibroImagenLongitudMaxima()
       )
     );
+    
+    // agregar las reglas de validación para eliminar un libro.
+    // TODO: agregar ReglaLibroSinVentasAsociadas cuando exista el módulo de ventas.
+    this.reglasValidacionEliminarLibro = new ArrayList<>();
     
     // agregar las reglas de validación del libro con sus formatos
     this.reglasValidacionGuardarLibroConFormatos = new ArrayList<>(
@@ -123,11 +138,19 @@ public class GestionLibro {
   /// El libro debe ofrecerse al menos en un formato. Los formatos son opcionales: solo se
   /// validan y se guardan los formatos que el libro ofrece.
   /// 
-  /// Si el libro es nuevo (ID = nulo), se guarda el libro, y luego los formatos que ofrece.
+  /// Si el libro es nuevo (ID = nulo), se inserta el libro, y luego los formatos que ofrece.
   ///
   /// Si el libro ya existe (ID != nulo), se actualiza el libro y se actualizan sus formatos.
   /// 
   /// Un formato que el libro tenía guardado y que ya no ofrece se elimina.
+  /// 
+  /// `libroConFormatos` no es nulo.
+  /// 
+  /// Si la respuesta es exitosa, el libro y sus formatos quedaron guardados y la respuesta
+  /// los trae con sus IDs asignados.
+  /// 
+  /// Si la respuesta es fallida, ni el libro ni sus formatos se modificaron en el
+  /// repositorio.
   ///
   /// @param libroConFormatos Libro con sus dos formatos que se quiere guardar.
   /// @return Respuesta con el resultado de la operación de guardar.
@@ -189,6 +212,14 @@ public class GestionLibro {
   
   /// Elimina el libro con el ID especificado, todos sus formatos y las asociaciones con los
   /// autores.
+  /// 
+  /// El libro solo se elimina si cumple todas las reglas de validación para eliminar.
+  /// 
+  /// Si la respuesta es exitosa, el libro, sus formatos y sus asociaciones con los autores
+  /// ya no existen porque fueron borrados del repositorio.
+  /// 
+  /// Si la respuesta es fallida, el libro conserva sus formatos y sus autores, y todavía
+  /// están en el repositorio.
   ///
   /// @param id ID del libro que se quiere eliminar.
   /// @return Respuesta con el resultado de la operación de eliminar.
@@ -206,7 +237,23 @@ public class GestionLibro {
       return new RespuestaFallida<>(Optional.empty(), "No se pudo eliminar el libro.", errores);
     }
     
-    // TODO: aquí debe verificarse que el libro y sus formatos no tengan ventas asociadas
+    // verificar las reglas de negocio para eliminar el libro
+    for (IReglaValidacion<Libro> regla : this.reglasValidacionEliminarLibro) {
+      regla.validar(errores, libro.get());
+    }
+    
+    // si las reglas de validación provocaron errores se notifica la respuesta
+    if (errores.hayErrores()) {
+      return new RespuestaFallida<>(
+        libro,
+        String.format(
+          "No se puede eliminar el libro '%s'.",
+          libro.get()
+            .getTitulo()
+        ),
+        errores
+      );
+    }
     
     // primero, eliminar el libro con sus formatos en una sola operación atómica y verificar
     // que realmente se eliminó
@@ -293,7 +340,8 @@ public class GestionLibro {
         new ReglaFormatoLibroInventarioPositivo(prefijo + ".inventario"),
         new ReglaFormatoLibroCantidadPaginasPositivas(prefijo + ".cantidadPaginas"),
         new ReglaFormatoLibroPrecioPositivo(prefijo + ".precioBase"),
-        new ReglaFormatoLibroTipoIVANoNulo(prefijo + ".tipoIVA")
+        new ReglaFormatoLibroTipoIVANoNulo(prefijo + ".tipoIVA"),
+        new ReglaFormatoLibroEstadoNoNulo(prefijo + ".estadoEnCatalogo")
       )
     );
   }

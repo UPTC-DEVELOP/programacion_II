@@ -38,7 +38,7 @@ public class ReglaEditorialNombreNoVacio implements IReglaValidacion<Editorial> 
     }
     // aquí, el elemento viola la regla
     
-    String mensajeError = String.format("El nombre de la editorial no puede ser vacío.");
+    String mensajeError = new String("El nombre de la editorial no puede ser vacío.");
     
     // primero, reportar el error (atributo, mensajeError)
     errores.agregarAtributo("nombre", mensajeError);

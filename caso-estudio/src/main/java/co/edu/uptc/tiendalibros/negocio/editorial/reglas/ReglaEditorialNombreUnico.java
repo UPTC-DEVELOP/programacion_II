@@ -13,6 +13,7 @@ import co.edu.uptc.tiendalibros.negocio.excepciones.ViolacionReglaNegocioExcepti
 
 /// Regla de validación para determinar si el nombre de una editorial es único.
 ///
+/// 
 /// Retorna una [ViolacionReglaNegocioAtributoException] si al validar la editorial viola
 /// la regla de tener un nombre único.
 public class ReglaEditorialNombreUnico implements IReglaValidacion<Editorial> {
@@ -32,6 +33,11 @@ public class ReglaEditorialNombreUnico implements IReglaValidacion<Editorial> {
   
   @Override
   public boolean cumple(Editorial editorial) {
+    // si la editorial no tiene nombre no hay nada que comparar
+    if (editorial.getNombre() == null || editorial.getNombre()
+      .isBlank()) {
+      return true;
+    }
     // se busca en el repositorio si hay una editorial existente con el mismo nombre.
     for (Editorial existente : this.repositorio.buscarPorNombre(editorial.getNombre())) {
       // se compara si la editorial existente que tiene el mismo nombre tiene el mismo ID

@@ -30,14 +30,16 @@ public class GestionEditorial {
   private final IRepositorioLibro repositorioLibro;
   
   /// Lista de reglas de validación para guardar una editorial
-  List<IReglaValidacion<Editorial>> reglasValidacionGuardar;
+  private final List<IReglaValidacion<Editorial>> reglasValidacionGuardar;
   
   /// Lista de reglas de validación para eliminar una editorial
-  List<IReglaValidacion<Editorial>> reglasValidacionEliminar;
+  private final List<IReglaValidacion<Editorial>> reglasValidacionEliminar;
   
   /// Crea un nuevo objeto [GestionEditorial].
   ///
-  /// @param repositorio Repositorio de datos de la editorial.
+  /// @param repositorioEditorial Repositorio de datos de las editoriales.
+  /// @param repositorioLibro     Repositorio de datos de los libros, para saber si una
+  ///                             editorial tiene libros asociados.
   public GestionEditorial(
     IRepositorioEditorial repositorioEditorial,
     IRepositorioLibro repositorioLibro
@@ -47,11 +49,11 @@ public class GestionEditorial {
     
     // agregar las reglas de validación para guardar una editorial
     this.reglasValidacionGuardar = new ArrayList<>(
-      (List.of(
+      List.of(
         new ReglaEditorialNombreNoVacio(),
         new ReglaEditorialNombreLongitudMaxima(),
         new ReglaEditorialNombreUnico(this.repositorioEditorial)
-      ))
+      )
     );
     
     // agregar las reglas de validación para eliminar una editorial
@@ -64,6 +66,13 @@ public class GestionEditorial {
   
   /// Guarda la editorial especificada en el repositorio de datos.
   ///
+  /// `editorial` no debe ser un objeto nulo.
+  /// 
+  /// Si la respuesta es exitosa, la editorial quedó guardada y la respuesta trae la
+  /// editorial con su ID.
+  /// 
+  /// Si es fallida, el repositorio no se modificó.
+  /// 
   /// @param editorial Editorial que se quiere guardar.
   /// @return Respuesta con el resultado de la operación de guardar.
   public Respuesta<Editorial> guardar(Editorial editorial) {
@@ -80,17 +89,17 @@ public class GestionEditorial {
     }
     
     // preparar la editorial antes de validar y guardar
-    Editorial unaEditorial = prepararParaGuardar(editorial);
+    prepararParaGuardar(editorial);
     
     // primero, verificar si no hubo errores de validación de datos
     for (IReglaValidacion<Editorial> regla : reglasParaValidar) {
-      regla.validar(errores, unaEditorial);
+      regla.validar(errores, editorial);
     }
     
     if (errores.hayErrores()) {
       // devolver una respuesta fallida por errores de validación
       return new RespuestaFallida<Editorial>(
-        Optional.of(unaEditorial), "Hay errores en los datos ingresados para la editorial.", errores
+        Optional.of(editorial), "Hay errores en los datos ingresados para la editorial.", errores
       );
     }
     
@@ -107,7 +116,9 @@ public class GestionEditorial {
       
       // devolver una respuesta fallida de la operación guardar
       return new RespuestaFallida<Editorial>(
-        Optional.of(editorial), String.format("No se pudo guardar la editorial '%s'", editorial.getNombre()), errores
+        Optional.of(editorial),
+        String.format("No se pudo guardar la editorial '%s'", editorial.getNombre()),
+        errores
       );
     }
     
@@ -179,15 +190,14 @@ public class GestionEditorial {
   /// normaliza los datos.
   ///
   /// @param editorial Editorial que se desea preparar.
-  /// @return La misma editorial con sus atributos normalizados.
-  public Editorial prepararParaGuardar(Editorial editorial) {
+  public void prepararParaGuardar(Editorial editorial) {
     // limpiar el atributo 'nombre'
-    editorial.setNombre(
-      editorial.getNombre()
-        .trim()
-    );
-    
-    return editorial;
+    if (editorial.getNombre() != null) {
+      editorial.setNombre(
+        editorial.getNombre()
+          .trim()
+      );
+    }
   }
   
 }

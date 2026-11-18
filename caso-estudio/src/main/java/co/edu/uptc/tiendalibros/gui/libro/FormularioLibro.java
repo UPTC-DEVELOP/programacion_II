@@ -129,13 +129,17 @@ public class FormularioLibro extends FormularioElementoBase<ElementoVistaLibroCo
     // compuesto consolidado
     Libro libro = this.panelCamposLibro.capturarDatos();
     
+    // si el usuario no seleccionó una categoría o una editorial de la lista combobox se asigna un ID nulo
+    Long idCategoria = libro.getCategoria() == null ? null : libro.getCategoria().getId();
+    Long idEditorial = libro.getEditorial() == null ? null : libro.getEditorial().getId();    
+    
     return DatosEntradaLibro.builder()
       .id(libro.getId())
       .isbn(libro.getIsbn())
       .titulo(libro.getTitulo())
       .anioPublicacion(libro.getAnioPublicacion())
-      .idCategoria(libro.getIdCategoria())
-      .idEditorial(libro.getIdEditorial())
+      .idCategoria(idCategoria)
+      .idEditorial(idEditorial)
       .imagenLibro(libro.getImagenLibro())
       .formatoImpreso(this.panelFormatoImpreso.capturarDatos())
       .formatoDigital(this.panelFormatoDigital.capturarDatos())

@@ -60,6 +60,14 @@ public class RepositorioLibroJDBC extends RepositorioJDBCBase<Libro> implements 
   private static final String SQL_BUSCAR_POR_TITULO = "SELECT " + COLUMNAS_SELECT
     + " FROM libro WHERE titulo LIKE ? ORDER BY titulo";
   
+  /// Comando SQL para saber si exite algún libro de una editorial. Devuelve una sola fila
+  /// con 1 si existe, o con 0 si no existe.
+  private static final String SQL_EXISTE_LIBRO_POR_EDITORIAL = "SELECT EXISTS (SELECT 1 FROM libro WHERE id_editorial = ?)";
+  
+  /// Comando SQL para saber si existe algún libro de una categoría. Devuelve una sola fila
+  /// con 1 si existe, o con 0 si no existe.
+  private static final String SQL_EXISTE_LIBRO_POR_CATEGORIA = "SELECT EXISTS (SELECT 1 FROM libro WHERE id_categoria = ?)";
+  
   /// Repositorio que se usa para cargar la categoría de cada libro.
   private final RepositorioCategoriaJDBC repositorioCategoria;
   
@@ -288,4 +296,59 @@ public class RepositorioLibroJDBC extends RepositorioJDBCBase<Libro> implements 
     }
   }
   
+  @Override
+  public boolean existeLibroConEditorial(Editorial editorial) {
+    // no se puede buscar una editorial nula
+    if (editorial == null) {
+      throw new IllegalArgumentException("Error: La editorial no puede ser nula.");
+    }
+    
+    // una editorial sin ID no se ha guardado y, por tanto, no puede tener libros
+    if (editorial.getId() == null) {
+      return false;
+    }
+    
+    // hacer la consulta a la base de datos
+    try (
+      Connection conexion = abrirConexion();
+      PreparedStatement comando = conexion
+        .prepareStatement(RepositorioLibroJDBC.SQL_EXISTE_LIBRO_POR_EDITORIAL)) {
+      comando.setLong(1, editorial.getId());
+      
+      try (ResultSet resultado = comando.executeQuery()) {
+        // SELECT EXISTS siempre devuelve una fila: 1 (existe) o 0 (no existe)
+        return resultado.next() && resultado.getBoolean(1);
+      }
+    } catch (SQLException excepcion) {
+      throw traducirExcepcion("verificar si la editorial tiene libros", excepcion);
+    }
+  }
+  
+  @Override
+  public boolean existeLibroConCategoria(Categoria categoria) {
+    // no se puede buscar una categoría nula
+    if (categoria == null) {
+      throw new IllegalArgumentException("Error: La categoría no puede ser nula.");
+    }
+    
+    // una categoría sin ID no se ha guardado y, por tanto, no puede tener libros
+    if (categoria.getId() == null) {
+      return false;
+    }
+    
+    // hacer la consulta a la base de datos
+    try (
+      Connection conexion = abrirConexion();
+      PreparedStatement comando = conexion
+        .prepareStatement(RepositorioLibroJDBC.SQL_EXISTE_LIBRO_POR_CATEGORIA)) {
+      comando.setLong(1, categoria.getId());
+      
+      try (ResultSet resultado = comando.executeQuery()) {
+        // SELECT EXISTS siempre devuelve una fila: 1 (existe) o 0 (no existe)
+        return resultado.next() && resultado.getBoolean(1);
+      }
+    } catch (SQLException excepcion) {
+      throw traducirExcepcion("verificar si la categoría tiene libros", excepcion);
+    }
+  }
 }

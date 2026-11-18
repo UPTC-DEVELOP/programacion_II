@@ -22,7 +22,7 @@ public class ReglaLibroIsbnUnico implements IReglaValidacion<Libro> {
   
   /// Crea una nueva regla de ISBN de libro único.
   ///
-  /// @repositorio repositorio Repositorio de libros para saber si el ISBN es único.
+  /// @param repositorio repositorio Repositorio de libros para saber si el ISBN es único.
   public ReglaLibroIsbnUnico(IRepositorioLibro repositorio) {
     this.repositorio = repositorio;
   }

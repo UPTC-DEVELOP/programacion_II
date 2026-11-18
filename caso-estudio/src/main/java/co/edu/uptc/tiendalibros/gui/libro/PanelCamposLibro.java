@@ -363,13 +363,11 @@ public class PanelCamposLibro extends PanelCamposBase<ElementoVistaLibroConForma
     LibroConFormatos libroConFormatos = getElementoVista().getElemento();
     Long idLibro = libroConFormatos.getId();
     
-    // obtener el id de la categoría seleccionada en el JComboBox
+    // obtener la categoría seleccionada en el JComboBox
     Categoria categoria = (Categoria) this.cbxCategoria.getSelectedItem();
-    Long idCategoria = categoria.getId();
     
-    // obtener el id de la editorial seleccionada en el JComboBox
+    // obtener la editorial seleccionada en el JComboBox
     Editorial editorial = (Editorial) this.cbxEditorial.getSelectedItem();
-    Long idEditorial = editorial.getId();
     
     // obtener el título
     String titulo = this.txtTitulo.getText()
@@ -394,8 +392,8 @@ public class PanelCamposLibro extends PanelCamposBase<ElementoVistaLibroConForma
       .id(idLibro)
       .isbn(isbn)
       .titulo(titulo)
-      .idCategoria(idCategoria)
-      .idEditorial(idEditorial)
+      .categoria(categoria)
+      .editorial(editorial)
       .anioPublicacion(anioPublicacion)
       .imagenLibro(imagenLibro)
       .construir();
@@ -447,8 +445,11 @@ public class PanelCamposLibro extends PanelCamposBase<ElementoVistaLibroConForma
   ///
   /// @param libro Libro del cual se quiere seleccionar la categoría.
   private void seleccionarCategoria(Libro libro) {
-    // obtiene el id de la categoría
-    Long idCategoria = libro.getIdCategoria();
+    // obtiene el id de la categoría. Un libro nuevo todavía no tiene una categoría
+    Long idCategoria = libro.getCategoria() == null ? null
+      : libro.getCategoria()
+        .getId();
+    
     // si el usuario no ha escogido una opción de categoría.
     // o también, por alguna extraña razón, el libro tiene una categoría nula
     if (idCategoria == null) {
@@ -500,8 +501,11 @@ public class PanelCamposLibro extends PanelCamposBase<ElementoVistaLibroConForma
   ///
   /// @param libro Libro del cual se quiere seleccionar la editorial.
   private void seleccionarEditorial(Libro libro) {
-    // obtiene el id de la editorial
-    Long idEditorial = libro.getIdEditorial();
+    // obtiene el id de la editorial. Un libro nuevo todavía no tiene una editorial
+    Long idEditorial = libro.getEditorial() == null ? null
+      : libro.getEditorial()
+        .getId();
+    
     // si el usuario no ha escogido una opción de editorial.
     // o también, por alguna extraña razón, el libro tiene una editorial nula
     if (idEditorial == null) {

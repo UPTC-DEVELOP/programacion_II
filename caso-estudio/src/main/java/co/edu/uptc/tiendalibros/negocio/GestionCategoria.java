@@ -1,10 +1,12 @@
 package co.edu.uptc.tiendalibros.negocio;
 
 import java.util.List;
+import java.util.Optional;
 
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioCategoria;
 import co.edu.uptc.tiendalibros.modelo.Categoria;
 import co.edu.uptc.tiendalibros.negocio.excepciones.ReglaNegocioException;
+import co.edu.uptc.tiendalibros.negocio.excepciones.ViolacionElementoNoExisteException;
 
 public class GestionCategoria {
   
@@ -27,7 +29,11 @@ public class GestionCategoria {
       );
     }
     
-    return this.repositorio.guardar(categoria);
+    try {
+      return this.repositorio.guardar(categoria);
+    } catch (ViolacionElementoNoExisteException excepcion) {
+      throw new ReglaNegocioException(excepcion.getMessage());
+    }
   }
   
   public void validar(Categoria categoria) {
@@ -70,7 +76,7 @@ public class GestionCategoria {
     return this.repositorio.listar();
   }
   
-  public List<Categoria> buscarPorId(Long id) {
+  public Optional<Categoria> buscarPorId(Long id) {
     return this.repositorio.buscarPorId(id);
   }
   

@@ -1,6 +1,7 @@
 package co.edu.uptc.tiendalibros.gui.categoria;
 
 import java.util.List;
+import java.util.Optional;
 
 import co.edu.uptc.tiendalibros.gui.avisos.Aviso;
 import co.edu.uptc.tiendalibros.gui.componentes.ControladorBase;
@@ -84,13 +85,11 @@ public class ControladorCategoria
     
     Long idCategoria = (Long) id;
     
-    List<Categoria> categorias = this.gestorCategoria.buscarPorId(
-      idCategoria
-    );
+    Optional<Categoria> categoria = this.gestorCategoria.buscarPorId(idCategoria);
     
-    if (!categorias.isEmpty()) {
+    if (categoria.isPresent()) {
       ElementoVistaCategoria elementoVista = new ElementoVistaCategoria(
-        categorias.get(0),
+        categoria.get(),
         new ResultadoValidacion()
       );
       this.panelCategorias.mostrarFormulario(elementoVista);

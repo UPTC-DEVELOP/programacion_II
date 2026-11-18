@@ -12,7 +12,8 @@ import co.edu.uptc.tiendalibros.negocio.excepciones.ViolacionReglaNegocioExcepti
 /// Regla de validación para determinar si la editorial tiene un nombre con la longitud
 /// máxima permitida.
 /// 
-/// 
+/// Retorna una[ViolacionReglaNegocioAtributoException]si al validar la editorial viola la
+/// regla de no superar [#LONGITUD_MAXIMA_NOMBRE] caracteres.
 public class ReglaEditorialNombreLongitudMaxima implements IReglaValidacion<Editorial> {
   
   /// Longitud máxima del nombre de la editorial.
@@ -42,7 +43,7 @@ public class ReglaEditorialNombreLongitudMaxima implements IReglaValidacion<Edit
     
     String mensajeError = String
       .format(
-        "El nombre de la editorial no puede tener más de %d caracteres",
+        "El nombre de la editorial no puede tener más de %d caracteres.",
         ReglaEditorialNombreLongitudMaxima.LONGITUD_MAXIMA_NOMBRE
       );
     

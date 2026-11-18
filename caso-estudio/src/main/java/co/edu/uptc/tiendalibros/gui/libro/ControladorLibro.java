@@ -85,8 +85,8 @@ public class ControladorLibro extends ControladorBase {
     
     // convertir la lista de libros en un array de objetos para el modelo de datos de la tabla
     
-    // un libro tiene 3 atributos (id, titulo,isbn)
-    int cantidadAtributos = 3;
+    // un libro tiene 4 atributos (id, titulo,isbn, año, categoría, editorial)
+    int cantidadAtributos = 6;
     
     // array contenedor de dos dimensiones:
     // - dimensión 0: los índices de las filas
@@ -98,7 +98,13 @@ public class ControladorLibro extends ControladorBase {
     for (int i = 0; i < libros.size(); i++) {
       Libro libro = libros.get(i);
       
-      filas[i] = new Object[] { libro.getId(), libro.getTitulo(), libro.getIsbn() };
+      filas[i] = new Object[] {
+        libro.getId(), libro.getTitulo(), libro.getIsbn(), libro.getAnioPublicacion(),
+        libro.getCategoria()
+          .getNombre(),
+        libro.getEditorial()
+          .getNombre()
+      };
     }
     
     // pedirle al panel que actualice la tabla de libros.
@@ -147,7 +153,7 @@ public class ControladorLibro extends ControladorBase {
     this.panelLibros.mostrarFormulario(crearVista(libroConFormatos.get(), new ResultadoValidacion()));
   }
   
-  /// Crea un objeto vista que se envía al lormulario.
+  /// Crea un objeto vista que se envía al formulario.
   ///
   /// @param libroConFormatos Libro con sus dos formatos que se quiere mostrar.
   /// @param errores          Errores de validación que se quieren mostrar. Vacío si no hay
@@ -207,7 +213,6 @@ public class ControladorLibro extends ControladorBase {
   /// Elimina un libro con el ID especificado.
   ///
   /// @param id ID del libro que se quiere eliminar.
-  ///
   public void eliminar(Long id) {
     // si el ID es nulo no hacer nada
     if (id == null) {
@@ -223,9 +228,9 @@ public class ControladorLibro extends ControladorBase {
       // si la respuesta devuelve el libro eliminado, entonces se puede mostrar el título del
       // libro eliminado
       case RespuestaExitosa<Libro> exitosa -> {
-        String titulo = respuesta.getElemento()
+        String titulo = exitosa.getElemento()
           .isPresent()
-            ? respuesta.getElemento()
+            ? exitosa.getElemento()
               .get()
               .getTitulo()
             : "";
@@ -238,6 +243,18 @@ public class ControladorLibro extends ControladorBase {
       }
       
       case RespuestaFallida<Libro> fallida -> {
+        // volver a cargar el libro con sus formatos para mostrar el formulario con los errores
+        // que impidieron eliminar el libro
+        Optional<LibroConFormatos> libroConError = this.gestorLibro.buscarLibroConFormatos(id);
+        
+        if (libroConError.isPresent()) {
+          // mostrar el formulario y los errores al eliminar el libro
+          this.panelLibros.mostrarFormulario(crearVista(libroConError.get(), fallida.getErrores()));
+        } else {
+          // el libro ya no existe, solo falta actualizar la tabla de datos
+          listar();
+        }
+        
         // mostrar los errores que ocurrieron al eliminar
         mostrarAviso(Aviso.advertencia(fallida.getMensaje()));
       }

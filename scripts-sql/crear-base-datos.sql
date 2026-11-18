@@ -3,7 +3,7 @@
 /********* 1. CREAR LA BASE DE DATOS *********/
 
 -- Crea la base de datos de la tienda de libros
--- Colación es_0900_ai_ci: insensible a tildes y mayúsculas
+-- Colación es español insensible a tildes y mayúsculas
 CREATE DATABASE IF NOT EXISTS tienda_libros_gr9
   CHARACTER SET utf8mb4
 COLLATE utf8mb4_spanish_ci;

@@ -1,10 +1,12 @@
 package co.edu.uptc.tiendalibros.negocio;
 
 import java.util.List;
+import java.util.Optional;
 
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioAutor;
 import co.edu.uptc.tiendalibros.modelo.Autor;
 import co.edu.uptc.tiendalibros.negocio.excepciones.ReglaNegocioException;
+import co.edu.uptc.tiendalibros.negocio.excepciones.ViolacionElementoNoExisteException;
 
 public class GestionAutor {
   
@@ -21,7 +23,11 @@ public class GestionAutor {
       throw new ReglaNegocioException("El autor ya no existe.");
     }
     
-    return this.repositorio.guardar(autor);
+    try {
+      return this.repositorio.guardar(autor);
+    } catch (ViolacionElementoNoExisteException excepcion) {
+      throw new ReglaNegocioException(excepcion.getMessage());
+    }
   }
   
   public void validar(Autor autor) {
@@ -43,7 +49,7 @@ public class GestionAutor {
     return this.repositorio.listar();
   }
   
-  public List<Autor> buscarPorId(Long id) {
+  public Optional<Autor> buscarPorId(Long id) {
     return this.repositorio.buscarPorId(id);
   }
   

@@ -36,10 +36,7 @@ También se puede trabajar con el Maven de eclipse: Window → Preferences → M
 
 ## Cargar la Base de Datos 
 
-En DBeaver en una conexión activa ejecutar los scripts del directorio `scripts-sql`:
-
-- `crear-base-datos.sql` 
-- `poblar.sql`, o individualmente, `insertar-editorial.sql`, `insertar-libro`, `insertar-formato-libro.sql`.
+En DBeaver en una conexión activa sin tener una base de datos selecciona abrir y ejecutar el script `construir-bd.sql` del directorio `scripts-sql`. Este script se debe ejecutar en DBeaver con el comando 'Execute SQL Script (Ctrl+X)'.
 
 ## Cómo Abrir el Proyecto en eclipse
 

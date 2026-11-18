@@ -3,6 +3,8 @@ package co.edu.uptc.tiendalibros.gui.libro;
 
 import java.util.Optional;
 
+import co.edu.uptc.tiendalibros.modelo.Categoria;
+import co.edu.uptc.tiendalibros.modelo.Editorial;
 import co.edu.uptc.tiendalibros.modelo.FormatoLibro;
 import co.edu.uptc.tiendalibros.modelo.Libro;
 import co.edu.uptc.tiendalibros.modelo.LibroBuilder;
@@ -16,19 +18,39 @@ public record DatosEntradaLibro(
   Optional<DatosEntradaFormatoLibro> formatoImpreso, Optional<DatosEntradaFormatoLibro> formatoDigital
 ) {
   
-  /// Convierte estos datos de entrada en un libro con sus dos formatos del modelo.
+  /// Convierte estos datos de entrada en un objeto libro con sus dos formatos del modelo.
+  /// 
+  /// La categoría y la editorial del libro son objetos provisionales que solo tienen el ID.
+  /// 
+  /// En el backend, los repositorios cargan el objeto completo categoría y editorial
+  /// consultando el ID.
+  /// 
+  /// Las reglas de negocio solo necesitan el ID para verificar que la categoría y la
+  /// editorial existen.
+  /// 
+  /// Sin embargo, si se envía IDs nulos para categoría y editorial es porque el usuario no
+  /// seleccionó una opción en las listas combobox.
+  /// 
+  /// `anioPublicacion` no debe ser nulo.
   ///
   /// @return Un [LibroConFormatos] con los mismos datos de este objeto.
   /// @throws IllegalArgumentException Si el formato impreso o el formato digital no son del
   ///                                  tipo que les corresponde.
   public LibroConFormatos aLibroConFormatos() {
+    // del formulario libro solo se necesita capturar el ID de la categoría y el ID de la
+    // editorial.
+    // podemos crear un objeto provisional que solo tenga el ID. En el backend, se utiliza al
+    // repositorio respectivo para que busque la categoría o la editorial basado en el ID
+    Categoria categoriaProvisional = new Categoria(this.idCategoria(), null, null, null);
+    Editorial editorialProvisional = new Editorial(this.idEditorial(), null);
+    
     Libro libro = new LibroBuilder()
       .id(this.id)
       .isbn(this.isbn)
       .titulo(this.titulo)
       .anioPublicacion(this.anioPublicacion)
-      .idCategoria(this.idCategoria)
-      .idEditorial(this.idEditorial)
+      .categoria(categoriaProvisional)
+      .editorial(editorialProvisional)
       .imagenLibro(this.imagenLibro)
       .construir();
     

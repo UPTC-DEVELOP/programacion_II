@@ -38,7 +38,7 @@ public class Editorial extends ElementoBase {
   
   /// Establece el nombre de la editorial.
   ///
-  /// @nombre Nombre de la editorial.
+  /// @param nombre Nombre de la editorial.
   public void setNombre(String nombre) { this.nombre = nombre; }
   
 }

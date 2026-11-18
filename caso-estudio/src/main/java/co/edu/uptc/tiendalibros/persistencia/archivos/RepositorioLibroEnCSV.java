@@ -327,4 +327,48 @@ public class RepositorioLibroEnCSV extends RepositorioElementoEnCSVBase<Libro> i
     return Optional.empty();
   }
   
+  @Override
+  public boolean existeLibroConEditorial(Editorial editorial) {
+    if (editorial == null) {
+      throw new IllegalArgumentException("Error: La editorial no puede ser nula.");
+    }
+    
+    // una editorial sin ID no se ha guardado y, por tanto, no puede tener libros
+    if (editorial.getId() == null) {
+      return false;
+    }
+    
+    // recorrer los registros buscando la editorial
+    for (Libro libro : getRegistros()) {
+      if (editorial.equals(libro.getEditorial())) {
+        return true;
+      }
+    }
+    
+    // no se encontró un libro con esa editorial
+    return false;
+  }
+  
+  @Override
+  public boolean existeLibroConCategoria(Categoria categoria) {
+    // no se puede buscar una categoría nula
+    if (categoria == null) {
+      throw new IllegalArgumentException("Error: La categoría no puede ser nula.");
+    }
+    
+    // una categoría sin ID no se ha guardado y, por tanto, no puede tener libros
+    if (categoria.getId() == null) {
+      return false;
+    }
+    
+    // recorrer los registros buscando la categoría
+    for (Libro libro : getRegistros()) {
+      if (categoria.equals(libro.getCategoria())) {
+        return true;
+      }
+    }
+    // no se encontró un libro con esa categoría
+    return false;
+  }
+  
 }
