@@ -26,6 +26,10 @@ import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioFormatoLibroJDBC;
 import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioLibroConFormatosJDBC;
 import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioLibroJDBC;
 import co.edu.uptc.tiendalibros.persistencia.memoria.RepositorioAutorEnMemoria;
+import co.edu.uptc.tiendalibros.gui.clientes.ControladorCliente;
+import co.edu.uptc.tiendalibros.interfaces.IRepositorioCliente;
+import co.edu.uptc.tiendalibros.negocio.GestionCliente;
+import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioClienteJDBC;
 /// Representa la aplicación.
 public class Aplicacion {
   
@@ -78,6 +82,10 @@ public class Aplicacion {
 
     RepositorioCategoriaJDBC repositorioCategoriaJDBC = new RepositorioCategoriaJDBC(this.conexionBaseDatos);
     
+ // Repositorio para la gestión de clientes.
+    IRepositorioCliente repositorioCliente =
+        new RepositorioClienteJDBC(this.conexionBaseDatos);
+    
     IRepositorioEditorial repositorioEditorial = repositorioEditorialJDBC;
     IRepositorioCategoria repositorioCategoria = repositorioCategoriaJDBC;
     
@@ -110,6 +118,9 @@ public class Aplicacion {
       repositorioLibro, repositorioLibroConFormatos, repositorioEditorial, repositorioCategoria,
       repositorioAutorLibro
     );
+    
+ // Gestor para la lógica de negocio de clientes.
+    GestionCliente gestorCliente = new GestionCliente(repositorioCliente);
     
     // crear los controladores que intermedian entre la interfaz gráfica y la capa de lógica
     
@@ -148,6 +159,13 @@ public class Aplicacion {
           .getPanelLibros(),
         gestorLibro, gestorCategoria, gestorEditorial
       ),
+      
+      // Controlador para la gestión de clientes.
+      new ControladorCliente(
+        this.enrutadorEventos,
+        contenidoPrincipal.getPanelGestionClientes(),
+        gestorCliente
+    )
     };
     
     // cada controlador es responsable de registrar sus rutas de eventos

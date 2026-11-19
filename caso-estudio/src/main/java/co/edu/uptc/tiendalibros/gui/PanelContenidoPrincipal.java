@@ -73,8 +73,7 @@ public class PanelContenidoPrincipal extends PanelBase {
     add(this.panelGestionVentas, PanelContenidoPrincipal.PANEL_GESTION_VENTAS);
     
     // crear el panel para la gestión de clientes
-    this.panelGestionClientes = (PanelGestionClientes) new PanelGestionClientes().construir();
-    add(this.panelGestionClientes, PanelContenidoPrincipal.PANEL_GESTION_CLIENTES);
+    this.panelGestionClientes = (PanelGestionClientes) new PanelGestionClientes(getEvento()).construir();    add(this.panelGestionClientes, PanelContenidoPrincipal.PANEL_GESTION_CLIENTES);
     
     // crear el panel para la administración del sistema
     this.panelAdministracionSistema = (PanelAdministracionSistema) new PanelAdministracionSistema()
