@@ -1,5 +1,9 @@
 package view;
 
+import java.util.Map;
+
+import javax.swing.table.DefaultTableModel;
+
 import model.CarritoCompras;
 import model.Libro;
 import model.MetodoPago;
@@ -65,7 +69,7 @@ public class EventosCompras extends Eventos {
         }
 
         carrito.agregarLibro(libro, cantidad);
-        vista.actualizarTabla();
+        actualizarTabla();
     }
 
     private void modificarCantidad() {
@@ -95,7 +99,7 @@ public class EventosCompras extends Eventos {
         }
 
         vista.getCarrito().modificarCantidad(libro, cantidad);
-        vista.actualizarTabla();
+        actualizarTabla();
     }
 
     private void eliminarDelCarrito() {
@@ -107,12 +111,12 @@ public class EventosCompras extends Eventos {
 
         Libro libro = (Libro) vista.getModeloTabla().getValueAt(filaSeleccionada, 0);
         vista.getCarrito().eliminarLibro(libro);
-        vista.actualizarTabla();
+        actualizarTabla();
     }
 
     private void vaciarCarrito() {
         vista.getCarrito().vaciar();
-        vista.actualizarTabla();
+        actualizarTabla();
     }
 
     private void cargarSeleccion() {
@@ -125,6 +129,40 @@ public class EventosCompras extends Eventos {
         int cantidad = (Integer) vista.getModeloTabla().getValueAt(filaSeleccionada, 1);
         vista.getCmbLibro().setSelectedItem(libro);
         vista.getTxtCantidad().setText(String.valueOf(cantidad));
+    }
+
+    private void actualizarTabla() {
+        DefaultTableModel modeloTabla = vista.getModeloTabla();
+        modeloTabla.setRowCount(0);
+
+        for (Map.Entry<Libro, Integer> entrada : vista.getCarrito().getItems().entrySet()) {
+            Libro libro = entrada.getKey();
+            int cantidad = entrada.getValue();
+            double subtotal = libro.getPrecio() * cantidad;
+            modeloTabla.addRow(new Object[] {
+                    libro,
+                    cantidad,
+                    libro.getPrecio(),
+                    subtotal
+            });
+        }
+
+        vista.getLblSubtotal().setText(
+                String.format("$%,.2f", vista.getCarrito().calcularSubtotal()));
+        vista.getLblIva19().setText(
+                String.format("$%,.2f", vista.getCarrito().calcularIVA19()));
+        vista.getLblIva5().setText(
+                String.format("$%,.2f", vista.getCarrito().calcularIVA5()));
+        vista.getLblOtrosIva().setText(
+                String.format("$%,.2f", vista.getCarrito().calcularOtrosIva()));
+
+        double descuento = vista.getCliente() != null
+                ? vista.getCliente().calcularDescuento() : 0.0;
+        double valorDescuento = vista.getCarrito().calcularSubtotal() * descuento;
+        vista.getLblDescuentoPremium().setText(
+                String.format("$%,.2f", valorDescuento));
+        vista.getLblTotal().setText(
+                String.format("$%,.2f", vista.getCarrito().calcularTotal(descuento)));
     }
 
     private void finalizarCompra() {
@@ -140,6 +178,6 @@ public class EventosCompras extends Eventos {
             mostrarError(resultado.getMensaje());
         }
 
-        vista.actualizarTabla();
+        actualizarTabla();
     }
 }
