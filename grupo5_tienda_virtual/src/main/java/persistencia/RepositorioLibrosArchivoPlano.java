@@ -1,10 +1,13 @@
 package persistencia;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,6 +113,46 @@ public class RepositorioLibrosArchivoPlano implements IRepositorio<Libro> {
 
     @Override
     public void guardar() {
-        // Implementacion en C14
+        File archivo = new File(rutaArchivo);
+        File carpetaPadre = archivo.getParentFile();
+        if (carpetaPadre != null && !carpetaPadre.exists()) {
+            carpetaPadre.mkdirs();
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(archivo), StandardCharsets.UTF_8))) {
+            for (Libro libro : libros) {
+                writer.write(formatearLinea(libro));
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            throw new PersistenciaException("Error al guardar el archivo de libros: " + rutaArchivo, e);
+        }
+    }
+
+    /**
+     * Serializa un libro en una linea tabulada compatible con parsearLinea().
+     */
+    private String formatearLinea(Libro libro) {
+        FormatoLibro formato = libro.getFormato() != null ? libro.getFormato() : FormatoLibro.FISICO;
+        return String.join(SEPARADOR,
+                limpiarCampo(libro.getIsbn()),
+                limpiarCampo(libro.getTitulo()),
+                limpiarCampo(libro.getAutor()),
+                String.valueOf(libro.getAnioPublicacion()),
+                limpiarCampo(libro.getCategoria()),
+                limpiarCampo(libro.getEditorial()),
+                String.valueOf(libro.getNumeroPaginas()),
+                String.valueOf(libro.getPrecio()),
+                String.valueOf(libro.getPorcentajeIva()),
+                String.valueOf(libro.getCantidadDisponible()),
+                formato.name());
+    }
+
+    private String limpiarCampo(String valor) {
+        if (valor == null) {
+            return "";
+        }
+        return valor.replace("\t", " ").replace("\r", " ").replace("\n", " ");
     }
 }
