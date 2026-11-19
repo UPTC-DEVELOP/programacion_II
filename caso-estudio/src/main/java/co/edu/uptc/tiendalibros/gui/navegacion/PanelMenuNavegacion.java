@@ -29,13 +29,15 @@ public class PanelMenuNavegacion extends PanelBase {
   private JButton btnGestionClientes;
   private JButton btnAdministracionSistema;
   
+  private JButton btnExploracionCatalogo;
+  
   /// Colección que asocia la ruta de un módulo, con el botón del menú de navegación.
   private Map<String, JButton> moduloBotones;
   
   public PanelMenuNavegacion(Evento evento) {
     super(evento);
-    // cinco módulos
-    this.moduloBotones = new HashMap<>(5);
+    // seis módulos
+    this.moduloBotones = new HashMap<>(6);
   }
   
   @Override
@@ -71,8 +73,15 @@ public class PanelMenuNavegacion extends PanelBase {
       ControladorNavegacion.NAVEGACION_ADMINISTRACION
     );
     
+    this.btnExploracionCatalogo = crearBoton(
+      "Explorar Catálogo",
+      IconoImagen.EXPLORAR_CATALOGO,
+      ControladorNavegacion.NAVEGACION_EXPLORACION_CATALOGO
+    );
+    
     // agregar los botones
     add(this.btnInicioSesion);
+    add(this.btnExploracionCatalogo);
     add(this.btnGestionCatalogo);
     add(this.btnGestionVentas);
     add(this.btnGestionClientes);

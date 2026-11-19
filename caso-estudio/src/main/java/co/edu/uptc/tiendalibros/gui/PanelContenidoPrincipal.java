@@ -4,6 +4,7 @@ package co.edu.uptc.tiendalibros.gui;
 import java.awt.CardLayout;
 
 import co.edu.uptc.tiendalibros.gui.administracion.PanelAdministracionSistema;
+import co.edu.uptc.tiendalibros.gui.catalogo.PanelExploracionCatalogo;
 import co.edu.uptc.tiendalibros.gui.catalogo.PanelGestionCatalogo;
 import co.edu.uptc.tiendalibros.gui.clientes.PanelGestionClientes;
 import co.edu.uptc.tiendalibros.gui.componentes.PanelBase;
@@ -30,6 +31,9 @@ public class PanelContenidoPrincipal extends PanelBase {
   /// Nombre del panel para la administración del sistema.
   public static final String PANEL_ADMINISTRACION_SISTEMA = "PanelAdministracionSistema";
   
+  /// Nombre del panel para la exploración del catálogo.
+  public static final String PANEL_EXPLORACION_CATALOGO = "PanelExploracionCatalogo";
+  
   /// Panel de inicio de sesión de usuario.
   private PanelLogin panelLogin;
   
@@ -44,6 +48,9 @@ public class PanelContenidoPrincipal extends PanelBase {
   
   /// Panel de administración del sistema.
   private PanelAdministracionSistema panelAdministracionSistema;
+  
+  /// Panel de exploración del catálogo
+  private PanelExploracionCatalogo panelExploracionCatalogo;
   
   /// Gestor para manejar los paneles como tarjetas.
   private CardLayout layoutCartas;
@@ -80,6 +87,10 @@ public class PanelContenidoPrincipal extends PanelBase {
     this.panelAdministracionSistema = (PanelAdministracionSistema) new PanelAdministracionSistema()
       .construir();
     add(this.panelAdministracionSistema, PanelContenidoPrincipal.PANEL_ADMINISTRACION_SISTEMA);
+    
+    // crear el panel para la exploración del catálogo
+    this.panelExploracionCatalogo = (PanelExploracionCatalogo) new PanelExploracionCatalogo(getEvento()).construir();
+    add(this.panelExploracionCatalogo, PanelContenidoPrincipal.PANEL_EXPLORACION_CATALOGO);
   }
   
   /// Muestra el panel de inicio de sesión de usuario.

@@ -25,6 +25,9 @@ public class ControladorNavegacion extends ControladorBase {
   /// Ruta para el evento de abrir el panel de administración del sistema.
   public static final String NAVEGACION_ADMINISTRACION = "navegacion.administracionSistema";
   
+  /// Ruta para el evento de abrir el panel de exploración del catálogo.
+  public static final String NAVEGACION_EXPLORACION_CATALOGO = "navegacion.exploracionCatalogo";
+  
   /// Panel del contenido principal de la ventana de la tienda.
   private final PanelContenidoPrincipal panelContenidoPrincipal;
   
@@ -114,6 +117,12 @@ public class ControladorNavegacion extends ControladorBase {
           ControladorNavegacion.NAVEGACION_ADMINISTRACION
         )
       );
+    
+    // asociar el evento de mostrar el panel de exploración del catálogo
+    getEnrutador().registrarEvento(
+      ControladorNavegacion.NAVEGACION_EXPLORACION_CATALOGO,
+      (elemento) -> mostrarPanel(PanelContenidoPrincipal.PANEL_EXPLORACION_CATALOGO, ControladorNavegacion.NAVEGACION_EXPLORACION_CATALOGO)
+    );
   }
   
 }
