@@ -91,24 +91,58 @@ public class RepositorioLibrosArchivoPlano implements IRepositorio<Libro> {
                     "Formato invalido en libros.txt en la linea " + numeroLinea + ": se esperaban 11 columnas.");
         }
 
+        String isbn = partes[0].trim();
+        String titulo = partes[1].trim();
+        String autor = partes[2].trim();
+        if (isbn.isEmpty() || titulo.isEmpty() || autor.isEmpty()) {
+            throw new PersistenciaException(
+                    "Datos obligatorios vacios (isbn, titulo o autor) en libros.txt en la linea " + numeroLinea + ".");
+        }
+
+        int anioPublicacion;
+        int numeroPaginas;
+        double precio;
+        double porcentajeIva;
+        int cantidadDisponible;
         try {
-            Libro libro = new Libro();
-            libro.setIsbn(partes[0].trim());
-            libro.setTitulo(partes[1]);
-            libro.setAutor(partes[2]);
-            libro.setAnioPublicacion(Integer.parseInt(partes[3].trim()));
-            libro.setCategoria(partes[4]);
-            libro.setEditorial(partes[5]);
-            libro.setNumeroPaginas(Integer.parseInt(partes[6].trim()));
-            libro.setPrecio(Double.parseDouble(partes[7].trim()));
-            libro.setPorcentajeIva(Double.parseDouble(partes[8].trim()));
-            libro.setCantidadDisponible(Integer.parseInt(partes[9].trim()));
-            libro.setFormato(FormatoLibro.valueOf(partes[10].trim().toUpperCase()));
-            return libro;
+            anioPublicacion = Integer.parseInt(partes[3].trim());
+            numeroPaginas = Integer.parseInt(partes[6].trim());
+            precio = Double.parseDouble(partes[7].trim());
+            porcentajeIva = Double.parseDouble(partes[8].trim());
+            cantidadDisponible = Integer.parseInt(partes[9].trim());
+        } catch (NumberFormatException e) {
+            throw new PersistenciaException(
+                    "Valor numerico invalido en libros.txt en la linea " + numeroLinea + ": " + e.getMessage(), e);
+        }
+
+        if (numeroPaginas < 0 || precio < 0 || porcentajeIva < 0 || cantidadDisponible < 0) {
+            throw new PersistenciaException(
+                    "Valores numericos negativos no permitidos en libros.txt en la linea " + numeroLinea + ".");
+        }
+
+        FormatoLibro formato;
+        try {
+            formato = FormatoLibro.valueOf(partes[10].trim().toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new PersistenciaException(
-                    "Error de datos en libros.txt en la linea " + numeroLinea + ": " + e.getMessage(), e);
+                    "Formato de libro invalido en libros.txt en la linea " + numeroLinea + ": '" + partes[10].trim()
+                            + "'.",
+                    e);
         }
+
+        Libro libro = new Libro();
+        libro.setIsbn(isbn);
+        libro.setTitulo(titulo);
+        libro.setAutor(autor);
+        libro.setAnioPublicacion(anioPublicacion);
+        libro.setCategoria(partes[4].trim());
+        libro.setEditorial(partes[5].trim());
+        libro.setNumeroPaginas(numeroPaginas);
+        libro.setPrecio(precio);
+        libro.setPorcentajeIva(porcentajeIva);
+        libro.setCantidadDisponible(cantidadDisponible);
+        libro.setFormato(formato);
+        return libro;
     }
 
     @Override
