@@ -2,10 +2,6 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -30,6 +26,7 @@ public class VentanaHistorialCompras extends JFrame {
 
     private JTable tabla;
     private DefaultTableModel modeloTabla;
+    private JButton btnAtras;
 
     public VentanaHistorialCompras(IServicioCompras controladorCompras,
             Cliente cliente, JFrame padre) {
@@ -46,14 +43,7 @@ public class VentanaHistorialCompras extends JFrame {
         add(new JScrollPane(crearTabla()), BorderLayout.CENTER);
         add(crearBoton(), BorderLayout.SOUTH);
 
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e) {
-                if (VentanaHistorialCompras.this.padre != null) {
-                    VentanaHistorialCompras.this.padre.setVisible(true);
-                }
-            }
-        });
+        new EventosHistorialCompras(this).registrarEventos(btnAtras, padre);
 
         cargarTabla();
     }
@@ -74,13 +64,7 @@ public class VentanaHistorialCompras extends JFrame {
 
     private JPanel crearBoton() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton btnAtras = new JButton("Atrás");
-        btnAtras.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                volver();
-            }
-        });
+        btnAtras = new JButton("Atrás");
         panel.add(btnAtras);
         return panel;
     }
@@ -110,10 +94,4 @@ public class VentanaHistorialCompras extends JFrame {
         }
     }
 
-    private void volver() {
-        dispose();
-        if (padre != null) {
-            padre.setVisible(true);
-        }
-    }
 }
