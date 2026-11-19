@@ -174,6 +174,10 @@ public class EventosCompras extends Eventos {
 
         if (resultado.isExitoso()) {
             mostrarInfo(resultado.getMensaje());
+            if (resultado.getCompra() != null) {
+                new VentanaRecibo(vista.getCliente(), resultado.getCompra(), vista)
+                        .setVisible(true);
+            }
         } else {
             mostrarError(resultado.getMensaje());
         }

@@ -43,6 +43,8 @@ public class VentanaRecibo extends JFrame {
         btnCerrar = new JButton("Cerrar");
         panelBoton.add(btnCerrar);
         add(panelBoton, BorderLayout.SOUTH);
+
+        new EventosRecibo(this).registrarEventos(btnCerrar, padre);
     }
 
     private String construirRecibo() {
