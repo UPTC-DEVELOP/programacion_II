@@ -36,7 +36,7 @@ public class Main {
                     IServicioLibros controladorLibros =
                             new ControladorLibro(ProjectConfig.libros());
                     IServicioCompras controladorCompras =
-                            new ControladorCompras(ProjectConfig.compras());
+                            new ControladorCompras(ProjectConfig.compras(), controladorLibros);
 
                     cargarDatosDePrueba(controladorClientes);
                     cargarLibrosDePrueba(controladorLibros);
