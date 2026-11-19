@@ -81,8 +81,7 @@ public class RepositorioLibrosArchivoPlano implements IRepositorio<Libro> {
     }
 
     /**
-     * Convierte una linea con formato:
-     * isbn\ttitulo\tautor\tanioPublicacion\tcategoria\teditorial\tnumeroPaginas\tprecio\tporcentajeIva\tcantidadDisponible\tformato
+     * Valida y convierte una linea tabulada en un objeto Libro.
      */
     private Libro parsearLinea(String linea, int numeroLinea) {
         String[] partes = linea.split(SEPARADOR, -1);
@@ -130,13 +129,20 @@ public class RepositorioLibrosArchivoPlano implements IRepositorio<Libro> {
                     e);
         }
 
+        return construirLibro(isbn, titulo, autor, anioPublicacion, partes[4].trim(), partes[5].trim(),
+                numeroPaginas, precio, porcentajeIva, cantidadDisponible, formato);
+    }
+
+    private Libro construirLibro(String isbn, String titulo, String autor, int anioPublicacion, String categoria,
+            String editorial, int numeroPaginas, double precio, double porcentajeIva, int cantidadDisponible,
+            FormatoLibro formato) {
         Libro libro = new Libro();
         libro.setIsbn(isbn);
         libro.setTitulo(titulo);
         libro.setAutor(autor);
         libro.setAnioPublicacion(anioPublicacion);
-        libro.setCategoria(partes[4].trim());
-        libro.setEditorial(partes[5].trim());
+        libro.setCategoria(categoria);
+        libro.setEditorial(editorial);
         libro.setNumeroPaginas(numeroPaginas);
         libro.setPrecio(precio);
         libro.setPorcentajeIva(porcentajeIva);
