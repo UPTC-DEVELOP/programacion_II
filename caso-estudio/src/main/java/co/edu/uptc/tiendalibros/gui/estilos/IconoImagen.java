@@ -23,7 +23,9 @@ public enum IconoImagen {
   EDITORIAL("editorial-1.png"),
   AUTOR("autor-1.png"),
   CATEGORIA("categoria-1.png"),
-  LIBRO("libro-1.png");
+  LIBRO("libro-1.png"),
+  EXPLORAR_CATALOGO("catalogo-4.png"),
+  PESTANA_CATALOGO("catalogo-7.png");
   
   /// Tamaño del lado predeterminado que tendrá la imagen del ícono. Se mide en pixeles.
   private static final int LADO_PREDETERMINADO = 20;

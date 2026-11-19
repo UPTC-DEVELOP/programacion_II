@@ -2,10 +2,7 @@
 package co.edu.uptc.tiendalibros.gui.catalogo;
 
 import java.awt.BorderLayout;
-import java.util.Optional;
 
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
@@ -16,6 +13,7 @@ import co.edu.uptc.tiendalibros.gui.autor.PanelAutores;
 import co.edu.uptc.tiendalibros.gui.categoria.ControladorCategoria;
 import co.edu.uptc.tiendalibros.gui.categoria.PanelCategorias;
 import co.edu.uptc.tiendalibros.gui.componentes.PanelBase;
+import co.edu.uptc.tiendalibros.gui.componentes.PanelConPestanas;
 import co.edu.uptc.tiendalibros.gui.editorial.ControladorEditorial;
 import co.edu.uptc.tiendalibros.gui.editorial.PanelEditoriales;
 import co.edu.uptc.tiendalibros.gui.estilos.FabricaEstilos;
@@ -25,10 +23,7 @@ import co.edu.uptc.tiendalibros.gui.libro.ControladorLibro;
 import co.edu.uptc.tiendalibros.gui.libro.PanelLibros;
 
 /// Representa un panel para permitir la gestión del catálogo de libros.
-public class PanelGestionCatalogo extends PanelBase {
-  
-  /// Tamaño del lado del ícono de una pestana.
-  private static final int LADO_ICONO_PESTANA = 24;
+public class PanelGestionCatalogo extends PanelBase implements PanelConPestanas {
   
   /// Panel en forma de pestañas.
   private JTabbedPane pestanas;
@@ -54,11 +49,12 @@ public class PanelGestionCatalogo extends PanelBase {
   protected void inicializarComponente() {
     setLayout(new BorderLayout());
     
+    // crear el panel tipo pestañas
     this.pestanas = new JTabbedPane(SwingConstants.TOP);
     FabricaEstilos.fabrica(this.pestanas)
       .pestanas();
     
-    // crear los paneles
+    // crear los paneles de cada pestaña
     this.panelEditoriales = (PanelEditoriales) new PanelEditoriales(getEvento()).construir();
     
     this.panelAutores = (PanelAutores) new PanelAutores(getEvento()).construir();
@@ -69,10 +65,13 @@ public class PanelGestionCatalogo extends PanelBase {
     
     // agregar los paneles en forma de pestañas
     
-    agregarPestana("Editoriales", IconoImagen.EDITORIAL, this.panelEditoriales);
-    agregarPestana("Autores", IconoImagen.AUTOR, this.panelAutores);
-    agregarPestana("Categorías", IconoImagen.CATEGORIA, this.panelCategorias);
-    agregarPestana("Libros", IconoImagen.LIBRO, this.panelLibros);
+    agregarPestana("Editoriales", IconoImagen.EDITORIAL, this.pestanas, this.panelEditoriales);
+    agregarPestana("Autores", IconoImagen.AUTOR, this.pestanas, this.panelAutores);
+    agregarPestana("Categorías", IconoImagen.CATEGORIA, this.pestanas, this.panelCategorias);
+    agregarPestana("Libros", IconoImagen.LIBRO, this.pestanas, this.panelLibros);
+    
+    // agregar las pestañas al panel
+    add(this.pestanas, BorderLayout.CENTER);
     
     // establecer el evento cuando el usuario activa una pestaña
     this.pestanas.addChangeListener(new ChangeListener() {
@@ -104,8 +103,7 @@ public class PanelGestionCatalogo extends PanelBase {
       }
     });
     
-    // agregar las pestañas al panel
-    add(this.pestanas, BorderLayout.CENTER);
+
   }
   
   /// Obtiene el panel para la gestión de editoriales.
@@ -119,22 +117,5 @@ public class PanelGestionCatalogo extends PanelBase {
   
   /// Obtiene el panel para la gestión de libros.
   public PanelLibros getPanelLibros() { return this.panelLibros; }
-  
-  //// Agrega una pestaña con título e ícono. Si el ícono no carga, la pestaña queda solo
-  /// con título.
-  ///
-  /// @param titulo    Título de la pestaña.
-  /// @param icono     Ícono de la pestaña.
-  /// @param contenido Panel con el contenido de la pestaña.
-  private void agregarPestana(String titulo, IconoImagen icono, JComponent contenido) {
-    // obtener el ícono para la pestana
-    Optional<ImageIcon> imagen = icono.icono(PanelGestionCatalogo.LADO_ICONO_PESTANA);
-    if (imagen.isPresent()) {
-      // agregar el tab con título, imagen y contenido
-      this.pestanas.addTab(titulo, imagen.get(), contenido);
-    } else {
-      this.pestanas.addTab(titulo, contenido);
-    }
-  }
   
 }

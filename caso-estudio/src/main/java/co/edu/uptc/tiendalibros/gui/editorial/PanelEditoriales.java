@@ -10,8 +10,6 @@ import co.edu.uptc.tiendalibros.gui.estilos.FabricaEstilos;
 import co.edu.uptc.tiendalibros.gui.eventos.Evento;
 import co.edu.uptc.tiendalibros.modelo.Editorial;
 
-// ElementoVistaEditorial está en el mismo paquete; no requiere import adicional
-
 /// Representa una panel para la gestión de las editoriales.
 public class PanelEditoriales extends PanelGestionElementoBase<ElementoVistaEditorial> {
   
