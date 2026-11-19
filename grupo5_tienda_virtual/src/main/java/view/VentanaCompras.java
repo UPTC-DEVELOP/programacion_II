@@ -254,7 +254,7 @@ public class VentanaCompras extends JFrame {
         actualizarTabla();
     }
     
-    private void actualizarTabla() {
+    public void actualizarTabla() {
 
         modeloTabla.setRowCount(0);
 
@@ -552,6 +552,14 @@ public class VentanaCompras extends JFrame {
         panelPrincipal.add(panelFinal, BorderLayout.SOUTH);
 
         return panelPrincipal;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public CarritoCompras getCarrito() {
+        return carrito;
     }
 
     public JComboBox<Libro> getCmbLibro() {
