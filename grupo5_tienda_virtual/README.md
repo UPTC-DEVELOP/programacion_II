@@ -64,7 +64,7 @@ Los datos no viven en memoria: se guardan y se leen desde archivo plano, JSON
 | Módulo | Archivo plano | JSON | Base de datos | Valor por defecto |
 |--------|---------------|------|---------------|-------------------|
 | Clientes | `datos/clientes.txt` | `datos/clientes.json` (incluye el tipo Regular/Premium) | `datos/tienda.db` | Archivo plano |
-| Libros | pendiente | `datos/libros.json` (inventario de libros) | `datos/tienda.db` | JSON |
+| Libros | `datos/libros.txt` | `datos/libros.json` (inventario de libros) | `datos/tienda.db` | JSON |
 | Compras | `datos/compras.txt` | `datos/compras.json` | `datos/tienda.db` | Base de datos |
 
 Para cambiar la persistencia de un módulo se modifica **una sola línea** en
@@ -89,13 +89,16 @@ Detalle y reparto en `docs/PLAN_REFACTORIZACION_GRUPO5.md`.
 | Punto | Estado |
 |-------|--------|
 | `ProjectConfig` y `Main` sin la bandera `usarBD` | Hecho |
-| Repositorios plano, JSON y BD de Clientes y Compras | Hecho |
-| Repositorios JSON y BD de Libros | Hecho |
-| Repositorio de Libros en archivo plano | Pendiente |
-| `ResultadoCompra` | Creado, aún no se usa |
-| Lógica de finalizar compra en `ControladorCompras` | Pendiente (sigue en `VentanaCompras`) |
-| Manejadores de eventos por ventana (`view/eventos/`) | Pendiente (existe solo la clase base `Eventos`) |
-| Registro de cliente delegado al servicio | Pendiente (la ventana aún decide Premium o Regular) |
+| Repositorios plano, JSON y BD de Clientes, Libros y Compras | Hecho |
+| `ResultadoCompra` | Hecho y usado por `ControladorCompras` |
+| Lógica de finalizar compra en `ControladorCompras` | Hecho |
+| `Eventos` base y eventos de Compras, Historial y Recibo | Hecho |
+| Eventos de Login, Registro, Clientes, Libros y Mi Cuenta | Pendiente (Cristhian) |
+| Registro de cliente delegado al servicio | Hecho (`registrarCliente`) |
+| Recibo de compra (RF20) | Hecho (`VentanaRecibo`) |
+| Registro de operaciones en TXT | Hecho (`RegistroOperacionesTXT` + `ControladorOperaciones`) |
+| Catálogo y búsqueda separados para cliente | Pendiente (Cristhian) |
+| Matriz 3x3 y acta de pruebas | Pendiente (Liz) |
 
 ## Persistencia avanzada (JSON)
 

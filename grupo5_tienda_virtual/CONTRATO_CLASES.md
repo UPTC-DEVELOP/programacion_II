@@ -1,201 +1,265 @@
 # Contrato de clases — Tienda Virtual de Libros
 
-Definición de las clases compartidas del proyecto: responsabilidades, atributos,
-tipos y firmas de métodos. Cualquier cambio debe acordarse con el equipo.
-
-Reglas de dependencia entre capas:
-
-- `negocio` no depende de `gui`.
-- `persistencia` no depende de `gui`.
-- `gui` depende de `negocio` y `persistencia`.
+**Actualizado:** 19/11/2026  
+**Alcance:** clases que existen hoy en `src/main/java`. Si una clase no aparece aquí, no forma parte del contrato actual.
 
 ---
 
-## Capa `negocio`
+## 1. Dependencias entre capas
 
-### `FormatoLibro` (enum)
-
-```
-FISICO
-DIGITAL
-AUDIO_LIBRO
-```
-
-### `Libro`
-
-```
-- isbn: String
-- titulo: String
-- autor: String
-- anioPublicacion: int
-- categoria: String
-- editorial: String
-- numeroPaginas: int
-- precio: double
-- porcentajeIva: double
-- cantidadDisponible: int
-- formato: FormatoLibro
-
-+ Libro()
-+ Libro(isbn, titulo, autor, precio, porcentajeIva, cantidadDisponible, formato)
-+ getters y setters de todos los atributos
-+ equals(Object): boolean    // por isbn
-+ hashCode(): int
-+ toString(): String
+```text
+view  -> service
+controller -> service, persistencia, model
+persistencia -> model
+service -> model
+model -> (nada)
+config -> persistencia
 ```
 
-### `Cliente` (abstracta)
+Reglas:
 
-```
-- nombreCompleto: String
-- correo: String
-- direccion: String
-- telefono: String
-- contrasena: String
-- compras: List<Compra>
-
-# Cliente()                                       // protected
-# Cliente(nombreCompleto, correo, contrasena)     // protected
-+ calcularDescuento(): double                     // abstracto
-+ agregarCompra(compra: Compra): void
-+ getters y setters
-+ equals(Object): boolean    // por correo
-+ hashCode(): int
-+ toString(): String
-```
-
-### `ClienteRegular extends Cliente`
-
-```
-+ calcularDescuento(): double    // devuelve 0.0
-```
-
-### `ClientePremium extends Cliente`
-
-```
-+ DESCUENTO: double = 0.10       // constante
-+ calcularDescuento(): double    // devuelve DESCUENTO
-```
-
-### `CarritoCompras`
-
-```
-- items: Map<Libro, Integer>
-
-+ CarritoCompras()
-+ agregarLibro(libro: Libro, cantidad: int): void
-+ modificarCantidad(libro: Libro, nuevaCantidad: int): void
-+ eliminarLibro(libro: Libro): void
-+ vaciar(): void
-+ calcularSubtotal(): double
-+ calcularIVA19(): double
-+ calcularIVA5(): double
-+ calcularTotal(): double
-+ getItems(): Map<Libro, Integer>
-+ setItems(items: Map<Libro, Integer>): void
-+ estaVacio(): boolean
-```
-
-### `ItemCompra`
-
-```
-- libro: Libro
-- cantidad: int
-- subtotal: double
-- impuestos: double
-
-+ ItemCompra()
-+ ItemCompra(libro: Libro, cantidad: int)
-+ calcularSubtotal(): void
-+ calcularImpuestos(): void
-+ getTotalLinea(): double
-+ getters y setters
-+ toString(): String
-```
-
-### `Compra`
-
-```
-- metodoPago: String
-- fecha: LocalDate
-- items: List<ItemCompra>
-
-+ Compra()
-+ Compra(metodoPago: String)
-+ agregarItem(item: ItemCompra): void
-+ calcularTotal(): double
-+ getters y setters
-```
-
-> `metodoPago` guarda el nombre del método elegido (String, como en el diagrama).
-> La clase `MetodoPago` representa el catálogo de opciones disponibles.
-
-### `MetodoPago`
-
-```
-- nombre: String
-- descripcion: String
-
-+ MetodoPago()
-+ MetodoPago(nombre, descripcion)
-+ getters y setters
-+ toString(): String
-```
+- `view` no debe importar `controller` concretos.
+- `controller` no debe importar `javax.swing`.
+- `persistencia` no debe importar `view`.
+- `model` no debe importar Swing ni repositorios.
 
 ---
 
-## Capa `persistencia`
+## 2. Persistencia
 
-### `GestorPersistencia`
+### `IRepositorio<T>`
 
-```
-+ GestorPersistencia()
-+ GestorPersistencia(ruta: String)
-+ getRuta(): String
-+ setRuta(ruta: String): void
-
-+ guardarLibros(libros: List<Libro>): void throws IOException
-+ cargarLibros(): List<Libro> throws IOException
-+ guardarClientes(clientes: List<Cliente>): void throws IOException
-+ cargarClientes(): List<Cliente> throws IOException
-+ guardarCompras(compras: List<Compra>): void throws IOException
-+ cargarCompras(): List<Compra> throws IOException
+```java
+List<T> listar();
+void agregar(T elemento);
+boolean eliminar(T elemento);
+void cargar();
+void guardar();
 ```
 
-### `GestorCarritoJSON`
+No agregar métodos abstractos sin actualizar **todas** las implementaciones el mismo día.
 
-```
-+ guardarCarrito(carrito: CarritoCompras, nombreArchivo: String): void throws IOException
-+ cargarCarrito(nombreArchivo: String, catalogo: List<Libro>): CarritoCompras throws IOException
-```
+### Implementaciones
+
+| Módulo | Archivo plano | JSON | Base de datos |
+|---|---|---|---|
+| Clientes | `RepositorioClientesArchivoPlano` | `RepositorioClientesJson` | `RepositorioClientesBD` |
+| Libros | `RepositorioLibrosArchivoPlano` | `RepositorioLibrosJson` | `RepositorioLibrosBD` |
+| Compras | `RepositorioComprasArchivoPlano` | `RepositorioComprasJson` | `RepositorioComprasBD` |
 
 ### `RegistroOperacionesTXT`
 
-```
-+ registrarOperacion(descripcion: String): void throws IOException
+```java
+RegistroOperacionesTXT();
+RegistroOperacionesTXT(String ruta);
+void registrar(String descripcion);
 ```
 
-> Utilizado por los controladores para registrar las operaciones del sistema.
+Escribe en `datos/operaciones.txt` con fecha, hora y descripción.
+
+### `PersistenciaException`
+
+Excepción de la capa de persistencia. Se lanza cuando falla la lectura, escritura o validación de datos guardados.
 
 ---
 
-## Capa `gui`
+## 3. Configuración
 
-Punto de entrada y ventana principal. Cada módulo incorpora sus propias pantallas.
+### `ProjectConfig`
 
+```java
+IRepositorio<Cliente> clientes();
+IRepositorio<Cliente> clientesArchivoPlano();
+IRepositorio<Cliente> clientesJson();
+IRepositorio<Cliente> clientesBD();
+
+IRepositorio<Libro> libros();
+IRepositorio<Libro> librosArchivoPlano();
+IRepositorio<Libro> librosJson();
+IRepositorio<Libro> librosBD();
+
+IRepositorio<Compra> compras();
+IRepositorio<Compra> comprasArchivoPlano();
+IRepositorio<Compra> comprasJson();
+IRepositorio<Compra> comprasBD();
 ```
-+ Main.main(args: String[]): void
-+ VentanaPrincipal()      // pendiente (aun no creada)
+
+Es el único lugar donde se cambia la persistencia de un módulo.
+
+Defaults actuales:
+
+- Clientes: archivo plano.
+- Libros: JSON.
+- Compras: base de datos.
+
+---
+
+## 4. Servicios
+
+### `IServicioClientes`
+
+```java
+boolean registrar(Cliente cliente);
+boolean registrarCliente(String tipo, String nombreCompleto, String correo,
+        String direccion, String telefono, String contrasena);
+List<Cliente> listar();
+Cliente buscar(String correo);
+boolean actualizarDatos(String correo, String nombreCompleto,
+        String direccion, String telefono);
+boolean eliminar(String correo);
+Cliente iniciarSesion(String correo, String contrasena);
+int cantidad();
+```
+
+### `IServicioLibros`
+
+```java
+boolean registrar(Libro libro);
+List<Libro> listar();
+Libro buscar(String isbn);
+List<Libro> buscarPorCriterio(String criterio);
+boolean actualizar(String isbn, Libro datos);
+boolean eliminar(String isbn);
+boolean validarDisponibilidad(String isbn, int cantidadSolicitada);
+boolean actualizarInventario(String isbn, int cantidadVendida);
+```
+
+### `IServicioCompras`
+
+```java
+boolean registrarCompra(Compra compra);
+ResultadoCompra finalizarCompra(Cliente cliente, CarritoCompras carrito,
+        String metodoPago);
+List<Compra> listarCompras();
+List<Compra> listarPorCliente(String correo);
+int cantidad();
+```
+
+### `ResultadoCompra`
+
+```java
+ResultadoCompra(boolean exitoso, String mensaje, Compra compra);
+static ResultadoCompra exito(String mensaje, Compra compra);
+static ResultadoCompra error(String mensaje);
+boolean isExitoso();
+String getMensaje();
+Compra getCompra();
 ```
 
 ---
 
-## Relaciones entre clases
+## 5. Controladores
 
+### `ControladorCliente`
+
+```java
+ControladorCliente(IRepositorio<Cliente> repositorio);
+ControladorCliente(IRepositorio<Cliente> repositorio,
+        ControladorOperaciones operaciones);
 ```
-Cliente (1) ---- (0..*) Compra
-Compra (1) ---- (0..*) ItemCompra
-ItemCompra (0..*) ---- (1) Libro
-CarritoCompras (1) ---- (0..*) Libro
-CarritoCompras (1) ---- (0..*) Compra    // el carrito genera una o más compras
+
+Implementa `IServicioClientes`.
+
+### `ControladorLibro`
+
+```java
+ControladorLibro(IRepositorio<Libro> repositorio);
+ControladorLibro(IRepositorio<Libro> repositorio,
+        ControladorOperaciones operaciones);
 ```
+
+Implementa `IServicioLibros`.
+
+### `ControladorCompras`
+
+```java
+ControladorCompras(IRepositorio<Compra> repositorio);
+ControladorCompras(IRepositorio<Compra> repositorio,
+        IServicioLibros servicioLibros);
+ControladorCompras(IRepositorio<Compra> repositorio,
+        IServicioLibros servicioLibros,
+        ControladorOperaciones operaciones);
+```
+
+Implementa `IServicioCompras`. La lógica de compra está en `finalizarCompra`.
+
+### `ControladorOperaciones`
+
+```java
+ControladorOperaciones(RegistroOperacionesTXT registro);
+void registrar(String descripcion);
+```
+
+---
+
+## 6. Modelo
+
+```text
+Cliente (abstracta)
+  ClienteRegular
+  ClientePremium
+Libro
+FormatoLibro (FISICO, DIGITAL, AUDIO_LIBRO)
+CarritoCompras
+ItemCompra
+Compra
+MetodoPago
+```
+
+`Compra` contiene `id`, `metodoPago`, `fecha`, `correoCliente`, `total` e `items`.
+
+`ItemCompra` contiene `libro`, `cantidad`, `subtotal` e `impuestos`.
+
+`CarritoCompras` contiene un `Map<Libro, Integer>`.
+
+---
+
+## 7. Vista y eventos
+
+### `Eventos` (abstracta)
+
+```java
+protected Eventos(JFrame ventana);
+protected void mostrarInfo(String mensaje);
+protected void mostrarError(String mensaje);
+protected boolean confirmar(String mensaje);
+protected void volver(JFrame padre);
+```
+
+### Manejadores existentes
+
+- `EventosCompras`
+- `EventosHistorialCompras`
+- `EventosRecibo`
+
+Pendientes:
+
+- `EventosLogin`
+- `EventosRegistroCliente`
+- `EventosClientes`
+- `EventosLibros`
+- `EventosMiCuenta`
+
+### Ventanas principales
+
+- `Main`
+- `VentanaLogin`
+- `VentanaRegistroCliente`
+- `VentanaMiCuenta`
+- `VentanaClientes`
+- `VentanaLibros`
+- `VentanaCompras`
+- `VentanaHistorialCompras`
+- `VentanaRecibo`
+
+`VentanaCompras` ya no contiene `finalizarCompra` ni la lógica del carrito. Delega en `EventosCompras`.
+
+---
+
+## 8. Reglas para cambiar el contrato
+
+1. Si se agrega un método a una interfaz, todas sus implementaciones se actualizan en el mismo commit.
+2. No agregar métodos “por si acaso” a `IRepositorio`.
+3. No poner lógica de negocio en `Eventos` ni en las ventanas.
+4. No cambiar `ProjectConfig` desde otro integrante sin avisar.
+5. Antes de commitear: `mvn clean compile`.
