@@ -19,14 +19,21 @@ public class ControladorCompras implements IServicioCompras {
 
     private final IRepositorio<Compra> repositorio;
     private final IServicioLibros servicioLibros;
+    private final ControladorOperaciones operaciones;
 
     public ControladorCompras(IRepositorio<Compra> repositorio) {
-        this(repositorio, null);
+        this(repositorio, null, null);
     }
 
     public ControladorCompras(IRepositorio<Compra> repositorio, IServicioLibros servicioLibros) {
+        this(repositorio, servicioLibros, null);
+    }
+
+    public ControladorCompras(IRepositorio<Compra> repositorio,
+            IServicioLibros servicioLibros, ControladorOperaciones operaciones) {
         this.repositorio = repositorio;
         this.servicioLibros = servicioLibros;
+        this.operaciones = operaciones;
         this.repositorio.cargar();
     }
 
@@ -99,6 +106,9 @@ public class ControladorCompras implements IServicioCompras {
         }
 
         cliente.agregarCompra(compra);
+        registrarOperacion("Compra registrada: " + compra.getId()
+                + " de " + cliente.getCorreo()
+                + " por " + String.format("$%,.2f", compra.getTotal()));
 
         String mensaje = "COMPRA REALIZADA CORRECTAMENTE\n\n"
                 + "Cliente: " + cliente.getNombreCompleto()
@@ -137,6 +147,12 @@ public class ControladorCompras implements IServicioCompras {
     @Override
     public int cantidad() {
         return repositorio.listar().size();
+    }
+
+    private void registrarOperacion(String descripcion) {
+        if (operaciones != null) {
+            operaciones.registrar(descripcion);
+        }
     }
 
     private void revertir() {

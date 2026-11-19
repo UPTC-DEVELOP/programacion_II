@@ -21,9 +21,16 @@ import service.IServicioClientes;
 public class ControladorCliente implements IServicioClientes {
 
     private final IRepositorio<Cliente> repositorio;
+    private final ControladorOperaciones operaciones;
 
     public ControladorCliente(IRepositorio<Cliente> repositorio) {
+        this(repositorio, null);
+    }
+
+    public ControladorCliente(IRepositorio<Cliente> repositorio,
+            ControladorOperaciones operaciones) {
         this.repositorio = repositorio;
+        this.operaciones = operaciones;
         this.repositorio.cargar();
     }
 
@@ -37,6 +44,7 @@ public class ControladorCliente implements IServicioClientes {
         try {
             repositorio.agregar(cliente);
             repositorio.guardar();
+            registrarOperacion("Cliente registrado: " + cliente.getCorreo());
             return true;
         } catch (PersistenciaException e) {
             revertir();
@@ -94,6 +102,7 @@ public class ControladorCliente implements IServicioClientes {
             actual.setDireccion(direccion);
             actual.setTelefono(telefono);
             repositorio.guardar();
+            registrarOperacion("Cliente actualizado: " + correo);
             return true;
         } catch (PersistenciaException e) {
             revertir();
@@ -110,10 +119,17 @@ public class ControladorCliente implements IServicioClientes {
         try {
             repositorio.eliminar(actual);
             repositorio.guardar();
+            registrarOperacion("Cliente eliminado: " + correo);
             return true;
         } catch (PersistenciaException e) {
             revertir();
             return false;
+        }
+    }
+
+    private void registrarOperacion(String descripcion) {
+        if (operaciones != null) {
+            operaciones.registrar(descripcion);
         }
     }
 

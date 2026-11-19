@@ -7,11 +7,13 @@ import config.ProjectConfig;
 import controller.ControladorCliente;
 import controller.ControladorCompras;
 import controller.ControladorLibro;
+import controller.ControladorOperaciones;
 import model.Cliente;
 import model.ClientePremium;
 import model.FormatoLibro;
 import model.Libro;
 import persistencia.PersistenciaException;
+import persistencia.RegistroOperacionesTXT;
 import service.IServicioClientes;
 import service.IServicioCompras;
 import service.IServicioLibros;
@@ -31,12 +33,15 @@ public class Main {
                 try {
                     // CAPA 1 y 2: persistencia y lógica de negocio
                 	
+                    ControladorOperaciones operaciones =
+                            new ControladorOperaciones(new RegistroOperacionesTXT());
                     IServicioClientes controladorClientes =
-                            new ControladorCliente(ProjectConfig.clientes());
+                            new ControladorCliente(ProjectConfig.clientes(), operaciones);
                     IServicioLibros controladorLibros =
-                            new ControladorLibro(ProjectConfig.libros());
+                            new ControladorLibro(ProjectConfig.libros(), operaciones);
                     IServicioCompras controladorCompras =
-                            new ControladorCompras(ProjectConfig.compras(), controladorLibros);
+                            new ControladorCompras(
+                                    ProjectConfig.compras(), controladorLibros, operaciones);
 
                     cargarDatosDePrueba(controladorClientes);
                     cargarLibrosDePrueba(controladorLibros);

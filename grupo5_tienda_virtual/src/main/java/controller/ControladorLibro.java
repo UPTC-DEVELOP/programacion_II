@@ -18,9 +18,16 @@ import service.IServicioLibros;
 public class ControladorLibro implements IServicioLibros {
 
     private final IRepositorio<Libro> repositorio;
+    private final ControladorOperaciones operaciones;
 
     public ControladorLibro(IRepositorio<Libro> repositorio) {
+        this(repositorio, null);
+    }
+
+    public ControladorLibro(IRepositorio<Libro> repositorio,
+            ControladorOperaciones operaciones) {
         this.repositorio = repositorio;
+        this.operaciones = operaciones;
         this.repositorio.cargar();
     }
 
@@ -45,6 +52,7 @@ public class ControladorLibro implements IServicioLibros {
         try {
             repositorio.agregar(libro);
             repositorio.guardar();
+            registrarOperacion("Libro registrado: " + libro.getIsbn());
             return true;
         } catch (PersistenciaException e) {
             revertir();
@@ -110,6 +118,7 @@ public class ControladorLibro implements IServicioLibros {
             actual.setCantidadDisponible(datos.getCantidadDisponible());
             actual.setFormato(datos.getFormato());
             repositorio.guardar();
+            registrarOperacion("Libro actualizado: " + isbn);
             return true;
         } catch (PersistenciaException e) {
             revertir();
@@ -127,6 +136,7 @@ public class ControladorLibro implements IServicioLibros {
         try {
             repositorio.eliminar(actual);
             repositorio.guardar();
+            registrarOperacion("Libro eliminado: " + isbn);
             return true;
         } catch (PersistenciaException e) {
             revertir();
@@ -159,6 +169,12 @@ public class ControladorLibro implements IServicioLibros {
             }
         }
         return false;
+    }
+
+    private void registrarOperacion(String descripcion) {
+        if (operaciones != null) {
+            operaciones.registrar(descripcion);
+        }
     }
 
     private void revertir() {
