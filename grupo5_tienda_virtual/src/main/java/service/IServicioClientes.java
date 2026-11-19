@@ -15,6 +15,9 @@ public interface IServicioClientes {
 
     boolean registrar(Cliente cliente);
 
+    boolean registrarCliente(String tipo, String nombreCompleto, String correo,
+            String direccion, String telefono, String contrasena);
+
     List<Cliente> listar();
 
     Cliente buscar(String correo);

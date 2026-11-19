@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.Cliente;
+import model.ClientePremium;
+import model.ClienteRegular;
 import persistencia.IRepositorio;
 import persistencia.PersistenciaException;
 import service.IServicioClientes;
@@ -40,6 +42,26 @@ public class ControladorCliente implements IServicioClientes {
             revertir();
             return false;
         }
+    }
+
+    @Override
+    public boolean registrarCliente(String tipo, String nombreCompleto, String correo,
+            String direccion, String telefono, String contrasena) {
+        if (nombreCompleto == null || nombreCompleto.trim().isEmpty()
+                || correo == null || correo.trim().isEmpty()
+                || contrasena == null || contrasena.isEmpty()) {
+            return false;
+        }
+
+        Cliente cliente;
+        if ("Premium".equalsIgnoreCase(tipo != null ? tipo.trim() : "")) {
+            cliente = new ClientePremium(nombreCompleto.trim(), correo.trim(), contrasena);
+        } else {
+            cliente = new ClienteRegular(nombreCompleto.trim(), correo.trim(), contrasena);
+        }
+        cliente.setDireccion(direccion != null ? direccion.trim() : "");
+        cliente.setTelefono(telefono != null ? telefono.trim() : "");
+        return registrar(cliente);
     }
 
     @Override
