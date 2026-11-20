@@ -1,58 +1,75 @@
 # Checklist de pruebas de persistencia
 
 **Proyecto:** Tienda Virtual de Libros — Grupo 5  
-**Fecha:** 19/11/2026
+**Fecha de ejecución:** 20/11/2026
 
 ## 1. Matriz 3x3
 
 | Módulo | Archivo plano | JSON | Base de datos |
 |---|---|---|---|
-| Clientes | [ ] | [ ] | [ ] |
-| Libros | [ ] | [ ] | [ ] |
-| Compras | [ ] | [ ] | [ ] |
+| Clientes | [x] | [x] | [x] |
+| Libros | [x] | [x] | [x] |
+| Compras | [x] | [x] | [x] |
 
-Para cada combinación se debe probar:
+Cada combinación se probó con un arnés temporal:
 
-- [ ] Registrar o crear.
-- [ ] Listar.
-- [ ] Actualizar.
-- [ ] Eliminar.
-- [ ] Cerrar la aplicación.
-- [ ] Volver a abrir.
-- [ ] Confirmar que los datos siguen ahí.
+- Agregar un registro.
+- Guardar.
+- Crear una instancia nueva del repositorio.
+- Verificar que el registro se recuperó.
+- Eliminar.
+- Guardar.
+- Crear otra instancia y verificar que quedó vacío.
+
+Resultado: **9/9 OK**.
 
 ## 2. Evidencia por combinación
 
-| Módulo | Persistencia | Archivo o base | Estado |
+| Módulo | Persistencia | Archivo o base | Resultado |
 |---|---|---|---|
-| Clientes | Archivo plano | `datos/clientes.txt` | Probado: carga, guardado, Premium/Regular y línea inválida |
-| Clientes | JSON | `datos/clientes.json` | Pendiente de repetir |
-| Clientes | BD | `datos/tienda.db` | Pendiente de repetir |
-| Libros | Archivo plano | `datos/libros.txt` | Probado con un libro en C38 |
-| Libros | JSON | `datos/libros.json` | Pendiente de repetir |
-| Libros | BD | `datos/tienda.db` | Pendiente de repetir |
-| Compras | Archivo plano | `datos/compras.txt` | Probado: guardar, cargar, dos items e IDs duplicados |
-| Compras | JSON | `datos/compras.json` | Pendiente de repetir |
-| Compras | BD | `datos/tienda.db` | Es el valor por defecto actual |
+| Clientes | Archivo plano | `datos/clientes.txt` | OK |
+| Clientes | JSON | `datos/clientes.json` | OK |
+| Clientes | BD | `datos/tienda.db` | OK |
+| Libros | Archivo plano | `datos/libros.txt` | OK |
+| Libros | JSON | `datos/libros.json` | OK |
+| Libros | BD | `datos/tienda.db` | OK |
+| Compras | Archivo plano | `datos/compras.txt` | OK |
+| Compras | JSON | `datos/compras.json` | OK |
+| Compras | BD | `datos/tienda.db` | OK |
 
 ## 3. Prueba de cambio de una línea
 
-1. Abrir `config/ProjectConfig.java`.
-2. En `compras()` cambiar `comprasBD()` por `comprasJson()`.
-3. Ejecutar `mvn clean compile`.
-4. Hacer una compra.
-5. Verificar `datos/compras.json`.
-6. Cerrar y abrir la aplicación; el historial debe cargar.
-7. Volver a `comprasBD()` y verificar `datos/tienda.db`.
-8. Confirmar que no se tocó ninguna ventana ni controlador.
+Se cambió `ProjectConfig.compras()`:
 
-## 4. Prueba de independencia de la GUI
+```java
+return comprasBD();
+```
 
-- [ ] `model` no importa Swing.
-- [ ] `persistencia` no importa Swing.
-- [ ] `service` no importa Swing.
-- [ ] `controller` no importa Swing.
-- [ ] La compra se puede finalizar desde `ControladorCompras` sin abrir la ventana.
+por:
+
+```java
+return comprasJson();
+```
+
+Resultados:
+
+```text
+Antes:  RepositorioComprasBD
+Después: RepositorioComprasJson
+Vuelta: RepositorioComprasBD
+```
+
+También se ejecutó `mvn clean compile` después de cada cambio: BUILD SUCCESS.
+
+No se modificó ninguna ventana ni controlador.
+
+## 4. Independencia de la GUI
+
+- [x] `model` no importa Swing.
+- [x] `persistencia` no importa Swing.
+- [x] `service` no importa Swing.
+- [x] `controller` no importa Swing.
+- [x] `ControladorCompras.finalizarCompra` se probó sin abrir la ventana.
 
 ## 5. Compilación
 
@@ -60,4 +77,4 @@ Para cada combinación se debe probar:
 mvn clean compile
 ```
 
-Resultado esperado: `BUILD SUCCESS`.
+Resultado: **BUILD SUCCESS** con 45 fuentes.

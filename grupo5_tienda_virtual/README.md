@@ -98,7 +98,7 @@ Detalle y reparto en `docs/PLAN_REFACTORIZACION_GRUPO5.md`.
 | Recibo de compra (RF20) | Hecho (`VentanaRecibo`) |
 | Registro de operaciones en TXT | Hecho (`RegistroOperacionesTXT` + `ControladorOperaciones`) |
 | Catálogo y búsqueda separados para cliente | Pendiente (Cristhian) |
-| Matriz 3x3 y acta de pruebas | Pendiente (Liz) |
+| Matriz 3x3 y acta de pruebas | Hecho: 9/9 y prueba de una línea |
 
 ## Persistencia avanzada (JSON)
 

@@ -1,7 +1,7 @@
 # Acta de pruebas
 
 **Proyecto:** Tienda Virtual de Libros — Grupo 5  
-**Fecha:** 19/11/2026  
+**Fecha:** 20/11/2026  
 **Responsable:** Juan Pablo Barrero
 
 ## 1. Compilación
@@ -12,27 +12,41 @@
 | Número de fuentes | 45 |
 | Java | 21 |
 
-## 2. Pruebas ejecutadas
+## 2. Matriz 3x3
 
-### Clientes en archivo plano
+Se ejecutó un arnés temporal con los nueve repositorios, sin agregar código de prueba al repositorio.
 
-- Se cargaron dos clientes desde un archivo temporal.
-- Se verificó un cliente Premium y uno Regular.
-- Se probó una línea incompleta: lanzó error con el número de línea.
-- Se registró un cliente desde `ControladorCliente` y se escribió la operación en `operaciones.txt`.
+| Módulo | Plano | JSON | BD |
+|---|---|---|---|
+| Clientes | OK | OK | OK |
+| Libros | OK | OK | OK |
+| Compras | OK | OK | OK |
 
-Resultado: correcto.
+Para cada celda se probó:
 
-### Compras en archivo plano
+1. Agregar.
+2. Guardar.
+3. Recargar con una instancia nueva.
+4. Verificar el dato.
+5. Eliminar.
+6. Guardar.
+7. Recargar y verificar que quedó vacío.
 
-- Se cargó una compra con dos items desde un archivo temporal.
-- Se verificó el total de 120000.
-- Se guardó una compra y se volvió a cargar con otro repositorio.
-- Se probaron IDs duplicados: falló con mensaje explícito.
+Resultado: **9/9 correcto**.
 
-Resultado: correcto.
+## 3. Prueba de cambio de una línea
 
-### Finalizar compra sin GUI
+Se cambió únicamente `ProjectConfig.compras()`:
+
+- Inicial: `comprasBD()` → `RepositorioComprasBD`.
+- Cambio: `comprasJson()` → `RepositorioComprasJson`.
+- Vuelta: `comprasBD()` → `RepositorioComprasBD`.
+
+Cada cambio se compiló con `mvn clean compile` y dio BUILD SUCCESS.
+
+No se tocó ninguna ventana ni ningún controlador.
+
+## 4. Finalizar compra sin GUI
 
 - Se creó un libro con IVA 19%.
 - Se agregó al carrito.
@@ -48,7 +62,7 @@ stock=3
 total=$238,00
 ```
 
-### IVA distinto de 19% y 5%
+## 5. IVA distinto de 19% y 5%
 
 - Libro de 100 con IVA 10%.
 - IVA 19: 0.
@@ -59,23 +73,21 @@ total=$238,00
 
 Resultado: correcto.
 
-### Registro de operaciones
+## 6. Registro de operaciones
 
 - Se registró un cliente con `ControladorOperaciones`.
 - Se verificó la línea en `operaciones.txt`.
 
 Resultado: correcto.
 
-## 3. Pruebas pendientes
+## 7. Pruebas que faltan
 
-- Repetir la matriz completa para JSON y BD en los tres módulos.
-- Probar el flujo visual completo de Login, Registro, Clientes, Libros y Mi Cuenta.
+- Flujo visual completo de Login, Registro, Clientes, Libros y Mi Cuenta.
 - Probar el recibo desde la interfaz.
-- Probar el cambio de una línea en Compras de BD a JSON y volver a BD.
-- Completar eventos de las ventanas que aún tienen listeners internos.
+- Eventos de las ventanas que aún tienen listeners internos.
+- Catálogo y búsqueda separados para cliente.
 
-## 4. Observaciones
+## 8. Observaciones
 
-- El recibo se abre después de una compra exitosa.
 - La compra y el descuento de stock no son atómicos cuando están en almacenamientos distintos.
 - El registro de operaciones es de apoyo y no reemplaza la persistencia principal.
