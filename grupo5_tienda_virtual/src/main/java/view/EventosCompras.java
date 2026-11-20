@@ -36,11 +36,6 @@ public class EventosCompras extends Eventos {
 
     private void agregarAlCarrito() {
         Libro libro = (Libro) vista.getCmbLibro().getSelectedItem();
-        if (libro == null) {
-            mostrarError("Seleccione un libro.");
-            return;
-        }
-
         int cantidad;
         try {
             cantidad = Integer.parseInt(vista.getTxtCantidad().getText());
@@ -49,22 +44,10 @@ public class EventosCompras extends Eventos {
             return;
         }
 
-        if (cantidad <= 0) {
-            mostrarError("La cantidad debe ser mayor que cero.");
-            return;
-        }
-
         CarritoCompras carrito = vista.getCarrito();
-        Integer cantidadActual = carrito.getItems().get(libro);
-        if (cantidadActual == null) {
-            cantidadActual = 0;
-        }
-
-        int cantidadSolicitada = cantidadActual + cantidad;
-        if (cantidadSolicitada > libro.getCantidadDisponible()) {
-            int disponible = libro.getCantidadDisponible() - cantidadActual;
-            mostrarError("No hay suficiente stock.\n"
-                    + "Unidades disponibles para agregar: " + disponible);
+        String error = carrito.validarAgregar(libro, cantidad);
+        if (error != null) {
+            mostrarError(error);
             return;
         }
 
@@ -88,13 +71,9 @@ public class EventosCompras extends Eventos {
             return;
         }
 
-        if (cantidad < 0) {
-            mostrarError("La cantidad no puede ser negativa.");
-            return;
-        }
-        if (cantidad > libro.getCantidadDisponible()) {
-            mostrarError("No hay suficiente stock.\n"
-                    + "Stock disponible: " + libro.getCantidadDisponible());
+        String error = vista.getCarrito().validarModificar(libro, cantidad);
+        if (error != null) {
+            mostrarError(error);
             return;
         }
 

@@ -17,6 +17,38 @@ public class CarritoCompras {
     }
 // AGREGAR LIBRO
     
+    public String validarAgregar(Libro libro, int cantidad) {
+        if (libro == null) {
+            return "Seleccione un libro.";
+        }
+        if (cantidad <= 0) {
+            return "La cantidad debe ser mayor que cero.";
+        }
+
+        Integer cantidadActual = items.get(libro);
+        int actual = cantidadActual != null ? cantidadActual : 0;
+        if (actual + cantidad > libro.getCantidadDisponible()) {
+            int disponible = libro.getCantidadDisponible() - actual;
+            return "No hay suficiente stock.\n"
+                    + "Unidades disponibles para agregar: " + disponible;
+        }
+        return null;
+    }
+
+    public String validarModificar(Libro libro, int cantidad) {
+        if (libro == null) {
+            return "Seleccione un libro de la tabla.";
+        }
+        if (cantidad < 0) {
+            return "La cantidad no puede ser negativa.";
+        }
+        if (cantidad > libro.getCantidadDisponible()) {
+            return "No hay suficiente stock.\n"
+                    + "Stock disponible: " + libro.getCantidadDisponible();
+        }
+        return null;
+    }
+
     public void agregarLibro(Libro libro, int cantidad) {
         if (libro == null || cantidad <= 0) {
             return;
