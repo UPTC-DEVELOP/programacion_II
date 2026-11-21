@@ -9,8 +9,9 @@ import java.util.List;
  * ---------------------------------------------------------------------------
  * CONTRATO de PERSISTENCIA de libros. La capa de negocio (GestionLibro) solo
  * conoce esta interfaz, nunca la clase concreta que guarda los datos.
- * Hoy la implementa LocalLibro (lista en RAM); para usar archivos o JDBC basta
- * crear otra clase que la implemente y cambiar UNA línea en AppLibros (OCP / DIP).
+ * La implementación activa es LibroJsonRepository (data/libros.json); para
+ * usar otra persistencia basta crear una clase que implemente esta interfaz y
+ * cambiarla en AppLibros (OCP / DIP).
  */
 public interface ILibroRepositorio {
 
