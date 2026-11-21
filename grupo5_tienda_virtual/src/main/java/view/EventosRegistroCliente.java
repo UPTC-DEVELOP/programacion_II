@@ -56,7 +56,7 @@ public class EventosRegistroCliente extends Eventos {
             return;
         }
 
-        if (controlador.registrarCliente(nombre, correo, contrasena, direccion, telefono, tipo)) {
+        if (controlador.registrarCliente(tipo, nombre, correo, direccion, telefono, contrasena)) {
             mostrarInfo("Cliente registrado correctamente.");
             limpiarFormulario(txtNombre, txtCorreo, txtDireccion, txtTelefono, txtContrasena, cmbTipo);
         } else if (controlador.buscar(correo) != null) {
