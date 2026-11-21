@@ -144,3 +144,42 @@ CREATE TABLE IF NOT EXISTS formato_libro (
     CHECK (estado_en_catalogo IN ('P', 'D', 'S'))
 );
 
+
+-- Crear la tabla Cliente
+
+CREATE TABLE IF NOT EXISTS cliente (
+  id_cliente BIGINT NOT NULL AUTO_INCREMENT,
+  tipo_documento VARCHAR(10) NOT NULL,
+  numero_documento VARCHAR(20) NOT NULL,
+  nombres VARCHAR(100) NOT NULL,
+  apellidos VARCHAR(100) NOT NULL,
+  correo_electronico VARCHAR(120) NOT NULL,
+  telefono VARCHAR(20) NOT NULL,
+  direccion_envio VARCHAR(200) NOT NULL,
+  tipo_cliente VARCHAR(15) NOT NULL,
+
+  -- Restricción de clave primaria
+  PRIMARY KEY (id_cliente),
+
+  -- Restricciones de valores únicos
+  CONSTRAINT uq_cliente_documento
+    UNIQUE (tipo_documento, numero_documento),
+
+  CONSTRAINT uq_cliente_correo
+    UNIQUE (correo_electronico),
+
+  -- Restricciones de textos no vacíos
+  CONSTRAINT ck_cliente_nombres_no_vacios
+    CHECK (CHAR_LENGTH(TRIM(nombres)) > 0),
+
+  CONSTRAINT ck_cliente_apellidos_no_vacios
+    CHECK (CHAR_LENGTH(TRIM(apellidos)) > 0),
+
+  CONSTRAINT ck_cliente_correo_no_vacio
+    CHECK (CHAR_LENGTH(TRIM(correo_electronico)) > 0),
+
+  -- Restricción de tipos de cliente válidos
+  CONSTRAINT ck_cliente_tipo_valido
+    CHECK (tipo_cliente IN ('REGULAR', 'PREMIUM'))
+);
+
