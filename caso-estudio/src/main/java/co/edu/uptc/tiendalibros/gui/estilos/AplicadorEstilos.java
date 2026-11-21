@@ -37,6 +37,9 @@ public class AplicadorEstilos {
   /// Lado, en píxeles, de los íconos de los botones del menú lateral.
   private static final int LADO_ICONO_MENU_NAVEGACION = 24;
   
+  private static final int ANCHO_CUBIERTA = 120;
+  private static final int ALTO_CUBIERTA = 170;
+  
   /// Componente al que se le aplican los estilos visuales.
   private final JComponent componente;
   
@@ -57,15 +60,81 @@ public class AplicadorEstilos {
     return this;
   }
   
+  /// Aplica el estilo de una etiqueta fija de una ficha (por ejemplo, "ISBN:",
+  /// "Editorial:").
+  /// 
+  /// Este estilo no define el tamaño preferido, y deja que la etiqueta ajuste su ancho al
+  /// tamaño del texto.
+  public AplicadorEstilos etiquetaFicha() {
+    if (this.componente instanceof JLabel etiqueta) {
+      etiqueta.setFont(Fuentes.FUENTE_ETIQUETA_CAMPO.fuente());
+      etiqueta.setForeground(PaletaColores.TEXTO_SECUNDARIO.color());
+    }
+    return this;
+  }
+  
+  /// Aplica el estilo de un dato mostrado en una ficha (por ejemplo, año, editorial,
+  /// precio).
+  /// 
+  /// Este estilo no define el tamaño preferido.
+  public AplicadorEstilos datoFicha() {
+    if (this.componente instanceof JLabel dato) {
+      dato.setFont(Fuentes.FUENTE_CAMPO.fuente());
+      dato.setForeground(PaletaColores.TEXTO_PRINCIPAL.color());
+    }
+    return this;
+  }
+  
+  /// Aplica el estilo de título libro mostrado en una ficha
+  public AplicadorEstilos tituloLibroFicha() {
+    this.componente.setFont(Fuentes.FUENTE_TITULO_LIBRO_FICHA.fuente());
+    this.componente.setForeground(PaletaColores.TEXTO_PRINCIPAL.color());
+    
+    if (this.componente instanceof JTextComponent componenteTexto) {
+      componenteTexto.setEditable(false);
+      componenteTexto.setBorder(BorderFactory.createEmptyBorder());
+    }
+    
+    return this;
+  }
+  
+  /// Aplica el estilo de un campo de texto cuyo texto no se puede editar.
+  public AplicadorEstilos campoTextoNoEditable() {
+    if (this.componente instanceof JTextComponent componenteTexto) {
+      componenteTexto.setEditable(false);
+    }
+    return this;
+  }
+  
+  /// Aplica el estilo de un componente sin borde.
+  public AplicadorEstilos campoSinBorde() {
+    this.componente.setBorder(BorderFactory.createEmptyBorder());
+    return this;
+  }
+  
+  /// Aplica el estilo de un componente que se visualiza como una etiqueta.
+  public AplicadorEstilos etiquetaComoCampo() {
+    campoBasico().campoSinBorde()
+      .campoTextoNoEditable();
+    return this;
+  }
+  
+  /// Aplica el estilo básico a un campo.
+  public AplicadorEstilos campoBasico() {
+    this.componente.setFont(Fuentes.FUENTE_CAMPO.fuente());
+    this.componente.setForeground(PaletaColores.TEXTO_PRINCIPAL.color());
+    this.componente.setBackground(Color.WHITE);
+    this.componente.setMinimumSize(new Dimension(80, AplicadorEstilos.ALTO_CAMPO));
+    this.componente.setPreferredSize(new Dimension(this.componente.getPreferredSize().width, AplicadorEstilos.ALTO_CAMPO));
+    return this;
+  }
+  
   /// Aplica el estilo de un campo de texto con el número de columnas indicado.
   public AplicadorEstilos campoTexto(int columnas) {
+    campoBasico();
+    
     if (this.componente instanceof JTextField campo) {
       campo.setColumns(columnas);
-      campo.setFont(Fuentes.FUENTE_CAMPO.fuente());
-      campo.setForeground(PaletaColores.TEXTO_PRINCIPAL.color());
-      campo.setBackground(Color.WHITE);
-      campo.setMinimumSize(new Dimension(80, AplicadorEstilos.ALTO_CAMPO));
-      campo.setPreferredSize(new Dimension(campo.getPreferredSize().width, AplicadorEstilos.ALTO_CAMPO));
       bordeCampoNormal();
     }
     return this;
@@ -126,7 +195,7 @@ public class AplicadorEstilos {
     return this;
   }
   
-  /// Aplica estilo de botón más el ícono de eliminar.
+  /// Aplica el estilo de botón más el ícono de eliminar.
   public AplicadorEstilos botonEliminar() {
     boton();
     if (this.componente instanceof JButton boton) {
@@ -138,6 +207,43 @@ public class AplicadorEstilos {
         );
       }
     }
+    return this;
+  }
+  
+  /// Aplica el estilo de botón con el ícono de agregar al carrito de compras.
+  public AplicadorEstilos botonAgregarAlCarrito() {
+    boton();
+    if (this.componente instanceof JButton boton) {
+      if (IconoImagen.AGREGAR_AL_CARRITO.icono()
+        .isPresent()) {
+        boton.setIcon(
+          IconoImagen.AGREGAR_AL_CARRITO.icono()
+            .get()
+        );
+      }
+    }
+    return this;
+  }
+  
+  // Aplica el estilo de botón con el ícono de ver detalles.
+  public AplicadorEstilos botonVerDetalles() {
+    boton();
+    if (this.componente instanceof JButton boton) {
+      if (IconoImagen.VER_DETALLES.icono()
+        .isPresent()) {
+        boton.setIcon(
+          IconoImagen.VER_DETALLES.icono()
+            .get()
+        );
+      }
+    }
+    return this;
+  }
+  
+  /// Aplica el estilo de imagen de la cubierta de un libro.
+  public AplicadorEstilos cubiertaLibro() {
+    this.componente.setPreferredSize(new Dimension(AplicadorEstilos.ANCHO_CUBIERTA, AplicadorEstilos.ALTO_CUBIERTA));
+    this.componente.setBorder(BorderFactory.createLineBorder(PaletaColores.CAMPO_BORDE.color(), 1));
     return this;
   }
   

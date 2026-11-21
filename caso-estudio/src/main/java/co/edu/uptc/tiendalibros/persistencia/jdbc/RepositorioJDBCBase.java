@@ -88,12 +88,27 @@ public abstract class RepositorioJDBCBase<T extends IElemento> implements IRepos
   @Override
   public List<T> listar() {
     // intentar obtener la lista de elementos
-    try (Connection conexion = abrirConexion();
-      PreparedStatement comando = crearComandoSQLListar(conexion)) {
-      // convertir los resultados SQL en una lista de objetos Java
-      return convertirFilas(comando);
+    try (Connection conexion = abrirConexion()) {
+      return listar(conexion);
     } catch (SQLException excepcion) {
       throw traducirExcepcion("listar", excepcion);
+    }
+  }
+  
+  /// Obtiene la lista de elementos usando una conexión compartida.
+  /// 
+  /// **Conexión compartida:** este método no abre ni cierra la conexión con la base de
+  /// datos. La recibe del método que lo invoca, que es responsable de cerrarla. Más detalles
+  /// en [co.edu.uptc.tiendalibros.persistencia.jdbc].
+  /// 
+  /// @param conexion Conexión abierta y compartida con la base de datos. Sigue abierta al
+  ///                 terminar este método.
+  /// @return Lista de elementos con sus dependientes cargados. O, vacía si no hay elementos.
+  /// @throws SQLException Si ocurre un error técnico al consultar.
+  protected List<T> listar(Connection conexion) throws SQLException {
+    try (PreparedStatement comando = crearComandoSQLListar(conexion)) {
+      // convertir los resultados SQL en una lista de objetos Java
+      return convertirFilas(comando);
     }
   }
   

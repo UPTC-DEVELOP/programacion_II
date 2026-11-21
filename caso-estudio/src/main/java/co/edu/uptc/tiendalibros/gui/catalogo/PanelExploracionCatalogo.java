@@ -20,7 +20,7 @@ public class PanelExploracionCatalogo extends PanelBase implements PanelConPesta
   private JTabbedPane pestanas;
   
   /// Panel para explorar el catálogo
-  private PanelCatalogo panelCatalogo;
+  private PanelContenedorCatalogo panelContenedorCatalogo;
   
   public PanelExploracionCatalogo(Evento evento) {
     super(evento);
@@ -36,13 +36,32 @@ public class PanelExploracionCatalogo extends PanelBase implements PanelConPesta
       .pestanas();
     
     // crear los paneles de cada pestaña
-    this.panelCatalogo = (PanelCatalogo) new PanelCatalogo(getEvento()).construir();
+    this.panelContenedorCatalogo = (PanelContenedorCatalogo) new PanelContenedorCatalogo(getEvento()).construir();
     
     // agregar los paneles en forma de pestaña
-    agregarPestana("Explorar Catálogo", IconoImagen.PESTANA_CATALOGO, this.pestanas, this.panelCatalogo);
+    agregarPestana("Explorar Catálogo", IconoImagen.PESTANA_CATALOGO, this.pestanas, this.panelContenedorCatalogo);
     
     // agregar las pestañas al panel
     add(this.pestanas, BorderLayout.CENTER);
+    
+    // si llegamos a necesitar otra pestaña, usar este código para el listener de las pestañas
+    /*
+     * // establecer el evento cuando el usuario activa una pestaña
+     * this.pestanas.addChangeListener(new ChangeListener() {
+     * 
+     * @Override public void stateChanged(ChangeEvent e) { JTabbedPane lasPestanas =
+     * (JTabbedPane) e.getSource(); PanelBase panelSeleccionado = (PanelBase)
+     * lasPestanas.getSelectedComponent();
+     * 
+     * // listar los libros y sus formatos en el explorador del catálogo if
+     * (panelSeleccionado.getClass() == PanelContenedorCatalogo.class) {
+     * getEvento().manejar(ControladorExploradorCatalogo.CATALOGO_LISTAR); }
+     * 
+     * } });
+     */
   }
+  
+  /// Obtiene el panel que muestra las fichas de los libros del catálogo.
+  public PanelExploradorCatalogo getPanelExploradorCatalogo() { return this.panelContenedorCatalogo.getPanelExploradorCatalogo(); }
   
 }

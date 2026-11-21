@@ -119,4 +119,7 @@ public class PanelContenidoPrincipal extends PanelBase {
   /// Obtiene el panel de administración del sistema.
   public PanelAdministracionSistema getPanelAdministracionSistema() { return this.panelAdministracionSistema; }
   
+  /// Obtiene el panel de exploración del catálogo
+  public PanelExploracionCatalogo getPanelExploracionCatalogo() { return this.panelExploracionCatalogo; }
+  
 }

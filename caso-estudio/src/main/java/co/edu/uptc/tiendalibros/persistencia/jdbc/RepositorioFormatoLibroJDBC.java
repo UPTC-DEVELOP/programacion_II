@@ -38,14 +38,15 @@ public class RepositorioFormatoLibroJDBC extends RepositorioJDBCBase<FormatoLibr
   private static final String SQL_ELIMINAR = "DELETE FROM formato_libro WHERE id_formato_libro = ?";
   
   /// Comando SQL para hacer la lista de formatos.
-  private static final String SQL_LISTAR = "SELECT " + COLUMNAS + " FROM formato_libro ORDER BY id_formato_libro";
+  private static final String SQL_LISTAR = "SELECT " + RepositorioFormatoLibroJDBC.COLUMNAS
+    + " FROM formato_libro ORDER BY id_formato_libro";
   
   /// Comando SQL para buscar un formato por su ID.
-  private static final String SQL_BUSCAR_POR_ID = "SELECT " + COLUMNAS
+  private static final String SQL_BUSCAR_POR_ID = "SELECT " + RepositorioFormatoLibroJDBC.COLUMNAS
     + " FROM formato_libro WHERE id_formato_libro = ?";
   
   /// Comando SQL para buscar los formatos de un libro.
-  private static final String SQL_BUSCAR_POR_ID_LIBRO = "SELECT " + COLUMNAS
+  private static final String SQL_BUSCAR_POR_ID_LIBRO = "SELECT " + RepositorioFormatoLibroJDBC.COLUMNAS
     + " FROM formato_libro WHERE id_libro = ? ORDER BY id_formato_libro";
   
   /// Comando SQL para eliminar todos los formatos de un libro.
@@ -54,6 +55,12 @@ public class RepositorioFormatoLibroJDBC extends RepositorioJDBCBase<FormatoLibr
   /// Comando SQL para eliminar el formato de un tipo específico de un libro.
   private static final String SQL_ELIMINAR_POR_ID_LIBRO_Y_TIPO = "DELETE FROM formato_libro "
     + "WHERE id_libro = ? AND tipo_formato = ?";
+  
+  /// Comando SQL para listar los formatos que se pueden comprar: estado disponible e
+  /// inventario mayor a cero.
+  private static final String SQL_LISTAR_COMPRABLES = "SELECT " + RepositorioFormatoLibroJDBC.COLUMNAS
+    + " FROM formato_libro WHERE estado_en_catalogo = ? AND inventario > 0"
+    + " ORDER BY id_libro, tipo_formato";
   
   /// Crea un nuevo repositorio de formatos de libros conectado a una base de datos
   /// relacional.
@@ -169,6 +176,7 @@ public class RepositorioFormatoLibroJDBC extends RepositorioJDBCBase<FormatoLibr
       throw traducirExcepcion("buscar por ID del libro", excepcion);
     }
   }
+
   
   /// Busca los formatos de un libro usando una conexión compartida.
   ///
@@ -184,6 +192,27 @@ public class RepositorioFormatoLibroJDBC extends RepositorioJDBCBase<FormatoLibr
   protected List<FormatoLibro> buscarPorIdLibro(Connection conexion, Long idLibro) throws SQLException {
     try (PreparedStatement comando = conexion.prepareStatement(RepositorioFormatoLibroJDBC.SQL_BUSCAR_POR_ID_LIBRO)) {
       comando.setLong(1, idLibro);
+      return convertirFilas(comando);
+    }
+  }
+  
+  /// Lista los formatos que se pueden comprar usando la conexión compartida.
+  /// 
+  /// Un formato se puede comprar si su estado en el catálogo es
+  /// [EstadoEnCatalogo#DISPONIBLE] y su inventario es mayor a cero.
+  /// 
+  /// **Conexión compartida:** este método no abre ni cierra la conexión con la base de
+  /// datos. La recibe del método que lo invoca, que es responsable de cerrarla. Más detalles
+  /// en [co.edu.uptc.tiendalibros.persistencia.jdbc].
+  /// 
+  /// @param conexion Conexión abierta y compartida con la base de datos. Sigue abierta al
+  ///                 terminar este método.
+  /// @return Lista de formatos comprables, ordenada por ID del libro. Vacía si no hay.
+  /// @throws SQLException Si ocurre un error técnico al consultar.
+  protected List<FormatoLibro> listarComprables(Connection conexion) throws SQLException {
+    try (PreparedStatement comando = conexion.prepareStatement(RepositorioFormatoLibroJDBC.SQL_LISTAR_COMPRABLES)) {
+      // la abreviatura que se usa para estado en catálogo viene del enum
+      comando.setString(1, EstadoEnCatalogo.DISPONIBLE.getAbreviatura());
       return convertirFilas(comando);
     }
   }

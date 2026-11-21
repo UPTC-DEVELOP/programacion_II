@@ -150,7 +150,7 @@ public class PanelCamposLibro extends PanelCamposBase<ElementoVistaLibroConForma
   public void prepararCampos(ElementoVistaLibroConFormatos elementoVista) {
     setElementoVista(elementoVista);
     
-    // llenar los campos de selección que vienen con el elmento vista
+    // llenar los campos de selección que vienen con el elemento vista
     llenarCategorias(elementoVista.getCategorias());
     llenarEditoriales(elementoVista.getEditoriales());
     
