@@ -5,23 +5,18 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import model.Cliente;
 import service.IServicioClientes;
 import service.IServicioCompras;
 import service.IServicioLibros;
-import model.Cliente;
 
 /**
  * Ventana "Mi Cuenta": el cliente actualiza sus datos (segun el prototipo).
@@ -30,26 +25,22 @@ public class VentanaMiCuenta extends JFrame {
 
     private static final long serialVersionUID = 1L;
 
-    private IServicioClientes controlador;
-    private IServicioLibros controladorLibro;
-    private IServicioCompras controladorCompras;
-    private Cliente cliente;
-    private JFrame padre;
+    private final EventosMiCuenta eventos;
 
     private JTextField txtNombre;
     private JTextField txtCorreo;
     private JTextField txtDireccion;
     private JTextField txtTelefono;
+    private JButton btnAtras;
+    private JButton btnGuardar;
+    private JButton btnCompras;
+    private JButton btnHistorial;
 
     public VentanaMiCuenta(
             IServicioClientes controlador, IServicioLibros controladorLibro,
             IServicioCompras controladorCompras, Cliente cliente, JFrame padre) {
-
-        this.controlador = controlador;
-        this.controladorLibro = controladorLibro;
-        this.controladorCompras = controladorCompras;
-        this.cliente = cliente;
-        this.padre = padre;
+        this.eventos = new EventosMiCuenta(
+                this, controlador, controladorLibro, controladorCompras, cliente);
 
         setTitle("Mi Cuenta");
         setSize(420, 300);
@@ -60,16 +51,8 @@ public class VentanaMiCuenta extends JFrame {
         add(crearFormulario(), BorderLayout.CENTER);
         add(crearBoton(), BorderLayout.SOUTH);
 
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e) {
-                if (padre != null) {
-                    padre.setVisible(true);
-                }
-            }
-        });
-
-        cargarDatos();
+        eventos.registrarEventos(txtNombre, txtCorreo, txtDireccion, txtTelefono,
+                btnAtras, btnGuardar, btnCompras, btnHistorial, padre);
     }
 
     private JPanel crearFormulario() {
@@ -107,94 +90,15 @@ public class VentanaMiCuenta extends JFrame {
 
     private JPanel crearBoton() {
         JPanel panel = new JPanel();
-        JButton btnAtras = new JButton("Atr\u00e1s");
-        JButton btnGuardar = new JButton("Guardar cambios");
-        JButton btnCompras = new JButton("Compras");
-        JButton btnHistorial = new JButton("Historial");
-        btnAtras.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                volver();
-            }
-        });
-        btnGuardar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                accionGuardar();
-            }
-            
-        });
-        
-        btnCompras.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                abrirCompras();
-            }
-        });
+        btnAtras = new JButton("Atr\u00e1s");
+        btnGuardar = new JButton("Guardar cambios");
+        btnCompras = new JButton("Compras");
+        btnHistorial = new JButton("Historial");
 
-        btnHistorial.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                abrirHistorial();
-            }
-        });
         panel.add(btnAtras);
         panel.add(btnGuardar);
         panel.add(btnCompras);
         panel.add(btnHistorial);
         return panel;
-    }
-
-    private void volver() {
-        dispose();
-        if (padre != null) {
-            padre.setVisible(true);
-        }
-    }
-
-    private void cargarDatos() {
-        if (cliente == null) {
-            return;
-        }
-        txtNombre.setText(cliente.getNombreCompleto());
-        txtCorreo.setText(cliente.getCorreo());
-        txtDireccion.setText(cliente.getDireccion());
-        txtTelefono.setText(cliente.getTelefono());
-    }
-
-    private void accionGuardar() {
-        if (cliente == null) {
-            JOptionPane.showMessageDialog(this, "No hay sesion iniciada.");
-            return;
-        }
-
-        String nombre = txtNombre.getText().trim();
-        String direccion = txtDireccion.getText().trim();
-        String telefono = txtTelefono.getText().trim();
-
-        if (nombre.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "El nombre completo es obligatorio.");
-            return;
-        }
-
-        if (controlador.actualizarDatos(cliente.getCorreo(), nombre, direccion, telefono)) {
-            JOptionPane.showMessageDialog(this, "Datos actualizados correctamente.");
-        } else {
-            JOptionPane.showMessageDialog(this,
-                    "No se pudieron actualizar los datos. Verifique el almacenamiento.");
-        }
-    }
-    
- // ABRIR VENTANA DE COMPRAS Liz 
-    private void abrirCompras() {
-
-        VentanaCompras ventanaCompras =
-                new VentanaCompras(cliente, controladorLibro, controladorCompras);
-
-        ventanaCompras.setVisible(true);
-    }
-
-    private void abrirHistorial() {
-        new VentanaHistorialCompras(controladorCompras, cliente, this).setVisible(true);
     }
 }
