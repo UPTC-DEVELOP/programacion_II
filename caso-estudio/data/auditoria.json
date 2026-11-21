@@ -31,7 +31,55 @@
       "usuario": "admin",
       "fecha": "2026-11-09T17:48:24.108369300",
       "detalles": "Registro de nuevo libro: Romeo and Juliet"
+    },
+    {
+      "id": 5,
+      "accion": "CREATE",
+      "isbn": "1036589654",
+      "usuario": "admin",
+      "fecha": "2026-11-14T10:15:36.357042200",
+      "detalles": "Registro de cliente: oscar@uptc.edu.co"
+    },
+    {
+      "id": 6,
+      "accion": "CREATE",
+      "isbn": "9780547928227",
+      "usuario": "admin",
+      "fecha": "2026-11-21T09:22:01.647315400",
+      "detalles": "Registro de nuevo libro: The Hobbit"
+    },
+    {
+      "id": 7,
+      "accion": "CREATE",
+      "isbn": "9781451673319",
+      "usuario": "admin",
+      "fecha": "2026-11-21T09:29:21.944195300",
+      "detalles": "Registro de nuevo libro: Fahrenheit 451"
+    },
+    {
+      "id": 8,
+      "accion": "UPDATE",
+      "isbn": "9781451673319",
+      "usuario": "admin",
+      "fecha": "2026-11-21T09:30:47.095028200",
+      "detalles": "Actualización de libro: Fahrenheit 451 (precio\u003d68000.0, stock\u003d15)"
+    },
+    {
+      "id": 9,
+      "accion": "UPDATE",
+      "isbn": "9780134685991",
+      "usuario": "admin",
+      "fecha": "2026-11-21T09:32:28.540027600",
+      "detalles": "Actualización de libro: Effective Java (precio\u003d135000.0, stock\u003d15)"
+    },
+    {
+      "id": 10,
+      "accion": "CREATE",
+      "isbn": "9780393317558",
+      "usuario": "admin",
+      "fecha": "2026-11-21T09:36:37.587554800",
+      "detalles": "Registro de nuevo libro: Guns, Germs, and Steel"
     }
   ],
-  "ultimoId": 4
+  "ultimoId": 10
 }
