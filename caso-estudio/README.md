@@ -26,3 +26,5 @@ La configuración de MariaDB se realiza mediante `caso-estudio/config/database.p
 - [Instalación](docs/INSTALACION.md)
 - [Pruebas y evidencias](docs/PRUEBAS.md)
 - [Comandos de MariaDB, JDBC y pruebas](docs/COMANDOS_MARIADB_JDBC_Y_PRUEBAS.md)
+
+Escrito desde Eclipse Git Staging´
