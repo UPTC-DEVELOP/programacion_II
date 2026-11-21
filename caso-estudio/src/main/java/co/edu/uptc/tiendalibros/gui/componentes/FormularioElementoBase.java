@@ -276,11 +276,6 @@ public abstract class FormularioElementoBase<EV extends ElementoVista<?>, DTO> e
     }
   }
   
-  // Obtiene el elemento principal que el formulario maneja.
-  //
-  // @return Elemento principal que el formulario maneja.
-  // public T getElemento() { return this.elementoVista != null ?
-  // this.elementoVista.getElemento() : null; }
   
   /// Obtiene el elemento que el formulario maneja.
   ///

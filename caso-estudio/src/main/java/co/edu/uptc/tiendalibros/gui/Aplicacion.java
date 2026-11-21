@@ -2,6 +2,7 @@
 package co.edu.uptc.tiendalibros.gui;
 
 import co.edu.uptc.tiendalibros.gui.autor.ControladorAutor;
+import co.edu.uptc.tiendalibros.gui.catalogo.ControladorExploradorCatalogo;
 import co.edu.uptc.tiendalibros.gui.categoria.ControladorCategoria;
 import co.edu.uptc.tiendalibros.gui.editorial.ControladorEditorial;
 import co.edu.uptc.tiendalibros.gui.eventos.EnrutadorEventos;
@@ -16,6 +17,7 @@ import co.edu.uptc.tiendalibros.interfaces.IRepositorioLibro;
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioLibroConFormatos;
 import co.edu.uptc.tiendalibros.negocio.GestionAutor;
 import co.edu.uptc.tiendalibros.negocio.GestionCategoria;
+import co.edu.uptc.tiendalibros.negocio.catalogo.GestionExploradorCatalogo;
 import co.edu.uptc.tiendalibros.negocio.editorial.GestionEditorial;
 import co.edu.uptc.tiendalibros.negocio.libro.GestionLibro;
 import co.edu.uptc.tiendalibros.persistencia.archivos.RepositorioAutorLibroEnCSV;
@@ -26,6 +28,7 @@ import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioFormatoLibroJDBC;
 import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioLibroConFormatosJDBC;
 import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioLibroJDBC;
 import co.edu.uptc.tiendalibros.persistencia.memoria.RepositorioAutorEnMemoria;
+
 /// Representa la aplicación.
 public class Aplicacion {
   
@@ -104,12 +107,16 @@ public class Aplicacion {
     
     GestionCategoria gestorCategoria = new GestionCategoria(repositorioCategoria);
     
- // el gestor de libros necesita el repositorio de libros, el de libros con formatos,
+    // el gestor de libros necesita el repositorio de libros, el de libros con formatos,
     // editoriales, categorías y asociaciones autor-libro
     GestionLibro gestorLibro = new GestionLibro(
       repositorioLibro, repositorioLibroConFormatos, repositorioEditorial, repositorioCategoria,
       repositorioAutorLibro
     );
+    
+    // el gestor del explorador del catálogo solo necesita el repositorio de libros con
+    // formatos porque hace la lista únicamente de los libros que se pueden comprar
+    GestionExploradorCatalogo gestorExplorador = new GestionExploradorCatalogo(repositorioLibroConFormatos);
     
     // crear los controladores que intermedian entre la interfaz gráfica y la capa de lógica
     
@@ -147,6 +154,15 @@ public class Aplicacion {
         this.enrutadorEventos, contenidoPrincipal.getPanelGestionCatalogo()
           .getPanelLibros(),
         gestorLibro, gestorCategoria, gestorEditorial
+      ),
+      
+      // el controlador del explorador del catálogo necesita el panel que muestra las fichas
+      // de los libros y el gestor de lógica del explorador
+      new ControladorExploradorCatalogo(
+        this.enrutadorEventos,
+        contenidoPrincipal.getPanelExploracionCatalogo()
+          .getPanelExploradorCatalogo(),
+        gestorExplorador
       ),
     };
     

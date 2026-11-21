@@ -1,6 +1,7 @@
 /// 
 package co.edu.uptc.tiendalibros.interfaces;
 
+import java.util.List;
 import java.util.Optional;
 
 import co.edu.uptc.tiendalibros.modelo.LibroConFormatos;
@@ -41,5 +42,30 @@ public interface IRepositorioLibroConFormatos {
   /// @return `true` si el libro se eliminó. `false` si no se encontró.
   /// @throws IllegalArgumentException Si `id` es nulo.
   boolean eliminar(Long id);
+  
+  /// Obtiene la lista de libros con formatos almacenados en el repositorio.
+  ///
+  /// @return Lista de libros con formatos almacenados. Vacía si no hay libros con
+  ///         formatos almacenados.
+  List<LibroConFormatos> listar();
+  
+  /// Obtiene la lista de libros que se pueden comprar, cada uno con sus formatos
+  /// comprables.
+  ///
+  /// Un formato se puede comprar si su estado en el catálogo es disponible y su inventario
+  /// es mayor a cero. Un libro sin ningún formato comprable no aparece en la lista.
+  /// 
+  /// En este método, si un libro tiene un solo formato que cumple la condición de ser
+  /// comprable, el otro formato de libro estará vacío.
+  ///
+  /// **Nota: El resultado es una vista de solo lectura para el catálogo:** Un libro cargado
+  /// con este método puede traer solo uno de sus dos formatos. Ningún libro obtenido con
+  /// este método debe pasarse a [#guardar(LibroConFormatos)] porque al guardar, el
+  /// repositorio interpreta el formato faltante (vacío) que no está disponible para la
+  /// compra como un formato que el libro dejó de ofrecer, y lo eliminaría de la base de
+  /// datos.
+  ///
+  /// @return Lista de libros con sus formatos comprables. Vacía si no hay ninguno.
+  List<LibroConFormatos> listarComprables();
   
 }

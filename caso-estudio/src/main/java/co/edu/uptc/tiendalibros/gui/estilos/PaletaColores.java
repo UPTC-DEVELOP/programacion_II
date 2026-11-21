@@ -3,17 +3,6 @@ package co.edu.uptc.tiendalibros.gui.estilos;
 
 import java.awt.Color;
 
-// estamos usando esta paleta de colores (usar sólo los primeros seis dígitos
-// hexadecimales)
-// https://coolors.co/588b8b-ffffff-ffd5c2-f28f3b-c8553d-2d3047-93b7be
-// --dark-cyan: #588b8bff;
-// --white: #fdfdfdff;
-// --peach-fuzz: #ffd5c2ff;
-// --tiger-orange: #f28f3bff;
-// --rosy-copper: #c8553dff;
-// --space-indigo: #2d3047ff;
-// --light-blue: #93b7beff;
-
 /// Representa una paleta de colores. Hay colores según su propósito.
 ///
 public enum PaletaColores {

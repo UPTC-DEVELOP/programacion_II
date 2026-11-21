@@ -1,9 +1,11 @@
 //
 package co.edu.uptc.tiendalibros.modelo;
 
+import co.edu.uptc.tiendalibros.interfaces.IElementoComprable;
+
 /// Representa un formato comercial de un libro como obra intelectual. Tiene los datos de
 /// formato y los datos comerciales del libro.
-public class FormatoLibro extends ElementoBase {
+public class FormatoLibro extends ElementoBase implements IElementoComprable {
   
   /// ID del libro como obra intelectual.
   private Long idLibro;
@@ -126,6 +128,7 @@ public class FormatoLibro extends ElementoBase {
   /// Obtiene el precio base del formato comercial del libro antes del IVA.
   ///
   /// @return Precio base del formato comercial del libro antes del IVA.
+  @Override
   public Dinero getPrecioBase() { return this.precioBase; }
   
   /// Establece el precio base del formato comercial del libro antes del IVA.
@@ -136,6 +139,7 @@ public class FormatoLibro extends ElementoBase {
   /// Obtiene el tipo de IVA que se aplica a la presentación del libro.
   ///
   /// @return Tipo de IVA que se aplica a la presentación del libro.
+  @Override
   public TipoIVA getTipoIVA() { return this.tipoIVA; }
   
   /// Establece el Tipo de IVA que se aplica a la presentación del libro.

@@ -3,6 +3,7 @@ package co.edu.uptc.tiendalibros.gui.navegacion;
 
 import co.edu.uptc.tiendalibros.gui.ControladorVentanaPrincipal;
 import co.edu.uptc.tiendalibros.gui.PanelContenidoPrincipal;
+import co.edu.uptc.tiendalibros.gui.catalogo.ControladorExploradorCatalogo;
 import co.edu.uptc.tiendalibros.gui.componentes.ControladorBase;
 import co.edu.uptc.tiendalibros.gui.editorial.ControladorEditorial;
 import co.edu.uptc.tiendalibros.gui.eventos.EnrutadorEventos;
@@ -60,6 +61,19 @@ public class ControladorNavegacion extends ControladorBase {
     this.panelContenidoPrincipal.mostrarPanel(nombrePanel);
     // marcar el botón para indicar el módulo activo
     this.panelNavegacion.marcarModuloActivo(rutaNavegacion);
+  }
+  
+  /// Muestra el panel de exploración del catálogo y le pide al explorador que cargue la
+  /// lista de libros disponibles.
+  private void mostrarExploracionCatalogo() {
+    // primero, mostrar el panel de exploración
+    mostrarPanel(
+      PanelContenidoPrincipal.PANEL_EXPLORACION_CATALOGO,
+      ControladorNavegacion.NAVEGACION_EXPLORACION_CATALOGO
+    );
+    
+    // ahora, provocar el evento de inicio del explorador, que carga las fichas
+    getEnrutador().manejarEvento(ControladorExploradorCatalogo.CATALOGO_INICIO);
   }
   
   @Override
@@ -121,7 +135,7 @@ public class ControladorNavegacion extends ControladorBase {
     // asociar el evento de mostrar el panel de exploración del catálogo
     getEnrutador().registrarEvento(
       ControladorNavegacion.NAVEGACION_EXPLORACION_CATALOGO,
-      (elemento) -> mostrarPanel(PanelContenidoPrincipal.PANEL_EXPLORACION_CATALOGO, ControladorNavegacion.NAVEGACION_EXPLORACION_CATALOGO)
+      (elemento) -> mostrarExploracionCatalogo()
     );
   }
   

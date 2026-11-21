@@ -10,7 +10,8 @@ public enum Fuentes {
   FUENTE_CAMPO("arvo", "Arvo-Bold.ttf", Font.PLAIN, 12f),
   FUENTE_BOTON("arvo", "Arvo-Bold.ttf", Font.BOLD, 13f),
   FUENTE_PESTANA("arvo", "Arvo-Bold.ttf", Font.BOLD, 14f),
-  FUENTE_MENSAJE_ERROR("arvo", "Arvo-Bold.ttf", Font.BOLD, 13f);
+  FUENTE_MENSAJE_ERROR("arvo", "Arvo-Bold.ttf", Font.BOLD, 13f),
+  FUENTE_TITULO_LIBRO_FICHA("arvo", "Arvo-Bold.ttf", Font.BOLD, 16f);
   
   private String nombreDirectorio;
   private String nombreArchivo;

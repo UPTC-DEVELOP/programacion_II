@@ -3,6 +3,7 @@
 package co.edu.uptc.tiendalibros.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.Optional;
 
 import javax.swing.ImageIcon;
@@ -48,7 +49,10 @@ public class VentanaPrincipal extends VentanaBase implements IReceptorEventos {
   @Override
   protected void inicializarComponente() {
     setTitle("Tienda Libros - Grupo 9");
-    setSize(1000, 900);
+    // el tamaño máximo y mínimo de la ventana consideran el ancho de las fichas de libros del
+    // explorador del catálogo
+    setSize(1280, 900);
+    setMinimumSize(new Dimension(1100, 650));
     establecerIconoAplicacion();
     
     getContentPane().setLayout(new BorderLayout());
