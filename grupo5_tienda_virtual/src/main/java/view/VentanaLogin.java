@@ -5,15 +5,12 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -21,7 +18,6 @@ import javax.swing.JTextField;
 import service.IServicioClientes;
 import service.IServicioCompras;
 import service.IServicioLibros;
-import model.Cliente;
 
 /**
  * Ventana "Iniciar Sesion" segun el prototipo.
@@ -30,18 +26,17 @@ public class VentanaLogin extends JFrame {
 
     private static final long serialVersionUID = 1L;
 
-    private IServicioClientes controlador;
-    private IServicioLibros controladorLibro;
-    private IServicioCompras controladorCompras;
+    private final EventosLogin eventos;
 
     private JTextField txtCorreo;
     private JPasswordField txtContrasena;
+    private JButton btnIniciarSesion;
+    private JButton btnRegistrarse;
+    private JButton btnAdministrador;
 
     public VentanaLogin(IServicioClientes controlador, IServicioLibros controladorLibro,
             IServicioCompras controladorCompras) {
-        this.controlador = controlador;
-        this.controladorLibro = controladorLibro;
-        this.controladorCompras = controladorCompras;
+        this.eventos = new EventosLogin(this, controlador, controladorLibro, controladorCompras);
 
         setTitle("Iniciar Sesi\u00f3n");
         setSize(420, 300);
@@ -51,6 +46,9 @@ public class VentanaLogin extends JFrame {
 
         add(crearFormulario(), BorderLayout.CENTER);
         add(crearBotones(), BorderLayout.SOUTH);
+
+        eventos.registrarEventos(txtCorreo, txtContrasena,
+                btnIniciarSesion, btnRegistrarse, btnAdministrador);
     }
 
     private JPanel crearFormulario() {
@@ -87,79 +85,18 @@ public class VentanaLogin extends JFrame {
         contenedor.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
 
         JPanel fila = new JPanel();
-        JButton btnIniciarSesion = new JButton("Iniciar sesi\u00f3n");
-        JButton btnRegistrarse = new JButton("Registrarse");
+        btnIniciarSesion = new JButton("Iniciar sesi\u00f3n");
+        btnRegistrarse = new JButton("Registrarse");
         fila.add(btnIniciarSesion);
         fila.add(btnRegistrarse);
 
         JPanel filaAdmin = new JPanel();
-        JButton btnAdministrador = new JButton("Entrar como Administrador");
+        btnAdministrador = new JButton("Entrar como Administrador");
         filaAdmin.add(btnAdministrador);
 
         contenedor.add(fila);
         contenedor.add(filaAdmin);
 
-        btnIniciarSesion.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                accionIniciarSesion();
-            }
-        });
-
-        btnRegistrarse.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new VentanaRegistroCliente(controlador, VentanaLogin.this).setVisible(true);
-                setVisible(false);
-            }
-        });
-
-        btnAdministrador.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                abrirAdministracion();
-            }
-        });
-
         return contenedor;
-    }
-
-    private void abrirAdministracion() {
-        Object[] opciones = { "Gesti\u00f3n de Libros", "Gesti\u00f3n de Clientes" };
-        int opcion = JOptionPane.showOptionDialog(this,
-                "Seleccione el m\u00f3dulo de administraci\u00f3n:",
-                "Administraci\u00f3n",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                opciones,
-                opciones[0]);
-
-        if (opcion == 0) {
-            new VentanaLibros(VentanaLogin.this, controladorLibro).setVisible(true);
-            setVisible(false);
-        } else if (opcion == 1) {
-            new VentanaClientes(controlador, VentanaLogin.this).setVisible(true);
-            setVisible(false);
-        }
-    }
-
-    private void accionIniciarSesion() {
-        String correo = txtCorreo.getText().trim();
-        String contrasena = new String(txtContrasena.getPassword());
-
-        if (correo.isEmpty() || contrasena.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Correo y contrase\u00f1a obligatorios.");
-            return;
-        }
-
-        Cliente cliente = controlador.iniciarSesion(correo, contrasena);
-        if (cliente != null) {
-            new VentanaMiCuenta(controlador, controladorLibro, controladorCompras, cliente,
-                    VentanaLogin.this).setVisible(true);
-            setVisible(false);
-        } else {
-            JOptionPane.showMessageDialog(this, "Correo o contrase\u00f1a no v\u00e1lidos.");
-        }
     }
 }
