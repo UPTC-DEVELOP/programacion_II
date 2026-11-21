@@ -25,9 +25,7 @@ import co.edu.uptc.persistencia.CarritoJsonRepository;
 import co.edu.uptc.persistencia.ClienteJdbcRepository;
 import co.edu.uptc.persistencia.ClienteJsonRepository;
 import co.edu.uptc.persistencia.FacturaJsonRepository;
-import co.edu.uptc.persistencia.LibroJdbcRepository;
 import co.edu.uptc.persistencia.LibroJsonRepository;
-import co.edu.uptc.persistencia.LibroRepositoryFactory;
 import co.edu.uptc.persistencia.VentaJdbcRepository;
 
 
@@ -54,21 +52,16 @@ import co.edu.uptc.persistencia.VentaJdbcRepository;
  * 
  *
 
- * La persistencia de libros se selecciona a través de
- * {@link LibroRepositoryFactory}: con Tipo.JSON se usa data/libros.json y con
- * Tipo.MEMORIA se conserva el comportamiento histórico de LocalLibro. La capa
- * de negocio sigue dependiendo únicamente de ILibroRepositorio (DIP).
-
- * La composición activa usa JDBC; las implementaciones JSON y en memoria
- * siguen disponibles para pruebas y escenarios alternativos. La capa de
- * negocio sigue dependiendo únicamente de interfaces (DIP).
+ * La persistencia de libros usa exclusivamente LibroJsonRepository
+ * (data/libros.json). La capa de negocio sigue dependiendo únicamente de
+ * ILibroRepositorio (DIP); PostgreSQL ya no participa en el CRUD de libros.
 
  */
 public class AppLibros {
     public static void main(String[] args) {
         // 1. Capa de Persistencia (se inyecta en la capa de negocio)
         /*modificacion:Brayan Panqueva*/
-        // PostgreSQL es la implementación activa; los repositorios JSON siguen disponibles.
+        // El CRUD de libros se persiste exclusivamente en JSON (data/libros.json).
         IClienteRepositorio repositorioCliente = new ClienteJdbcRepository();
         IClienteRepositorio repositorioClienteJson = new ClienteJsonRepository();
         VentaJdbcRepository repositorioVentaJdbc = new VentaJdbcRepository();
@@ -84,9 +77,8 @@ public class AppLibros {
         IAuditoria auditoria = new AuditoriaCompuesta(
                 new AuditoriaTxtRepository(), new AuditoriaRepository());
 
-        // Libros se persisten en PostgreSQL y se replican en data/libros.json.
-        ILibroRepositorio repositorioLibro = new LibroJdbcRepository(repositorioVenta);
-        ILibroRepositorio repositorioLibroJson = new LibroJsonRepository(repositorioVenta);
+        // Libros se persisten exclusivamente en data/libros.json (sin espejo JDBC).
+        ILibroRepositorio repositorioLibro = new LibroJsonRepository(repositorioVenta);
 
         // 2. Capa de Validación
         ValidadorDatos validador = new ValidadorDatos();
@@ -94,7 +86,7 @@ public class AppLibros {
         // 3. Capa de Negocio (Inyección de Dependencias)
         GestionSeguridad gestionSeguridad = new GestionSeguridad(repositorioCliente);
         GestionLibro gestionLibro = new GestionLibro(
-                repositorioLibro, validador, repositorioLibroJson, auditoria);
+                repositorioLibro, validador, auditoria);
         GestionCliente gestionCliente = new GestionCliente(repositorioCliente, validador,
                 repositorioClienteJson, auditoria);
         // GestionDashboard inyecta DOS repositorios: libros (stock) y ventas (KPIs)

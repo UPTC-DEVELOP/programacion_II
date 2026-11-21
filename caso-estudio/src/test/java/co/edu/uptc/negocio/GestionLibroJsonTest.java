@@ -23,52 +23,47 @@ import co.edu.uptc.modelo.enums.Formato;
 import co.edu.uptc.persistencia.LibroJsonRepository;
 
 /**
- * Verifica que GestionLibro replique las operaciones confirmadas en la
- * persistencia principal hacia el repositorio JSON de respaldo.
+ * Verifica que GestionLibro persista el CRUD de libros únicamente en JSON,
+ * sin repositorio JDBC ni espejo.
  */
-public class GestionLibroDualTest {
+public class GestionLibroJsonTest {
 
     @Rule
     public TemporaryFolder carpetaTemporal = new TemporaryFolder();
 
-    private LibroJsonRepository principal;
-    private LibroJsonRepository espejo;
+    private LibroJsonRepository repositorio;
     private GestionLibro servicio;
 
     @Before
     public void setUp() {
         Path base = carpetaTemporal.getRoot().toPath().resolve("data");
-        principal = new LibroJsonRepository(base.resolve("principal.json").toString(), null);
-        espejo = new LibroJsonRepository(base.resolve("libros.json").toString(), null);
-        servicio = new GestionLibro(principal, new ValidadorDatos(), espejo, null);
+        repositorio = new LibroJsonRepository(base.resolve("libros.json").toString(), null);
+        servicio = new GestionLibro(repositorio, new ValidadorDatos(), null);
     }
 
     @Test
-    public void testGuardarReplicaEnJson() throws Exception {
+    public void testGuardarPersisteEnJson() throws Exception {
         servicio.guardarLibro(crearLibro("9780000001001", "Original"));
 
-        assertNotNull(principal.consultarPorIsbn("9780000001001"));
-        assertNotNull(espejo.consultarPorIsbn("9780000001001"));
-        assertEquals("Original", espejo.consultarPorIsbn("9780000001001").getTitulo());
+        assertNotNull(repositorio.consultarPorIsbn("9780000001001"));
+        assertEquals("Original", repositorio.consultarPorIsbn("9780000001001").getTitulo());
     }
 
     @Test
-    public void testActualizarReplicaEnJson() throws Exception {
+    public void testActualizarPersisteEnJson() throws Exception {
         servicio.guardarLibro(crearLibro("9780000001002", "Original"));
         servicio.actualizarLibro(crearLibro("9780000001002", "Actualizado"));
 
-        assertEquals("Actualizado", principal.consultarPorIsbn("9780000001002").getTitulo());
-        assertEquals("Actualizado", espejo.consultarPorIsbn("9780000001002").getTitulo());
+        assertEquals("Actualizado", repositorio.consultarPorIsbn("9780000001002").getTitulo());
     }
 
     @Test
-    public void testEliminarReplicaEnJson() throws Exception {
+    public void testEliminarPersisteEnJson() throws Exception {
         servicio.guardarLibro(crearLibro("9780000001003", "Borrable"));
         servicio.eliminarLibro("9780000001003");
 
-        assertNull(principal.consultarPorIsbn("9780000001003"));
-        assertNull(espejo.consultarPorIsbn("9780000001003"));
-        assertFalse(espejo.existePorIsbn("9780000001003"));
+        assertNull(repositorio.consultarPorIsbn("9780000001003"));
+        assertFalse(repositorio.existePorIsbn("9780000001003"));
     }
 
     @Test
@@ -76,11 +71,11 @@ public class GestionLibroDualTest {
         Libro primero = aEntidad(crearLibro("9780000001004", "Primero"));
         Libro segundo = aEntidad(crearLibro("9780000001004", "Segundo"));
 
-        espejo.guardar(primero);
-        espejo.guardar(segundo);
+        repositorio.guardar(primero);
+        repositorio.guardar(segundo);
 
-        assertEquals(1, espejo.listarTodos().size());
-        assertEquals("Segundo", espejo.consultarPorIsbn("9780000001004").getTitulo());
+        assertEquals(1, repositorio.listarTodos().size());
+        assertEquals("Segundo", repositorio.consultarPorIsbn("9780000001004").getTitulo());
     }
 
     @Test
@@ -98,14 +93,14 @@ public class GestionLibroDualTest {
 
     @Test
     public void testSincronizarReemplazaYRespalda() throws Exception {
-        espejo.guardar(aEntidad(crearLibro("9780000001005", "Anterior")));
+        repositorio.guardar(aEntidad(crearLibro("9780000001005", "Anterior")));
 
-        espejo.sincronizar(List.of(
+        repositorio.sincronizar(List.of(
                 aEntidad(crearLibro("9780000001006", "Nuevo uno")),
                 aEntidad(crearLibro("9780000001007", "Nuevo dos"))));
 
-        assertEquals(2, espejo.listarTodos().size());
-        assertNull(espejo.consultarPorIsbn("9780000001005"));
+        assertEquals(2, repositorio.listarTodos().size());
+        assertNull(repositorio.consultarPorIsbn("9780000001005"));
         assertTrue(contieneRespaldo(carpetaTemporal.getRoot().toPath().resolve("data"),
                 "libros.json.bak-"));
     }
