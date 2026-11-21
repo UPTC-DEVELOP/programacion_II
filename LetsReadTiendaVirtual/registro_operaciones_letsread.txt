@@ -29,3 +29,41 @@
 [2026-11-12T22:49:31.804750500] Inicio de sesión exitoso de Administrador (admin).
 [2026-11-12T22:50:29.655746] Inicio de sesión exitoso de Administrador ().
 [2026-11-12T22:52:29.295416100] Inicio de sesión exitoso de Administrador ().
+[2026-11-12T22:55:08.611803300] Inicio de sesión exitoso de Administrador ().
+[2026-11-12T22:56:33.792035400] Admin registró nuevo libro: aventuras del ayer y hoy (ISBN: 1049641116)
+[2026-11-12T22:56:49.743715900] Admin eliminó el libro: aventuras del ayer y hoy (ISBN: 1049641116)
+[2026-11-12T23:07:16.111994500] Inicio de sesión exitoso de Administrador ().
+[2026-11-12T23:10:36.703845700] Admin registró nuevo libro: FANTASIAS (ISBN: 6666)
+[2026-11-12T23:12:37.871077800] Inicio de sesión exitoso de Administrador ().
+[2026-11-12T23:13:43.298062400] Inicio de sesión exitoso de Administrador ().
+[2026-11-12T23:15:21.289268300] Admin actualizó el libro: mil años de felicidad (ISBN: 999999999999)
+[2026-11-12T23:17:57.516779100] Admin eliminó el libro: mil años de felicidad (ISBN: 999999999999)
+[2026-11-13T18:04:33.895590900] Inicio de sesión exitoso de Administrador ().
+[2026-11-13T18:04:54.758928300] Inicio de sesión exitoso de Administrador ().
+[2026-11-13T18:06:19.001523100] Carrito guardado en carrito_letsread.json
+[2026-11-13T18:06:19.005068700] Añadido al carrito de Let's Read: Cien años de soledad
+[2026-11-13T18:06:22.551397300] Carrito guardado en carrito_letsread.json
+[2026-11-13T18:06:22.554396300] Añadido al carrito de Let's Read: Clean Code
+[2026-11-13T18:06:25.918251300] Carrito guardado en carrito_letsread.json
+[2026-11-13T18:06:25.920759500] Añadido al carrito de Let's Read: El Hobbit
+[2026-11-13T18:06:31.594144400] Compra realizada con éxito por daniel
+[2026-11-13T18:06:31.596164] Carrito guardado en carrito_letsread.json
+[2026-11-13T18:08:06.887897600] Inicio de sesión exitoso de Administrador ().
+[2026-11-13T18:08:41.563935] Admin registró nuevo libro: un sueño (ISBN: 5641561456156)
+[2026-11-13T18:09:42.666810900] Admin actualizó el libro: un sueño (ISBN: 5641561456156)
+[2026-11-13T18:09:49.559654] Admin actualizó el libro: un sueño (ISBN: 5641561456156)
+[2026-11-13T18:10:00.877388800] Admin eliminó el libro: un sueño (ISBN: 5641561456156)
+[2026-11-13T18:23:57.984392900] Inicio de sesión exitoso de Administrador ().
+[2026-11-13T18:29:36.021326600] Inicio de sesión exitoso de Administrador ().
+[2026-11-14T09:58:44.040667500] Carrito guardado en carrito_letsread.json
+[2026-11-14T09:58:44.048191400] Añadido al carrito de Let's Read: Cien años de soledad
+[2026-11-14T09:58:48.542859700] Carrito guardado en carrito_letsread.json
+[2026-11-14T09:58:48.543896900] Añadido al carrito de Let's Read: El Hobbit
+[2026-11-14T09:58:53.666546] Carrito guardado en carrito_letsread.json
+[2026-11-14T09:58:53.668649] Añadido al carrito de Let's Read: El código Da Vinci
+[2026-11-14T09:59:03.764647600] Compra realizada con éxito por yeisson melo
+[2026-11-14T09:59:03.766653300] Carrito guardado en carrito_letsread.json
+[2026-11-14T09:59:13.846957700] Inicio de sesión exitoso de Administrador ().
+[2026-11-14T09:59:49.720882600] Inicio de sesión exitoso de Administrador ().
+[2026-11-16T22:17:36.313321500] Carrito guardado en carrito_letsread.json
+[2026-11-16T22:17:36.316322] Añadido al carrito de Let's Read: Cien años de soledad

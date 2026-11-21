@@ -35,9 +35,15 @@ public class VentanaPrincipal extends JFrame {
     private TiendaService service;
 
     private JTabbedPane pestanias;
-    private JTextField txtNombre, txtCorreo, txtDireccion, txtTelefono, txtApellido;
+    // Campos para Iniciar Sesión
+    private JTextField txtCorreoLogin;
+    private JPasswordField txtClaveLogin;
+    private JLabel lblEstadoSesion;
+    // Campos para Registro
+    private JTextField txtNombre, txtApellido, txtCorreo, txtDireccion, txtTelefono;
     private JPasswordField txtClave;
     private JComboBox<String> comboTipoCliente;
+
     private JTable tablaLibros, tablaCarrito;
     private DefaultTableModel modeloLibros, modeloCarrito;
     private JSpinner spinnerCantidad;
@@ -50,7 +56,7 @@ public class VentanaPrincipal extends JFrame {
         service = new TiendaService();
 
         setTitle("Let's Read - Tienda Virtual de Libros    YEISSON CRUZ & CRISTTOPHER MORENO  ");
-        setSize(650, 400);
+        setSize(680, 460);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -73,31 +79,77 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private JPanel crearPanelCliente() {
-        JPanel panel = new JPanel(new GridLayout(8, 2, 15, 15));
-        panel.setBorder(BorderFactory.createTitledBorder("Registro de Cliente - Let's Read"));
+        JPanel panelContenedor = new JPanel(new BorderLayout(10, 10));
+        panelContenedor.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JTabbedPane subPestaniasCliente = new JTabbedPane();
+
+        // --- SUB-PESTAÑA 1: INICIAR SESIÓN ---
+        JPanel panelLogin = new JPanel(new BorderLayout(10, 10));
+        panelLogin.setBorder(BorderFactory.createTitledBorder("Acceso de Cliente Registrado"));
+
+        JPanel panelCamposLogin = new JPanel(new GridLayout(3, 2, 12, 15));
+        panelCamposLogin.setBorder(BorderFactory.createEmptyBorder(25, 40, 25, 40));
+
+        txtCorreoLogin = new JTextField();
+        txtClaveLogin = new JPasswordField();
+
+        JButton btnIniciarSesion = new JButton("Iniciar Sesión");
+        JButton btnCerrarSesion = new JButton("Cerrar Sesión");
+        btnCerrarSesion.setEnabled(false);
+
+        panelCamposLogin.add(new JLabel("Correo Electrónico:"));
+        panelCamposLogin.add(txtCorreoLogin);
+        panelCamposLogin.add(new JLabel("Contraseña:"));
+        panelCamposLogin.add(txtClaveLogin);
+
+        JPanel panelBotonesLogin = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        panelBotonesLogin.add(btnIniciarSesion);
+        panelBotonesLogin.add(btnCerrarSesion);
+
+        panelCamposLogin.add(new JLabel(""));
+        panelCamposLogin.add(panelBotonesLogin);
+
+        lblEstadoSesion = new JLabel("Ningún usuario logueado actualmente.", JLabel.CENTER);
+        lblEstadoSesion.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
+
+        panelLogin.add(panelCamposLogin, BorderLayout.CENTER);
+        panelLogin.add(lblEstadoSesion, BorderLayout.SOUTH);
+
+        // --- SUB-PESTAÑA 2: REGISTRARSE ---
+        JPanel panelRegistro = new JPanel(new BorderLayout(10, 10));
+        panelRegistro.setBorder(BorderFactory.createTitledBorder("Crear Nueva Cuenta - Let's Read"));
+
+        JPanel panelCamposRegistro = new JPanel(new GridLayout(7, 2, 10, 8));
+        panelCamposRegistro.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
 
         txtNombre = new JTextField();
         txtApellido = new JTextField();
         txtCorreo = new JTextField();
+        txtClave = new JPasswordField();
         txtDireccion = new JTextField();
         txtTelefono = new JTextField();
-        txtClave = new JPasswordField();
         comboTipoCliente = new JComboBox<>(new String[]{"Regular", "Premium"});
 
-        panel.add(new JLabel("Nombres:")); panel.add(txtNombre);
-        panel.add(new JLabel("Apellidos:")); panel.add(txtApellido);
-        panel.add(new JLabel("Correo Electrónico:")); panel.add(txtCorreo);
-        panel.add(new JLabel("Contraseña:")); panel.add(txtClave);
-        panel.add(new JLabel("Dirección:")); panel.add(txtDireccion);
-        panel.add(new JLabel("Teléfono:")); panel.add(txtTelefono);
-        panel.add(new JLabel("Tipo de Cliente:")); panel.add(comboTipoCliente);
+        panelCamposRegistro.add(new JLabel("Nombres:")); panelCamposRegistro.add(txtNombre);
+        panelCamposRegistro.add(new JLabel("Apellidos:")); panelCamposRegistro.add(txtApellido);
+        panelCamposRegistro.add(new JLabel("Correo Electrónico:")); panelCamposRegistro.add(txtCorreo);
+        panelCamposRegistro.add(new JLabel("Contraseña:")); panelCamposRegistro.add(txtClave);
+        panelCamposRegistro.add(new JLabel("Dirección:")); panelCamposRegistro.add(txtDireccion);
+        panelCamposRegistro.add(new JLabel("Teléfono:")); panelCamposRegistro.add(txtTelefono);
+        panelCamposRegistro.add(new JLabel("Tipo de Cliente:")); panelCamposRegistro.add(comboTipoCliente);
 
-        JButton btnIniciarSesion = new JButton("Iniciar Sesión");
-        JButton btnRegistrar = new JButton("Registrarse");
+        JPanel panelBotonRegistro = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton btnRegistrar = new JButton("Crear Cuenta");
+        panelBotonRegistro.add(btnRegistrar);
 
+        panelRegistro.add(panelCamposRegistro, BorderLayout.CENTER);
+        panelRegistro.add(panelBotonRegistro, BorderLayout.SOUTH);
+
+        // --- LÓGICA DE EVENTOS ---
         btnIniciarSesion.addActionListener(e -> {
-            String correo = txtCorreo.getText().trim().toLowerCase();
-            String clave = new String(txtClave.getPassword());
+            String correo = txtCorreoLogin.getText().trim().toLowerCase();
+            String clave = new String(txtClaveLogin.getPassword());
 
             if (correo.isEmpty() || clave.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Ingrese correo y contraseña.");
@@ -112,45 +164,71 @@ public class VentanaPrincipal extends JFrame {
 
             String tipo = (cliente instanceof ClientePremium) ? "Premium" : "Regular";
             service.setClienteActual(cliente);
+            lblEstadoSesion.setText("Sesión activa: " + cliente.getNombreCompleto() + " (" + tipo + ")");
+            btnCerrarSesion.setEnabled(true);
+            txtClaveLogin.setText("");
+
             JOptionPane.showMessageDialog(this, "¡Bienvenido/a de nuevo, " + cliente.getNombreCompleto() + " (" + tipo + ")!");
             actualizarTablaCarrito();
         });
 
+        btnCerrarSesion.addActionListener(e -> {
+            service.setClienteActual(null);
+            lblEstadoSesion.setText("Ningún usuario logueado actualmente.");
+            btnCerrarSesion.setEnabled(false);
+            txtCorreoLogin.setText("");
+            txtClaveLogin.setText("");
+            actualizarTablaCarrito();
+            JOptionPane.showMessageDialog(this, "Sesión cerrada correctamente.");
+        });
+
         btnRegistrar.addActionListener(e -> {
+            String nombres = txtNombre.getText().trim();
+            String apellidos = txtApellido.getText().trim();
             String correo = txtCorreo.getText().trim().toLowerCase();
             String clave = new String(txtClave.getPassword());
 
-            if (txtNombre.getText().trim().isEmpty() || correo.isEmpty() || clave.isEmpty()
+            if (nombres.isEmpty() || apellidos.isEmpty() || correo.isEmpty() || clave.isEmpty()
                     || txtDireccion.getText().trim().isEmpty() || txtTelefono.getText().trim().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Complete todos los campos para registrarse.");
                 return;
             }
 
             if (clientesRegistrados.containsKey(correo)) {
-                JOptionPane.showMessageDialog(this, "Ese correo ya está registrado. Use \"Iniciar Sesión\".");
+                JOptionPane.showMessageDialog(this, "Ese correo ya está registrado. Use la pestaña \"Iniciar Sesión\".");
                 return;
             }
 
+            String nombreCompleto = nombres + " " + apellidos;
             String tipo = (String) comboTipoCliente.getSelectedItem();
             Cliente cliente = tipo.equals("Premium") ?
-                    new ClientePremium(txtNombre.getText(), correo, txtDireccion.getText(), txtTelefono.getText(), clave) :
-                    new ClienteRegular(txtNombre.getText(), correo, txtDireccion.getText(), txtTelefono.getText(), clave);
+                    new ClientePremium(nombreCompleto, correo, txtDireccion.getText().trim(), txtTelefono.getText().trim(), clave) :
+                    new ClienteRegular(nombreCompleto, correo, txtDireccion.getText().trim(), txtTelefono.getText().trim(), clave);
 
             clientesRegistrados.put(correo, cliente);
             clavesRegistradas.put(correo, clave);
 
             service.setClienteActual(cliente);
+            lblEstadoSesion.setText("Sesión activa: " + cliente.getNombreCompleto() + " (" + tipo + ")");
+            btnCerrarSesion.setEnabled(true);
+
+            txtNombre.setText("");
+            txtApellido.setText("");
+            txtCorreo.setText("");
+            txtClave.setText("");
+            txtDireccion.setText("");
+            txtTelefono.setText("");
+            subPestaniasCliente.setSelectedIndex(0);
+
             JOptionPane.showMessageDialog(this, "¡Registro exitoso! Bienvenido/a a Let's Read, " + cliente.getNombreCompleto() + " (" + tipo + ")");
             actualizarTablaCarrito();
         });
 
-        JPanel panelBotones = new JPanel(new FlowLayout());
-        panelBotones.add(btnIniciarSesion);
-        panelBotones.add(btnRegistrar);
+        subPestaniasCliente.addTab("Iniciar Sesión", panelLogin);
+        subPestaniasCliente.addTab("Registrarse", panelRegistro);
 
-        panel.add(new JLabel(""));     
-        panel.add(panelBotones);
-        return panel;
+        panelContenedor.add(subPestaniasCliente, BorderLayout.CENTER);
+        return panelContenedor;
     }
 
     private JPanel crearPanelCatalogo() {
