@@ -17,7 +17,7 @@ public interface IGestionCliente {
 
     void eliminar(String id);
 =======
-package co.edu.uptc.tienda.negocio;
+package co.edu.uptc.tienda.interfaz;
 
 import java.util.ArrayList;
 
