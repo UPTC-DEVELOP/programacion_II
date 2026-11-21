@@ -6,9 +6,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -22,7 +24,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
-import co.edu.uptc.tienda.interfaz.IGestionCarrito;
+import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.modelo.ItemCarrito;
 import co.edu.uptc.tienda.modelo.Libro;
 
@@ -30,35 +32,42 @@ public class PanelCarrito extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
-    public static final String ACCION_AGREGAR = "AGREGAR";
-    public static final String ACCION_CAMBIAR = "CAMBIAR";
-    public static final String ACCION_ELIMINAR = "ELIMINAR";
-
-    private static final String[] COLUMNAS = { "ISBN", "Titulo", "Precio", "IVA %", "Cantidad", "Subtotal" };
+    private static final String[] COLUMNAS = { "ISBN", "Título", "Precio", "IVA %", "Cantidad", "Subtotal" };
+    private static final String SIN_CLIENTE = "Sin cliente (sin descuento)";
 
     private JComboBox<Libro> cmbLibros;
+    private JComboBox<String> cmbClientes;
+    private List<Cliente> clientes = new ArrayList<>();
     private JSpinner spnCantidad;
     private JButton btnAgregar;
     private JButton btnCambiar;
     private JButton btnEliminar;
+    private JButton btnVaciar;
     private JTable tablaItems;
     private DefaultTableModel modeloTabla;
     private JLabel lblSubtotal;
     private JLabel lblImpuestos;
+    private JLabel lblDescuento;
     private JLabel lblTotal;
 
-    public PanelCarrito(IGestionCarrito gestion, List<Libro> catalogo) {
-        initComponents(catalogo);
-        EventosCarrito eventos = new EventosCarrito(this, gestion);
-        btnAgregar.setActionCommand(ACCION_AGREGAR);
-        btnCambiar.setActionCommand(ACCION_CAMBIAR);
-        btnEliminar.setActionCommand(ACCION_ELIMINAR);
+    public PanelCarrito() {
+        initComponents();
+    }
+
+    public void setEventos(EventosCarrito eventos) {
+        btnAgregar.setActionCommand(EventosCarrito.AGREGAR);
+        btnCambiar.setActionCommand(EventosCarrito.CAMBIAR);
+        btnEliminar.setActionCommand(EventosCarrito.ELIMINAR);
+        btnVaciar.setActionCommand(EventosCarrito.VACIAR);
+        cmbClientes.setActionCommand(EventosCarrito.CLIENTE);
         btnAgregar.addActionListener(eventos);
         btnCambiar.addActionListener(eventos);
         btnEliminar.addActionListener(eventos);
+        btnVaciar.addActionListener(eventos);
+        cmbClientes.addActionListener(eventos);
     }
 
-    private void initComponents(List<Libro> catalogo) {
+    private void initComponents() {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -72,7 +81,7 @@ public class PanelCarrito extends JPanel {
         gbc.gridy = 0;
         panelNorte.add(new JLabel("Libro:"), gbc);
 
-        cmbLibros = new JComboBox<>(catalogo.toArray(new Libro[0]));
+        cmbLibros = new JComboBox<>();
         gbc.gridx = 1;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -87,21 +96,25 @@ public class PanelCarrito extends JPanel {
         gbc.gridx = 3;
         panelNorte.add(spnCantidad, gbc);
 
-        btnAgregar = new JButton("Agregar");
+        btnAgregar = new JButton(EventosCarrito.AGREGAR);
         gbc.gridx = 4;
         panelNorte.add(btnAgregar, gbc);
 
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panelNorte.add(new JLabel("Cliente:"), gbc);
+
+        cmbClientes = new JComboBox<>(new String[] { SIN_CLIENTE });
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panelNorte.add(cmbClientes, gbc);
+
         add(panelNorte, BorderLayout.NORTH);
 
-        modeloTabla = new DefaultTableModel(COLUMNAS, 0) {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public boolean isCellEditable(int fila, int columna) {
-                return false;
-            }
-        };
+        modeloTabla = new DefaultTableModel(COLUMNAS, 0);
         tablaItems = new JTable(modeloTabla);
+        tablaItems.setDefaultEditor(Object.class, null);
         tablaItems.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         add(new JScrollPane(tablaItems), BorderLayout.CENTER);
 
@@ -109,21 +122,26 @@ public class PanelCarrito extends JPanel {
 
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
         panelBotones.setBorder(BorderFactory.createTitledBorder("Con el libro seleccionado (usa la cantidad de arriba)"));
-        btnCambiar = new JButton("Cambiar cantidad");
-        btnEliminar = new JButton("Eliminar");
+        btnCambiar = new JButton(EventosCarrito.CAMBIAR);
+        btnEliminar = new JButton(EventosCarrito.ELIMINAR);
+        btnVaciar = new JButton(EventosCarrito.VACIAR);
         panelBotones.add(btnCambiar);
         panelBotones.add(btnEliminar);
+        panelBotones.add(btnVaciar);
         panelSur.add(panelBotones, BorderLayout.CENTER);
 
-        JPanel panelTotales = new JPanel(new GridLayout(3, 2, 10, 5));
+        JPanel panelTotales = new JPanel(new GridLayout(4, 2, 10, 5));
         panelTotales.setBorder(BorderFactory.createTitledBorder("Resumen"));
         lblSubtotal = new JLabel("$0.00", SwingConstants.RIGHT);
         lblImpuestos = new JLabel("$0.00", SwingConstants.RIGHT);
+        lblDescuento = new JLabel("$0.00", SwingConstants.RIGHT);
         lblTotal = new JLabel("$0.00", SwingConstants.RIGHT);
         panelTotales.add(new JLabel("Subtotal:"));
         panelTotales.add(lblSubtotal);
         panelTotales.add(new JLabel("Impuestos (IVA):"));
         panelTotales.add(lblImpuestos);
+        panelTotales.add(new JLabel("Descuento:"));
+        panelTotales.add(lblDescuento);
         panelTotales.add(new JLabel("Total:"));
         panelTotales.add(lblTotal);
         panelSur.add(panelTotales, BorderLayout.EAST);
@@ -139,6 +157,38 @@ public class PanelCarrito extends JPanel {
         return (Integer) spnCantidad.getValue();
     }
 
+    public Cliente getClienteSeleccionado() {
+        int indice = cmbClientes.getSelectedIndex();
+        if (indice <= 0) {
+            return null;
+        }
+        return clientes.get(indice - 1);
+    }
+
+    public void cargarCatalogo(List<Libro> catalogo) {
+        Libro anterior = getLibroSeleccionado();
+        cmbLibros.setModel(new DefaultComboBoxModel<>(catalogo.toArray(new Libro[0])));
+        if (anterior != null && catalogo.contains(anterior)) {
+            cmbLibros.setSelectedItem(anterior);
+        }
+    }
+
+    public void cargarClientes(List<Cliente> clientes, String idSeleccionado) {
+        this.clientes = new ArrayList<>(clientes);
+        DefaultComboBoxModel<String> modelo = new DefaultComboBoxModel<>();
+        modelo.addElement(SIN_CLIENTE);
+        int indice = 0;
+        for (int i = 0; i < clientes.size(); i++) {
+            Cliente cliente = clientes.get(i);
+            modelo.addElement(cliente.getNombreCompleto() + " (" + cliente.getId() + ")");
+            if (cliente.getId().equals(idSeleccionado)) {
+                indice = i + 1;
+            }
+        }
+        cmbClientes.setModel(modelo);
+        cmbClientes.setSelectedIndex(indice);
+    }
+
     public String getIsbnSeleccionado() {
         int fila = tablaItems.getSelectedRow();
         if (fila < 0) {
@@ -147,19 +197,23 @@ public class PanelCarrito extends JPanel {
         return (String) modeloTabla.getValueAt(fila, 0);
     }
 
-    public void mostrarCarrito(List<ItemCarrito> items, double subtotal, double impuestos, double total) {
+    public void mostrarCarrito(List<ItemCarrito> items, double subtotal, double impuestos, double descuento,
+            double porcentajeDescuento, double total) {
         modeloTabla.setRowCount(0);
         for (ItemCarrito item : items) {
             modeloTabla.addRow(new Object[] {
                     item.getLibro().getIsbn(),
                     item.getLibro().getTitulo(),
-                    formatear(item.getLibro().getPrecioVenta()),
-                    item.getLibro().getIvaPorcentaje(),
+                    formatear(item.getLibro().getPrecio()),
+                    String.format("%.0f", item.getLibro().getIvaPorcentaje()),
                     item.getCantidad(),
                     formatear(item.obtenerSubtotalItem()) });
         }
         lblSubtotal.setText(formatear(subtotal));
         lblImpuestos.setText(formatear(impuestos));
+        lblDescuento.setText(porcentajeDescuento > 0
+                ? "-" + formatear(descuento) + " (" + String.format("%.0f", porcentajeDescuento) + "%)"
+                : formatear(0));
         lblTotal.setText(formatear(total));
     }
 

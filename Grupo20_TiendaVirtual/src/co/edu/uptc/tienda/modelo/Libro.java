@@ -2,18 +2,31 @@ package co.edu.uptc.tienda.modelo;
 
 public class Libro {
 
-    private final String isbn;
-    private final String titulo;
-    private final double precioVenta;
-    private final int ivaPorcentaje;
-    private final int cantidadInventario;
+    private String isbn;
+    private String titulo;
+    private String autor;
+    private int anioPublicacion;
+    private String editorial;
+    private int numPaginas;
+    private double precio;
+    private double ivaPorcentaje;
+    private int stock;
+    private String formato;
 
-    public Libro(String isbn, String titulo, double precioVenta, int ivaPorcentaje, int cantidadInventario) {
+    public Libro(String isbn, String titulo, String autor, int anioPublicacion,
+                 String editorial, int numPaginas, double precio,
+                 double ivaPorcentaje, int stock, String formato) {
+
         this.isbn = isbn;
         this.titulo = titulo;
-        this.precioVenta = precioVenta;
+        this.autor = autor;
+        this.anioPublicacion = anioPublicacion;
+        this.editorial = editorial;
+        this.numPaginas = numPaginas;
+        this.precio = precio;
         this.ivaPorcentaje = ivaPorcentaje;
-        this.cantidadInventario = cantidadInventario;
+        this.stock = stock;
+        this.formato = formato;
     }
 
     public String getIsbn() {
@@ -24,20 +37,80 @@ public class Libro {
         return titulo;
     }
 
-    public double getPrecioVenta() {
-        return precioVenta;
+    public String getAutor() {
+        return autor;
     }
 
-    public int getIvaPorcentaje() {
+    public int getAnioPublicacion() {
+        return anioPublicacion;
+    }
+
+    public String getEditorial() {
+        return editorial;
+    }
+
+    public int getNumPaginas() {
+        return numPaginas;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public double getIvaPorcentaje() {
         return ivaPorcentaje;
     }
 
-    public int getCantidadInventario() {
-        return cantidadInventario;
+    public int getStock() {
+        return stock;
+    }
+
+    public String getFormato() {
+        return formato;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public void setAutor(String autor) {
+        this.autor = autor;
+    }
+
+    public void setAnioPublicacion(int anioPublicacion) {
+        this.anioPublicacion = anioPublicacion;
+    }
+
+    public void setEditorial(String editorial) {
+        this.editorial = editorial;
+    }
+
+    public void setNumPaginas(int numPaginas) {
+        this.numPaginas = numPaginas;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
+    public void setIvaPorcentaje(double ivaPorcentaje) {
+        this.ivaPorcentaje = ivaPorcentaje;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    public void setFormato(String formato) {
+        this.formato = formato;
     }
 
     @Override
     public String toString() {
         return titulo;
+    }
+
+    public boolean validarStock(int cantidad) {
+        return cantidad > 0 && cantidad <= stock;
     }
 }

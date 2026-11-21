@@ -17,4 +17,12 @@ public interface IOperacionesCarrito {
     void cambiarCantidad(String isbn, int nuevaCantidad) throws CarritoExcepcion;
 
     void eliminarLibro(String isbn) throws CarritoExcepcion;
+
+    void vaciar() throws CarritoExcepcion;
+
+    List<String> sincronizarConCatalogo(List<Libro> catalogo) throws CarritoExcepcion;
+
+    void asignarCliente(String idCliente) throws CarritoExcepcion;
+
+    String obtenerIdCliente();
 }

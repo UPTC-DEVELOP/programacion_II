@@ -1,0 +1,26 @@
+[
+  {
+    "isbn": "1234567891234",
+    "titulo": "nilson book",
+    "autor": "nillson",
+    "anioPublicacion": 2024,
+    "editorial": "nilson´s",
+    "numPaginas": 117,
+    "precio": 25000.0,
+    "ivaPorcentaje": 19.0,
+    "stock": 20,
+    "formato": "Físico"
+  },
+  {
+    "isbn": "1234567891236",
+    "titulo": "Nilson Book",
+    "autor": "Nilsonoslin",
+    "anioPublicacion": 2024,
+    "editorial": "nilson´s",
+    "numPaginas": 117,
+    "precio": 25000.0,
+    "ivaPorcentaje": 19.0,
+    "stock": 20,
+    "formato": "Físico"
+  }
+]

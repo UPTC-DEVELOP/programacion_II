@@ -1,0 +1,196 @@
+package co.edu.uptc.tienda.gui;
+
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+
+import co.edu.uptc.tienda.modelo.Cliente;
+import co.edu.uptc.tienda.negocio.ClienteConfig;
+
+public class EventosCliente implements ActionListener {
+
+    public final static String GUARDAR = "Guardar";
+    public final static String BUSCAR = "Buscar";
+    public final static String ACTUALIZAR = "Actualizar";
+    public final static String ELIMINAR = "Eliminar";
+    public final static String LISTAR = "Listar";
+    public final static String LIMPIAR = "Limpiar";
+
+    private PanelCliente panelCliente;
+    private ClienteConfig clienteConfig;
+
+    public EventosCliente(PanelCliente panelCliente) {
+        this(panelCliente, new ClienteConfig());
+    }
+
+    public EventosCliente(PanelCliente panelCliente, ClienteConfig clienteConfig) {
+        this.panelCliente = panelCliente;
+        this.clienteConfig = clienteConfig;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        try {
+            ejecutar(e);
+        } catch (IllegalArgumentException ex) {
+            panelCliente.mostrarAlerta("Clientes", ex.getMessage());
+        }
+    }
+
+    private void ejecutar(ActionEvent e) {
+
+        String evento = e.getActionCommand();
+
+        if (evento.equals(GUARDAR)) {
+
+            Cliente cliente = new Cliente(
+                    panelCliente.getId().trim(),
+                    panelCliente.getNombre().trim(),
+                    panelCliente.getCorreo().trim(),
+                    panelCliente.getDireccion().trim(),
+                    panelCliente.getCelular().trim(),
+                    panelCliente.getTipoCliente()
+            );
+
+            clienteConfig.guardar(cliente);
+
+            panelCliente.mostrarMensajeExito("Registro exitoso", "Cliente registrado correctamente.");
+            panelCliente.limpiarCampos();
+        }
+
+        else if (evento.equals(BUSCAR)) {
+
+            String id = panelCliente.getId().trim();
+            if (id.isEmpty()) {
+                panelCliente.mostrarAlerta("Validación", "Debe ingresar el ID del cliente para buscar.");
+                return;
+            }
+
+            Cliente cliente = clienteConfig.buscarPorId(id);
+
+            if (cliente != null) {
+                panelCliente.mostrarCliente(cliente);
+                panelCliente.mostrarMensajeExito("Búsqueda exitosa", "Cliente encontrado.");
+            } else {
+                panelCliente.mostrarAlerta("Clientes", "No existe un cliente registrado con ese ID.");
+            }
+        }
+
+        else if (evento.equals(ACTUALIZAR)) {
+
+            Cliente cliente = new Cliente(
+                    panelCliente.getId().trim(),
+                    panelCliente.getNombre().trim(),
+                    panelCliente.getCorreo().trim(),
+                    panelCliente.getDireccion().trim(),
+                    panelCliente.getCelular().trim(),
+                    panelCliente.getTipoCliente()
+            );
+
+            clienteConfig.actualizar(cliente);
+
+            panelCliente.mostrarMensajeExito("Actualización exitosa", "Cliente actualizado correctamente.");
+            panelCliente.limpiarCampos();
+        }
+
+        else if (evento.equals(ELIMINAR)) {
+
+            String id = panelCliente.getId().trim();
+            if (id.isEmpty()) {
+                panelCliente.mostrarAlerta("Validación", "Debe ingresar el ID del cliente para eliminar.");
+                return;
+            }
+
+            Cliente cliente = clienteConfig.buscarPorId(id);
+            if (cliente == null) {
+                panelCliente.mostrarAlerta("Clientes", "No existe un cliente con el ID ingresado.");
+                return;
+            }
+
+            int respuesta = JOptionPane.showConfirmDialog(
+                    panelCliente,
+                    "¿Está seguro de eliminar el cliente?\n\n"
+                            + "ID: " + cliente.getId() + "\n"
+                            + "Nombre: " + cliente.getNombreCompleto(),
+                    "Confirmar eliminación",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            if (respuesta == JOptionPane.YES_OPTION) {
+                clienteConfig.eliminar(id);
+                panelCliente.mostrarMensajeExito("Eliminación exitosa", "Cliente eliminado correctamente.");
+                panelCliente.limpiarCampos();
+            }
+        }
+
+        else if (evento.equals(LISTAR)) {
+            listar();
+        }
+
+        else if (evento.equals(LIMPIAR)) {
+            panelCliente.limpiarCampos();
+        }
+    }
+
+    private void listar() {
+
+        List<Cliente> clientes = new ArrayList<>(clienteConfig.listar());
+
+        if (clientes.isEmpty()) {
+            panelCliente.mostrarMensajeExito("Listado de clientes", "No hay clientes registrados.");
+            return;
+        }
+
+        clientes.sort(Comparator.comparing(Cliente::getId));
+
+        String[] columnas = {
+            "ID",
+            "Nombre Completo",
+            "Correo",
+            "Dirección",
+            "Celular",
+            "Tipo"
+        };
+
+        DefaultTableModel modelo = new DefaultTableModel(columnas, 0) {
+            @Override
+            public boolean isCellEditable(int fila, int columna) {
+                return false;
+            }
+        };
+
+        for (Cliente cliente : clientes) {
+            Object[] fila = {
+                cliente.getId(),
+                cliente.getNombreCompleto(),
+                cliente.getCorreoElectronico(),
+                cliente.getDireccionEnvio(),
+                cliente.getCelular(),
+                cliente.getTipoCliente()
+            };
+            modelo.addRow(fila);
+        }
+
+        JTable tabla = new JTable(modelo);
+        tabla.setAutoCreateRowSorter(true);
+
+        JScrollPane scroll = new JScrollPane(tabla);
+        scroll.setPreferredSize(new Dimension(750, 300));
+
+        JOptionPane.showMessageDialog(
+                panelCliente,
+                scroll,
+                "Listado de clientes",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+}
