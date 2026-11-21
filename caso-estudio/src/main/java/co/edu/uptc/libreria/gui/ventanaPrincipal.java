@@ -396,7 +396,7 @@ public class ventanaPrincipal extends JFrame {
 
 	/** Stock del libro como entero, o -1 si el texto registrado no es valido. */
 	private int leerStock(Libro libro) {
-		return Math.max(0, Integer.parseInt(libro.getStock()));
+		return Math.max(0, libro.getStock());
 	}
 
 	// ======================= CLIENTE =======================

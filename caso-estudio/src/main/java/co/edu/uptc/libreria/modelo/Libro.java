@@ -9,7 +9,7 @@ public class Libro {
     private String anioPublicacion;
     private String genero;
     private double precio;
-    private String stock;
+    private int stock;
 
     private final double porcentajeIva = 0.19;
 
@@ -19,7 +19,7 @@ public class Libro {
 
     public Libro(int codigo, String titulo, String autor,
                  String editorial, String anioPublicacion,
-                 String genero, double precio, String stock) {
+                 String genero, double precio, int stock) {
 
         this.codigo = codigo;
         this.titulo = titulo;
@@ -87,11 +87,11 @@ public class Libro {
         this.precio = precio;
     }
 
-    public String getStock() {
+    public int getStock() {
         return stock;
     }
 
-    public void setStock(String stock) {
+    public void setStock(int stock) {
         this.stock = stock;
     }
     
@@ -111,5 +111,12 @@ public class Libro {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	@Override
+	public String toString() {
+		return titulo;
+	}
+	
+	
 
 }

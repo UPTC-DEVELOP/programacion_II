@@ -135,7 +135,7 @@ public class PanelActualizarLibro extends JFrame {
         botonCancelar.addActionListener(e -> limpiarCampos());
 
         botonVolver.addActionListener(e -> {
-            new ventanaPrincipal().setVisible(true);
+            
             dispose();
         });
 
@@ -165,7 +165,7 @@ public class PanelActualizarLibro extends JFrame {
                 );
 
                 campoPrecio.setText(String.valueOf(libro.getPrecio()));
-                campoStock.setText(libro.getStock());
+                campoStock.setText(String.valueOf(libro.getStock()));
 
                 return;
             }
@@ -197,7 +197,7 @@ public class PanelActualizarLibro extends JFrame {
                 campoAnio.getText(),
                 campoGenero.getSelectedItem().toString(),
                 Double.parseDouble(campoPrecio.getText()),
-                campoStock.getText()
+                Integer.parseInt(campoStock.getText())
         );
 
         gestionLibro.actualizarLibro(libroActualizado);

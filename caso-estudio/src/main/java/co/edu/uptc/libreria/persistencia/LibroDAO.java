@@ -27,7 +27,7 @@ public class LibroDAO implements IGestionLibro{
                 ps.setString(5, libro.getAnioPublicacion());
                 ps.setString(6, libro.getGenero());
                 ps.setDouble(7, libro.getPrecio());
-                ps.setString(8, libro.getStock());
+                ps.setInt(8, libro.getStock());
                 
                 ps.executeUpdate();
             }
@@ -68,7 +68,7 @@ public class LibroDAO implements IGestionLibro{
     		libro.setAnioPublicacion(rs.getString("anio_publicacion"));
     		libro.setGenero(rs.getString("genero"));
     		libro.setPrecio(rs.getDouble("precio"));
-    		libro.setStock(rs.getString("stock"));
+    		libro.setStock(rs.getInt("stock"));
     		
     		return libro;
     	} catch (SQLException e) {
@@ -80,7 +80,7 @@ public class LibroDAO implements IGestionLibro{
     
     @Override
 	public void  actualizar(Libro libro) {
-        String sql = "UPDATE libros SET titulo = ?, autor = ?, precio = ?, codigo = ?, stock = ?,  editorial = ?, anio_publicacion = ?, genero = ? WHERE codigo = ?";
+        String sql = "UPDATE libros SET titulo = ?, autor = ?, precio = ?, stock = ?,  editorial = ?, anio_publicacion = ?, genero = ? WHERE codigo = ?";
 
         try (Connection con = ConexionBD.getConnection()) {
             if (con == null) return;
@@ -89,12 +89,14 @@ public class LibroDAO implements IGestionLibro{
                 ps.setString(1, libro.getTitulo());
                 ps.setString(2, libro.getAutor());
                 ps.setDouble(3, libro.getPrecio());
-                ps.setInt(4, libro.getCodigo());
-                ps.setString(5, libro.getStock());
-                ps.setString(6, libro.getEditorial());
-                ps.setString(7, libro.getAnioPublicacion());
-                ps.setString(8, libro.getGenero());
+                ps.setInt(4, libro.getStock());
+                ps.setString(5, libro.getEditorial());
+                ps.setString(6, libro.getAnioPublicacion());
+                ps.setString(7, libro.getGenero());
+                ps.setInt(8, libro.getCodigo());
                 ps.executeUpdate();
+                
+               
             }
         } catch (SQLException e) {
             System.err.println("Error al actualizar: " + e.getMessage());

@@ -58,20 +58,17 @@ public class VistaCarrito extends JPanel{
 		tituloVista.setBounds(30, 10, 300, 25);
 		this.add(tituloVista);
 		
-		btnArchivo = new JButton("Archivo");
 		btnCatalogo = new JButton("Catalogo");
-		btnPerfil = new JButton("Mi perfil");
-		btnCerrarSesion = new JButton("Cerrar Sesion");
 		
-		btnArchivo.setBounds(330, 10, 80, 25);
-		btnCatalogo.setBounds(415, 10, 90, 25);
-		btnPerfil.setBounds(510, 10, 85, 25);
-		btnCerrarSesion.setBounds(600, 10, 70, 25);
 		
-		this.add(btnArchivo);
+		btnCatalogo.setBounds(600, 10, 70, 25);
+		
+		
+		btnCatalogo.setActionCommand("Seguir Comprando");
+		
+		
 		this.add(btnCatalogo);
-		this.add(btnPerfil);
-		this.add(btnCerrarSesion);
+		
 		
 		seccion = new JLabel("Carrito de compras");
 		seccion.setFont(new Font("Arial", Font.BOLD, 14));
@@ -133,15 +130,15 @@ public class VistaCarrito extends JPanel{
 		btnFinalizarCompra.setBounds(510, 400, 160, 35);
 		btnFinalizarCompra.setActionCommand(EventosGui.FINALIZAR_COMPRA);
 		
+		btnSeguirComprando.setActionCommand("Seguir Comprando");
+		
+		
 		this.add(btnSeguirComprando);
 		this.add(btnFinalizarCompra);
 	}
 	
 	public void conectarControlador(EventosGui eventos) {
-		btnArchivo.addActionListener(eventos);
 		btnCatalogo.addActionListener(eventos);
-		btnPerfil.addActionListener(eventos);
-		btnCerrarSesion.addActionListener(eventos);
 		btnActualizarCantidad.addActionListener(eventos);
 		btnEliminarLibro.addActionListener(eventos);
 		btnSeguirComprando.addActionListener(eventos);

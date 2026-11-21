@@ -2,6 +2,8 @@ package co.edu.uptc.libreria.controladores;
 
 import co.edu.uptc.libreria.modelo.ItemCarrito;
 import co.edu.uptc.libreria.negocio.GestionCarrito;
+import co.edu.uptc.libreria.negocio.GestionLibro;
+import co.edu.uptc.libreria.negocio.LibroConfig;
 
 import co.edu.uptc.libreria.modelo.Libro;
 
@@ -35,6 +37,19 @@ public class ControladorCarrito {
 	}
 	
 	public void finalizarCompra(String usuarioActual) {
+		
+		GestionLibro gl = LibroConfig.getInstancia().getGestionLibro();
+		
+		for (ItemCarrito item : listarCarrito()) {
+			Libro l = item.getLibro();
+			
+			int nuevoStock = l.getStock() - item.getCantidad();
+			
+			
+			l.setStock(nuevoStock);
+			gl.actualizarLibro(l);
+		}
+		
 		auditoria.registrarCompra(usuarioActual, listarCarrito(), obtenerTotal());
 		gestionCarrito.vaciarCarrito();
 	}

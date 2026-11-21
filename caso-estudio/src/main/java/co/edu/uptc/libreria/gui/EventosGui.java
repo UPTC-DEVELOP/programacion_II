@@ -66,6 +66,8 @@ public class EventosGui implements ActionListener {
 				return;
 			}
 			
+			
+			
 			//double total = controlador.obtenerTotal();
 			String usuario = controlador.getUsuarioActual();
 			controlador.finalizarCompra(usuario);
@@ -75,6 +77,10 @@ public class EventosGui implements ActionListener {
 			vista.mostrarTotales(0, 0, 0, 0);
 			
 			JOptionPane.showMessageDialog(vista, "Compra finalizada con exito gracias por tu compra");
+		} else if (evento.equals("Seguir Comprando")) {
+			if (alSeguirComprando != null) {
+				alSeguirComprando.run();
+			}
 		}
 		
 		

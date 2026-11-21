@@ -103,7 +103,7 @@ public class PanelRegistrarLibro extends JFrame {
         botonLimpiar.addActionListener(e -> limpiar());
 
         botonVolver.addActionListener(e -> {
-            new ventanaPrincipal().setVisible(true);
+           
             dispose();
         });
     }
@@ -118,7 +118,7 @@ public class PanelRegistrarLibro extends JFrame {
                 campoAnio.getText(),
                 campoGenero.getSelectedItem().toString(),
                 Double.parseDouble(campoPrecio.getText()),
-                campoStock.getText()
+                Integer.parseInt(campoStock.getText())
         );
 
         gestionLibro.guardarLibro(libro);

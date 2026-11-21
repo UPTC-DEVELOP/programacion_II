@@ -83,7 +83,7 @@ public class PanelBuscarLibro extends JFrame {
         botonBuscar.addActionListener(e -> buscarLibro());
 
         botonVolver.addActionListener(e -> {
-            new ventanaPrincipal().setVisible(true);
+            
             dispose();
         });
     }
@@ -100,7 +100,7 @@ public class PanelBuscarLibro extends JFrame {
                 campoAutor.setText(libro.getAutor());
                 campoEditorial.setText(libro.getEditorial());
                 campoPrecio.setText(String.valueOf(libro.getPrecio()));
-                campoStock.setText(libro.getStock());
+                campoStock.setText(String.valueOf(libro.getStock()));
 
                 return;
             }
