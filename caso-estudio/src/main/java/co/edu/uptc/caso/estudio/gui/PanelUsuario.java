@@ -1,12 +1,14 @@
-package co.edu.uptc.gui;
+package co.edu.uptc.caso.estudio.gui;
 
+import co.edu.uptc.caso.estudio.model.Cliente;
+import co.edu.uptc.caso.estudio.model.UbicacionesColombia;
+import co.edu.uptc.caso.estudio.model.enums.TipoCliente;
+import co.edu.uptc.caso.estudio.negocio.IGestionUsuarios;
+import co.edu.uptc.caso.estudio.negocio.dto.CredencialDto;
 import java.awt.*;
 import java.awt.event.ItemEvent;
+import java.util.Arrays;
 import javax.swing.*;
-import co.edu.uptc.model.Cliente;
-import co.edu.uptc.model.UbicacionesColombia;
-import co.edu.uptc.model.enums.TipoCliente;
-import co.edu.uptc.negocio.dto.CredencialDto;
 
 public class PanelUsuario extends JPanel {
     private static final long serialVersionUID = 1L;
@@ -50,13 +52,13 @@ public class PanelUsuario extends JPanel {
         });
 
         txtTelefono = new JTextField(30);
-        cbTipoCliente = new JComboBox<>(new TipoCliente[]{TipoCliente.ESTANDAR, TipoCliente.ADMINISTRADOR, TipoCliente.VIP});
+        cbTipoCliente = new JComboBox<>(TipoCliente.values());
 
         int row = 0;
         agregarFila(panelForm, "ID / Cédula:", txtId, gbc, row++);
         agregarFila(panelForm, "Nombre Completo:", txtNombre, gbc, row++);
         agregarFila(panelForm, "Correo Electrónico:", txtCorreo, gbc, row++);
-        agregarFila(panelForm, "Contraseña (mín. 6 caracteres):", panelPass, gbc, row++);
+        agregarFila(panelForm, "Contraseña (mín. " + IGestionUsuarios.LONGITUD_MINIMA_CONTRASENA + " caracteres):", panelPass, gbc, row++);
         agregarFila(panelForm, "Dirección Envío:", txtDireccion, gbc, row++);
         agregarFila(panelForm, "Departamento:", cbDepto, gbc, row++);
         agregarFila(panelForm, "Ciudad:", cbCiudad, gbc, row++);
@@ -108,7 +110,7 @@ public class PanelUsuario extends JPanel {
     }
 
     public CredencialDto obtenerCredenciales() {
-        return new CredencialDto(txtCorreo.getText().trim(), new String(txtPass.getPassword()));
+        return new CredencialDto(txtCorreo.getText().trim(), obtenerPasswordIngresada());
     }
 
     public Cliente construirClienteDesdeFormulario(String idFijo, String correoFijo) {
@@ -117,16 +119,19 @@ public class PanelUsuario extends JPanel {
         TipoCliente tipo = (TipoCliente) cbTipoCliente.getSelectedItem();
 
         Cliente c = new Cliente(
-            id, txtNombre.getText().trim(), correo, txtDireccion.getText().trim(),
-            (String) cbDepto.getSelectedItem(), (String) cbCiudad.getSelectedItem(),
-            txtTelefono.getText().trim(), tipo != null ? tipo.name() : TipoCliente.ESTANDAR.name()
+                id, txtNombre.getText().trim(), correo, txtDireccion.getText().trim(),
+                (String) cbDepto.getSelectedItem(), (String) cbCiudad.getSelectedItem(),
+                txtTelefono.getText().trim(), tipo != null ? tipo.name() : TipoCliente.ESTANDAR.name()
         );
-        c.setContrasenaHash(new String(txtPass.getPassword()));
+        c.setContrasenaHash(obtenerPasswordIngresada());
         return c;
     }
 
     public String obtenerPasswordIngresada() {
-        return new String(txtPass.getPassword());
+        char[] passChars = txtPass.getPassword();
+        String pass = new String(passChars);
+        Arrays.fill(passChars, '\0');
+        return pass;
     }
 
     public void cargarDatosUsuario(Cliente c) {

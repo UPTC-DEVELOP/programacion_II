@@ -1,4 +1,4 @@
-package co.edu.uptc.model.enums;
+package co.edu.uptc.caso.estudio.model.enums;
 
 public enum TipoCliente {
     ESTANDAR(0.0),

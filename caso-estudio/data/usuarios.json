@@ -1,0 +1,50 @@
+[
+  {
+    "id": "1006",
+    "nombreCompleto": "Sofia Rodriguez",
+    "correo": "sofi@gmail.com",
+    "direccionEnvio": "carrera 9-10-18",
+    "departamento": "Boyacá",
+    "ciudad": "Tunja",
+    "telefono": "3506795487",
+    "tipoCliente": "PREMIUM",
+    "porcentajeDescuento": 0.1,
+    "contrasenaHash": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
+  },
+  {
+    "id": "2006",
+    "nombreCompleto": "Rosa Camila",
+    "correo": "rosacam@gmail.com",
+    "direccionEnvio": "carrera 8-10-2",
+    "departamento": "Cundinamarca",
+    "ciudad": "Bogotá",
+    "telefono": "3224356789",
+    "tipoCliente": "PREMIUM",
+    "porcentajeDescuento": 0.1,
+    "contrasenaHash": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
+  },
+  {
+    "id": "2004",
+    "nombreCompleto": "Camilo",
+    "correo": "camilo@gmail.com",
+    "direccionEnvio": "cra 4-7-8",
+    "departamento": "Cundinamarca",
+    "ciudad": "Bogotá",
+    "telefono": "3213456385",
+    "tipoCliente": "PREMIUM",
+    "porcentajeDescuento": 0.1,
+    "contrasenaHash": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
+  },
+  {
+    "id": "3001",
+    "nombreCompleto": "Carlos Mendoza",
+    "correo": "carlos@uptc.edu.co",
+    "direccionEnvio": "Calle 24 # 12-45",
+    "departamento": "Boyacá",
+    "ciudad": "Tunja",
+    "telefono": "3104567890",
+    "tipoCliente": "PREMIUM",
+    "porcentajeDescuento": 0.1,
+    "contrasenaHash": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
+  }
+]

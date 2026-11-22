@@ -1,4 +1,4 @@
-package co.edu.uptc.model;
+package co.edu.uptc.caso.estudio.model;
 
 public class Cliente {
     private String id;
@@ -10,12 +10,10 @@ public class Cliente {
     private String telefono;
     private String tipoCliente;
     private double porcentajeDescuento;
-    // Se guarda el hash (SHA-256) de la contraseña, nunca la contraseña en texto plano
     private String contrasenaHash;
 
     public Cliente() {}
 
-    // Constructor original (se conserva para no romper código existente)
     public Cliente(String id, String nombreCompleto, String correo, String direccionEnvio, String telefono, String tipoCliente) {
         this(id, nombreCompleto, correo, direccionEnvio, "", "", telefono, tipoCliente);
     }
@@ -30,7 +28,12 @@ public class Cliente {
         this.ciudad = ciudad;
         this.telefono = telefono;
         this.tipoCliente = tipoCliente;
-        this.porcentajeDescuento = tipoCliente.equalsIgnoreCase("PREMIUM") ? 0.10 : 0.0;
+        this.porcentajeDescuento = 0.0;
+    }
+
+    // Método polimórfico (LSP / OCP): cada subclase define su propio descuento
+    public double calcularDescuento(double totalCompra) {
+        return totalCompra * getPorcentajeDescuento();
     }
 
     public String getId() { return id; }
@@ -48,11 +51,9 @@ public class Cliente {
     public String getTelefono() { return telefono; }
     public void setTelefono(String telefono) { this.telefono = telefono; }
     public String getTipoCliente() { return tipoCliente; }
-    public void setTipoCliente(String tipoCliente) {
-        this.tipoCliente = tipoCliente;
-        this.porcentajeDescuento = tipoCliente.equalsIgnoreCase("PREMIUM") ? 0.10 : 0.0;
-    }
+    public void setTipoCliente(String tipoCliente) { this.tipoCliente = tipoCliente; }
     public double getPorcentajeDescuento() { return porcentajeDescuento; }
+    protected void setPorcentajeDescuento(double porcentajeDescuento) { this.porcentajeDescuento = porcentajeDescuento; }
     public String getContrasenaHash() { return contrasenaHash; }
     public void setContrasenaHash(String contrasenaHash) { this.contrasenaHash = contrasenaHash; }
 }
