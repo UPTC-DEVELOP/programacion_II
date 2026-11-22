@@ -1,0 +1,29 @@
+[
+  {
+    "idCompra": "CMP-1C718394",
+    "clienteId": "3001",
+    "fecha": "2026-11-22T18:14:48.8515652",
+    "items": [
+      {
+        "libro": {
+          "isbn": "978-0132350884",
+          "titulo": "Clean Code",
+          "autor": "Robert C. Martin",
+          "anio": 2008,
+          "categoria": "Programación",
+          "editorial": "Pearson Education",
+          "paginas": 464,
+          "precioVenta": 180000.0,
+          "stock": 33,
+          "formato": "Físico",
+          "porcentajeIva": 19.0
+        },
+        "cantidad": 4
+      }
+    ],
+    "subtotalSinIva": 605042.0168067227,
+    "totalImpuestos": 114957.98319327732,
+    "descuentoAplicado": 0.0,
+    "totalPagado": 720000.0
+  }
+]

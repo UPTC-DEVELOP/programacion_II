@@ -1,0 +1,81 @@
+[
+  {
+    "clienteId": "1234566",
+    "items": [
+      {
+        "libro": {
+          "isbn": "978-0201633610",
+          "titulo": "Design Patterns",
+          "autor": "Erich Gamma",
+          "anio": 0,
+          "categoria": "Arquitectura",
+          "editorial": "Addison-Wesley",
+          "paginas": 0,
+          "precioVenta": 52000.0,
+          "stock": 5,
+          "formato": "Digital",
+          "porcentajeIva": 0.0
+        },
+        "cantidad": 3
+      }
+    ]
+  },
+  {
+    "clienteId": "1234567",
+    "items": [
+      {
+        "libro": {
+          "isbn": "978-8420652085",
+          "titulo": "Cien Años de Soledad",
+          "autor": "Gabriel García Márquez",
+          "anio": 0,
+          "categoria": "Literatura",
+          "editorial": "Editorial Sudamericana",
+          "paginas": 0,
+          "precioVenta": 35000.0,
+          "stock": 11,
+          "formato": "Físico",
+          "porcentajeIva": 19.0
+        },
+        "cantidad": 4
+      },
+      {
+        "libro": {
+          "isbn": "978-0132350884",
+          "titulo": "Clean Code",
+          "autor": "Robert C. Martin",
+          "anio": 0,
+          "categoria": "Programación",
+          "editorial": "Prentice Hall",
+          "paginas": 0,
+          "precioVenta": 45000.0,
+          "stock": 10,
+          "formato": "Físico",
+          "porcentajeIva": 19.0
+        },
+        "cantidad": 4
+      }
+    ]
+  },
+  {
+    "clienteId": "2003",
+    "items": [
+      {
+        "libro": {
+          "isbn": "978-0132350884",
+          "titulo": "Clean Code",
+          "autor": "Robert C. Martin",
+          "anio": 2008,
+          "categoria": "Programación",
+          "editorial": "Pearson Education",
+          "paginas": 464,
+          "precioVenta": 180000.0,
+          "stock": 9,
+          "formato": "Físico",
+          "porcentajeIva": 19.0
+        },
+        "cantidad": 2
+      }
+    ]
+  }
+]

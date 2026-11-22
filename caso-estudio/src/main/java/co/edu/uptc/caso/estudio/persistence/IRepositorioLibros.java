@@ -1,0 +1,12 @@
+package co.edu.uptc.caso.estudio.persistence;
+import java.util.List;
+
+import co.edu.uptc.caso.estudio.model.Libro;
+
+public interface IRepositorioLibros {
+    boolean guardarLibro(Libro libro);
+    boolean actualizarLibro(Libro libro);
+    boolean eliminarLibro(String isbn);
+    Libro buscarPorIsbn(String isbn);
+    List<Libro> obtenerTodos();
+}

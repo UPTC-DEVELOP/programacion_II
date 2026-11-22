@@ -1,0 +1,176 @@
+package co.edu.uptc.caso.estudio.negocio;
+
+import co.edu.uptc.caso.estudio.model.Carrito;
+import co.edu.uptc.caso.estudio.model.Cliente;
+import co.edu.uptc.caso.estudio.model.DatosTransferencia;
+import co.edu.uptc.caso.estudio.model.ItemCarrito;
+import co.edu.uptc.caso.estudio.model.Libro;
+import co.edu.uptc.caso.estudio.model.enums.MetodoPago;
+import co.edu.uptc.caso.estudio.negocio.dto.PagoDto;
+import co.edu.uptc.caso.estudio.persistence.IRepositorioCarrito;
+import co.edu.uptc.caso.estudio.persistence.IRepositorioCompra;
+import co.edu.uptc.caso.estudio.persistence.RegistradorOperacionesTxt;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+public class GestionComprasImpl implements IGestionCompras {
+
+    private final IRepositorioCarrito repoCarritoMySQL;
+    private final IRepositorioCarrito repoCarritoJson;
+    private final IRepositorioCompra repoCompraMySQL;
+    private final IRepositorioCompra repoCompraJson;
+    private final IGestionUsuarios gestionUsuarios;
+    private final IGestionLibros gestionLibros;
+    private final RegistradorOperacionesTxt registradorTxt;
+    private DatosTransferencia datosTransferencia;
+
+    public GestionComprasImpl(IRepositorioCarrito repoCarritoMySQL, IRepositorioCarrito repoCarritoJson,
+                              IRepositorioCompra repoCompraMySQL, IRepositorioCompra repoCompraJson,
+                              IGestionUsuarios gestionUsuarios, IGestionLibros gestionLibros,
+                              RegistradorOperacionesTxt registradorTxt) {
+        this.repoCarritoMySQL = repoCarritoMySQL;
+        this.repoCarritoJson = repoCarritoJson;
+        this.repoCompraMySQL = repoCompraMySQL;
+        this.repoCompraJson = repoCompraJson;
+        this.gestionUsuarios = gestionUsuarios;
+        this.gestionLibros = gestionLibros;
+        this.registradorTxt = registradorTxt;
+    }
+
+    @Override
+    public Carrito obtenerCarritoActual() {
+        Cliente logueado = gestionUsuarios.getUsuarioLogueado();
+        if (logueado == null) return new Carrito("anonimo");
+
+        Carrito carrito = repoCarritoMySQL.obtenerCarritoPorCliente(logueado.getId());
+        if (carrito == null || carrito.estaVacio()) {
+            Carrito respaldoJson = repoCarritoJson.obtenerCarritoPorCliente(logueado.getId());
+            if (respaldoJson != null && !respaldoJson.estaVacio()) {
+                return respaldoJson;
+            }
+        }
+        return carrito != null ? carrito : new Carrito(logueado.getId());
+    }
+
+    @Override
+    public void agregarAlCarrito(Libro libro, int cantidad) {
+        if (gestionUsuarios.getUsuarioLogueado() == null || libro == null || cantidad <= 0) return;
+
+        Carrito c = obtenerCarritoActual();
+        ItemCarrito existente = c.buscarItem(libro.getIsbn());
+        int cantidadActual = (existente != null) ? existente.getCantidad() : 0;
+
+        Libro libroActualizado = gestionLibros.buscarLibroPorIsbn(libro.getIsbn());
+        int stockDisponible = (libroActualizado != null) ? libroActualizado.getStock() : libro.getStock();
+
+        if (cantidadActual + cantidad > stockDisponible) {
+            return;
+        }
+
+        c.agregarItem(libro, cantidad);
+        sincronizarCarrito(c);
+    }
+
+    @Override
+    public String actualizarCantidadCarrito(String isbn, int nuevaCantidad) {
+        if (gestionUsuarios.getUsuarioLogueado() == null) return "Debe iniciar sesión primero.";
+        if (nuevaCantidad <= 0) return "La cantidad debe ser mayor a 0.";
+
+        Carrito c = obtenerCarritoActual();
+        ItemCarrito item = c.buscarItem(isbn);
+        if (item == null) return "El libro no se encuentra en el carrito.";
+
+        Libro l = gestionLibros.buscarLibroPorIsbn(isbn);
+        if (l != null && nuevaCantidad > l.getStock()) {
+            return "Stock insuficiente. Disponible: " + l.getStock();
+        }
+
+        c.actualizarCantidad(isbn, nuevaCantidad);
+        sincronizarCarrito(c);
+        return null;
+    }
+
+    @Override
+    public boolean eliminarDelCarrito(List<String> isbns) {
+        if (gestionUsuarios.getUsuarioLogueado() == null || isbns == null || isbns.isEmpty()) return false;
+
+        Carrito c = obtenerCarritoActual();
+        boolean eliminado = c.eliminarItems(isbns);
+        if (eliminado) {
+            sincronizarCarrito(c);
+        }
+        return eliminado;
+    }
+
+    @Override
+    public void vaciarCarrito() {
+        Cliente logueado = gestionUsuarios.getUsuarioLogueado();
+        if (logueado != null) {
+            repoCarritoMySQL.vaciarCarrito(logueado.getId());
+            repoCarritoJson.vaciarCarrito(logueado.getId());
+        }
+    }
+
+    @Override
+    public String registrarPago(PagoDto pago) {
+        if (pago == null) return "Datos de pago inválidos.";
+        if (MetodoPago.TARJETA.getEtiqueta().equalsIgnoreCase(pago.getMetodo())) {
+            if (pago.getBanco() == null || pago.getBanco().isBlank()) return "Seleccione un banco.";
+            if (pago.getNumeroTarjeta() == null || !pago.getNumeroTarjeta().matches("\\d{16}")) return "Número de tarjeta inválido (16 dígitos).";
+            if (pago.getCvv() == null || !pago.getCvv().matches("\\d{3,4}")) return "CVV inválido (3 o 4 dígitos).";
+            if (pago.getExpiracion() == null || !pago.getExpiracion().matches("(0[1-9]|1[0-2])/\\d{2}")) return "Fecha de expiración inválida (MM/AA).";
+            YearMonth vencimiento = YearMonth.parse(pago.getExpiracion(), DateTimeFormatter.ofPattern("MM/yy"));
+            if (vencimiento.isBefore(YearMonth.now())) return "La tarjeta se encuentra vencida.";
+            this.datosTransferencia = new DatosTransferencia(pago.getBanco(), pago.getNumeroTarjeta(), pago.getCvv(), pago.getExpiracion(), null);
+        } else if (MetodoPago.TRANSFERENCIA.getEtiqueta().equalsIgnoreCase(pago.getMetodo())) {
+            if (pago.getNumeroNequi() == null || !pago.getNumeroNequi().matches("3\\d{9}")) return "Número de Nequi inválido (10 dígitos empezando por 3).";
+            this.datosTransferencia = new DatosTransferencia(DatosTransferencia.NEQUI, null, null, null, pago.getNumeroNequi());
+        } else {
+            return "Método de pago no válido.";
+        }
+        return null;
+    }
+
+    @Override
+    public boolean finalizarCompra() {
+        Cliente logueado = gestionUsuarios.getUsuarioLogueado();
+        if (logueado == null) return false;
+
+        Carrito c = obtenerCarritoActual();
+        if (c == null || c.estaVacio()) return false;
+
+        boolean compraMySQL = repoCompraMySQL.registrarCompra(logueado.getId(), c);
+        boolean compraJson = repoCompraJson.registrarCompra(logueado.getId(), c);
+
+        if (!compraMySQL && !compraJson) {
+            return false;
+        }
+
+        if (!compraMySQL) {
+            for (ItemCarrito item : c.getItems()) {
+                if (item.getLibro() != null) {
+                    gestionLibros.ajustarStock(item.getLibro().getIsbn(), -item.getCantidad());
+                }
+            }
+        }
+
+        vaciarCarrito();
+
+        String infoPago = (datosTransferencia != null) ? datosTransferencia.getBanco() : "No especificado";
+        if (registradorTxt != null) {
+            registradorTxt.registrar(
+                    String.format("COMPRA - Cliente: %s (%s) | Pago: %s | Total: $%.2f",
+                            logueado.getNombreCompleto(), logueado.getCorreo(), infoPago, c.calcularTotal())
+            );
+        }
+
+        this.datosTransferencia = null;
+        return true;
+    }
+
+    private void sincronizarCarrito(Carrito carrito) {
+        repoCarritoMySQL.guardarCarrito(carrito);
+        repoCarritoJson.guardarCarrito(carrito);
+    }
+}

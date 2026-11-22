@@ -1,0 +1,92 @@
+[
+  {
+    "id": "12314",
+    "nombreCompleto": "sofia",
+    "correo": "sofiajfa.com",
+    "direccionEnvio": "gaywed7wye",
+    "telefono": "24124141",
+    "tipoCliente": "ESTANDAR",
+    "porcentajeDescuento": 0.0
+  },
+  {
+    "id": "1234",
+    "nombreCompleto": "sofia",
+    "correo": "sofia.com",
+    "direccionEnvio": "sofia12345",
+    "telefono": "312456",
+    "tipoCliente": "ESTANDAR",
+    "porcentajeDescuento": 0.0
+  },
+  {
+    "id": "12345",
+    "nombreCompleto": "Sofia",
+    "correo": "sofia@gmail.com",
+    "direccionEnvio": "Cra 5",
+    "departamento": "Boyacá",
+    "ciudad": "Tunja",
+    "telefono": "5423512351",
+    "tipoCliente": "ESTANDAR",
+    "porcentajeDescuento": 0.0,
+    "contrasenaHash": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
+  },
+  {
+    "id": "1234566",
+    "nombreCompleto": "Sofia",
+    "correo": "sofia21@gmail.com",
+    "direccionEnvio": "Cra 5",
+    "departamento": "Boyacá",
+    "ciudad": "Tunja",
+    "telefono": "5423512351",
+    "tipoCliente": "ESTANDAR",
+    "porcentajeDescuento": 0.0,
+    "contrasenaHash": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
+  },
+  {
+    "id": "1234567",
+    "nombreCompleto": "camilo",
+    "correo": "camilo@gmail.com",
+    "direccionEnvio": "crav 5",
+    "departamento": "Amazonas",
+    "ciudad": "Leticia",
+    "telefono": "35135135615",
+    "tipoCliente": "ESTANDAR",
+    "porcentajeDescuento": 0.0,
+    "contrasenaHash": "5c55b2aa0e6de1a2eb38e3e4f0ec5319759afbf628fa200d44f043c9aa13052d"
+  },
+  {
+    "id": "68289632",
+    "nombreCompleto": "Camila",
+    "correo": "camila@gmail.com",
+    "direccionEnvio": "cra 5-6",
+    "departamento": "Boyacá",
+    "ciudad": "Paipa",
+    "telefono": "3106086911",
+    "tipoCliente": "ESTANDAR",
+    "porcentajeDescuento": 0.0,
+    "contrasenaHash": "4dc7acdc8cd5ddcffa6094985ea636474cdbddfd174e9eb2c7dd83eff6d40dad"
+  },
+  {
+    "id": "2468",
+    "nombreCompleto": "sara",
+    "correo": "sara@gmail.com",
+    "direccionEnvio": "cra 9-10",
+    "departamento": "Valle del Cauca",
+    "ciudad": "Tuluá",
+    "telefono": "3213278693",
+    "tipoCliente": "ESTANDAR",
+    "porcentajeDescuento": 0.0,
+    "contrasenaHash": "6ad9cc2e71516362024f424e29129783dcecc295da8000bcd2d99935f1dc1610"
+  },
+  {
+    "id": "2003",
+    "nombreCompleto": "celeste",
+    "correo": "celeste@gmail.com",
+    "direccionEnvio": "cra 3-0",
+    "departamento": "Cundinamarca",
+    "ciudad": "Bogotá",
+    "telefono": "3221345678",
+    "tipoCliente": "ESTANDAR",
+    "porcentajeDescuento": 0.0,
+    "contrasenaHash": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
+  }
+]

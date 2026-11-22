@@ -124,7 +124,7 @@ public class GestionComprasImpl implements IGestionCompras {
         Carrito c = obtenerCarritoActual();
         if (c.getItems().isEmpty()) return false;
 
-        try (PrintWriter out = new PrintWriter(new FileWriter("operaciones_tienda.txt", true))) {
+        try (PrintWriter out = new PrintWriter(new FileWriter("data/operaciones_tienda.txt", true))) {
             out.println("COMPRA - Cliente: " + logueado.getNombreCompleto() + " (" + logueado.getCorreo() + ")");
             out.println("Total Pagado: $" + c.calcularTotal());
             out.println("----------------------------------------");

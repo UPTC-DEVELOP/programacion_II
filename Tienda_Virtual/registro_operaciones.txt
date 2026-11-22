@@ -1,0 +1,8 @@
+=== RECIBO DE COMPRA ===
+Cliente: sofia (ESTANDAR)
+Método de Pago: Tarjeta de Crédito
+ - Cien Años de Soledad x4 = $140000.0
+Total Impuestos: $22352.941176470587
+TOTAL PAGADO: $140000.0
+----------------------------------------
+
