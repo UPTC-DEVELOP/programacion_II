@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RepositorioCarritoJson implements IRepositorioCarrito {
-    private final String ARCHIVO = "carritos.json";
+	private final String ARCHIVO = "data/carritos.json";
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     private List<Carrito> cargar() {

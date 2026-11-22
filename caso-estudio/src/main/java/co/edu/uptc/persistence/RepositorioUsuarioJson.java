@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RepositorioUsuarioJson implements IRepositorioUsuario {
-    private final String ARCHIVO = "usuarios.json";
+	private final String ARCHIVO = "data/usuarios.json";
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     private List<Cliente> cargar() {

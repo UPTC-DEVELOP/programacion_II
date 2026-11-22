@@ -17,7 +17,7 @@ import com.google.gson.reflect.TypeToken;
 import co.edu.uptc.model.Libro;
 
 public class RepositorioLibrosJson implements IRepositorioLibros {
-    private final String ARCHIVO = "libros.json";
+	private final String ARCHIVO = "data/libros.json";
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     private List<Libro> cargar() {
