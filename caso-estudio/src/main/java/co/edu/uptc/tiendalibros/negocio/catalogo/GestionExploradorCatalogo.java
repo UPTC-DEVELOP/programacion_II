@@ -44,6 +44,6 @@ public class GestionExploradorCatalogo {
   /// 
   /// @return Lista de libros con sus formatos comprables. Vacía si no hay ninguno.
   public List<LibroConFormatos> listar() {
-    return this.repositorioLibroConFormatos.listar();
+    return this.repositorioLibroConFormatos.listarComprables();
   }
 }

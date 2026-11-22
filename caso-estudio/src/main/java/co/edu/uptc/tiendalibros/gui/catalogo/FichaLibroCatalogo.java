@@ -5,11 +5,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.util.Optional;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -24,7 +21,7 @@ import co.edu.uptc.tiendalibros.gui.estilos.FabricaEstilos;
 import co.edu.uptc.tiendalibros.gui.estilos.PaletaColores;
 import co.edu.uptc.tiendalibros.gui.eventos.Evento;
 
-///
+/// Representa una ficha que muestra los datos de un libro en el catálogo.
 public class FichaLibroCatalogo extends PanelBase {
   
   // campos y componentes del libro
@@ -400,19 +397,6 @@ public class FichaLibroCatalogo extends PanelBase {
   /// Si la imagen de la cubierta no existe o no se puede cargar, se deja el texto
   /// "Sin cubierta".
   private void mostrarCubierta(ElementoVistaFichaLibro ficha) {
-    // el área utilizable es el tamaño preferido del campo menos el grosor del borde
-    Insets bordes = this.campoCubierta.getInsets();
-    int anchoUtilizable = this.campoCubierta.getPreferredSize().width - bordes.left - bordes.right;
-    int altoUtilizable = this.campoCubierta.getPreferredSize().height - bordes.top - bordes.bottom;
-    
-    // obtener la imagen de la cubierta con el tamaño nuevo
-    Optional<ImageIcon> cubierta = AlmacenImagenesCubiertas
-      .cargarCubierta(ficha.getNombreImagenCubierta(), anchoUtilizable, altoUtilizable);
-    
-    // mostrar la imagen como ícono del JLabel
-    if (cubierta.isPresent()) {
-      this.campoCubierta.setText(null);
-      this.campoCubierta.setIcon(cubierta.get());
-    }
+    AlmacenImagenesCubiertas.mostrarEnEtiqueta(this.campoCubierta, ficha.getNombreImagenCubierta());
   }
 }

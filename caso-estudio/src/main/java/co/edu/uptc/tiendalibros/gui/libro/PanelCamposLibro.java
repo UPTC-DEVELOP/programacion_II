@@ -1,7 +1,10 @@
 //
 package co.edu.uptc.tiendalibros.gui.libro;
 
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
@@ -14,6 +17,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import co.edu.uptc.tiendalibros.gui.componentes.AsociacionCamposFormulario;
 import co.edu.uptc.tiendalibros.gui.componentes.PanelCamposBase;
@@ -51,6 +55,9 @@ public class PanelCamposLibro extends PanelCamposBase<ElementoVistaLibroConForma
   
   /// Diálogo para seleccionar la imagen de la cubierta del libro
   private JFileChooser dialogoImagenLibro;
+  
+  /// Etiqueta que muestra la imagen de la cubierta del libro.
+  private JLabel lblCubierta;
   
   /// Componente para mostrar errores del título
   private JLabel notaErrorTitulo;
@@ -107,11 +114,26 @@ public class PanelCamposLibro extends PanelCamposBase<ElementoVistaLibroConForma
     FabricaEstilos.fabrica(this.txtIsbn)
       .campoTexto(17);
     
+    // crear la etiqueta de la imagen de la cubierta. si no hay una imagen válida se muestra
+    // el texto "sin cubierta"
+    this.lblCubierta = new JLabel(AlmacenImagenesCubiertas.TEXTO_SIN_CUBIERTA, SwingConstants.CENTER);
+    FabricaEstilos.fabrica(this.lblCubierta)
+      .cubiertaLibro();
+    
     // crear el campo de imagen del libro
     this.txtImagenLibro = new JTextField();
     FabricaEstilos.fabrica(this.txtImagenLibro)
       .campoTexto(10);
     
+    // el usuario también puede escribir o pegar el nombre del archivo de la imagen. Por eso,
+    // se maneja el evento al perder el foco para actualizar la imagen
+    this.txtImagenLibro.addFocusListener(new FocusAdapter() {
+      @Override
+      public void focusLost(FocusEvent e) {
+        mostrarCubierta();
+      }
+    });
+
     // crear las notas de errores para cada campo
     this.notaErrorTitulo = new JLabel();
     FabricaEstilos.fabrica(this.notaErrorTitulo)
@@ -163,6 +185,7 @@ public class PanelCamposLibro extends PanelCamposBase<ElementoVistaLibroConForma
     this.txtAnioPublicacion.setText(String.valueOf(libro.getAnioPublicacion()));
     this.txtIsbn.setText(libro.getIsbn());
     this.txtImagenLibro.setText(libro.getImagenLibro());
+    mostrarCubierta();
     
     seleccionarCategoria(libro);
     seleccionarEditorial(libro);
@@ -339,6 +362,16 @@ public class PanelCamposLibro extends PanelCamposBase<ElementoVistaLibroConForma
         .gridx(1)
         .gridwidth(3)
         .expandirHorizontal()
+    );
+    // agregar la vista previa de la cubierta. se ubica a la derecha de todos los campos y ocupa varias filas
+    agregar(
+      this.lblCubierta,
+      base.clonar()
+        .gridy(0)
+        .gridx(4)
+        .gridheight(8)
+        .anchor(GridBagConstraints.NORTH)
+        .insets(4, 4, 0, 4)
     );
     
   }
@@ -588,6 +621,17 @@ public class PanelCamposLibro extends PanelCamposBase<ElementoVistaLibroConForma
     
     // establecer el nombre del archivo de la imagen de la cubierta
     this.txtImagenLibro.setText(archivoImagen.getName());
+    // mostrar la cubierta del libro
+    mostrarCubierta();
+  }
+  
+  private void mostrarCubierta() {
+    // cargar y mostrar la imagen de la cubierta, o mostrar el texto "sin cubierta"
+    AlmacenImagenesCubiertas.mostrarEnEtiqueta(
+      this.lblCubierta,
+      this.txtImagenLibro.getText()
+        .trim()
+    );
   }
   
 }

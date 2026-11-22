@@ -2,6 +2,7 @@
 package co.edu.uptc.tiendalibros.gui.estilos;
 
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.FileSystemNotFoundException;
@@ -11,12 +12,16 @@ import java.util.Optional;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
 /// Representa un almacén que contiene las imágenes de las cubiertas de los libros.
 public class AlmacenImagenesCubiertas {
   
   /// Ruta del directorio que contiene las imágenes de las cubiertas de los libros
   public static final Path RUTA_CUBIERTAS = Path.of("cubiertas");
+  
+  /// Texto que se muestra cuando un libro no tiene imagen de cubierta.
+  public static final String TEXTO_SIN_CUBIERTA = "Sin cubierta";
   
   /// Obtiene el directorio donde se guarden las imágenes de las cubiertas de los libros.
   public static Optional<Path> obtenerDirectorioCubiertas() {
@@ -88,6 +93,38 @@ public class AlmacenImagenesCubiertas {
         String.format("Error al cargar la cubierta '%s' (excepción): %s", nombreArchivo, excepcion.getMessage())
       );
       return Optional.empty();
+    }
+  }
+  
+  /// Muestra la imagen de una cubierta en la etiqueta especificada y ajustada al tamaño de
+  /// la etiqueta.
+  ///
+  /// Si la imagen se pudo cargar, la etiqueta muestra la imagen y no tiene texto.
+  /// 
+  /// Si la imagen no se pudo cargar, la etiqueta no tiene ícono y contrario, no tiene ícono
+  /// y muestra [#TEXTO_SIN_CUBIERTA].
+  ///
+  /// @param etiqueta      Etiqueta donde se muestra la cubierta.
+  /// @param nombreArchivo Nombre del archivo de la imagen dentro del directorio
+  ///                      de cubiertas.
+  public static void mostrarEnEtiqueta(JLabel etiqueta, String nombreArchivo) {
+    // el área utilizable es el tamaño preferido del campo menos el grosor del borde
+    Insets margen = etiqueta.getInsets();
+    int anchoUtilizable = etiqueta.getPreferredSize().width - margen.left - margen.right;
+    int altoUtilizable = etiqueta.getPreferredSize().height - margen.top - margen.bottom;
+    
+    // obtener la imagen de la cubierta con el tamaño nuevo
+    Optional<ImageIcon> cubierta = AlmacenImagenesCubiertas
+      .cargarCubierta(nombreArchivo, anchoUtilizable, altoUtilizable);
+    
+    // si se obtuvo el archivo de imagen, mostrar la imagen
+    if (cubierta.isPresent()) {
+      etiqueta.setText("");
+      etiqueta.setIcon(cubierta.get());
+    } else {
+      // si no se obtuvo el archivo de imagen, mostrar el texto "sin cubierta"
+      etiqueta.setIcon(null);
+      etiqueta.setText(AlmacenImagenesCubiertas.TEXTO_SIN_CUBIERTA);
     }
   }
 }

@@ -19,4 +19,6 @@ DELETE FROM editorial;
 @include insertar-editorial.sql
 @include insertar-libro.sql
 @include insertar-formato_libro.sql
+@include insertar-cliente.sql
+
 

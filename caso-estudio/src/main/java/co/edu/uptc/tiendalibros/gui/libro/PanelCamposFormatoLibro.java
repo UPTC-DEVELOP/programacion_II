@@ -5,7 +5,9 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
@@ -42,6 +44,9 @@ public class PanelCamposFormatoLibro
   /// Campo para mostrar la cantidad de páginas
   private JTextField txtCantidadPaginas;
   
+  /// Campo de selección del estado de este formato en el catálogo.
+  private JComboBox<EstadoEnCatalogo> cbxEstado;
+  
   /// Campo para mostrar el precio base
   private JFormattedTextField txtPrecioBase;
   
@@ -71,6 +76,9 @@ public class PanelCamposFormatoLibro
   
   /// Componente para mostrar errores del tipo de IVA
   private JLabel notaErrorTipoIVA;
+  
+  /// Componente para mostrar errores del estado en el catálogo
+  private JLabel notaErrorEstado;
   
   /// Tipo de formato de libro que este panel maneja
   private TipoFormatoLibro tipoFormato;
@@ -133,6 +141,17 @@ public class PanelCamposFormatoLibro
       .campoTexto(20)
       .soloLectura();
     
+    // crear el campo de selección del estado en el catálogo
+    this.cbxEstado = new JComboBox<>();
+    FabricaEstilos.fabrica(this.cbxEstado)
+      .comboBox();
+    this.cbxEstado
+      .setToolTipText(
+        "Solo si el formato está en estado Disponible y tiene un inventario mayor que cero aparecerá en el explorador del catálogo."
+      );
+    llenarListaEstados();
+    asignarRendererComboBoxEstado();
+    
     // crear el grupo de opciones del IVA
     this.rbIva19 = new JRadioButton("19%", true);
     this.rbIva5 = new JRadioButton("5%", false);
@@ -156,6 +175,9 @@ public class PanelCamposFormatoLibro
     this.notaErrorTipoIVA = new JLabel();
     FabricaEstilos.fabrica(this.notaErrorTipoIVA)
       .notaError();
+    this.notaErrorEstado = new JLabel();
+    FabricaEstilos.fabrica(this.notaErrorEstado)
+      .notaError();
     
     // asociar atributos, campos y notas de error
     
@@ -167,6 +189,7 @@ public class PanelCamposFormatoLibro
     );
     asociarCampo(obtenerAtributoFormato("precioBase"), this.txtPrecioBase, this.notaErrorPrecioBase);
     asociarCampo(obtenerAtributoFormato("tipoIVA"), this.panelOpcionesIva, this.notaErrorTipoIVA);
+    asociarCampo(obtenerAtributoFormato("estadoEnCatalogo"), this.cbxEstado, this.notaErrorEstado);
     
     // ubicar los componentes en un layout
     ubicarComponentes();
@@ -246,6 +269,8 @@ public class PanelCamposFormatoLibro
     this.rbIva19.setSelected(tipoIVA == TipoIVA.IVA_19);
     this.rbIva5.setSelected(tipoIVA == TipoIVA.IVA_5);
     
+    // seleccionar el estado del formato en el catálogo
+    this.cbxEstado.setSelectedItem(formatoLibro.getEstadoEnCatalogo());
   }
   
   /// Habilita o deshabilita los campos que el usuario llena solo cuando el libro ofrece el
@@ -259,6 +284,7 @@ public class PanelCamposFormatoLibro
     this.rbIva19.setEnabled(habilitar);
     this.rbIva5.setEnabled(habilitar);
     this.txtPrecioVenta.setEnabled(habilitar);
+    this.cbxEstado.setEnabled(habilitar);
   }
   
   public void ubicarComponentes() {
@@ -269,26 +295,11 @@ public class PanelCamposFormatoLibro
     JLabel lblPrecioBase = new JLabel("Precio Base:");
     JLabel lblTipoIva = new JLabel("Tipo IVA:");
     JLabel lblPrecioVenta = new JLabel("Precio Venta:");
+    JLabel lblEstado = new JLabel("Estado:");
     
     // crear una restricción base para todos los componentes del formulario
     RestriccionesCelda base = new RestriccionesCelda().insets(4, 4, 0, 4)
       .anclarIzquierda();
-    
-    // ubicar la etiqueta tipo de formato
-    // agregar(
-    // lblTipoFormato,
-    // base.clonar()
-    // .gridy(0)
-    // .gridx(0)
-    // );
-    // // ubicar el campo tipo de formato de libro
-    // agregar(
-    // this.txtTipoFormato,
-    // base.clonar()
-    // .gridy(0)
-    // .gridx(1)
-    // .expandirHorizontal()
-    // );
     
     // ubicar la casilla de ofrecer el formato, que ocupa toda la primera fila
     agregar(
@@ -368,6 +379,29 @@ public class PanelCamposFormatoLibro
         .expandirHorizontal()
     );
     
+    // ubicar la etiqueta del estado en el catálogo
+    agregar(
+      lblEstado,
+      base.clonar()
+        .gridy(3)
+        .gridx(2)
+    );
+    // ubicar el campo del estado en el catálogo
+    agregar(
+      this.cbxEstado,
+      base.clonar()
+        .gridy(3)
+        .gridx(3)
+        .expandirHorizontal()
+    );
+    // ubicar la nota de error del estado
+    agregar(
+      this.notaErrorEstado,
+      base.clonar()
+        .gridy(4)
+        .gridx(3)
+    );
+    
     // ubicar la etiqueta de tipo de IVA
     agregar(
       lblTipoIva,
@@ -440,8 +474,8 @@ public class PanelCamposFormatoLibro
     // obtener el tipo de formato
     TipoFormatoLibro tipoFormato = formatoLibro.getTipoFormato();
     
-    // obtener el estado
-    EstadoEnCatalogo estadoLibroCatalogo = formatoLibro.getEstadoEnCatalogo();
+    // obtener el estado que el usuario seleccionó en lista combobox
+    EstadoEnCatalogo estadoLibroCatalogo = (EstadoEnCatalogo) this.cbxEstado.getSelectedItem();
     
     // obtener el inventario
     int inventario = Integer.valueOf(
@@ -487,6 +521,40 @@ public class PanelCamposFormatoLibro
     }
     // el valor predeterminado es 19%
     return TipoIVA.IVA_19;
+  }
+  
+  /// Llena el combobox con la lista de los estados posibles del formato en el catálogo.
+  private void llenarListaEstados() {
+    DefaultComboBoxModel<EstadoEnCatalogo> modelo = new DefaultComboBoxModel<>();
+    // cada valor del enum es una opción
+    for (EstadoEnCatalogo estado : EstadoEnCatalogo.values()) {
+      modelo.addElement(estado);
+    }
+    this.cbxEstado.setModel(modelo);
+  }
+  
+  /// Configura cómo se muestra cada opción del combobox de estados.
+  private void asignarRendererComboBoxEstado() {
+    // se usa la sintaxis del renderer
+    this.cbxEstado.setRenderer((list, estado, index, selected, focused) -> {
+      JLabel etiqueta = new JLabel();
+      if (estado != null) {
+        etiqueta.setText(textoEstado(estado));
+      }
+      return etiqueta;
+    });
+  }
+  
+  /// Obtiene el texto que el usuario ve para cada estado en el catálogo.
+  ///
+  /// @param estado Estado del formato en el catálogo.
+  /// @return Texto del estado.
+  private String textoEstado(EstadoEnCatalogo estado) {
+    return switch (estado) {
+      case PENDIENTE  -> "Pendiente";
+      case DISPONIBLE -> "Disponible";
+      case SUSPENDIDO -> "Suspendido";
+    };
   }
   
   /// Calcula el precio de venta cuando el usuario cambia el precio base y lo muestra

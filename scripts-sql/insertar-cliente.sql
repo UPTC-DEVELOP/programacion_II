@@ -1,0 +1,2 @@
+INSERT INTO tienda_libros_gr9.cliente (id_cliente,tipo_documento,numero_documento,nombres,apellidos,correo_electronico,telefono,direccion_envio,tipo_cliente) VALUES (1,'CC','101','Felix','Fonseca','felixfonseca@gmail.com','3021056','Carrera 25','REGULAR');
+INSERT INTO tienda_libros_gr9.cliente (id_cliente,tipo_documento,numero_documento,nombres,apellidos,correo_electronico,telefono,direccion_envio,tipo_cliente) VALUES (2,'TI','101','Camilo','Fonseca','camilo@correo','1023','Calle 12 23 - 04','REGULAR');
