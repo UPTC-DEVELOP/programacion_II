@@ -1,0 +1,14 @@
+[
+  {
+    "id": "1034567894",
+    "nombreCompleto": "Lili Pomm",
+    "correo": "lipom10@gmail.com",
+    "direccionEnvio": "calle 4a #3-63",
+    "departamento": "Cundinamarca",
+    "ciudad": "Bogotá",
+    "telefono": "3120456789",
+    "tipoCliente": "VIP",
+    "porcentajeDescuento": 0.0,
+    "contrasenaHash": "cc2815a051e83ca8fb6271a9c826c0cfa8071269b30e38645c7fb74d59ff85bf"
+  }
+]
