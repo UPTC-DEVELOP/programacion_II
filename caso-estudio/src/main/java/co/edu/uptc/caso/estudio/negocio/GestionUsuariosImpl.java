@@ -34,10 +34,12 @@ public class GestionUsuariosImpl implements IGestionUsuarios {
         if (cliente.getNombreCompleto() == null || cliente.getNombreCompleto().isBlank()) {
             return "El nombre completo es obligatorio.";
         }
-        if (cliente.getCorreo() == null || cliente.getCorreo().isBlank() || !cliente.getCorreo().contains("@")) {
-            return "Ingrese un correo electrónico válido.";
+        if (cliente.getCorreo() == null || !cliente.getCorreo().trim().matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
+            return "Ingrese un correo electrónico con formato válido (ej. usuario@dominio.com).";
         }
-
+        if (cliente.getTelefono() != null && !cliente.getTelefono().isBlank() && !cliente.getTelefono().trim().matches("\\d{7,15}")) {
+            return "El teléfono debe contener solo números (entre 7 y 15 dígitos).";
+        }
         String clavePlana = cliente.getContrasenaHash();
         if (clavePlana == null || clavePlana.length() < LONGITUD_MINIMA_CONTRASENA) {
             return "La contraseña debe tener mínimo " + LONGITUD_MINIMA_CONTRASENA + " caracteres.";
