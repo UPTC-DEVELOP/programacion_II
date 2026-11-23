@@ -1,0 +1,12 @@
+TIENDA VIRTUAL DE LIBROS
+Pedido #2
+Fecha: 2026-11-21 10:37:01
+Cliente: camilo@uptc.edu.co
+Pago: Tarjeta de crédito
+
+El amor en los tiempos del cólera | 5 x $ 45.000 | Subtotal: $ 225.000 | IVA: $ 11.250
+
+Subtotal: $ 225.000
+Impuestos: $ 11.250
+Descuento: $ 23.625
+TOTAL: $ 212.625
