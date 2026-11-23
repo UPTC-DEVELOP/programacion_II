@@ -12,8 +12,8 @@ import co.edu.uptc.modelo.CarritoCompras;
  * GestionReporte) depende de ESTA ABSTRACCIÓN, nunca de la implementación
  * concreta.
  *
- * La implementan CarritoRepositoryEnMemoria (HashMap en RAM) y
- * CarritoJsonRepository (archivo data/carritos.json). El Main selecciona la
+ * La implementan CarritoJdbcRepository (PostgreSQL) y
+ * CarritoRepositoryEnMemoria (HashMap en RAM). El Main selecciona la
  * implementación mediante inyección de dependencias sin tocar la lógica de
  * negocio (OCP / DIP).
  *

@@ -41,7 +41,6 @@ public class GestionLibro implements IGestionLibro {
     private static final String USUARIO_ADMIN = "admin";
 
     private final ILibroRepositorio persistencia;
-    private final ILibroRepositorio persistenciaJson;
     private final ValidadorDatos validador;
     private final IAuditoria auditoria;
 
@@ -53,7 +52,7 @@ public class GestionLibro implements IGestionLibro {
      * @param validador    Validador de datos
      */
     public GestionLibro(ILibroRepositorio persistencia, ValidadorDatos validador) {
-        this(persistencia, validador, null, null);
+        this(persistencia, validador, null);
     }
 
     /**
@@ -65,23 +64,7 @@ public class GestionLibro implements IGestionLibro {
      */
     public GestionLibro(ILibroRepositorio persistencia, ValidadorDatos validador,
                         IAuditoria auditoria) {
-        this(persistencia, validador, null, auditoria);
-    }
-
-    /**
-     * Constructor con espejo JSON y auditoría. La persistencia principal
-     * (PostgreSQL) sigue siendo la fuente de verdad; el repositorio JSON
-     * recibe una copia de cada operación confirmada para cumplir RF02/RF03.
-     *
-     * @param persistencia     Repositorio principal de libros
-     * @param validador        Validador de datos
-     * @param persistenciaJson Repositorio JSON de respaldo (puede ser null)
-     * @param auditoria        Servicio de auditoría (puede ser null)
-     */
-    public GestionLibro(ILibroRepositorio persistencia, ValidadorDatos validador,
-                        ILibroRepositorio persistenciaJson, IAuditoria auditoria) {
         this.persistencia = persistencia;
-        this.persistenciaJson = persistenciaJson;
         this.validador = validador;
         this.auditoria = auditoria;
     }
@@ -104,8 +87,6 @@ public class GestionLibro implements IGestionLibro {
 
         Libro entidad = LibroMapper.toEntity(libroDto);
         persistencia.guardar(entidad);
-        replicarEnJson(() -> persistenciaJson.guardar(entidad),
-                "registrar el libro " + libroDto.getIsbn());
         auditar(AccionAuditoria.CREATE, libroDto.getIsbn(),
                 "Registro de nuevo libro: " + libroDto.getTitulo());
     }
@@ -131,8 +112,6 @@ public class GestionLibro implements IGestionLibro {
 
         Libro entidad = LibroMapper.toEntity(libroDto);
         persistencia.actualizar(entidad);
-        replicarEnJson(() -> persistenciaJson.actualizar(entidad),
-                "actualizar el libro " + libroDto.getIsbn());
         auditar(AccionAuditoria.UPDATE, libroDto.getIsbn(),
                 "Actualización de libro: " + libroDto.getTitulo()
                         + " (precio=" + libroDto.getPrecioVenta()
@@ -165,8 +144,6 @@ public class GestionLibro implements IGestionLibro {
         }
 
         persistencia.eliminar(isbn);
-        replicarEnJson(() -> persistenciaJson.eliminar(isbn),
-                "eliminar el libro " + isbn);
         auditar(AccionAuditoria.DELETE, isbn,
                 "Eliminación de libro: " + existente.getTitulo());
     }
@@ -206,26 +183,6 @@ public class GestionLibro implements IGestionLibro {
             return null;
         }
         return LibroMapper.toDto(persistencia.consultarPorIsbn(isbn.trim()));
-    }
-
-    /**
-     * Replica una operación ya confirmada en la persistencia principal hacia
-     * el repositorio JSON. Un fallo del espejo se informa por consola y no
-     * revierte ni invalida la operación de PostgreSQL.
-     *
-     * @param operacion Acción de escritura sobre el repositorio JSON
-     * @param descripcion Descripción usada en el mensaje de advertencia
-     */
-    private void replicarEnJson(Runnable operacion, String descripcion) {
-        if (persistenciaJson == null) {
-            return;
-        }
-        try {
-            operacion.run();
-        } catch (PersistenciaException e) {
-            System.err.println("No se pudo replicar en JSON al " + descripcion
-                    + ": " + e.getMessage());
-        }
     }
 
     /**

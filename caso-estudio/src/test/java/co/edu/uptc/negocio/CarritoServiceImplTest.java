@@ -5,14 +5,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 import co.edu.uptc.excepciones.ReglaNegocioException;
 import co.edu.uptc.excepciones.StockInsuficienteException;
@@ -27,11 +24,11 @@ import co.edu.uptc.modelo.dto.TotalesCarritoDto;
 import co.edu.uptc.modelo.enums.Categoria;
 import co.edu.uptc.modelo.enums.Formato;
 import co.edu.uptc.modelo.enums.TipoCliente;
-import co.edu.uptc.persistencia.CarritoJsonRepository;
+import co.edu.uptc.persistencia.CarritoRepositoryEnMemoria;
 
 /**
- * Pruebas de integración entre CarritoServiceImpl, el repositorio JSON de
- * carritos y las abstracciones del catálogo y de clientes.
+ * Pruebas de integración entre CarritoServiceImpl, el repositorio en memoria
+ * de carritos y las abstracciones del catálogo y de clientes.
  */
 public class CarritoServiceImplTest {
 
@@ -40,17 +37,12 @@ public class CarritoServiceImplTest {
     private static final int CLIENTE_PREMIUM = 100;
     private static final int CLIENTE_REGULAR = 200;
 
-    @Rule
-    public TemporaryFolder carpetaTemporal = new TemporaryFolder();
-
-    private CarritoJsonRepository carritoRepository;
+    private CarritoRepositoryEnMemoria carritoRepository;
     private CarritoServiceImpl servicio;
 
     @Before
     public void setUp() {
-        Path ruta = carpetaTemporal.getRoot().toPath()
-                .resolve("data").resolve("carritos.json");
-        carritoRepository = new CarritoJsonRepository(ruta.toString());
+        carritoRepository = new CarritoRepositoryEnMemoria();
 
         FakeLibroRepositorio libros = new FakeLibroRepositorio();
         libros.guardar(crearLibro(ISBN_FISICO, "Libro fisico", 100.0, 5, Formato.FISICO));

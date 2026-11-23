@@ -6,7 +6,6 @@ import java.util.List;
 import co.edu.uptc.excepciones.CantidadInvalidaException;
 import co.edu.uptc.excepciones.ClienteNoEncontradoException;
 import co.edu.uptc.excepciones.LibroNoEncontradoException;
-import co.edu.uptc.excepciones.PersistenciaException;
 import co.edu.uptc.excepciones.ReglaNegocioException;
 import co.edu.uptc.excepciones.StockInsuficienteException;
 import co.edu.uptc.interfaces.ICarritoRepository;
@@ -25,7 +24,7 @@ import co.edu.uptc.modelo.dto.TotalesCarritoDto;
  * Implementa ICarritoService: la GUI solo conoce la interfaz (DIP).
  *
  * DEPENDENCIAS INYECTADAS POR CONSTRUCTOR (SOLID / DIP):
- *  - ICarritoRepository: persiste los carritos en memoria o en JSON.
+ *  - ICarritoRepository: persiste los carritos (JDBC o en memoria).
  *  - ILibroRepositorio  : valida la existencia del ISBN y consulta precio,
  *                         stock y formato en el catálogo (RF10).
  *  - IGestionCliente    : valida que el cliente exista ("sesión") y obtiene su
@@ -42,7 +41,6 @@ import co.edu.uptc.modelo.dto.TotalesCarritoDto;
 public class CarritoServiceImpl implements ICarritoService {
 
     private final ICarritoRepository carritoRepository;
-    private final ICarritoRepository carritoRepositoryJson;
     private final ILibroRepositorio libroRepository;
     private final IGestionCliente clienteService;
 
@@ -50,24 +48,15 @@ public class CarritoServiceImpl implements ICarritoService {
      * CONSTRUCTOR CON INYECCIÓN DE DEPENDENCIAS (SOLID / DIP).
      * Las tres dependencias son ABSTRACCIONES (interfaces), no clases concretas:
      * el servicio no sabe ni debe saber cómo se persisten los datos ni de dónde
-     * salen los libros/clientes. Eso permite cambiar implementaciones (p. ej.
-     * CarritoJsonRepository) sin modificar NI UNA línea de esta clase.
+     * salen los libros/clientes. Eso permite cambiar implementaciones sin
+     * modificar NI UNA línea de esta clase.
      */
     public CarritoServiceImpl(ICarritoRepository carritoRepository,
                               ILibroRepositorio libroRepository,
                               IGestionCliente clienteService) {
-        this(carritoRepository, libroRepository, clienteService, null);
-    }
-
-    /*modificacion:Brayan Panqueva*/
-    public CarritoServiceImpl(ICarritoRepository carritoRepository,
-                              ILibroRepositorio libroRepository,
-                              IGestionCliente clienteService,
-                              ICarritoRepository carritoRepositoryJson) {
         this.carritoRepository = carritoRepository;
         this.libroRepository = libroRepository;
         this.clienteService = clienteService;
-        this.carritoRepositoryJson = carritoRepositoryJson;
     }
 
     // ----------------------------- RF10: AGREGAR -----------------------------
@@ -196,15 +185,12 @@ public class CarritoServiceImpl implements ICarritoService {
     }
 
     /**
-     * Elimina el carrito completo del cliente. Se propaga a las dos
-     * implementaciones de persistencia para mantener sincronizados JDBC y JSON.
+     * Elimina el carrito completo del cliente.
      */
     @Override
     public void eliminarCarrito(int idCliente) throws ReglaNegocioException {
         validarClienteExistente(idCliente);
         carritoRepository.eliminarCarrito(idCliente);
-        replicarEnJson(() -> carritoRepositoryJson.eliminarCarrito(idCliente),
-                "eliminar el carrito del cliente " + idCliente);
     }
 
     // ------------------------- RF13: CALCULAR TOTALES -------------------------
@@ -281,7 +267,7 @@ public class CarritoServiceImpl implements ICarritoService {
      * Devuelve el carrito del cliente; si no existe, crea uno NUEVO vacío (aún
      * sin persistir: se persiste cuando tenga al menos un ítem).
      * Como cada cliente tiene UN carrito, se usa el idCliente como idCarrito
-     * técnico también (suficiente mientras no haya persistencia en JSON).
+     * técnico también.
      */
     private CarritoCompras obtenerOCrearCarrito(int idCliente) {
         CarritoCompras carrito = carritoRepository.obtenerCarritoPorCliente(idCliente);
@@ -316,28 +302,8 @@ public class CarritoServiceImpl implements ICarritoService {
         return (libro != null) ? libro.getTitulo() : "";
     }
 
-    /*modificacion:Brayan Panqueva*/
     private void guardarCarrito(CarritoCompras carrito) {
         carritoRepository.guardarCarrito(carrito);
-        replicarEnJson(() -> carritoRepositoryJson.guardarCarrito(carrito),
-                "guardar el carrito del cliente " + carrito.getIdCliente());
-    }
-
-    /**
-     * Replica una operación ya confirmada en JDBC hacia el repositorio JSON.
-     * Un fallo del espejo se informa por consola y no revierte ni invalida la
-     * operación principal.
-     */
-    private void replicarEnJson(Runnable operacion, String descripcion) {
-        if (carritoRepositoryJson == null) {
-            return;
-        }
-        try {
-            operacion.run();
-        } catch (PersistenciaException e) {
-            System.err.println("No se pudo replicar en JSON al " + descripcion
-                    + ": " + e.getMessage());
-        }
     }
 
     /**
