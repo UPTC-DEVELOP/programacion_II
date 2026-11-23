@@ -12,7 +12,7 @@ import co.edu.uptc.caso.estudio.model.Cliente;
 public class RepositorioCompraMySQL implements IRepositorioCompra {
 
     @Override
-    public boolean registrarCompra(Cliente cliente, Carrito carrito) {
+    public boolean registrarCompra(Cliente cliente, Carrito carrito, String metodoPago) {
         if (cliente == null || cliente.getId() == null || carrito == null || carrito.estaVacio()) {
             return false;
         }

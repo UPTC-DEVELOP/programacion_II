@@ -21,7 +21,7 @@ public class RepositorioCompraJson implements IRepositorioCompra {
     }
 
     @Override
-    public boolean registrarCompra(Cliente cliente, Carrito carrito) {
+    public boolean registrarCompra(Cliente cliente, Carrito carrito, String metodoPago) {
         if (cliente == null || cliente.getId() == null || carrito == null || carrito.estaVacio()) {
         }
 
@@ -34,6 +34,7 @@ public class RepositorioCompraJson implements IRepositorioCompra {
         compra.setTotalImpuestos(carrito.calcularTotalImpuestos());
         compra.setDescuentoAplicado(carrito.calcularDescuento(cliente));
         compra.setTotalPagado(carrito.calcularTotalFinal(cliente));
+        compra.setMetodoPago(metodoPago);
 
         List<Compra> compras = manejadorJson.leerLista();
         compras.add(compra);

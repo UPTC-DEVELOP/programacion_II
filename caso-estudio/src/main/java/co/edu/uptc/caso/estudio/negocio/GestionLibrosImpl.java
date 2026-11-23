@@ -97,6 +97,14 @@ public class GestionLibrosImpl implements IGestionLibros {
             repoJson.actualizarLibro(l);
         }
     }
+    
+    @Override
+    public void sincronizarStockRespaldo(String isbn) {
+        Libro l = repoMySQL.buscarPorIsbn(isbn);
+        if (l != null) {
+            repoJson.actualizarLibro(l);
+        }
+    }
 
     private String validarLibro(Libro l, boolean esEdicion) {
         if (l == null) return "El libro no puede ser nulo.";

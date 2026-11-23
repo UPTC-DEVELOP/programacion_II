@@ -11,4 +11,5 @@ public interface IGestionLibros {
     String actualizarLibro(Libro libro);
     boolean eliminarLibro(String isbn);
     void ajustarStock(String isbn, int delta);
+    void sincronizarStockRespaldo(String isbn);
 }

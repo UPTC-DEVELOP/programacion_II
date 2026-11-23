@@ -115,6 +115,7 @@ public class GestionComprasImpl implements IGestionCompras {
     @Override
     public String registrarPago(PagoDto pago) {
         if (pago == null) return "Datos de pago inválidos.";
+        if (obtenerCarritoActual().estaVacio()) return "El carrito está vacío.";
         if (MetodoPago.TARJETA.getEtiqueta().equalsIgnoreCase(pago.getMetodo())) {
             if (pago.getBanco() == null || pago.getBanco().isBlank()) return "Seleccione un banco.";
             if (pago.getNumeroTarjeta() == null || !pago.getNumeroTarjeta().matches("\\d{16}")) return "Número de tarjeta inválido (16 dígitos).";
@@ -140,8 +141,9 @@ public class GestionComprasImpl implements IGestionCompras {
         Carrito c = obtenerCarritoActual();
         if (c == null || c.estaVacio()) return false;
 
-        boolean compraMySQL = repoCompraMySQL.registrarCompra(logueado, c);
-        boolean compraJson = repoCompraJson.registrarCompra(logueado, c);
+        String infoPago = (datosTransferencia != null) ? datosTransferencia.getBanco() : "No especificado";
+        boolean compraMySQL = repoCompraMySQL.registrarCompra(logueado, c, infoPago);
+        boolean compraJson = repoCompraJson.registrarCompra(logueado, c, infoPago);
 
         if (!compraMySQL && !compraJson) {
             return false;
@@ -153,11 +155,16 @@ public class GestionComprasImpl implements IGestionCompras {
                     gestionLibros.ajustarStock(item.getLibro().getIsbn(), -item.getCantidad());
                 }
             }
+        } else {
+            for (ItemCarrito item : c.getItems()) {
+                if (item.getLibro() != null) {
+                    gestionLibros.sincronizarStockRespaldo(item.getLibro().getIsbn());
+                }
+            }
         }
 
         vaciarCarrito();
 
-        String infoPago = (datosTransferencia != null) ? datosTransferencia.getBanco() : "No especificado";
         if (registradorTxt != null) {
             registradorTxt.registrar(
                     String.format("COMPRA - Cliente: %s (%s) | Pago: %s | Total: $%.2f",
