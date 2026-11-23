@@ -28,18 +28,25 @@ public class GestionUsuariosImpl implements IGestionUsuarios {
     }
 
     @Override
-    public boolean registrarCliente(Cliente cliente) {
-        if (cliente == null || cliente.getId() == null || cliente.getId().isBlank()
-                || cliente.getCorreo() == null || cliente.getCorreo().isBlank()) {
-            return false;
+    public String registrarCliente(Cliente cliente) {
+        if (cliente == null) return "Los datos del cliente son obligatorios.";
+        if (cliente.getId() == null || cliente.getId().isBlank()) return "El ID / Cédula es obligatorio.";
+        if (cliente.getNombreCompleto() == null || cliente.getNombreCompleto().isBlank()) {
+            return "El nombre completo es obligatorio.";
         }
-        String clavePlana = cliente.getContrasenaHash();
-        if (clavePlana == null || clavePlana.length() < LONGITUD_MINIMA_CONTRASENA) {
-            return false;
+        if (cliente.getCorreo() == null || cliente.getCorreo().isBlank() || !cliente.getCorreo().contains("@")) {
+            return "Ingrese un correo electrónico válido.";
         }
 
-        if (buscarPorIdConRespaldo(cliente.getId()) != null) return false;
-        if (buscarPorCorreoConRespaldo(cliente.getCorreo().trim()) != null) return false;
+        String clavePlana = cliente.getContrasenaHash();
+        if (clavePlana == null || clavePlana.length() < LONGITUD_MINIMA_CONTRASENA) {
+            return "La contraseña debe tener mínimo " + LONGITUD_MINIMA_CONTRASENA + " caracteres.";
+        }
+
+        if (buscarPorIdConRespaldo(cliente.getId()) != null) return "Ya existe un usuario registrado con ese ID.";
+        if (buscarPorCorreoConRespaldo(cliente.getCorreo().trim()) != null) {
+            return "Ya existe un usuario registrado con ese Correo.";
+        }
 
         cliente.setContrasenaHash(sha256(clavePlana));
         boolean okMySQL = repoMySQL.guardarUsuario(cliente);
@@ -47,9 +54,9 @@ public class GestionUsuariosImpl implements IGestionUsuarios {
 
         if (okMySQL || okJson) {
             registrarEvento("USUARIO REGISTRADO - ID: " + cliente.getId() + " | Correo: " + cliente.getCorreo());
-            return true;
+            return null;
         }
-        return false;
+        return "No se pudo guardar el usuario en la persistencia.";
     }
 
     @Override
