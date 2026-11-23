@@ -123,8 +123,30 @@ public class VentanaPrincipal extends JFrame {
     }
 
     public void mostrarOlvidoContrasena() {
-        JOptionPane.showMessageDialog(this,
-                "La recuperación de contraseña por correo no está disponible en esta versión.\nContacte al administrador de la tienda.");
+        JTextField txtIdRec = new JTextField();
+        JTextField txtCorreoRec = new JTextField();
+        JPasswordField txtNuevaPass = new JPasswordField();
+
+        Object[] formulario = {
+            "Ingrese sus datos para verificar su identidad:",
+            "ID / Cédula:", txtIdRec,
+            "Correo Electrónico:", txtCorreoRec,
+            "Nueva Contraseña (mín. " + IGestionUsuarios.LONGITUD_MINIMA_CONTRASENA + " caracteres):", txtNuevaPass
+        };
+
+        int opcion = JOptionPane.showConfirmDialog(this, formulario, "Restablecer Contraseña",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (opcion == JOptionPane.OK_OPTION) {
+            String error = gestionUsuarios.restablecerContrasena(
+                    txtIdRec.getText(), txtCorreoRec.getText(), new String(txtNuevaPass.getPassword()));
+            if (error != null) {
+                JOptionPane.showMessageDialog(this, error, "Error al restablecer", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "¡Contraseña restablecida con éxito! Ya puede iniciar sesión.",
+                        "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
     }
 
     // ---------------- Acciones de Libros ----------------

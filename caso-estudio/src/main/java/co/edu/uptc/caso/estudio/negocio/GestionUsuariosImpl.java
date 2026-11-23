@@ -122,6 +122,41 @@ public class GestionUsuariosImpl implements IGestionUsuarios {
         registrarEvento("USUARIO ACTUALIZADO - ID: " + actualizado.getId() + " | Correo: " + actualizado.getCorreo());
         return null;
     }
+    
+    @Override
+    public String restablecerContrasena(String id, String correo, String nuevaContrasena) {
+        if (id == null || id.isBlank()) return "Ingrese su ID / Cédula para verificar su identidad.";
+        if (correo == null || correo.isBlank()) return "Ingrese su correo electrónico registrado.";
+        if (nuevaContrasena == null || nuevaContrasena.length() < LONGITUD_MINIMA_CONTRASENA) {
+            return "La nueva contraseña debe tener mínimo " + LONGITUD_MINIMA_CONTRASENA + " caracteres.";
+        }
+
+        Cliente encontrado = buscarPorIdConRespaldo(id.trim());
+        if (encontrado == null || encontrado.getCorreo() == null
+                || !encontrado.getCorreo().trim().equalsIgnoreCase(correo.trim())) {
+            return "Los datos no coinciden con ningún usuario registrado.";
+        }
+
+        Cliente actualizado = FabricaClientes.crear(
+                encontrado.getId(), encontrado.getNombreCompleto(), encontrado.getCorreo(),
+                encontrado.getDireccionEnvio(), encontrado.getDepartamento(), encontrado.getCiudad(),
+                encontrado.getTelefono(), encontrado.getTipoCliente(), sha256(nuevaContrasena)
+        );
+
+        boolean okMySQL = repoMySQL.actualizarUsuario(actualizado);
+        boolean okJson = repoJson.actualizarUsuario(actualizado);
+
+        if (!okMySQL && !okJson) {
+            return "No se pudo actualizar la contraseña en el repositorio.";
+        }
+
+        if (usuarioLogueado != null && usuarioLogueado.getId().equals(actualizado.getId())) {
+            this.usuarioLogueado = actualizado;
+        }
+
+        registrarEvento("CONTRASEÑA RESTABLECIDA - ID: " + actualizado.getId() + " | Correo: " + actualizado.getCorreo());
+        return null;
+    }
 
     @Override
     public boolean eliminarUsuarioLogueado(String contrasena) {

@@ -11,5 +11,6 @@ public interface IGestionUsuarios {
     void cerrarSesion();
     Cliente getUsuarioLogueado();
     String actualizarUsuario(Cliente nuevosDatos, String nuevaContrasena);
+    String restablecerContrasena(String id, String correo, String nuevaContrasena);
     boolean eliminarUsuarioLogueado(String contrasena);
 }
