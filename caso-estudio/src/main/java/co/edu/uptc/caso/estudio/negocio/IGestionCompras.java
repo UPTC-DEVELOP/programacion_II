@@ -6,6 +6,7 @@ import co.edu.uptc.caso.estudio.model.Carrito;
 import co.edu.uptc.caso.estudio.model.Libro;
 import co.edu.uptc.caso.estudio.negocio.dto.PagoDto;
 
+
 public interface IGestionCompras {
     Carrito obtenerCarritoActual();
     void agregarAlCarrito(Libro libro, int cantidad);
@@ -14,4 +15,5 @@ public interface IGestionCompras {
     void vaciarCarrito();
     String registrarPago(PagoDto pago);
     boolean finalizarCompra();
+    double calcularTotalFinal();
 }

@@ -100,21 +100,19 @@ public class PanelCarrito extends JPanel {
         return btn;
     }
 
-    public void actualizarTabla(List<ItemCarrito> items) {
+    public void actualizarTabla(List<ItemCarrito> items, double totalFinal) {
         modeloTablaCarrito.setRowCount(0);
-        double total = 0;
         if (items != null) {
             for (ItemCarrito it : items) {
                 if (it.getLibro() == null) continue;
                 double subtotal = it.getLibro().getPrecioVenta() * it.getCantidad();
-                total += subtotal;
                 modeloTablaCarrito.addRow(new Object[]{
                     it.getLibro().getIsbn(), it.getLibro().getTitulo(),
                     it.getCantidad(), it.getLibro().getPrecioVenta(), subtotal
                 });
             }
         }
-        lblTotalCarrito.setText("Total Compra: $" + String.format("%.2f", total));
+        lblTotalCarrito.setText("Total Compra: $" + String.format("%.2f", totalFinal));
     }
 
     public String getIsbnUnicoSeleccionado() {

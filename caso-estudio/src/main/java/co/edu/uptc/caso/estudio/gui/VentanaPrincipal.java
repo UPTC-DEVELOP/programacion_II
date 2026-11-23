@@ -242,7 +242,7 @@ public class VentanaPrincipal extends JFrame {
     // ---------------- Acciones de Carrito ----------------
 
     public void refrescarCarrito() {
-        panelCarrito.actualizarTabla(gestionCompras.obtenerCarritoActual().getItems());
+        panelCarrito.actualizarTabla(gestionCompras.obtenerCarritoActual().getItems(), gestionCompras.calcularTotalFinal());
     }
 
     public void actualizarCantidadCarrito() {

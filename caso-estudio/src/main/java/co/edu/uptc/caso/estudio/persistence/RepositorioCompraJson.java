@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import co.edu.uptc.caso.estudio.model.Cliente;
 
 public class RepositorioCompraJson implements IRepositorioCompra {
 
@@ -20,18 +21,19 @@ public class RepositorioCompraJson implements IRepositorioCompra {
     }
 
     @Override
-    public boolean registrarCompra(String clienteId, Carrito carrito) {
-        if (clienteId == null || carrito == null || carrito.estaVacio()) {
-            return false;
+    public boolean registrarCompra(Cliente cliente, Carrito carrito) {
+        if (cliente == null || cliente.getId() == null || carrito == null || carrito.estaVacio()) {
         }
 
         Compra compra = new Compra();
         compra.setIdCompra("CMP-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
-        compra.setClienteId(clienteId);
+        compra.setClienteId(cliente.getId());
+        compra.setNombreCliente(cliente.getNombreCompleto());
         compra.setItems(new ArrayList<>(carrito.getItems()));
         compra.setSubtotalSinIva(carrito.calcularSubtotalSinIva());
         compra.setTotalImpuestos(carrito.calcularTotalImpuestos());
-        compra.setTotalPagado(carrito.calcularTotal());
+        compra.setDescuentoAplicado(carrito.calcularDescuento(cliente));
+        compra.setTotalPagado(carrito.calcularTotalFinal(cliente));
 
         List<Compra> compras = manejadorJson.leerLista();
         compras.add(compra);

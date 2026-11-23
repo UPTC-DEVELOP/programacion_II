@@ -7,19 +7,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import co.edu.uptc.caso.estudio.model.Cliente; 
 
 public class RepositorioCompraMySQL implements IRepositorioCompra {
 
     @Override
-    public boolean registrarCompra(String clienteId, Carrito carrito) {
-        if (clienteId == null || carrito == null || carrito.estaVacio()) {
+    public boolean registrarCompra(Cliente cliente, Carrito carrito) {
+        if (cliente == null || cliente.getId() == null || carrito == null || carrito.estaVacio()) {
             return false;
         }
 
+        String clienteId = cliente.getId();
         try (Connection conn = ConexionMySQL.obtenerConexion()) {
             conn.setAutoCommit(false);
             try {
-                int compraId = insertarCabeceraCompra(conn, clienteId, carrito.calcularTotal());
+                int compraId = insertarCabeceraCompra(conn, clienteId, carrito.calcularTotalFinal(cliente));
                 registrarDetallesYDescontarStock(conn, compraId, carrito);
                 vaciarCarritoCliente(conn, clienteId);
 

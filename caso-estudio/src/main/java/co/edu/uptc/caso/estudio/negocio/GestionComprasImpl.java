@@ -140,8 +140,8 @@ public class GestionComprasImpl implements IGestionCompras {
         Carrito c = obtenerCarritoActual();
         if (c == null || c.estaVacio()) return false;
 
-        boolean compraMySQL = repoCompraMySQL.registrarCompra(logueado.getId(), c);
-        boolean compraJson = repoCompraJson.registrarCompra(logueado.getId(), c);
+        boolean compraMySQL = repoCompraMySQL.registrarCompra(logueado, c);
+        boolean compraJson = repoCompraJson.registrarCompra(logueado, c);
 
         if (!compraMySQL && !compraJson) {
             return false;
@@ -161,12 +161,18 @@ public class GestionComprasImpl implements IGestionCompras {
         if (registradorTxt != null) {
             registradorTxt.registrar(
                     String.format("COMPRA - Cliente: %s (%s) | Pago: %s | Total: $%.2f",
-                            logueado.getNombreCompleto(), logueado.getCorreo(), infoPago, c.calcularTotal())
+                            logueado.getNombreCompleto(), logueado.getCorreo(), infoPago, c.calcularTotalFinal(logueado))
             );
         }
 
         this.datosTransferencia = null;
         return true;
+    }
+    
+    @Override
+    public double calcularTotalFinal() {
+        Carrito c = obtenerCarritoActual();
+        return c.calcularTotalFinal(gestionUsuarios.getUsuarioLogueado());
     }
 
     private void sincronizarCarrito(Carrito carrito) {
