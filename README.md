@@ -17,15 +17,18 @@ Integrantes:
 
 ## Estructura
 
-El proyecto sigue una organización por capas basada en Maven y principios SOLID:
+El proyecto (`caso-estudio`) sigue una organización modular por capas basada en Maven y principios **SOLID**:
 
 | Carpeta / Paquete | Contenido |
 | :--- | :--- |
-| `src/main/java/co/edu/uptc/model` | Entidades `Libro`, `Cliente`, `Carrito`, `ItemCarrito`, `DatosTransferencia` y `UbicacionesColombia`. |
-| `src/main/java/co/edu/uptc/gui` | Ventana e interfaz gráfica Swing (`VentanaPrincipal.java`). |
-| `src/main/java/co/edu/uptc/controller` | Controlador principal (`TiendaController.java`), eventos y validaciones. |
-| `src/main/java/co/edu/uptc/persistence` | Conexión `ConexionMySQL`, interfaces (`IRepositorioLibros`, `IRepositorioUsuario`, `IRepositorioCarrito`) e implementaciones para **MySQL (JDBC)** y **JSON (Gson)**. |
-| `sql` | Scripts SQL para la creación y configuración de la base de datos en MySQL. |
+| `src/main/java/co/edu/uptc/caso/estudio/gui` | Interfaz gráfica modular (`VentanaPrincipal`, `PanelUsuario`, `PanelLibros`, `PanelCarrito`, `DialogoLibro`) y manejador central de eventos (`Evento`). |
+| `src/main/java/co/edu/uptc/caso/estudio/negocio` | Interfaces y servicios de negocio desacoplados (`IGestionUsuarios`, `IGestionLibros`, `IGestionCompras`, `TiendaConfig`). |
+| `src/main/java/co/edu/uptc/caso/estudio/negocio/dto` | Objetos de transferencia de datos entre vista y negocio (`CredencialDto`, `PagoDto`). |
+| `src/main/java/co/edu/uptc/caso/estudio/model` | Entidades del dominio con herencia/polimorfismo (`Cliente`, `ClienteRegular`, `ClientePremium`, `FabricaClientes`, `Libro`, `LibroFisico`, `LibroDigital`, `FabricaLibros`, `Carrito`, `Compra`). |
+| `src/main/java/co/edu/uptc/caso/estudio/model/enums` | Enumeraciones para constantes del dominio (`TipoCliente`, `MetodoPago`). |
+| `src/main/java/co/edu/uptc/caso/estudio/persistence` | Interfaces de repositorio (`IRepositorioUsuario`, `IRepositorioLibros`, `IRepositorioCarrito`, `IRepositorioCompra`) e implementaciones duales en **MySQL** y **JSON** (`ManejadorArchivoJson`, `RegistradorOperacionesTxt`). |
+| `data/` | Archivos locales de persistencia JSON (`usuarios.json`, `libros.json`, `carritos.json`, `compras.json`) y registro de auditoría (`operaciones_tienda.txt`). |
+| `sql/` | Scripts SQL para la creación y configuración de la base de datos en MySQL. |
 | `pom.xml` | Configuración de dependencias Maven (`mysql-connector-j`, `gson`) y versión de **Java 25**. |
 
 ## Abrir y ejecutar en Eclipse
