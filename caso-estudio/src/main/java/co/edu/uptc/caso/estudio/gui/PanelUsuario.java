@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.util.Arrays;
 import javax.swing.*;
+import co.edu.uptc.caso.estudio.model.FabricaClientes;
 
 public class PanelUsuario extends JPanel {
     private static final long serialVersionUID = 1L;
@@ -117,14 +118,13 @@ public class PanelUsuario extends JPanel {
         String id = (idFijo != null) ? idFijo : txtId.getText().trim();
         String correo = (correoFijo != null) ? correoFijo : txtCorreo.getText().trim();
         TipoCliente tipo = (TipoCliente) cbTipoCliente.getSelectedItem();
+        String tipoNombre = (tipo != null) ? tipo.name() : TipoCliente.ESTANDAR.name();
 
-        Cliente c = new Cliente(
+        return FabricaClientes.crear(
                 id, txtNombre.getText().trim(), correo, txtDireccion.getText().trim(),
                 (String) cbDepto.getSelectedItem(), (String) cbCiudad.getSelectedItem(),
-                txtTelefono.getText().trim(), tipo != null ? tipo.name() : TipoCliente.ESTANDAR.name()
+                txtTelefono.getText().trim(), tipoNombre, obtenerPasswordIngresada()
         );
-        c.setContrasenaHash(obtenerPasswordIngresada());
-        return c;
     }
 
     public String obtenerPasswordIngresada() {
