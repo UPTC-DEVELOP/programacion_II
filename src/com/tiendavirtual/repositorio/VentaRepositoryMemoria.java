@@ -16,11 +16,13 @@ public class VentaRepositoryMemoria implements VentaRepository {
 
     @Override
     public Venta buscarPorId(String id) {
+
         for (Venta venta : ventas) {
             if (venta.getId().equals(id)) {
                 return venta;
             }
         }
+
         return null;
     }
 
@@ -32,5 +34,17 @@ public class VentaRepositoryMemoria implements VentaRepository {
     @Override
     public void eliminarVenta(String id) {
         ventas.removeIf(venta -> venta.getId().equals(id));
+    }
+
+    @Override
+    public void actualizarVenta(Venta venta) {
+
+        for (int i = 0; i < ventas.size(); i++) {
+
+            if (ventas.get(i).getId().equals(venta.getId())) {
+                ventas.set(i, venta);
+                return;
+            }
+        }
     }
 }

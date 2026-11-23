@@ -12,4 +12,5 @@ public interface VentaRepository {
     List<Venta> obtenerTodas();
 
     void eliminarVenta(String id);
+    void actualizarVenta(Venta venta);
 }

@@ -10,7 +10,7 @@ import javax.swing.table.DefaultTableModel;
 import com.tiendavirtual.controlador.VentaController;
 import com.tiendavirtual.modelo.Venta;
 import com.tiendavirtual.negocio.VentaService;
-import com.tiendavirtual.repositorio.VentaRepositoryMemoria;
+import com.tiendavirtual.repositorio.VentaRepositoryMySQL;
 
 public class VentaFrame extends JFrame {
 
@@ -20,7 +20,7 @@ public class VentaFrame extends JFrame {
     private VentaController controller;
 
     public VentaFrame() {
-        VentaRepositoryMemoria repositorio = new VentaRepositoryMemoria();
+        VentaRepositoryMySQL repositorio = new VentaRepositoryMySQL();
         VentaService servicio = new VentaService(repositorio);
         controller = new VentaController(servicio);
 

@@ -1,146 +1,112 @@
 package com.tiendavirtual.negocio;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.tiendavirtual.modelo.Cliente;
+import com.tiendavirtual.repositorio.ClienteRepository;
+import com.tiendavirtual.repositorio.ClienteRepositoryMySQL;
 
 public class GestionCliente {
-	
-	private ArrayList<Cliente> clientes;
-	
-	public GestionCliente() {
-		// TODO Auto-generated constructor stub
-		clientes=new ArrayList<>();
-	}
 
-		public boolean registrarCliente(Cliente cliente) {
-			
-			if (!camposCompletos(cliente)) {
-				return false;
-			}
-			if (existeCorreo(cliente.getCorreo())) {
-				return false;
-			}
-			
-			if (existeDocumento(cliente.getNumeroDocumento())) {
-				return false;
-			}
-			
-			if (!contraseniaValida(cliente.getContrasenia())) {
-				return false;
-			}
-			clientes.add(cliente);
-			return true;
-		}
-		
-		public Cliente iniciarSesion(String correo, String contrasenia) {
-			for (Cliente cliente:clientes) {
-				if (cliente.getCorreo().equals(correo)
-					&& cliente.getContrasenia().equals(contrasenia)) {
-						return cliente;
-					}
-			}
-			return null;
-		}
-		
-		private Cliente buscarPorDocumento(int numeroDocumento) {
-			for (Cliente cliente:clientes) {
-				if (cliente.getNumeroDocumento()==numeroDocumento) {
-					return cliente;
-				}
-			}
-			return null;
-		}
-		
-		public boolean actualizarCliente(Cliente clienteActualizado) {
+    private ClienteRepository repositorio;
 
-		    Cliente cliente = null;
+    public GestionCliente() {
+        repositorio = new ClienteRepositoryMySQL();
+    }
 
-		    for (Cliente c : clientes) {
-		        if (c.getCorreo().equals(clienteActualizado.getCorreo())) {
-		            cliente = c;
-		            break;
-		        }
-		    }
+    public boolean registrarCliente(Cliente cliente) {
 
-		    if (cliente == null) {
-		        return false;
-		    }
+        if (!camposCompletos(cliente)) {
+            return false;
+        }
 
-		    if (!camposCompletos(clienteActualizado)) {
-		        return false;
-		    }
+        if (existeCorreo(cliente.getCorreo())) {
+            return false;
+        }
 
-		    for (Cliente otroCliente : clientes) {
+        if (existeDocumento(cliente.getNumeroDocumento())) {
+            return false;
+        }
 
-		        if (otroCliente != cliente
-		                && otroCliente.getCorreo().equals(clienteActualizado.getCorreo())) {
+        if (!contraseniaValida(cliente.getContrasenia())) {
+            return false;
+        }
 
-		            return false;
-		            
-		        }
-		    }
+        return repositorio.guardar(cliente);
+    }
 
-		    cliente.setNombre(clienteActualizado.getNombre());
-		    cliente.setApellido(clienteActualizado.getApellido());
-		    cliente.setCorreo(clienteActualizado.getCorreo());
-		    cliente.setTelefono(clienteActualizado.getTelefono());
+    public Cliente iniciarSesion(String correo, String contrasenia) {
+        return repositorio.iniciarSesion(correo, contrasenia);
+    }
 
-		    if (clienteActualizado.getContrasenia() != null
-		            && !clienteActualizado.getContrasenia().isEmpty()) {
+    public boolean actualizarCliente(Cliente actualizado) {
 
-		        if (!contraseniaValida(clienteActualizado.getContrasenia())) {
-		            return false;
-		        }
+        if (!camposCompletos(actualizado)) {
+            return false;
+        }
 
-		        cliente.setContrasenia(clienteActualizado.getContrasenia());
-		    }
+        Cliente existente =
+                repositorio.buscarPorDocumento(actualizado.getNumeroDocumento());
 
-		    return true;
-		}
-		
-		
-		private boolean existeCorreo(String correo) {
-			for (Cliente cliente:clientes) {
-				if (cliente.getCorreo().equals(correo)) {
-					return true;
-				}
-			}
-			return false;
-		}
-		private boolean existeDocumento(int numeroDocumento) {
-			for (Cliente cliente:clientes) {
-				if (cliente.getNumeroDocumento() == numeroDocumento) {
-					return true;
-				}
-			}
-			return false;
-		}
-		
-		private boolean contraseniaValida(String contrasenia) {
-			return contrasenia !=null && contrasenia.length() >=6;
-		}
-		
-		private boolean camposCompletos(Cliente cliente) {
-			
-		return cliente.getNombre() !=null && !cliente.getNombre().isEmpty()
-				&& cliente.getApellido() !=null && !cliente.getApellido().isEmpty()
-						&& cliente.getCorreo() !=null && !cliente.getCorreo().isEmpty()
-		 && cliente.getTelefono() != null && !cliente.getTelefono().isEmpty();
-		 
-		}
-		public ArrayList<Cliente> listarClientes() {
-		    return new ArrayList<>(clientes);
-		}
+        if (existente == null) {
+            return false;
+        }
 
-		public boolean eliminarCliente(int numeroDocumento) {
-		    Cliente cliente = buscarPorDocumento(numeroDocumento);
+        for (Cliente otro : repositorio.listar()) {
+            if (otro.getNumeroDocumento() != actualizado.getNumeroDocumento()
+                    && otro.getCorreo().equalsIgnoreCase(actualizado.getCorreo())) {
+                return false;
+            }
+        }
 
-		    if (cliente == null) {
-		        return false;
-		    }
+        if (actualizado.getContrasenia() != null
+                && !actualizado.getContrasenia().isEmpty()
+                && !contraseniaValida(actualizado.getContrasenia())) {
+            return false;
+        }
 
-		    clientes.remove(cliente);
-		    return true;
-		}
+        if (actualizado.getContrasenia() == null
+                || actualizado.getContrasenia().isEmpty()) {
+            actualizado.setContrasenia(existente.getContrasenia());
+        }
+
+        return repositorio.actualizar(actualizado);
+    }
+
+    public boolean eliminarCliente(int numeroDocumento) {
+        return repositorio.eliminar(numeroDocumento);
+    }
+
+    public List<Cliente> listarClientes() {
+        return repositorio.listar();
+    }
+
+    private boolean existeCorreo(String correo) {
+        for (Cliente cliente : repositorio.listar()) {
+            if (cliente.getCorreo().equalsIgnoreCase(correo)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean existeDocumento(int numeroDocumento) {
+        return repositorio.buscarPorDocumento(numeroDocumento) != null;
+    }
+
+    private boolean contraseniaValida(String contrasenia) {
+        return contrasenia != null && contrasenia.length() >= 6;
+    }
+
+    private boolean camposCompletos(Cliente cliente) {
+        return cliente != null
+                && cliente.getNombre() != null && !cliente.getNombre().isEmpty()
+                && cliente.getApellido() != null && !cliente.getApellido().isEmpty()
+                && cliente.getCorreo() != null && !cliente.getCorreo().isEmpty()
+                && cliente.getTelefono() != null && !cliente.getTelefono().isEmpty();
+    }
+
+public Cliente buscarPorDocumento(int numeroDocumento) {
+    return repositorio.buscarPorDocumento(numeroDocumento);
+}
 }

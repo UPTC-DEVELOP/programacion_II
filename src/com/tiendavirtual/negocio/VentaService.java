@@ -14,17 +14,21 @@ public class VentaService {
     }
 
     public void registrar(Venta venta) {
+
         if (venta == null || venta.getId() == null
                 || venta.getId().trim().isEmpty()) {
-            throw new IllegalArgumentException("La venta no es válida.");
+            throw new IllegalArgumentException(
+                "La venta no es válida.");
         }
 
         if (venta.getMontoTotal() <= 0) {
-            throw new IllegalArgumentException("El monto debe ser mayor que cero.");
+            throw new IllegalArgumentException(
+                "El monto debe ser mayor que cero.");
         }
 
         if (repositorio.buscarPorId(venta.getId()) != null) {
-            throw new IllegalArgumentException("El ID de venta ya existe.");
+            throw new IllegalArgumentException(
+                "El ID de venta ya existe.");
         }
 
         repositorio.guardarVenta(venta);
@@ -39,23 +43,33 @@ public class VentaService {
     }
 
     public void eliminar(String id) {
+
         if (repositorio.buscarPorId(id) == null) {
-            throw new IllegalArgumentException("La venta no existe.");
+            throw new IllegalArgumentException(
+                "La venta no existe.");
         }
 
         repositorio.eliminarVenta(id);
     }
 
     public void actualizar(Venta venta) {
-        if (venta == null || repositorio.buscarPorId(venta.getId()) == null) {
-            throw new IllegalArgumentException("La venta no existe.");
+
+        if (venta == null || venta.getId() == null
+                || venta.getId().trim().isEmpty()) {
+            throw new IllegalArgumentException(
+                "La venta no es válida.");
+        }
+
+        if (repositorio.buscarPorId(venta.getId()) == null) {
+            throw new IllegalArgumentException(
+                "La venta no existe.");
         }
 
         if (venta.getMontoTotal() <= 0) {
-            throw new IllegalArgumentException("El monto debe ser mayor que cero.");
+            throw new IllegalArgumentException(
+                "El monto debe ser mayor que cero.");
         }
 
-        repositorio.eliminarVenta(venta.getId());
-        repositorio.guardarVenta(venta);
+        repositorio.actualizarVenta(venta);
     }
 }
