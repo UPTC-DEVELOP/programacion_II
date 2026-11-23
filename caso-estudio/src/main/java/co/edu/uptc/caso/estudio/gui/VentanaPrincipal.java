@@ -53,19 +53,13 @@ public class VentanaPrincipal extends JFrame {
 
     public void registrarUsuario() {
         Cliente c = panelUsuario.construirClienteDesdeFormulario(null, null);
-        if (c.getId().isEmpty() || c.getNombreCompleto().isEmpty() || c.getCorreo().isEmpty() || c.getContrasenaHash().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Complete los campos obligatorios.", "Aviso", JOptionPane.WARNING_MESSAGE);
+        String error = gestionUsuarios.registrarCliente(c);
+        if (error != null) {
+            JOptionPane.showMessageDialog(this, error, "Error de Validación", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        if (c.getContrasenaHash().length() < IGestionUsuarios.LONGITUD_MINIMA_CONTRASENA) {
-            JOptionPane.showMessageDialog(this, "La contraseña debe tener mínimo " + IGestionUsuarios.LONGITUD_MINIMA_CONTRASENA + " caracteres.");
-            return;
-        }
-        if (gestionUsuarios.registrarCliente(c)) {
-            JOptionPane.showMessageDialog(this, "¡Usuario registrado exitosamente!");
-        } else {
-            JOptionPane.showMessageDialog(this, "El ID o el Correo ya están registrados.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        panelUsuario.limpiarPassword();
+        JOptionPane.showMessageDialog(this, "¡Usuario registrado exitosamente!");
     }
 
     public void iniciarSesion() {
