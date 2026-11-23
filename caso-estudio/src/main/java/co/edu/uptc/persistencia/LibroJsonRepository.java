@@ -201,9 +201,8 @@ public class LibroJsonRepository implements ILibroRepositorio {
 
     /**
      * Reemplaza todo el contenido del archivo JSON con la lista indicada.
-     * Se usa para importar o reemplazar el catálogo completo desde una fuente
-     * externa y siempre deja un respaldo del archivo anterior antes de
-     * sobrescribirlo.
+     * Se usa para la sincronización inicial desde PostgreSQL y siempre deja
+     * un respaldo del archivo anterior antes de sobrescribirlo.
      *
      * @param libros Libros que deben quedar en el archivo
      */
@@ -385,7 +384,7 @@ public class LibroJsonRepository implements ILibroRepositorio {
                     + rutaArchivo, e);
         } catch (JsonParseException e) {
             // RF02/RF03: si el JSON está corrupto se respalda y se reconstruye
-            // vacío para no bloquear el CRUD de libros.
+            // vacío para no bloquear el CRUD principal en PostgreSQL.
             recuperarArchivoCorrupto();
             return new LibroData();
         }

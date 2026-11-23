@@ -10,9 +10,3 @@
 10 | 2026-11-09T17:28:17.749643800 | CREATE | admin | 9780141439518 | Registro de nuevo libro: Pride and Prejudice
 11 | 2026-11-09T17:29:01.307140100 | CREATE | admin | 9780553380163 | Registro de nuevo libro: A Brief History of Time
 12 | 2026-11-09T17:48:24.106371600 | CREATE | admin | 9780743477123 | Registro de nuevo libro: Romeo and Juliet
-13 | 2026-11-14T10:15:36.351006700 | CREATE | admin | 1036589654 | Registro de cliente: oscar@uptc.edu.co
-14 | 2026-11-21T09:22:01.644259900 | CREATE | admin | 9780547928227 | Registro de nuevo libro: The Hobbit
-15 | 2026-11-21T09:29:21.943196300 | CREATE | admin | 9781451673319 | Registro de nuevo libro: Fahrenheit 451
-16 | 2026-11-21T09:30:47.094030300 | UPDATE | admin | 9781451673319 | Actualización de libro: Fahrenheit 451 (precio=68000.0, stock=15)
-17 | 2026-11-21T09:32:28.539037600 | UPDATE | admin | 9780134685991 | Actualización de libro: Effective Java (precio=135000.0, stock=15)
-18 | 2026-11-21T09:36:37.586544 | CREATE | admin | 9780393317558 | Registro de nuevo libro: Guns, Germs, and Steel

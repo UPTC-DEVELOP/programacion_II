@@ -83,7 +83,7 @@
       "editorial": "Addison Wesley",
       "numPaginas": 416,
       "precioVenta": 135000.0,
-      "stock": 15,
+      "stock": 24,
       "formato": "DIGITAL",
       "categoria": "TECNOLOGIA"
     },
@@ -128,49 +128,7 @@
       "stock": 100,
       "formato": "DIGITAL",
       "categoria": "ROMANCE"
-    },
-    {
-      "isbn": "9780547928227",
-      "titulo": "The Hobbit",
-      "autores": [
-        "J.R.R. Tolkien"
-      ],
-      "anioPublicacion": 1937,
-      "editorial": "Hobbit sas",
-      "numPaginas": 550,
-      "precioVenta": 65000.0,
-      "stock": 20,
-      "formato": "FISICO",
-      "categoria": "OTROS"
-    },
-    {
-      "isbn": "9781451673319",
-      "titulo": "Fahrenheit 451",
-      "autores": [
-        "Ray Bradbury"
-      ],
-      "anioPublicacion": 1953,
-      "editorial": "451 editorial",
-      "numPaginas": 250,
-      "precioVenta": 68000.0,
-      "stock": 15,
-      "formato": "FISICO",
-      "categoria": "CIENCIA_FICCION"
-    },
-    {
-      "isbn": "9780393317558",
-      "titulo": "Guns, Germs, and Steel",
-      "autores": [
-        "Jared Diamond"
-      ],
-      "anioPublicacion": 1997,
-      "editorial": "Diamond editoriales",
-      "numPaginas": 525,
-      "precioVenta": 85000.0,
-      "stock": 6,
-      "formato": "FISICO",
-      "categoria": "HISTORIA"
     }
   ],
-  "ultimoId": 12
+  "ultimoId": 9
 }
