@@ -8,6 +8,7 @@ import co.edu.uptc.caso.estudio.persistence.RegistradorOperacionesTxt;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import co.edu.uptc.caso.estudio.model.FabricaClientes;
 
 public class GestionUsuariosImpl implements IGestionUsuarios {
 
@@ -93,13 +94,14 @@ public class GestionUsuariosImpl implements IGestionUsuarios {
         }
 
         String tipo = nuevosDatos.getTipoCliente() != null ? nuevosDatos.getTipoCliente() : usuarioLogueado.getTipoCliente();
-        Cliente actualizado = new Cliente(
+        
+        String hashFinal = cambiaContrasena ? sha256(nuevaContrasena) : usuarioLogueado.getContrasenaHash();
+        Cliente actualizado = FabricaClientes.crear(
                 usuarioLogueado.getId(), nuevosDatos.getNombreCompleto(), usuarioLogueado.getCorreo(),
                 nuevosDatos.getDireccionEnvio(), nuevosDatos.getDepartamento(), nuevosDatos.getCiudad(),
-                nuevosDatos.getTelefono(), tipo
+                nuevosDatos.getTelefono(), tipo, hashFinal
         );
-        actualizado.setContrasenaHash(cambiaContrasena ? sha256(nuevaContrasena) : usuarioLogueado.getContrasenaHash());
-
+       
         boolean okMySQL = repoMySQL.actualizarUsuario(actualizado);
         boolean okJson = repoJson.actualizarUsuario(actualizado);
 
