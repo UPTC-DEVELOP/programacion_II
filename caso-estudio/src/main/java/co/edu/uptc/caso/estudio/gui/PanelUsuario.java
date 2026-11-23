@@ -144,7 +144,7 @@ public class PanelUsuario extends JPanel {
         actualizarCiudades();
         cbCiudad.setSelectedItem(c.getCiudad());
         try {
-            cbTipoCliente.setSelectedItem(TipoCliente.valueOf(c.getTipoCliente().toUpperCase()));
+            cbTipoCliente.setSelectedItem(TipoCliente.desdeTexto(c.getTipoCliente()));
         } catch (Exception e) {
             cbTipoCliente.setSelectedItem(TipoCliente.ESTANDAR);
         }
