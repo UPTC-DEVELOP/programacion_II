@@ -6,7 +6,7 @@ import co.edu.uptc.caso.estudio.negocio.dto.CredencialDto;
 public interface IGestionUsuarios {
     int LONGITUD_MINIMA_CONTRASENA = 6;
 
-    boolean registrarCliente(Cliente cliente);
+    String registrarCliente(Cliente cliente);
     boolean iniciarSesion(CredencialDto credenciales);
     void cerrarSesion();
     Cliente getUsuarioLogueado();
