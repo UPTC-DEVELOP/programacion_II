@@ -15,4 +15,16 @@ public enum TipoCliente {
     public double getDescuento() {
         return descuento;
     }
+    
+    public static TipoCliente desdeTexto(String valor) {
+        if (valor == null || valor.isBlank()) {
+            return ESTANDAR;
+        }
+        try {
+            return TipoCliente.valueOf(valor.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return ESTANDAR;
+        }
+    }
+
 }
