@@ -8,10 +8,10 @@ public class Libro {
     private String categoria;
     private String editorial;
     private int paginas;
-    private double precioVenta; // Precio con IVA incluido[cite: 285]
+    private double precioVenta;   // Precio con IVA incluido
     private int stock;
-    private String formato;     // "Físico" o "Digital"[cite: 285]
-    private double porcentajeIva; // 19 o 5 (o 0.19 / 0.05)[cite: 285]
+    private String formato;       // "Físico" o "Digital"
+    private double porcentajeIva; // 19 o 5 (o 0.19 / 0.05)
 
     public Libro() {}
 
@@ -35,17 +35,17 @@ public class Libro {
         return porcentajeIva > 1 ? porcentajeIva / 100.0 : porcentajeIva;
     }
 
-    // Calcula el valor del impuesto para una cantidad dada (SRP)[cite: 286]
+    // Calcula el valor del impuesto para una cantidad dada (SRP)
     public double calcularImpuesto(int cantidad) {
         return (precioVenta * cantidad) * getTasaIvaDecimal();
     }
 
-    // Calcula el subtotal sin impuestos para una cantidad dada (SRP)[cite: 286]
+    // Calcula el subtotal sin impuestos para una cantidad dada (SRP)
     public double calcularSubtotal(int cantidad) {
         return precioVenta * cantidad;
     }
 
-    // Polimorfismo (LSP): cada subclase define si requiere logística de envío físico
+    // Polimorfismo (LSP): define si requiere logística de envío físico
     public boolean requiereEnvioFisico() {
         return "Físico".equalsIgnoreCase(formato);
     }
