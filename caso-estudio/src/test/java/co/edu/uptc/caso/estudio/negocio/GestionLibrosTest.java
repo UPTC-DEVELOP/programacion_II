@@ -81,7 +81,7 @@ public class GestionLibrosTest extends TestCase {
         gestionLibros.registrarLibro(new Libro("978-6", "Libro A", "Autor A", 2021, "Ficcion", "Ed", 150, 50000, 3, "Digital", 5));
         gestionLibros.registrarLibro(new Libro("978-7", "Libro B", "Autor B", 2022, "Historia", "Ed", 220, 70000, 5, "Físico", 19));
 
-        List<Libro> catalogo = gestionLibros.obtenerTodosLosLibros();
+        List<Libro> catalogo = gestionLibros.listarLibros();
         assertEquals("El catalogo debe tener exactamente 2 libros", 2, catalogo.size());
     }
 
