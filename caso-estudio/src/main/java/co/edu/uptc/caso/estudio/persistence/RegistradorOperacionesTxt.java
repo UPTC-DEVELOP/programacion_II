@@ -13,7 +13,11 @@ public class RegistradorOperacionesTxt {
     private final String rutaArchivo;
 
     public RegistradorOperacionesTxt() {
-        this.rutaArchivo = ConfiguracionTienda.obtener("ruta.txt.log", "data/operaciones_tienda.txt");
+        this(ConfiguracionTienda.obtener("ruta.txt.log", "data/operaciones_tienda.txt"));
+    }
+
+    public RegistradorOperacionesTxt(String rutaArchivo) {
+        this.rutaArchivo = rutaArchivo;
     }
 
     public void registrar(String mensaje) {
