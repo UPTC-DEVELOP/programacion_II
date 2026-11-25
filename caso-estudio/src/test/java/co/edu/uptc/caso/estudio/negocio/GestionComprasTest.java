@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import junit.framework.TestCase;
 
+// Pruebas unitarias para el carrito de compras, pagos y finalizacion de pedidos
 public class GestionComprasTest extends TestCase {
 
     private GestionUsuariosImpl gestionUsuarios;
@@ -27,6 +28,7 @@ public class GestionComprasTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        // Armamos los repositorios en memoria para aislar las pruebas
         RepoUsuarioMemoria repoUser = new RepoUsuarioMemoria();
         RepoLibrosMemoria repoLibros = new RepoLibrosMemoria();
         RepoCarritoMemoria repoCarritoMySQL = new RepoCarritoMemoria();
@@ -42,7 +44,7 @@ public class GestionComprasTest extends TestCase {
                 gestionUsuarios, gestionLibros, null
         );
 
-        // Preparar usuario logueado y libro con stock
+        // Creamos un cliente con sesion iniciada y un libro con 5 unidades disponibles
         Cliente cliente = FabricaClientes.crear("2001", "Juan Lopez", "juan@uptc.edu.co",
                 "Cra 5 # 12-30", "Boyaca", "Tunja", "3209876543", "REGULAR", "clave123");
         gestionUsuarios.registrarCliente(cliente);
@@ -53,6 +55,7 @@ public class GestionComprasTest extends TestCase {
         gestionLibros.registrarLibro(libro);
     }
 
+    // Verifica que al agregar un libro al carrito se guarde la cantidad y se calcule el total
     public void testAgregarAlCarritoYCalcularTotal() {
         Libro libro = gestionLibros.buscarLibroPorIsbn("978-99");
         gestionCompras.agregarAlCarrito(libro, 2);
@@ -63,6 +66,7 @@ public class GestionComprasTest extends TestCase {
         assertTrue("El total final debe ser mayor a 0", gestionCompras.calcularTotalFinal() > 0);
     }
 
+    // Comprueba que no deje agregar mas unidades de las que hay en stock
     public void testNoPermiteAgregarMasDelStockDisponible() {
         Libro libro = gestionLibros.buscarLibroPorIsbn("978-99"); // Stock = 5
         gestionCompras.agregarAlCarrito(libro, 10);
@@ -71,6 +75,25 @@ public class GestionComprasTest extends TestCase {
         assertTrue("No debe agregar items si superan el stock", carrito.estaVacio());
     }
 
+    // Revisa que al quitar un libro del carrito se elimine bien y el total vuelva a cero
+    public void testEliminarItemDelCarrito() {
+        Libro libro = gestionLibros.buscarLibroPorIsbn("978-99");
+        gestionCompras.agregarAlCarrito(libro, 2);
+
+        gestionCompras.eliminarDelCarrito("978-99");
+        Carrito carrito = gestionCompras.obtenerCarritoActual();
+        assertTrue("El carrito debe quedar vacio tras eliminar el unico item", carrito.estaVacio());
+        assertEquals(0.0, gestionCompras.calcularTotalFinal(), 0.01);
+    }
+
+    // Valida que no se pueda cerrar una compra si el carrito esta vacio
+    public void testFinalizarCompraConCarritoVacioFalla() {
+        boolean compraOk = gestionCompras.finalizarCompra();
+        assertFalse("No debe permitir finalizar una compra sin productos", compraOk);
+        assertEquals("No debe registrar ninguna compra en BD", 0, repoCompraMySQL.totalComprasRegistradas);
+    }
+
+    // Prueba el flujo completo: agregar libro, registrar pago Nequi, finalizar compra y vaciar carrito
     public void testRegistrarPagoNequiYFinalizarCompra() {
         Libro libro = gestionLibros.buscarLibroPorIsbn("978-99");
         gestionCompras.agregarAlCarrito(libro, 2);
@@ -89,7 +112,7 @@ public class GestionComprasTest extends TestCase {
         assertTrue("El carrito debe quedar vacio tras comprar", gestionCompras.obtenerCarritoActual().estaVacio());
     }
 
-    // --- Repositorios simulados en memoria ---
+    // Simula la tabla de usuarios en memoria
     private static class RepoUsuarioMemoria implements IRepositorioUsuario {
         private final Map<String, Cliente> datos = new HashMap<>();
         @Override public boolean guardarUsuario(Cliente c) { datos.put(c.getId(), c); return true; }
@@ -103,6 +126,7 @@ public class GestionComprasTest extends TestCase {
         @Override public List<Cliente> obtenerTodos() { return new ArrayList<>(datos.values()); }
     }
 
+    // Simula el catalogo de libros en memoria
     private static class RepoLibrosMemoria implements IRepositorioLibros {
         private final Map<String, Libro> datos = new HashMap<>();
         @Override public boolean guardarLibro(Libro l) { datos.put(l.getIsbn(), l); return true; }
@@ -112,6 +136,7 @@ public class GestionComprasTest extends TestCase {
         @Override public List<Libro> obtenerTodos() { return new ArrayList<>(datos.values()); }
     }
 
+    // Simula los carritos activos en memoria
     private static class RepoCarritoMemoria implements IRepositorioCarrito {
         private final Map<String, Carrito> carritos = new HashMap<>();
         @Override public Carrito obtenerCarritoPorCliente(String id) { return carritos.get(id); }
@@ -119,6 +144,7 @@ public class GestionComprasTest extends TestCase {
         @Override public boolean vaciarCarrito(String id) { carritos.remove(id); return true; }
     }
 
+    // Simula el historial de compras registradas
     private static class RepoCompraMemoria implements IRepositorioCompra {
         int totalComprasRegistradas = 0;
         @Override public boolean registrarCompra(Cliente c, Carrito carrito, String metodo) {
