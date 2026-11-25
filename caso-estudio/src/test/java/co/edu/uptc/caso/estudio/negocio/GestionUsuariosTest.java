@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import junit.framework.TestCase;
 
+// Pruebas unitarias para la gestion de usuarios sin depender de la base de datos
 public class GestionUsuariosTest extends TestCase {
 
     private GestionUsuariosImpl gestionUsuarios;
@@ -21,11 +22,13 @@ public class GestionUsuariosTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        // Inicializamos repositorios vacios en memoria antes de cada prueba
         repoMySQL = new RepoUsuarioMemoria();
         repoJson = new RepoUsuarioMemoria();
         gestionUsuarios = new GestionUsuariosImpl(repoMySQL, repoJson, new RepoCarritoVacio(), null);
     }
 
+    // Verifica que un cliente con datos validos se guarde sin errores
     public void testRegistrarClienteExitoso() {
         Cliente nuevo = FabricaClientes.crear(
                 "1001", "Ana Perez", "ana@uptc.edu.co",
@@ -38,6 +41,7 @@ public class GestionUsuariosTest extends TestCase {
         assertNotNull("Debe quedar guardado en repositorio", repoMySQL.buscarPorId("1001"));
     }
 
+    // Revisa que no deje registrar correos sin arroba
     public void testRegistrarClienteCorreoInvalido() {
         Cliente invalido = FabricaClientes.crear(
                 "1002", "Carlos Gomez", "correo_sin_arroba",
@@ -49,6 +53,7 @@ public class GestionUsuariosTest extends TestCase {
         assertNotNull("Debe rechazar correo con formato invalido", error);
     }
 
+    // Comprueba que no se permitan dos clientes con el mismo ID
     public void testRegistrarClienteDuplicado() {
         Cliente c1 = FabricaClientes.crear("1003", "Laura", "laura@uptc.edu.co", "Dir", "Boyaca", "Tunja", "3101234567", "REGULAR", "clave123");
         Cliente c2 = FabricaClientes.crear("1003", "Laura 2", "otra@uptc.edu.co", "Dir", "Boyaca", "Tunja", "3101234567", "REGULAR", "clave123");
@@ -57,6 +62,7 @@ public class GestionUsuariosTest extends TestCase {
         assertEquals("Ya existe un usuario registrado con ese ID.", gestionUsuarios.registrarCliente(c2));
     }
 
+    // Valida el login con clave mala, clave buena y cierre de sesion
     public void testIniciarYCerrarSesion() {
         Cliente c = FabricaClientes.crear("1004", "Pedro", "pedro@uptc.edu.co", "Dir", "Boyaca", "Tunja", "3101234567", "PREMIUM", "secreto99");
         gestionUsuarios.registrarCliente(c);
@@ -69,6 +75,7 @@ public class GestionUsuariosTest extends TestCase {
         assertNull("Al cerrar sesion el usuario logueado debe ser nulo", gestionUsuarios.getUsuarioLogueado());
     }
 
+    // Prueba el cambio de contrasena y que luego deje entrar con la nueva
     public void testRestablecerContrasena() {
         Cliente c = FabricaClientes.crear("1005", "Maria", "maria@uptc.edu.co", "Dir", "Boyaca", "Tunja", "3101234567", "REGULAR", "claveVieja");
         gestionUsuarios.registrarCliente(c);
@@ -78,7 +85,33 @@ public class GestionUsuariosTest extends TestCase {
         assertTrue(gestionUsuarios.iniciarSesion(new CredencialDto("maria@uptc.edu.co", "claveNueva1")));
     }
 
-    // --- Repositorios simulados en memoria ---
+    // Revisa que se puedan editar el nombre y direccion del cliente logueado
+    public void testActualizarPerfilCliente() {
+        Cliente c = FabricaClientes.crear("1006", "Diego", "diego@uptc.edu.co", "Dir 1", "Boyaca", "Tunja", "3101234567", "REGULAR", "clave123");
+        gestionUsuarios.registrarCliente(c);
+        gestionUsuarios.iniciarSesion(new CredencialDto("diego@uptc.edu.co", "clave123"));
+
+        c.setNombre("Diego Actualizado");
+        c.setDireccion("Nueva Direccion 45");
+        String error = gestionUsuarios.actualizarPerfil(c);
+
+        assertNull("Debe permitir actualizar los datos del perfil", error);
+        assertEquals("Diego Actualizado", repoMySQL.buscarPorId("1006").getNombre());
+    }
+
+    // Verifica que al borrar la cuenta se elimine del repositorio y se cierre la sesion
+    public void testEliminarCuentaCliente() {
+        Cliente c = FabricaClientes.crear("1007", "Sofia", "sofia@uptc.edu.co", "Dir 2", "Boyaca", "Tunja", "3101234567", "PREMIUM", "clave123");
+        gestionUsuarios.registrarCliente(c);
+        gestionUsuarios.iniciarSesion(new CredencialDto("sofia@uptc.edu.co", "clave123"));
+
+        boolean eliminado = gestionUsuarios.eliminarCuenta();
+        assertTrue("Debe eliminar la cuenta del usuario logueado", eliminado);
+        assertNull("El usuario no debe existir en el repositorio", repoMySQL.buscarPorId("1007"));
+        assertNull("La sesion debe cerrarse tras eliminar la cuenta", gestionUsuarios.getUsuarioLogueado());
+    }
+
+    // Simula la base de datos en memoria usando un HashMap
     private static class RepoUsuarioMemoria implements IRepositorioUsuario {
         private final Map<String, Cliente> datos = new HashMap<>();
 
@@ -119,6 +152,7 @@ public class GestionUsuariosTest extends TestCase {
         }
     }
 
+    // Carrito vacio de apoyo para poder instanciar GestionUsuariosImpl
     private static class RepoCarritoVacio implements IRepositorioCarrito {
         @Override public Carrito obtenerCarritoPorCliente(String clienteId) { return new Carrito(clienteId); }
         @Override public boolean guardarCarrito(Carrito carrito) { return true; }
