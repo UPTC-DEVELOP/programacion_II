@@ -21,15 +21,18 @@ El proyecto (`caso-estudio`) sigue una organización modular por capas basada en
 
 | Carpeta / Paquete | Contenido |
 | :--- | :--- |
+| `src/main/java/co/edu/uptc/caso/estudio` | Punto de entrada principal de la aplicación e inicialización del sistema. |
 | `src/main/java/co/edu/uptc/caso/estudio/gui` | Interfaz gráfica modular (`VentanaPrincipal`, `PanelUsuario`, `PanelLibros`, `PanelCarrito`, `DialogoLibro`) y manejador central de eventos (`Evento`). |
 | `src/main/java/co/edu/uptc/caso/estudio/negocio` | Interfaces y servicios de negocio desacoplados (`IGestionUsuarios`, `IGestionLibros`, `IGestionCompras`, `TiendaConfig`). |
 | `src/main/java/co/edu/uptc/caso/estudio/negocio/dto` | Objetos de transferencia de datos entre vista y negocio (`CredencialDto`, `PagoDto`). |
 | `src/main/java/co/edu/uptc/caso/estudio/model` | Entidades del dominio con herencia/polimorfismo (`Cliente`, `ClienteRegular`, `ClientePremium`, `FabricaClientes`, `Libro`, `LibroFisico`, `LibroDigital`, `FabricaLibros`, `Carrito`, `Compra`). |
 | `src/main/java/co/edu/uptc/caso/estudio/model/enums` | Enumeraciones para constantes del dominio (`TipoCliente`, `MetodoPago`). |
 | `src/main/java/co/edu/uptc/caso/estudio/persistence` | Interfaces de repositorio (`IRepositorioUsuario`, `IRepositorioLibros`, `IRepositorioCarrito`, `IRepositorioCompra`) e implementaciones duales en **MySQL** y **JSON** (`ManejadorArchivoJson`, `RegistradorOperacionesTxt`). |
+| `src/test/java/co/edu/uptc/caso/estudio/negocio` | Suite de pruebas unitarias en **JUnit 3.8.1** (`GestionUsuariosTest`, `GestionLibrosTest`, `GestionComprasTest`) con repositorios simulados en memoria. |
+| `config/` | Archivo de propiedades y parámetros de conexión de la tienda (`tienda.properties`). |
 | `data/` | Archivos locales de persistencia JSON (`usuarios.json`, `libros.json`, `carritos.json`, `compras.json`) y registro de auditoría (`operaciones_tienda.txt`). |
 | `sql/` | Scripts SQL para la creación y configuración de la base de datos en MySQL. |
-| `pom.xml` | Configuración de dependencias Maven (`mysql-connector-j`, `gson`) y versión de **Java 25**. |
+| `pom.xml` | Configuración de dependencias Maven (`mysql-connector-j`, `gson`, `junit`) y versión de **Java 25**. |
 
 ## Abrir y ejecutar en Eclipse
 
@@ -38,9 +41,15 @@ El proyecto (`caso-estudio`) sigue una organización modular por capas basada en
 3. En Eclipse, selecciona **File → Import → Existing Maven Projects**.
 4. Elige la carpeta `programacion_II-feature-grupo15/Tienda_Virtual` (que contiene el archivo `pom.xml`).
 5. Configura un JRE compatible con **Java 25** y actualiza las dependencias (**Maven → Update Project**).
-6. Abre `src/main/java/co/edu/uptc/gui/VentanaPrincipal.java` y selecciona **Run As → Java Application**.
+6. Ejecuta la clase principal en `src/main/java/co/edu/uptc/caso/estudio` (o `VentanaPrincipal.java` en `.gui`) con **Run As → Java Application**.
 
-El punto de entrada es la interfaz principal (`VentanaPrincipal.java`), desde donde se gestionan tanto la base de datos MySQL como los archivos JSON locales.
+## Pruebas Unitarias (JUnit 3.8.1)
+
+El proyecto cuenta con pruebas automatizadas del programador desacopladas de MySQL y archivos JSON mediante repositorios en memoria:
+
+1. En Eclipse, despliega `src/test/java`.
+2. Haz clic derecho sobre el paquete `co.edu.uptc.caso.estudio.negocio`.
+3. Selecciona **Run As → JUnit Test** para verificar la ejecución de los casos de prueba.
 
 ## Rama de trabajo
 
@@ -53,4 +62,5 @@ El material corresponde al proyecto de la rama `feature/grupo15` del repositorio
 - Maven 3.9
 - MySQL Server 8.4.0 (`mysql-connector-j`)
 - Google Gson (JSON)
+- JUnit 3.8.1
 - Eclipse IDE / SourceTree
