@@ -11,14 +11,11 @@ import java.sql.SQLException;
 
 public class RepositorioCarritoMySQL implements IRepositorioCarrito {
 
-    private final IRepositorioLibros repoLibros;
-
     public RepositorioCarritoMySQL() {
-        this(new RepositorioLibrosMySQL());
     }
 
     public RepositorioCarritoMySQL(IRepositorioLibros repoLibros) {
-        this.repoLibros = repoLibros;
+        this();
     }
 
     @Override
