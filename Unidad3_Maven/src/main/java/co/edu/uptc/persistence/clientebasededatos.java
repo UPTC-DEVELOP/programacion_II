@@ -10,6 +10,132 @@ import java.util.List;
 import java.util.Optional;
 import co.edu.uptc.exception.PersistenciaException;
 import co.edu.uptc.model.*;
-public class clientebasededatos {
+public class clientebasededatos implements UsuarioRepository {
 
+@Override
+public List<Usuario> listar() throws PersistenciaException {
+	List<Usuario> clientes = new ArrayList<>();
+	String sql = "SELECT * FROM clientes";
+	try (Connection conexion = Conexion.obtenerConexion()) {
+		if (conexion == null) {
+			throw new SQLException("No hay conexión con MariaDB");
+		}
+		try (PreparedStatement consulta = conexion.prepareStatement(sql);
+			     ResultSet resultado = consulta.executeQuery()) {
+			while (resultado.next()) {
+				String correo = resultado.getString("correo_electronico");
+				String nombre = resultado.getString("nombre_completo");
+				String direccion = resultado.getString("direccion_envio");
+				String telefono = resultado.getString("telefono");
+				String tipo = resultado.getString("tipo_cliente");
+				String contrasena = resultado.getString("contrasena_hash");
+				
+				
+				
+
+				
+
+				Cliente cliente;
+
+				if ("PREMIUM".equalsIgnoreCase(tipo)) {
+
+				    cliente = new ClientePremium(nombre, correo, contrasena, direccion, telefono);
+
+				} else {
+
+				    cliente = new ClienteRegular(nombre, correo, contrasena, direccion, telefono);
+
+				}
+
+				clientes.add(cliente);
+	        }
+
+	    }
+
+	} catch (SQLException e) {
+
+	    throw new PersistenciaException(
+	        "Error al consultar clientes: " + e.getMessage(), e);
+
+	}
+
+	return clientes;
+
+	}
+
+@Override
+public Optional<Usuario> buscarPorCorreo(String correo) throws PersistenciaException {
+
+    String sql = "SELECT * FROM clientes WHERE correo_electronico = ?";
+
+    try (Connection conexion = Conexion.obtenerConexion();
+         PreparedStatement consulta = conexion.prepareStatement(sql)) {
+
+        consulta.setString(1, correo);
+
+        try (ResultSet resultado = consulta.executeQuery()) {
+
+            if (resultado.next()) {
+
+                String nombre = resultado.getString("nombre_completo");
+                String contrasena = resultado.getString("contrasena_hash");
+                String direccion = resultado.getString("direccion_envio");
+                String telefono = resultado.getString("telefono");
+                String tipo = resultado.getString("tipo_cliente");
+
+                Cliente cliente;
+
+                if ("PREMIUM".equalsIgnoreCase(tipo)) {
+                    cliente = new ClientePremium(nombre, correo, contrasena, direccion, telefono);
+                } else {
+                    cliente = new ClienteRegular(nombre, correo, contrasena, direccion, telefono);
+                }
+
+                return Optional.of(cliente);
+            }
+        }
+
+    } catch (SQLException e) {
+        throw new PersistenciaException(
+            "Error al buscar cliente: " + e.getMessage(), e);
+    }
+
+    return Optional.empty();
+
+    }
+
+@Override
+public void guardar(Usuario usuario) throws PersistenciaException {
+	if (!(usuario instanceof Cliente)) {
+	    throw new PersistenciaException("Solo se pueden guardar clientes.");
+	}
+
+	Cliente cliente = (Cliente) usuario;
+
+    String sql = "INSERT INTO clientes "
+            + "(correo_electronico, nombre_completo, direccion_envio, telefono, tipo_cliente, contrasena_hash) "
+            + "VALUES (?, ?, ?, ?, ?, ?)";
+
+    try (Connection conexion = Conexion.obtenerConexion();
+         PreparedStatement consulta = conexion.prepareStatement(sql)) {
+
+        consulta.setString(1, cliente.getCorreo());
+        consulta.setString(2, cliente.getNombreCompleto());
+        consulta.setString(3, cliente.getDireccionEnvio());
+        consulta.setString(4, cliente.getTelefono());
+
+        String tipo = (cliente instanceof ClientePremium) ? "PREMIUM" : "REGULAR";
+
+        consulta.setString(5, tipo);
+        consulta.setString(6, cliente.getContrasenaHash());
+
+        consulta.executeUpdate();
+
+    } catch (SQLException e) {
+
+        throw new PersistenciaException(
+                "Error al guardar cliente: " + e.getMessage(), e);
+    }
 }
+
+}    

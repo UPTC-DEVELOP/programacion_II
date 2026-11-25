@@ -8,3 +8,9 @@
 [2026-11-21 10:37:01] [INFO] camilo@uptc.edu.co - Pedido #2 registrado por 212625.0
 [2026-11-21 10:37:35] [INFO] camilo@uptc.edu.co - Cambio en carrito
 [2026-11-21 10:37:38] [INFO] camilo@uptc.edu.co - Pedido #3 registrado por 42525.0
+[2026-11-24 18:30:49] [INFO] 123@uptc.edu.co - Cliente registrado
+[2026-11-24 18:34:26] [INFO] prueba123@gmail.com - Cliente registrado
+[2026-11-24 18:59:55] [INFO] cris@uptc.edu.co - Cliente registrado
+[2026-11-25 18:18:25] [INFO] cristianv@uptc.edu.co - Cliente registrado
+[2026-11-25 18:23:19] [INFO] fercha@uptc.edu.co - Cliente registrado
+[2026-11-25 18:24:10] [INFO] fercha@uptc.edu.co - Inicio de sesión
