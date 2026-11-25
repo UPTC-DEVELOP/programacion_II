@@ -80,7 +80,7 @@ public class GestionComprasTest extends TestCase {
         Libro libro = gestionLibros.buscarLibroPorIsbn("978-99");
         gestionCompras.agregarAlCarrito(libro, 2);
 
-        gestionCompras.eliminarDelCarrito("978-99");
+        gestionCompras.eliminarDelCarrito(java.util.Arrays.asList("978-99"));
         Carrito carrito = gestionCompras.obtenerCarritoActual();
         assertTrue("El carrito debe quedar vacio tras eliminar el unico item", carrito.estaVacio());
         assertEquals(0.0, gestionCompras.calcularTotalFinal(), 0.01);
