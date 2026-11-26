@@ -7,9 +7,11 @@ import co.edu.uptc.interfaces.ICarritoService;
 import co.edu.uptc.interfaces.IClienteRepositorio;
 import co.edu.uptc.interfaces.ILibroRepositorio;
 import co.edu.uptc.interfaces.IGestionResena;
+import co.edu.uptc.interfaces.IReviewRepository;
 import co.edu.uptc.interfaces.IVentaRepository;
 import co.edu.uptc.negocio.GestionResena;
 import co.edu.uptc.persistencia.ReviewJdbcRepository;
+import co.edu.uptc.persistencia.ReviewJsonRepository;
 import co.edu.uptc.negocio.CarritoServiceImpl;
 import co.edu.uptc.negocio.GestionCliente;
 import co.edu.uptc.negocio.GestionCompra;
@@ -103,9 +105,14 @@ public class AppLibros {
         GestionCompra gestionCompra = new GestionCompra(
                 repositorioCarrito, repositorioCliente, repositorioVentaJdbc);
 
-        // Reseñas y calificaciones (RF19/RF20): repositorio JDBC + servicio de negocio.
+        // Reseñas y calificaciones (RF19/RF20): persistencia DUAL. PostgreSQL (JDBC) es la
+        // fuente de verdad y el JSON (data/resenas.json) es el espejo, igual que en clientes.
+        // GestionResena solo conoce IReviewRepository (DIP/OCP).
+        IReviewRepository repositorioResena = new ReviewJdbcRepository();
+        IReviewRepository repositorioResenaJson = new ReviewJsonRepository(repositorioCliente);
         IGestionResena gestionResena = new GestionResena(
-                new ReviewJdbcRepository(), repositorioLibro, repositorioCliente);
+                repositorioResena, repositorioLibro, repositorioCliente, repositorioVenta,
+                repositorioResenaJson);
 
         // 4. Capa de Presentación (GUI)
         java.awt.EventQueue.invokeLater(() -> {

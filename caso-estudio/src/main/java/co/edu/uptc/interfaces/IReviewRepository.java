@@ -28,4 +28,20 @@ public interface IReviewRepository {
     default java.util.Map<Integer, java.time.LocalDateTime> fechasResenas(String isbn) {
         return java.util.Map.of();
     }
+
+    /**
+     * Reemplaza TODAS las reseñas de un libro por las indicadas, conservando sus
+     * ids y fechas. Lo usa el espejo JSON: GestionResena lee las reseñas del
+     * libro en la BD (fuente de verdad) y las copia aquí, de modo que los ids
+     * coinciden. Método default para no obligar a otras implementaciones: por
+     * defecto no hace nada.
+     *
+     * @param isbn    ISBN del libro
+     * @param resenas Reseñas vigentes del libro (con su id)
+     * @param fechas  Fecha de cada reseña (id de reseña -> fecha)
+     */
+    default void sincronizarLibro(String isbn, List<Review> resenas,
+                                  java.util.Map<Integer, java.time.LocalDateTime> fechas) {
+        // Sin efecto por defecto.
+    }
 }

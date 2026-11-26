@@ -1,0 +1,37 @@
+{
+  "registros": [
+    {
+      "id": 1,
+      "accion": "CREATE",
+      "isbn": "1010026731",
+      "usuario": "admin",
+      "fecha": "2026-11-11T15:13:23.885108100",
+      "detalles": "Registro de cliente: natalia@gmail.com"
+    },
+    {
+      "id": 2,
+      "accion": "CREATE",
+      "isbn": "1020799043",
+      "usuario": "admin",
+      "fecha": "2026-11-11T15:18:58.859533800",
+      "detalles": "Registro de cliente: natalia.cruz04@uptc.edu.co"
+    },
+    {
+      "id": 3,
+      "accion": "CREATE",
+      "isbn": "1234567891234",
+      "usuario": "admin",
+      "fecha": "2026-11-11T15:21:50.462761",
+      "detalles": "Registro de nuevo libro: Cien años de soledad"
+    },
+    {
+      "id": 4,
+      "accion": "CREATE",
+      "isbn": "1011263809",
+      "usuario": "admin",
+      "fecha": "2026-11-11T17:45:39.116906500",
+      "detalles": "Registro de cliente: elizabeth@gmail.com"
+    }
+  ],
+  "ultimoId": 4
+}

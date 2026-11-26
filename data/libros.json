@@ -1,0 +1,19 @@
+{
+  "libros": [
+    {
+      "isbn": "1234567891234",
+      "titulo": "Cien años de soledad",
+      "autores": [
+        "Gabriel Garcia"
+      ],
+      "anioPublicacion": 2000,
+      "editorial": "Español",
+      "numPaginas": 300,
+      "precioVenta": 150000.0,
+      "stock": 3,
+      "formato": "FISICO",
+      "categoria": "HISTORIA"
+    }
+  ],
+  "ultimoId": 1
+}

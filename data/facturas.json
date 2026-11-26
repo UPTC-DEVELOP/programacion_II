@@ -1,0 +1,23 @@
+[
+  {
+    "idVenta": 1,
+    "fecha": "2026-11-26T18:23:27.151327",
+    "clienteNombre": "Natalia Cruz Moreno",
+    "clienteCorreo": "natalia@gmail.com",
+    "tipoCliente": "Regular",
+    "subtotal": 156.0,
+    "impuestos": 29.64,
+    "descuento": 0.0,
+    "total": 185.64,
+    "lineas": [
+      {
+        "isbn": "9788498380880",
+        "titulo": "Cometas en el cielo",
+        "cantidad": 2,
+        "precioUnitario": 78.0,
+        "subtotal": 156.0,
+        "porcentajeIva": 19
+      }
+    ]
+  }
+]

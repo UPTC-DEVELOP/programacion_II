@@ -1,0 +1,59 @@
+{
+  "clientes": [
+    {
+      "idCliente": 1,
+      "primerNombre": "Natalia",
+      "otrosNombres": "",
+      "primerApellido": "Cruz",
+      "otrosApellidos": "Moreno",
+      "tipoIdentificacion": "CC",
+      "identificacion": "1010026731",
+      "correoElectronico": "natalia@gmail.com",
+      "celular": "3133744973",
+      "direccion": "Cra 26 7A 64",
+      "tipoCliente": "REGULAR",
+      "rol": "CLIENTE",
+      "contrasenia": "438260b1e374ee3fef3be42a7e1fc8df0344bcf6fc8b204cc8907b561738d767",
+      "fechaRegistro": "2026-11-11T15:13:23.579",
+      "intentosFallidos": 0,
+      "comprasRealizadas": 0
+    },
+    {
+      "idCliente": 2,
+      "primerNombre": "Natalia",
+      "otrosNombres": "",
+      "primerApellido": "Cruz",
+      "otrosApellidos": "Moreno",
+      "tipoIdentificacion": "CC",
+      "identificacion": "1020799043",
+      "correoElectronico": "natalia.cruz04@uptc.edu.co",
+      "celular": "3022378248",
+      "direccion": "cra 150 D",
+      "tipoCliente": "REGULAR",
+      "rol": "ADMIN",
+      "contrasenia": "d1b792325db260ab81b556de1994dabf41cc1e4aff63d71ce3ca3fcce80b6641",
+      "fechaRegistro": "2026-11-11T15:18:58.706",
+      "intentosFallidos": 0,
+      "comprasRealizadas": 0
+    },
+    {
+      "idCliente": 3,
+      "primerNombre": "Elizabeth",
+      "otrosNombres": "",
+      "primerApellido": "Contreras",
+      "otrosApellidos": "Cruz",
+      "tipoIdentificacion": "CC",
+      "identificacion": "1011263809",
+      "correoElectronico": "elizabeth@gmail.com",
+      "celular": "3123324171",
+      "direccion": "cra 153 f",
+      "tipoCliente": "REGULAR",
+      "rol": "CLIENTE",
+      "contrasenia": "2e22c08bcebcc8663b1abd8bf59593d595964b0e453eca9758c8326ef31be195",
+      "fechaRegistro": "2026-11-11T17:45:38.702",
+      "intentosFallidos": 0,
+      "comprasRealizadas": 0
+    }
+  ],
+  "ultimoId": 3
+}

@@ -1,0 +1,4 @@
+1 | 2026-11-11T15:13:23.871214600 | CREATE | admin | 1010026731 | Registro de cliente: natalia@gmail.com
+2 | 2026-11-11T15:18:58.856517900 | CREATE | admin | 1020799043 | Registro de cliente: natalia.cruz04@uptc.edu.co
+3 | 2026-11-11T15:21:50.457370500 | CREATE | admin | 1234567891234 | Registro de nuevo libro: Cien años de soledad
+4 | 2026-11-11T17:45:39.094651900 | CREATE | admin | 1011263809 | Registro de cliente: elizabeth@gmail.com

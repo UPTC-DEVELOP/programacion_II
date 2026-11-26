@@ -1,0 +1,13 @@
+{
+  "resenas": [
+    {
+      "id": 5,
+      "isbn": "9788498380880",
+      "idCliente": 1,
+      "calificacion": 4,
+      "comentario": "Buen libro, pero le cambiaria el final",
+      "fecha": "2026-11-26T18:24:17.252045"
+    }
+  ],
+  "ultimoId": 5
+}

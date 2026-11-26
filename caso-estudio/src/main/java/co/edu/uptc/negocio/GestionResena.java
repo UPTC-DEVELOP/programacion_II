@@ -12,7 +12,9 @@ import co.edu.uptc.interfaces.IGestionResena;
 import co.edu.uptc.interfaces.ILibroRepositorio;
 import co.edu.uptc.interfaces.IReviewRepository;
 import co.edu.uptc.interfaces.IReviewRepository.Review;
+import co.edu.uptc.interfaces.IVentaRepository;
 import co.edu.uptc.modelo.Cliente;
+import co.edu.uptc.modelo.Venta;
 import co.edu.uptc.modelo.enums.Rol;
 
 /**
@@ -25,8 +27,13 @@ import co.edu.uptc.modelo.enums.Rol;
  *  - Una sola reseña por cliente y libro.
  *  - Solo el dueño edita su reseña; el dueño o un ADMIN pueden eliminarla.
  *
- * PostgreSQL (RLS) exige además que quien reseña haya comprado el libro; si la
- * base rechaza la inserción se traduce a un mensaje comprensible.
+ * Solo reseña quien compró el libro: se verifica aquí con IVentaRepository (vale
+ * para JDBC y para JSON) y PostgreSQL (RLS) lo exige además; si la base rechaza
+ * la inserción se traduce a un mensaje comprensible.
+ *
+ * Persistencia dual: PostgreSQL (ReviewJdbcRepository) es la fuente de verdad y
+ * ReviewJsonRepository funciona como espejo (data/resenas.json). Esta clase solo
+ * conoce IReviewRepository, así que cualquiera de las dos es intercambiable.
  *
  * SOLID: SRP (solo reseñas) y DIP (depende de interfaces inyectadas).
  *
@@ -41,13 +48,50 @@ public class GestionResena implements IGestionResena {
     private final IReviewRepository reviewRepository;
     private final ILibroRepositorio libroRepository;
     private final IClienteRepositorio clienteRepository;
+    /** Ventas para verificar que el cliente compró el libro (puede ser null). */
+    private final IVentaRepository ventaRepository;
+    /** Espejo JSON de las reseñas (puede ser null). La BD sigue siendo la fuente de verdad. */
+    private final IReviewRepository reviewRepositoryJson;
 
+    /** Constructor sin verificación de compra en el negocio (la hace la BD con RLS). */
     public GestionResena(IReviewRepository reviewRepository,
                          ILibroRepositorio libroRepository,
                          IClienteRepositorio clienteRepository) {
+        this(reviewRepository, libroRepository, clienteRepository, null);
+    }
+
+    /**
+     * Constructor con verificación de compra en el negocio. Así la regla
+     * "solo reseña quien compró el libro" vale igual con la persistencia JDBC
+     * que con la JSON (que no tiene políticas RLS).
+     *
+     * @param ventaRepository Repositorio de ventas (null desactiva la verificación)
+     */
+    public GestionResena(IReviewRepository reviewRepository,
+                         ILibroRepositorio libroRepository,
+                         IClienteRepositorio clienteRepository,
+                         IVentaRepository ventaRepository) {
+        this(reviewRepository, libroRepository, clienteRepository, ventaRepository, null);
+    }
+
+    /**
+     * Constructor con espejo JSON. La persistencia principal (PostgreSQL) sigue
+     * siendo la fuente de verdad; después de cada crear, actualizar o eliminar
+     * confirmado, se copian al JSON las reseñas vigentes del libro (con los
+     * mismos ids y fechas que tiene la BD).
+     *
+     * @param reviewRepositoryJson Repositorio JSON de respaldo (null desactiva el espejo)
+     */
+    public GestionResena(IReviewRepository reviewRepository,
+                         ILibroRepositorio libroRepository,
+                         IClienteRepositorio clienteRepository,
+                         IVentaRepository ventaRepository,
+                         IReviewRepository reviewRepositoryJson) {
         this.reviewRepository = reviewRepository;
         this.libroRepository = libroRepository;
         this.clienteRepository = clienteRepository;
+        this.ventaRepository = ventaRepository;
+        this.reviewRepositoryJson = reviewRepositoryJson;
     }
 
     @Override
@@ -56,6 +100,7 @@ public class GestionResena implements IGestionResena {
         validarCliente(idCliente);
         validarLibro(isbn);
         String texto = validarContenido(calificacion, comentario);
+        validarCompra(idCliente, isbn);
         for (Review r : consultar(isbn)) {
             if (r.idCliente() == idCliente) {
                 throw new ReglaNegocioException(
@@ -68,6 +113,7 @@ public class GestionResena implements IGestionResena {
             throw new ReglaNegocioException("No se pudo guardar la reseña. "
                     + "Verifique que haya comprado este libro.");
         }
+        replicarEnJson(isbn);
     }
 
     @Override
@@ -124,6 +170,7 @@ public class GestionResena implements IGestionResena {
         } catch (PersistenciaException e) {
             throw new ReglaNegocioException("No se pudo actualizar la reseña.");
         }
+        replicarEnJson(isbn);
     }
 
     @Override
@@ -140,9 +187,31 @@ public class GestionResena implements IGestionResena {
         } catch (PersistenciaException e) {
             throw new ReglaNegocioException("No se pudo eliminar la reseña.");
         }
+        replicarEnJson(isbn);
     }
 
     // ------------------------------ auxiliares ------------------------------
+
+    /**
+     * Copia al espejo JSON las reseñas vigentes del libro, leídas de la BD
+     * (fuente de verdad), con sus ids y fechas reales. Un fallo del espejo se
+     * informa por consola y NO invalida la operación ya confirmada en la BD.
+     *
+     * @param isbn ISBN del libro cuyas reseñas cambiaron
+     */
+    private void replicarEnJson(String isbn) {
+        if (reviewRepositoryJson == null) {
+            return;
+        }
+        try {
+            reviewRepositoryJson.sincronizarLibro(isbn,
+                    reviewRepository.listarPorLibro(isbn),
+                    reviewRepository.fechasResenas(isbn));
+        } catch (PersistenciaException e) {
+            System.err.println("No se pudo replicar en JSON las reseñas del libro "
+                    + isbn + ": " + e.getMessage());
+        }
+    }
 
     private Cliente validarCliente(int idCliente) throws ReglaNegocioException {
         Cliente cliente = clienteRepository.buscarPorId(idCliente);
@@ -150,6 +219,27 @@ public class GestionResena implements IGestionResena {
             throw new ClienteNoEncontradoException("No existe el cliente que reseña el libro.");
         }
         return cliente;
+    }
+
+    /**
+     * Verifica que el cliente haya comprado el libro. Si no se inyectó el
+     * repositorio de ventas no se verifica aquí (la BD lo exige con RLS).
+     */
+    private void validarCompra(int idCliente, String isbn) throws ReglaNegocioException {
+        if (ventaRepository == null) {
+            return;
+        }
+        try {
+            for (Venta venta : ventaRepository.listarTodas()) {
+                if (venta.getIdCliente() == idCliente
+                        && venta.getIsbns() != null && venta.getIsbns().contains(isbn)) {
+                    return;
+                }
+            }
+        } catch (PersistenciaException e) {
+            throw new ReglaNegocioException("No se pudo verificar sus compras. Intente de nuevo.");
+        }
+        throw new ReglaNegocioException("Solo puede reseñar libros que haya comprado.");
     }
 
     private void validarLibro(String isbn) throws ReglaNegocioException {
