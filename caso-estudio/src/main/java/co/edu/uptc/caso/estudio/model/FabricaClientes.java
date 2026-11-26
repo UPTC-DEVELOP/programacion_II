@@ -1,3 +1,5 @@
+// Principios O y L (SOLID): decide si crear un ClienteRegular o ClientePremium usando herencia y polimorfismo.
+
 package co.edu.uptc.caso.estudio.model;
 
 public class FabricaClientes {
