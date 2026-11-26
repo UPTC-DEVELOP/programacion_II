@@ -38,6 +38,8 @@ import co.edu.uptc.libreria.persistencia.LocalCarritoPersistencia;
 import co.edu.uptc.libreria.persistencia.ServicioAuditoria;
 
 import java.sql.Connection;
+
+import co.edu.uptc.libreria.persistencia.CarritoBD;
 import co.edu.uptc.libreria.persistencia.ConexionBD;
 
 /**
@@ -123,7 +125,9 @@ public class ventanaPrincipal extends JFrame {
 	/** Arma las capas del carrito (persistencia, negocio, controlador y vista). */
 	private void construirCarrito() {
 		ServicioAuditoria auditoria = new ServicioAuditoria();
-		ICarritoPersistencia persistencia = new LocalCarritoPersistencia(LibroConfig.getInstancia().getiLibro());
+		//Cambio de carrito json a carrito BD
+		//ICarritoPersistencia persistencia = new LocalCarritoPersistencia(LibroConfig.getInstancia().getiLibro());
+		ICarritoPersistencia persistencia = new CarritoBD(LibroConfig.getInstancia().getiLibro());
 		GestionCarrito gestionCarrito = new GestionCarrito(persistencia, auditoria);
 		controlador = new ControladorCarrito(gestionCarrito, auditoria);
 
