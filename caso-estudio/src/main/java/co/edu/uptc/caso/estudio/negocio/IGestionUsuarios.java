@@ -1,3 +1,5 @@
+// Principio I (SOLID): define únicamente las operaciones de usuario que necesita la interfaz.
+
 package co.edu.uptc.caso.estudio.negocio;
 
 import co.edu.uptc.caso.estudio.model.Cliente;
