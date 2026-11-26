@@ -15,7 +15,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class GestionComprasImpl implements IGestionCompras {
-
+	
+    private static final String ID_CLIENTE_ANONIMO = "anonimo";
+    private static final String REGEX_TARJETA = "\\d{16}";
+    private static final String REGEX_CVV = "\\d{3,4}";
+    private static final String REGEX_EXPIRACION = "(0[1-9]|1[0-2])/\\d{2}";
+    private static final String REGEX_NEQUI = "3\\d{9}";
     private final IRepositorioCarrito repoCarritoMySQL;
     private final IRepositorioCarrito repoCarritoJson;
     private final IRepositorioCompra repoCompraMySQL;
@@ -41,7 +46,7 @@ public class GestionComprasImpl implements IGestionCompras {
     @Override
     public Carrito obtenerCarritoActual() {
         Cliente logueado = gestionUsuarios.getUsuarioLogueado();
-        if (logueado == null) return new Carrito("anonimo");
+        if (logueado == null) return new Carrito(ID_CLIENTE_ANONIMO);
 
         Carrito carrito = repoCarritoMySQL.obtenerCarritoPorCliente(logueado.getId());
         if (carrito == null || carrito.estaVacio()) {
@@ -135,15 +140,14 @@ public class GestionComprasImpl implements IGestionCompras {
         if (obtenerCarritoActual().estaVacio()) return "El carrito está vacío.";
         if (MetodoPago.TARJETA.getEtiqueta().equalsIgnoreCase(pago.getMetodo())) {
             if (pago.getBanco() == null || pago.getBanco().isBlank()) return "Seleccione un banco.";
-            if (pago.getNumeroTarjeta() == null || !pago.getNumeroTarjeta().matches("\\d{16}")) return "Número de tarjeta inválido (16 dígitos).";
-            if (pago.getCvv() == null || !pago.getCvv().matches("\\d{3,4}")) return "CVV inválido (3 o 4 dígitos).";
-            if (pago.getExpiracion() == null || !pago.getExpiracion().matches("(0[1-9]|1[0-2])/\\d{2}")) return "Fecha de expiración inválida (MM/AA).";
-            YearMonth vencimiento = YearMonth.parse(pago.getExpiracion(), DateTimeFormatter.ofPattern("MM/yy"));
+            if (pago.getNumeroTarjeta() == null || !pago.getNumeroTarjeta().matches(REGEX_TARJETA)) return "Número de tarjeta inválido (16 dígitos).";
+            if (pago.getCvv() == null || !pago.getCvv().matches(REGEX_CVV)) return "CVV inválido (3 o 4 dígitos).";
+            if (pago.getExpiracion() == null || !pago.getExpiracion().matches(REGEX_EXPIRACION)) return "Fecha de expiración inválida (MM/AA).";            YearMonth vencimiento = YearMonth.parse(pago.getExpiracion(), DateTimeFormatter.ofPattern("MM/yy"));
             if (vencimiento.isBefore(YearMonth.now())) return "La tarjeta se encuentra vencida.";
             this.datosTransferencia = new DatosTransferencia(pago.getBanco(), pago.getNumeroTarjeta(), pago.getCvv(), pago.getExpiracion(), null);
         } else if (MetodoPago.TRANSFERENCIA.getEtiqueta().equalsIgnoreCase(pago.getMetodo())) {
             if (pago.getNumeroNequi() == null || !pago.getNumeroNequi().matches("3\\d{9}")) return "Número de Nequi inválido (10 dígitos empezando por 3).";
-            this.datosTransferencia = new DatosTransferencia(DatosTransferencia.NEQUI, null, null, null, pago.getNumeroNequi());
+            if (pago.getNumeroNequi() == null || !pago.getNumeroNequi().matches(REGEX_NEQUI)) return "Número de Nequi inválido (10 dígitos empezando por 3).";
         } else {
             return "Método de pago no válido.";
         }
