@@ -106,11 +106,33 @@ public Optional<Usuario> buscarPorCorreo(String correo) throws PersistenciaExcep
 
 @Override
 public void guardar(Usuario usuario) throws PersistenciaException {
+	if (usuario == null) {
+	    throw new PersistenciaException("El cliente no puede ser nulo.");
+	}
+	if (usuario.getNombreCompleto() == null || usuario.getNombreCompleto().isBlank()) {
+	    throw new PersistenciaException("El nombre del cliente es obligatorio.");
+	}
+
+	if (usuario.getCorreo() == null || usuario.getCorreo().isBlank()) {
+	    throw new PersistenciaException("El correo electrónico es obligatorio.");
+	}
+	if (usuario.getContrasenaHash() == null || usuario.getContrasenaHash().isBlank()) {
+	    throw new PersistenciaException("La contraseña es obligatoria.");
+	}
 	if (!(usuario instanceof Cliente)) {
 	    throw new PersistenciaException("Solo se pueden guardar clientes.");
 	}
 
 	Cliente cliente = (Cliente) usuario;
+	if (cliente.getTelefono() == null || cliente.getTelefono().isBlank()) {
+	    throw new PersistenciaException("El teléfono es obligatorio.");
+	}
+
+	if (cliente.getDireccionEnvio() == null || cliente.getDireccionEnvio().isBlank()) {
+	    throw new PersistenciaException("La dirección de envío es obligatoria.");
+	}
+	
+	
 	Optional<Usuario> existente = buscarPorCorreo(cliente.getCorreo());
 
 	if (existente.isPresent()) {
