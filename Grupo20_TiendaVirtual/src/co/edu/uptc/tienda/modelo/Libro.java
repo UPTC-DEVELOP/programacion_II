@@ -1,5 +1,7 @@
 package co.edu.uptc.tienda.modelo;
 
+import java.util.Objects;
+
 public class Libro {
 
     private String isbn;
@@ -108,6 +110,22 @@ public class Libro {
     @Override
     public String toString() {
         return titulo;
+    }
+
+    @Override
+    public boolean equals(Object otro) {
+        if (this == otro) {
+            return true;
+        }
+        if (!(otro instanceof Libro)) {
+            return false;
+        }
+        return Objects.equals(isbn, ((Libro) otro).isbn);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(isbn);
     }
 
     public boolean validarStock(int cantidad) {
