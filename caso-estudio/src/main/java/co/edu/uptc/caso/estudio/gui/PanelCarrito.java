@@ -115,7 +115,7 @@ public class PanelCarrito extends JPanel {
         }
         lblTotalCarrito.setText("Total Compra: $" + String.format("%.2f", totalFinal));
     }
-
+    // convierte la fila de la vista a la del modelo, porque la tabla puede estar ordenada por el usuario
     public String getIsbnUnicoSeleccionado() {
         int[] filas = tablaCarrito.getSelectedRows();
         if (filas.length != 1) return null;
@@ -139,7 +139,7 @@ public class PanelCarrito extends JPanel {
         }
         return isbns;
     }
-
+    // recoge los campos del formulario; la validación real la hace GestionComprasImpl.registrarPago
     public PagoDto obtenerDatosPago() {
         return new PagoDto(
             (String) cbMetodoPago.getSelectedItem(),
