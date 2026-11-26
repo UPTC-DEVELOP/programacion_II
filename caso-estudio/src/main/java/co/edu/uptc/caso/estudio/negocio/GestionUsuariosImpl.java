@@ -1,3 +1,5 @@
+// Servicio de usuarios: valida los datos, cifra las contraseñas con SHA-256 y guarda en MySQL y JSON.
+
 package co.edu.uptc.caso.estudio.negocio;
 
 import co.edu.uptc.caso.estudio.model.Cliente;
