@@ -16,7 +16,8 @@ public class PanelCarrito extends JPanel {
     private JTable tablaCarrito;
     private JLabel lblTotalCarrito;
     private JComboBox<String> cbMetodoPago, cbBanco;
-    private JTextField txtTarjeta, txtExp, txtCvv, txtNequi;
+    private JTextField txtTarjeta, txtExp, txtNequi;
+    private JPasswordField txtCvv;
     private JPanel panelDatosTarjeta, panelDatosNequi;
 
     public PanelCarrito(Evento evento) {
@@ -56,7 +57,7 @@ public class PanelCarrito extends JPanel {
 
         txtTarjeta = new JTextField(13);
         txtExp = new JTextField(5);
-        txtCvv = new JTextField(4);
+        txtCvv = new JPasswordField(4);
         txtNequi = new JTextField(10);
 
         panelDatosTarjeta = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
@@ -145,7 +146,7 @@ public class PanelCarrito extends JPanel {
             (String) cbBanco.getSelectedItem(),
             txtTarjeta.getText().trim(),
             txtExp.getText().trim(),
-            txtCvv.getText().trim(),
+            new String(txtCvv.getPassword()).trim(),
             txtNequi.getText().trim()
         );
     }
