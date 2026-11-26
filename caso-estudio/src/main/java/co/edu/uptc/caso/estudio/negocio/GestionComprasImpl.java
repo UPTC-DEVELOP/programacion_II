@@ -139,13 +139,14 @@ public class GestionComprasImpl implements IGestionCompras {
         if (logueado == null) return false;
 
         Carrito c = obtenerCarritoActual();
-        if (c == null || c.estaVacio()) return false;
+        if (c == null || c.estaVacio() || datosTransferencia == null) return false;
 
-        String infoPago = (datosTransferencia != null) ? datosTransferencia.getBanco() : "No especificado";
+        String infoPago = datosTransferencia.getBanco();
         boolean compraMySQL = repoCompraMySQL.registrarCompra(logueado, c, infoPago);
         boolean compraJson = repoCompraJson.registrarCompra(logueado, c, infoPago);
 
         if (!compraMySQL && !compraJson) {
+            this.datosTransferencia = null;
             return false;
         }
 
