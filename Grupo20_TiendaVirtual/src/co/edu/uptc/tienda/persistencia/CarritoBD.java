@@ -16,23 +16,34 @@ public class CarritoBD implements IPersistenciaCarrito {
     @Override
     public void guardar(List<RegistroCarrito> registros) throws CarritoExcepcion {
         try (Connection conexion = ConexionBD.obtenerConexion()) {
-            List<RegistroCarrito> guardados = consultar(conexion);
-            for (RegistroCarrito registro : registros) {
-                RegistroCarrito guardado = buscar(guardados, registro.getIsbn());
-                if (guardado == null) {
-                    insertar(conexion, registro);
-                } else if (!sonIguales(guardado, registro)) {
-                    actualizar(conexion, registro);
-                }
-            }
-            for (RegistroCarrito guardado : guardados) {
-                if (buscar(registros, guardado.getIsbn()) == null) {
-                    eliminar(conexion, guardado.getIsbn());
-                }
+            conexion.setAutoCommit(false);
+            try {
+                sincronizar(conexion, registros);
+                conexion.commit();
+            } catch (SQLException e) {
+                conexion.rollback();
+                throw e;
             }
         } catch (SQLException e) {
             throw new CarritoExcepcion("No se pudo guardar el carrito en la base de datos: "
                     + ConexionBD.explicarError(e));
+        }
+    }
+
+    private void sincronizar(Connection conexion, List<RegistroCarrito> registros) throws SQLException {
+        List<RegistroCarrito> guardados = consultar(conexion);
+        for (RegistroCarrito registro : registros) {
+            RegistroCarrito guardado = buscar(guardados, registro.getIsbn());
+            if (guardado == null) {
+                insertar(conexion, registro);
+            } else if (!sonIguales(guardado, registro)) {
+                actualizar(conexion, registro);
+            }
+        }
+        for (RegistroCarrito guardado : guardados) {
+            if (buscar(registros, guardado.getIsbn()) == null) {
+                eliminar(conexion, guardado.getIsbn());
+            }
         }
     }
 
