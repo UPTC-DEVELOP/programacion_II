@@ -106,7 +106,7 @@ public class PanelCarrito extends JPanel {
         if (items != null) {
             for (ItemCarrito it : items) {
                 if (it.getLibro() == null) continue;
-                double subtotal = it.getLibro().getPrecioVenta() * it.getCantidad();
+                double subtotal = it.getSubtotalConIva();
                 modeloTablaCarrito.addRow(new Object[]{
                     it.getLibro().getIsbn(), it.getLibro().getTitulo(),
                     it.getCantidad(), it.getLibro().getPrecioVenta(), subtotal
