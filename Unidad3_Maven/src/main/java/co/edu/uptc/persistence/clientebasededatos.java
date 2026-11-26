@@ -116,6 +116,9 @@ public void guardar(Usuario usuario) throws PersistenciaException {
 	if (usuario.getCorreo() == null || usuario.getCorreo().isBlank()) {
 	    throw new PersistenciaException("El correo electrónico es obligatorio.");
 	}
+	if (!usuario.getCorreo().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+	    throw new PersistenciaException("El correo electrónico no tiene un formato válido.");
+	}
 	if (usuario.getContrasenaHash() == null || usuario.getContrasenaHash().isBlank()) {
 	    throw new PersistenciaException("La contraseña es obligatoria.");
 	}
