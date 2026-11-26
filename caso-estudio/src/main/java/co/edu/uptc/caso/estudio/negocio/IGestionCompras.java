@@ -1,11 +1,9 @@
 package co.edu.uptc.caso.estudio.negocio;
 
-import java.util.List;
-
 import co.edu.uptc.caso.estudio.model.Carrito;
 import co.edu.uptc.caso.estudio.model.Libro;
 import co.edu.uptc.caso.estudio.negocio.dto.PagoDto;
-
+import java.util.List;
 
 public interface IGestionCompras {
     Carrito obtenerCarritoActual();

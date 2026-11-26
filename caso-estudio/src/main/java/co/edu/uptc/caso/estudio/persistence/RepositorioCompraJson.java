@@ -1,6 +1,7 @@
 package co.edu.uptc.caso.estudio.persistence;
 
 import co.edu.uptc.caso.estudio.model.Carrito;
+import co.edu.uptc.caso.estudio.model.Cliente;
 import co.edu.uptc.caso.estudio.model.Compra;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
@@ -8,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import co.edu.uptc.caso.estudio.model.Cliente;
 
 public class RepositorioCompraJson implements IRepositorioCompra {
 

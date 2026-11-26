@@ -1,13 +1,13 @@
 package co.edu.uptc.caso.estudio.persistence;
 
 import co.edu.uptc.caso.estudio.model.Carrito;
+import co.edu.uptc.caso.estudio.model.Cliente;
 import co.edu.uptc.caso.estudio.model.ItemCarrito;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import co.edu.uptc.caso.estudio.model.Cliente; 
 
 public class RepositorioCompraMySQL implements IRepositorioCompra {
 
