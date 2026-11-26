@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
 import co.edu.uptc.tienda.excepcion.CarritoExcepcion;
@@ -46,13 +47,7 @@ public class CarritoJson implements IPersistenciaCarrito {
             return registros;
         }
         try (BufferedReader lector = new BufferedReader(new FileReader(archivo))) {
-            String texto = "";
-            String linea = lector.readLine();
-            while (linea != null) {
-                texto += linea;
-                linea = lector.readLine();
-            }
-            RegistroCarrito[] leidos = gson.fromJson(texto, RegistroCarrito[].class);
+            RegistroCarrito[] leidos = gson.fromJson(lector, RegistroCarrito[].class);
             if (leidos != null) {
                 for (RegistroCarrito registro : leidos) {
                     if (registro != null) {
@@ -60,7 +55,7 @@ public class CarritoJson implements IPersistenciaCarrito {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | JsonIOException e) {
             throw new CarritoExcepcion("No se pudo leer el carrito guardado en el archivo " + archivo.getPath() + ".");
         } catch (JsonSyntaxException e) {
             throw new CarritoExcepcion("El archivo " + archivo.getPath() + " no tiene un formato JSON válido.");
