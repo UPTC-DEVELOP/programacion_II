@@ -22,11 +22,8 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
-<<<<<<< HEAD
 /bin/
-=======
 
 Grupo20_TiendaVirtual/target/
 Grupo20_TiendaVirtual/.settings/
 Grupo20_TiendaVirtual/datos/
->>>>>>> branch 'feature/grupo20' of https://github.com/UPTC-DEVELOP/programacion_II.git
