@@ -37,7 +37,7 @@ public class GestionComprasImpl implements IGestionCompras {
         this.gestionLibros = gestionLibros;
         this.registradorTxt = registradorTxt;
     }
-
+    // MySQL es la fuente principal si no está disponible o el carrito está vacío, se usa el respaldo Json
     @Override
     public Carrito obtenerCarritoActual() {
         Cliente logueado = gestionUsuarios.getUsuarioLogueado();
@@ -128,7 +128,7 @@ public class GestionComprasImpl implements IGestionCompras {
             repoCarritoJson.vaciarCarrito(logueado.getId());
         }
     }
-
+    // valida los datos de pago y los guarda en memoria; el cobro se completa en finalizarCompra()
     @Override
     public String registrarPago(PagoDto pago) {
         if (pago == null) return "Datos de pago inválidos.";
@@ -199,7 +199,7 @@ public class GestionComprasImpl implements IGestionCompras {
         Carrito c = obtenerCarritoActual();
         return c.calcularTotalFinal(gestionUsuarios.getUsuarioLogueado());
     }
-
+    // guarda el carrito en MySQL y en el respaldo JSON para que ambos queden iguale
     private void sincronizarCarrito(Carrito carrito) {
         repoCarritoMySQL.guardarCarrito(carrito);
         repoCarritoJson.guardarCarrito(carrito);
