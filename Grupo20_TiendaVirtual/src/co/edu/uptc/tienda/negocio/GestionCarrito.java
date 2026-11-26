@@ -191,9 +191,21 @@ public class GestionCarrito implements IGestionCarrito {
 
     private void guardar() throws CarritoExcepcion {
         List<CarritoExcepcion> errores = guardarEnPersistencias();
-        if (!errores.isEmpty()) {
+        if (errores.isEmpty()) {
+            return;
+        }
+        if (errores.size() == persistencias.size()) {
             throw errores.get(0);
         }
+        throw avisoGuardadoParcial(errores);
+    }
+
+    private CarritoExcepcion avisoGuardadoParcial(List<CarritoExcepcion> errores) {
+        StringBuilder mensaje = new StringBuilder("El cambio se guardó, pero no en todas partes:");
+        for (CarritoExcepcion error : errores) {
+            mensaje.append("\n").append(error.getMessage());
+        }
+        return new CarritoExcepcion(mensaje.toString());
     }
 
     private void guardarODeshacer(List<ItemCarrito> itemsAntes, String clienteAntes) throws CarritoExcepcion {
@@ -206,7 +218,7 @@ public class GestionCarrito implements IGestionCarrito {
             throw new CarritoExcepcion("El carrito no se pudo guardar en ninguna parte y el cambio se deshizo.\n"
                     + errores.get(0).getMessage());
         }
-        throw errores.get(0);
+        throw avisoGuardadoParcial(errores);
     }
 
     private List<CarritoExcepcion> guardarEnPersistencias() {
