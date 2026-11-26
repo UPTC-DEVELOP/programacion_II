@@ -15,7 +15,7 @@ public class RepositorioCompraJson implements IRepositorioCompra {
     private final ManejadorArchivoJson<Compra> manejadorJson;
 
     public RepositorioCompraJson() {
-        String ruta = ConfiguracionTienda.obtener("ruta.json.compras", "compras.json");
+        String ruta = ConfiguracionTienda.obtener("ruta.json.compras", "data/compras.json");
         Type tipoLista = new TypeToken<ArrayList<Compra>>() {}.getType();
         this.manejadorJson = new ManejadorArchivoJson<>(ruta, tipoLista);
     }
