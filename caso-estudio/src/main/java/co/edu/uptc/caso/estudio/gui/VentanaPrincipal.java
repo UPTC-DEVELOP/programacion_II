@@ -100,6 +100,7 @@ public class VentanaPrincipal extends JFrame {
             return;
         }
         panelUsuario.cargarDatosUsuario(gestionUsuarios.getUsuarioLogueado());
+        refrescarCarrito();
         JOptionPane.showMessageDialog(this, "Datos actualizados correctamente.");
     }
 
@@ -188,6 +189,7 @@ public class VentanaPrincipal extends JFrame {
             } else {
                 JOptionPane.showMessageDialog(this, "¡Libro guardado con éxito!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 refrescarLibros();
+                refrescarCarrito();
             }
         }
     }
@@ -215,6 +217,7 @@ public class VentanaPrincipal extends JFrame {
             if (gestionLibros.eliminarLibro(isbn)) {
                 JOptionPane.showMessageDialog(this, "Libro eliminado correctamente.");
                 refrescarLibros();
+                refrescarCarrito();
             } else {
                 JOptionPane.showMessageDialog(this, "No se pudo eliminar el libro.", "Error", JOptionPane.ERROR_MESSAGE);
             }
