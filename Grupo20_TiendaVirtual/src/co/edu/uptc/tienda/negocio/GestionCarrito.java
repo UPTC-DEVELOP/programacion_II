@@ -43,12 +43,14 @@ public class GestionCarrito implements IGestionCarrito {
             throw new CarritoExcepcion("No hay inventario suficiente. Solicitado: " + totalSolicitado
                     + ", disponible: " + libro.getStock() + ".");
         }
+        List<ItemCarrito> itemsAntes = copiarItems();
+        String clienteAntes = carrito.getIdCliente();
         if (existente == null) {
             carrito.agregarItem(new ItemCarrito(libro, cantidad));
         } else {
             existente.setCantidad(totalSolicitado);
         }
-        guardar();
+        guardarODeshacer(itemsAntes, clienteAntes);
     }
 
     @Override
@@ -67,8 +69,10 @@ public class GestionCarrito implements IGestionCarrito {
             throw new CarritoExcepcion("No hay inventario suficiente. Solicitado: " + nuevaCantidad
                     + ", disponible: " + item.getLibro().getStock() + ".");
         }
+        List<ItemCarrito> itemsAntes = copiarItems();
+        String clienteAntes = carrito.getIdCliente();
         item.setCantidad(nuevaCantidad);
-        guardar();
+        guardarODeshacer(itemsAntes, clienteAntes);
     }
 
     @Override
@@ -77,14 +81,18 @@ public class GestionCarrito implements IGestionCarrito {
         if (item == null) {
             throw new CarritoExcepcion("El libro con ISBN " + isbn + " no está en el carrito.");
         }
+        List<ItemCarrito> itemsAntes = copiarItems();
+        String clienteAntes = carrito.getIdCliente();
         carrito.quitarItem(item);
-        guardar();
+        guardarODeshacer(itemsAntes, clienteAntes);
     }
 
     @Override
     public void vaciar() throws CarritoExcepcion {
+        List<ItemCarrito> itemsAntes = copiarItems();
+        String clienteAntes = carrito.getIdCliente();
         carrito.vaciar();
-        guardar();
+        guardarODeshacer(itemsAntes, clienteAntes);
     }
 
     @Override
@@ -94,8 +102,9 @@ public class GestionCarrito implements IGestionCarrito {
         if (igual) {
             return;
         }
+        List<ItemCarrito> itemsAntes = copiarItems();
         carrito.setIdCliente(idCliente);
-        guardar();
+        guardarODeshacer(itemsAntes, actual);
     }
 
     @Override
@@ -181,26 +190,58 @@ public class GestionCarrito implements IGestionCarrito {
     }
 
     private void guardar() throws CarritoExcepcion {
-        if (!recuperado) {
+        List<CarritoExcepcion> errores = guardarEnPersistencias();
+        if (!errores.isEmpty()) {
+            throw errores.get(0);
+        }
+    }
+
+    private void guardarODeshacer(List<ItemCarrito> itemsAntes, String clienteAntes) throws CarritoExcepcion {
+        List<CarritoExcepcion> errores = guardarEnPersistencias();
+        if (errores.isEmpty()) {
             return;
+        }
+        if (errores.size() == persistencias.size()) {
+            restaurar(itemsAntes, clienteAntes);
+            throw new CarritoExcepcion("El carrito no se pudo guardar en ninguna parte y el cambio se deshizo.\n"
+                    + errores.get(0).getMessage());
+        }
+        throw errores.get(0);
+    }
+
+    private List<CarritoExcepcion> guardarEnPersistencias() {
+        List<CarritoExcepcion> errores = new ArrayList<>();
+        if (!recuperado) {
+            return errores;
         }
         List<RegistroCarrito> registros = new ArrayList<>();
         for (ItemCarrito item : carrito.getItems()) {
             registros.add(new RegistroCarrito(carrito.getIdCliente(), item.getLibro().getIsbn(), item.getCantidad()));
         }
-        CarritoExcepcion error = null;
         for (IPersistenciaCarrito persistencia : persistencias) {
             try {
                 persistencia.guardar(registros);
             } catch (CarritoExcepcion e) {
-                if (error == null) {
-                    error = e;
-                }
+                errores.add(e);
             }
         }
-        if (error != null) {
-            throw error;
+        return errores;
+    }
+
+    private List<ItemCarrito> copiarItems() {
+        List<ItemCarrito> copia = new ArrayList<>();
+        for (ItemCarrito item : carrito.getItems()) {
+            copia.add(new ItemCarrito(item.getLibro(), item.getCantidad()));
         }
+        return copia;
+    }
+
+    private void restaurar(List<ItemCarrito> items, String idCliente) {
+        carrito.vaciar();
+        for (ItemCarrito item : items) {
+            carrito.agregarItem(item);
+        }
+        carrito.setIdCliente(idCliente);
     }
 
     @Override
