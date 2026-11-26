@@ -42,7 +42,7 @@ public class Carrito {
         }
         return null;
     }
-
+    // Reemplaza la cantidad del item, Retorna false si la cantidad es <= 0 o el ISBN no está
     public boolean actualizarCantidad(String isbn, int cantidad) {
         if (cantidad <= 0) return false;
         ItemCarrito item = buscarItem(isbn);
@@ -50,7 +50,7 @@ public class Carrito {
         item.setCantidad(cantidad);
         return true;
     }
-
+    // Elimina todos los items cuyo ISBN esté en la lista. Retorna true si quitó al menos uno
     public boolean eliminarItems(List<String> isbns) {
         if (isbns == null || items == null) return false;
         return items.removeIf(item -> item.getLibro() != null && isbns.contains(item.getLibro().getIsbn()));
@@ -92,7 +92,7 @@ public class Carrito {
     public double calcularDescuento(Cliente cliente) {
         return cliente != null ? cliente.calcularDescuento(calcularTotal()) : 0.0;
     }
-
+    // Total con IVA menos el descuento del cliente (Regular = 0%, Premium = 10%)
     public double calcularTotalFinal(Cliente cliente) {
         return calcularTotal() - calcularDescuento(cliente);
     }

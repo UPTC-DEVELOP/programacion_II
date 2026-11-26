@@ -16,6 +16,8 @@ public class ItemCarrito {
     public int getCantidad() { return cantidad; }
     public void setCantidad(int cantidad) { this.cantidad = cantidad; }
 
+     //el precio de venta del libro YA incluye IVA, por eso el valor sin IVA se obtiene
+     //dividiendo: precioVenta / (1 + tasaIva). Para el total con IVA no se recalcula nada
     public double getSubtotalBase() {
         if (libro == null) return 0.0;
         double precioSinIva = libro.getPrecioVenta() / (1.0 + libro.getTasaIvaDecimal());
