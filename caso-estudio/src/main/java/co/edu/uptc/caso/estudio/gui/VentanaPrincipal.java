@@ -1,3 +1,5 @@
+// VentanaPrincipal: integra los paneles visuales y se comunica con la capa de negocio.
+
 package co.edu.uptc.caso.estudio.gui;
 
 import co.edu.uptc.caso.estudio.model.Cliente;
