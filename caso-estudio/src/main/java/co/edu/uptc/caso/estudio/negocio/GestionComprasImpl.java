@@ -47,10 +47,27 @@ public class GestionComprasImpl implements IGestionCompras {
         if (carrito == null || carrito.estaVacio()) {
             Carrito respaldoJson = repoCarritoJson.obtenerCarritoPorCliente(logueado.getId());
             if (respaldoJson != null && !respaldoJson.estaVacio()) {
-                return respaldoJson;
+                carrito = respaldoJson;
             }
         }
-        return carrito != null ? carrito : new Carrito(logueado.getId());
+        if (carrito == null) carrito = new Carrito(logueado.getId());
+        refrescarLibrosDelCarrito(carrito);
+        return carrito;
+    }
+
+    // Actualiza precio/stock con el catálogo actual y descarta libros que ya no existen
+    private void refrescarLibrosDelCarrito(Carrito carrito) {
+        java.util.Iterator<ItemCarrito> it = carrito.getItems().iterator();
+        while (it.hasNext()) {
+            ItemCarrito item = it.next();
+            Libro actual = (item.getLibro() != null)
+                    ? gestionLibros.buscarLibroPorIsbn(item.getLibro().getIsbn()) : null;
+            if (actual == null) {
+                it.remove();
+            } else {
+                item.setLibro(actual);
+            }
+        }
     }
 
     @Override
