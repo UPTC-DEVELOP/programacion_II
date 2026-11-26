@@ -1,3 +1,5 @@
+// Principio S (SOLID)- Responsabilidad Unica: maneja exclusivamente las acciones de los botones.
+
 package co.edu.uptc.caso.estudio.gui;
 
 import java.awt.event.ActionEvent;
