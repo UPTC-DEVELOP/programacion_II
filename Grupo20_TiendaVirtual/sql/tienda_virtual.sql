@@ -32,3 +32,9 @@ CREATE TABLE IF NOT EXISTS carrito (
     cantidad INT NOT NULL,
     PRIMARY KEY (isbn)
 );
+
+ALTER TABLE carrito
+    ADD CONSTRAINT fk_carrito_libro FOREIGN KEY IF NOT EXISTS (isbn)
+        REFERENCES libros (isbn) ON DELETE CASCADE ON UPDATE CASCADE,
+    ADD CONSTRAINT fk_carrito_cliente FOREIGN KEY IF NOT EXISTS (id_cliente)
+        REFERENCES cliente (id) ON DELETE SET NULL ON UPDATE CASCADE;
