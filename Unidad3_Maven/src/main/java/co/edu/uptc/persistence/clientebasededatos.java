@@ -111,7 +111,13 @@ public void guardar(Usuario usuario) throws PersistenciaException {
 	}
 
 	Cliente cliente = (Cliente) usuario;
+	Optional<Usuario> existente = buscarPorCorreo(cliente.getCorreo());
 
+	if (existente.isPresent()) {
+	    throw new PersistenciaException(
+	        "Ya existe un cliente registrado con ese correo electrónico."
+	    );
+	}
     String sql = "INSERT INTO clientes "
             + "(correo_electronico, nombre_completo, direccion_envio, telefono, tipo_cliente, contrasena_hash) "
             + "VALUES (?, ?, ?, ?, ?, ?)";
