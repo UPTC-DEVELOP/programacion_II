@@ -21,7 +21,7 @@ public class ConexionBD {
             return "el usuario o la clave no son correctos.";
         } else if (codigo == 1049) {
             return "no existe la base de datos tienda_virtual.";
-        } else if (estado != null && estado.substring(0, 2).equals("08")) {
+        } else if (estado != null && estado.startsWith("08")) {
             return "no hay conexión con el servidor. Verifique que MariaDB esté encendido.";
         }
         return e.getMessage();
