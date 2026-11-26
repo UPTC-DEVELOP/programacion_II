@@ -1,3 +1,5 @@
+// Principio D (SOLID): conecta los servicios de negocio con los repositorios MySQL y JSON.
+
 package co.edu.uptc.caso.estudio.negocio;
 
 import co.edu.uptc.caso.estudio.persistence.*;
