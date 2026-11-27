@@ -1,4 +1,4 @@
-// Principio S (SOLID)- Responsabilidad Unica: maneja exclusivamente las acciones de los botones.
+// Principio S (SOLID) - Responsabilidad Única: maneja exclusivamente el despacho de acciones de los botones.
 
 package co.edu.uptc.caso.estudio.gui;
 
@@ -37,27 +37,57 @@ public class Evento implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String comando = e.getActionCommand();
+        if (comando == null) {
+            return;
+        }
         switch (comando) {
-            // Usuario
-            case REGISTRAR_USUARIO -> ventana.registrarUsuario();
-            case INICIAR_SESION -> ventana.iniciarSesion();
-            case ACTUALIZAR_USUARIO -> ventana.actualizarDatosUsuario();
-            case ELIMINAR_USUARIO -> ventana.eliminarCuentaUsuario();
-            case OLVIDO_PASSWORD -> ventana.mostrarOlvidoContrasena();
-            case CERRAR_SESION -> ventana.cerrarSesion();
-
-            // Libros
-            case BUSCAR_LIBRO -> ventana.buscarLibros();
-            case MOSTRAR_TODOS_LIBROS -> ventana.mostrarTodosLosLibros();
-            case AGREGAR_LIBRO -> ventana.abrirDialogoLibro(null);
-            case EDITAR_LIBRO -> ventana.editarLibroSeleccionado();
-            case ELIMINAR_LIBRO -> ventana.eliminarLibroSeleccionado();
-            case AGREGAR_AL_CARRITO -> ventana.agregarLibroAlCarrito();
-
-            // Carrito
-            case ACTUALIZAR_CANTIDAD_CARRITO -> ventana.actualizarCantidadCarrito();
-            case ELIMINAR_DEL_CARRITO -> ventana.eliminarDelCarrito();
-            case FINALIZAR_COMPRA -> ventana.realizarCompra();
+            case REGISTRAR_USUARIO:
+                ventana.registrarUsuario();
+                break;
+            case INICIAR_SESION:
+                ventana.iniciarSesion();
+                break;
+            case ACTUALIZAR_USUARIO:
+                ventana.actualizarDatosUsuario();
+                break;
+            case ELIMINAR_USUARIO:
+                ventana.eliminarCuentaUsuario();
+                break;
+            case OLVIDO_PASSWORD:
+                ventana.mostrarOlvidoContrasena();
+                break;
+            case CERRAR_SESION:
+                ventana.cerrarSesion();
+                break;
+            case BUSCAR_LIBRO:
+                ventana.buscarLibros();
+                break;
+            case MOSTRAR_TODOS_LIBROS:
+                ventana.mostrarTodosLosLibros();
+                break;
+            case AGREGAR_LIBRO:
+                ventana.abrirDialogoLibro(null);
+                break;
+            case EDITAR_LIBRO:
+                ventana.editarLibroSeleccionado();
+                break;
+            case ELIMINAR_LIBRO:
+                ventana.eliminarLibroSeleccionado();
+                break;
+            case AGREGAR_AL_CARRITO:
+                ventana.agregarLibroAlCarrito();
+                break;
+            case ACTUALIZAR_CANTIDAD_CARRITO:
+                ventana.actualizarCantidadCarrito();
+                break;
+            case ELIMINAR_DEL_CARRITO:
+                ventana.eliminarDelCarrito();
+                break;
+            case FINALIZAR_COMPRA:
+                ventana.realizarCompra();
+                break;
+            default:
+                break;
         }
     }
 }
