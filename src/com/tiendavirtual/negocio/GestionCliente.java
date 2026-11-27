@@ -5,6 +5,7 @@ import java.util.List;
 import com.tiendavirtual.modelo.Cliente;
 import com.tiendavirtual.repositorio.ClienteRepository;
 import com.tiendavirtual.repositorio.ClienteRepositoryMySQL;
+import com.tiendavirtual.util.Contrasenias;
 
 public class GestionCliente {
 
@@ -12,6 +13,10 @@ public class GestionCliente {
 
     public GestionCliente() {
         repositorio = new ClienteRepositoryMySQL();
+    }
+
+    public GestionCliente(ClienteRepository repositorio) {
+        this.repositorio = repositorio;
     }
 
     public boolean registrarCliente(Cliente cliente) {
@@ -32,11 +37,33 @@ public class GestionCliente {
             return false;
         }
 
+        cliente.setContrasenia(Contrasenias.hashear(cliente.getContrasenia()));
         return repositorio.guardar(cliente);
     }
 
     public Cliente iniciarSesion(String correo, String contrasenia) {
-        return repositorio.iniciarSesion(correo, contrasenia);
+        if (correo == null || contrasenia == null) {
+            return null;
+        }
+
+        Cliente cliente = repositorio.buscarPorCorreo(correo.trim());
+
+        if (cliente == null
+                || !Contrasenias.verificar(contrasenia, cliente.getContrasenia())) {
+            return null;
+        }
+
+        if (!Contrasenias.esHash(cliente.getContrasenia())) {
+            // Contraseña antigua en texto plano: se convierte a hash.
+            try {
+                cliente.setContrasenia(Contrasenias.hashear(contrasenia));
+                repositorio.actualizar(cliente);
+            } catch (RuntimeException e) {
+                // Si aún no se ejecutó el script SQL, el inicio de sesión sigue funcionando.
+            }
+        }
+
+        return cliente;
     }
 
     public boolean actualizarCliente(Cliente actualizado) {
@@ -59,15 +86,16 @@ public class GestionCliente {
             }
         }
 
-        if (actualizado.getContrasenia() != null
-                && !actualizado.getContrasenia().isEmpty()
-                && !contraseniaValida(actualizado.getContrasenia())) {
-            return false;
-        }
+        String nueva = actualizado.getContrasenia();
 
-        if (actualizado.getContrasenia() == null
-                || actualizado.getContrasenia().isEmpty()) {
+        if (nueva == null || nueva.isEmpty()
+                || nueva.equals(existente.getContrasenia())) {
+            // Sin cambio de contraseña: se conserva la guardada.
             actualizado.setContrasenia(existente.getContrasenia());
+        } else if (contraseniaValida(nueva)) {
+            actualizado.setContrasenia(Contrasenias.hashear(nueva));
+        } else {
+            return false;
         }
 
         return repositorio.actualizar(actualizado);

@@ -114,14 +114,13 @@ public class ClienteRepositoryMySQL implements ClienteRepository {
     }
 
     @Override
-    public Cliente iniciarSesion(String correo, String contrasenia) {
-        String sql = "SELECT * FROM clientes WHERE correo=? AND contrasenia=?";
+    public Cliente buscarPorCorreo(String correo) {
+        String sql = "SELECT * FROM clientes WHERE correo=?";
 
         try (Connection con = Conexion.conectar();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, correo);
-            ps.setString(2, contrasenia);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -130,7 +129,7 @@ public class ClienteRepositoryMySQL implements ClienteRepository {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al iniciar sesión: " + e.getMessage(), e);
+            throw new RuntimeException("Error al buscar cliente por correo: " + e.getMessage(), e);
         }
 
         return null;

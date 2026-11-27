@@ -15,5 +15,5 @@ public interface ClienteRepository {
 
     List<Cliente> listar();
 
-    Cliente iniciarSesion(String correo, String contrasenia);
+    Cliente buscarPorCorreo(String correo);
 }
