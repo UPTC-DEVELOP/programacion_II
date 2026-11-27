@@ -1,10 +1,9 @@
-// Principio S (SOLID) - Responsabilidad Única: maneja exclusivamente el despacho de acciones de los botones.
-
 package co.edu.uptc.caso.estudio.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+// Principio S (SOLID) - Responsabilidad Única: maneja exclusivamente el despacho de acciones de los botones.
 public class Evento implements ActionListener {
 
     // Constantes de Usuario
@@ -36,58 +35,86 @@ public class Evento implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if (ventana == null || e == null) {
+            return;
+        }
         String comando = e.getActionCommand();
         if (comando == null) {
             return;
         }
+
+        if (despacharUsuario(comando)) {
+            return;
+        }
+        if (despacharLibros(comando)) {
+            return;
+        }
+        despacharCarritoCompra(comando);
+    }
+
+    private boolean despacharUsuario(String comando) {
         switch (comando) {
             case REGISTRAR_USUARIO:
                 ventana.registrarUsuario();
-                break;
+                return true;
             case INICIAR_SESION:
                 ventana.iniciarSesion();
-                break;
+                return true;
             case ACTUALIZAR_USUARIO:
                 ventana.actualizarDatosUsuario();
-                break;
+                return true;
             case ELIMINAR_USUARIO:
                 ventana.eliminarCuentaUsuario();
-                break;
+                return true;
             case OLVIDO_PASSWORD:
                 ventana.mostrarOlvidoContrasena();
-                break;
+                return true;
             case CERRAR_SESION:
                 ventana.cerrarSesion();
-                break;
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private boolean despacharLibros(String comando) {
+        switch (comando) {
             case BUSCAR_LIBRO:
                 ventana.buscarLibros();
-                break;
+                return true;
             case MOSTRAR_TODOS_LIBROS:
                 ventana.mostrarTodosLosLibros();
-                break;
+                return true;
             case AGREGAR_LIBRO:
                 ventana.abrirDialogoLibro(null);
-                break;
+                return true;
             case EDITAR_LIBRO:
                 ventana.editarLibroSeleccionado();
-                break;
+                return true;
             case ELIMINAR_LIBRO:
                 ventana.eliminarLibroSeleccionado();
-                break;
+                return true;
             case AGREGAR_AL_CARRITO:
                 ventana.agregarLibroAlCarrito();
-                break;
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private boolean despacharCarritoCompra(String comando) {
+        switch (comando) {
             case ACTUALIZAR_CANTIDAD_CARRITO:
                 ventana.actualizarCantidadCarrito();
-                break;
+                return true;
             case ELIMINAR_DEL_CARRITO:
                 ventana.eliminarDelCarrito();
-                break;
+                return true;
             case FINALIZAR_COMPRA:
                 ventana.realizarCompra();
-                break;
+                return true;
             default:
-                break;
+                return false;
         }
     }
 }

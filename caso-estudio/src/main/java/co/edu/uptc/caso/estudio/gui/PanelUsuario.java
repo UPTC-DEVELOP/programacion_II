@@ -1,34 +1,61 @@
 package co.edu.uptc.caso.estudio.gui;
 
 import co.edu.uptc.caso.estudio.model.Cliente;
+import co.edu.uptc.caso.estudio.model.FabricaClientes;
 import co.edu.uptc.caso.estudio.model.UbicacionesColombia;
 import co.edu.uptc.caso.estudio.model.enums.TipoCliente;
 import co.edu.uptc.caso.estudio.negocio.IGestionUsuarios;
 import co.edu.uptc.caso.estudio.negocio.dto.CredencialDto;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Arrays;
-import javax.swing.*;
-import co.edu.uptc.caso.estudio.model.FabricaClientes;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class PanelUsuario extends JPanel {
-    private static final long serialVersionUID = 1L;
 
-    private JTextField txtId, txtNombre, txtCorreo, txtDireccion, txtTelefono;
+    private static final long serialVersionUID = 1L;
+    private static final Color COLOR_ESTADO = new Color(0, 128, 0);
+
+    private JTextField txtId;
+    private JTextField txtNombre;
+    private JTextField txtCorreo;
+    private JTextField txtDireccion;
+    private JTextField txtTelefono;
     private JPasswordField txtPass;
     private JCheckBox chkMostrarPass;
-    private JComboBox<String> cbDepto, cbCiudad;
+    private JComboBox<String> cbDepto;
+    private JComboBox<String> cbCiudad;
     private JComboBox<TipoCliente> cbTipoCliente;
     private JLabel lblEstadoUsuario;
 
     public PanelUsuario(Evento evento) {
         setLayout(new BorderLayout(15, 15));
         setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
-        initComponentes(evento);
+        add(crearFormulario(), BorderLayout.CENTER);
+        add(crearPanelBotones(evento), BorderLayout.SOUTH);
     }
 
-    private void initComponentes(Evento evento) {
-        JPanel panelForm = new JPanel(new GridBagLayout());
+    private JPanel crearFormulario() {
+        JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(6, 10, 6, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -36,38 +63,59 @@ public class PanelUsuario extends JPanel {
         txtId = new JTextField(30);
         txtNombre = new JTextField(30);
         txtCorreo = new JTextField(30);
+        txtDireccion = new JTextField(30);
+        txtTelefono = new JTextField(30);
+        cbTipoCliente = new JComboBox<>(TipoCliente.values());
+
+        configurarUbicaciones();
+        JPanel panelPass = crearCampoPassword();
+
+        String labelPass = "Contraseña (mín. " + IGestionUsuarios.LONGITUD_MINIMA_CONTRASENA + " caracteres):";
+        JComponent[] campos = {
+            txtId, txtNombre, txtCorreo, panelPass, txtDireccion, cbDepto, cbCiudad, txtTelefono, cbTipoCliente
+        };
+        String[] etiquetas = {
+            "ID / Cédula:", "Nombre Completo:", "Correo Electrónico:", labelPass,
+            "Dirección Envío:", "Departamento:", "Ciudad:", "Teléfono:", "Tipo de Cliente:"
+        };
+
+        for (int i = 0; i < etiquetas.length; i++) {
+            agregarFila(panel, etiquetas[i], campos[i], gbc, i);
+        }
+        return panel;
+    }
+
+    private void configurarUbicaciones() {
+        cbDepto = new JComboBox<>(UbicacionesColombia.getDepartamentos());
+        cbCiudad = new JComboBox<>();
+        actualizarCiudades();
+        cbDepto.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    actualizarCiudades();
+                }
+            }
+        });
+    }
+
+    private JPanel crearCampoPassword() {
         txtPass = new JPasswordField(22);
         chkMostrarPass = new JCheckBox("Mostrar");
-        chkMostrarPass.addActionListener(e -> txtPass.setEchoChar(chkMostrarPass.isSelected() ? (char) 0 : '•'));
+        chkMostrarPass.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                txtPass.setEchoChar(chkMostrarPass.isSelected() ? (char) 0 : '•');
+            }
+        });
 
         JPanel panelPass = new JPanel(new BorderLayout(5, 0));
         panelPass.add(txtPass, BorderLayout.CENTER);
         panelPass.add(chkMostrarPass, BorderLayout.EAST);
+        return panelPass;
+    }
 
-        txtDireccion = new JTextField(30);
-        cbDepto = new JComboBox<>(UbicacionesColombia.getDepartamentos());
-        cbCiudad = new JComboBox<>();
-        actualizarCiudades();
-        cbDepto.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) actualizarCiudades();
-        });
-
-        txtTelefono = new JTextField(30);
-        cbTipoCliente = new JComboBox<>(TipoCliente.values());
-
-        int row = 0;
-        agregarFila(panelForm, "ID / Cédula:", txtId, gbc, row++);
-        agregarFila(panelForm, "Nombre Completo:", txtNombre, gbc, row++);
-        agregarFila(panelForm, "Correo Electrónico:", txtCorreo, gbc, row++);
-        agregarFila(panelForm, "Contraseña (mín. " + IGestionUsuarios.LONGITUD_MINIMA_CONTRASENA + " caracteres):", panelPass, gbc, row++);
-        agregarFila(panelForm, "Dirección Envío:", txtDireccion, gbc, row++);
-        agregarFila(panelForm, "Departamento:", cbDepto, gbc, row++);
-        agregarFila(panelForm, "Ciudad:", cbCiudad, gbc, row++);
-        agregarFila(panelForm, "Teléfono:", txtTelefono, gbc, row++);
-        agregarFila(panelForm, "Tipo de Cliente:", cbTipoCliente, gbc, row++);
-
-        add(panelForm, BorderLayout.CENTER);
-
+    private JPanel crearPanelBotones(Evento evento) {
         JPanel panelBotones = new JPanel(new GridLayout(2, 4, 10, 10));
         panelBotones.setPreferredSize(new Dimension(0, 90));
 
@@ -80,10 +128,9 @@ public class PanelUsuario extends JPanel {
 
         lblEstadoUsuario = new JLabel("Sin iniciar sesión", SwingConstants.CENTER);
         lblEstadoUsuario.setFont(new Font("SansSerif", Font.BOLD, 13));
-        lblEstadoUsuario.setForeground(new Color(0, 128, 0));
+        lblEstadoUsuario.setForeground(COLOR_ESTADO);
         panelBotones.add(lblEstadoUsuario);
-
-        add(panelBotones, BorderLayout.SOUTH);
+        return panelBotones;
     }
 
     private JButton crearBoton(String texto, String comando, Evento evento) {
@@ -94,19 +141,27 @@ public class PanelUsuario extends JPanel {
     }
 
     private void agregarFila(JPanel panel, String etiqueta, JComponent comp, GridBagConstraints gbc, int row) {
-        gbc.gridx = 0; gbc.gridy = row; gbc.weightx = 0.3; gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.weightx = 0.3;
+        gbc.anchor = GridBagConstraints.WEST;
         JLabel lbl = new JLabel(etiqueta);
         lbl.setFont(new Font("SansSerif", Font.BOLD, 12));
         panel.add(lbl, gbc);
-        gbc.gridx = 1; gbc.weightx = 0.7;
+
+        gbc.gridx = 1;
+        gbc.weightx = 0.7;
         panel.add(comp, gbc);
     }
 
     private void actualizarCiudades() {
         cbCiudad.removeAllItems();
         String depto = (String) cbDepto.getSelectedItem();
-        if (depto != null) {
-            for (String c : UbicacionesColombia.getCiudades(depto)) cbCiudad.addItem(c);
+        if (depto == null) {
+            return;
+        }
+        for (String ciudad : UbicacionesColombia.getCiudades(depto)) {
+            cbCiudad.addItem(ciudad);
         }
     }
 
@@ -135,6 +190,10 @@ public class PanelUsuario extends JPanel {
     }
 
     public void cargarDatosUsuario(Cliente c) {
+        if (c == null) {
+            limpiarFormulario();
+            return;
+        }
         txtId.setText(c.getId());
         txtNombre.setText(c.getNombreCompleto());
         txtCorreo.setText(c.getCorreo());

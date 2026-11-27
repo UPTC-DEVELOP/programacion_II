@@ -1,5 +1,3 @@
-// VentanaPrincipal: integra los paneles visuales y se comunica con la capa de negocio.
-
 package co.edu.uptc.caso.estudio.gui;
 
 import co.edu.uptc.caso.estudio.model.Cliente;
@@ -9,11 +7,17 @@ import co.edu.uptc.caso.estudio.negocio.IGestionCompras;
 import co.edu.uptc.caso.estudio.negocio.IGestionLibros;
 import co.edu.uptc.caso.estudio.negocio.IGestionUsuarios;
 import co.edu.uptc.caso.estudio.negocio.dto.CredencialDto;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 
+// VentanaPrincipal: integra los paneles visuales y se comunica con la capa de negocio.
 public class VentanaPrincipal extends JFrame {
+
     private static final long serialVersionUID = 1L;
 
     private final IGestionLibros gestionLibros;
@@ -57,26 +61,26 @@ public class VentanaPrincipal extends JFrame {
         Cliente c = panelUsuario.construirClienteDesdeFormulario(null, null);
         String error = gestionUsuarios.registrarCliente(c);
         if (error != null) {
-            JOptionPane.showMessageDialog(this, error, "Error de Validación", JOptionPane.WARNING_MESSAGE);
+            mostrarMensaje(error, "Error de Validación", JOptionPane.WARNING_MESSAGE);
             return;
         }
         panelUsuario.limpiarPassword();
-        JOptionPane.showMessageDialog(this, "¡Usuario registrado exitosamente!");
+        mostrarMensaje("¡Usuario registrado exitosamente!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void iniciarSesion() {
         CredencialDto cred = panelUsuario.obtenerCredenciales();
         if (cred.getCorreo().isEmpty() || cred.getContrasena().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingrese Correo y Contraseña.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            mostrarMensaje("Ingrese Correo y Contraseña.", "Aviso", JOptionPane.WARNING_MESSAGE);
             return;
         }
         if (gestionUsuarios.iniciarSesion(cred)) {
             Cliente log = gestionUsuarios.getUsuarioLogueado();
             panelUsuario.cargarDatosUsuario(log);
-            JOptionPane.showMessageDialog(this, "Bienvenido " + log.getNombreCompleto());
+            mostrarMensaje("Bienvenido " + log.getNombreCompleto(), "Sesión iniciada", JOptionPane.INFORMATION_MESSAGE);
             refrescarCarrito();
         } else {
-            JOptionPane.showMessageDialog(this, "Credenciales incorrectas.", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarMensaje("Credenciales incorrectas.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -84,44 +88,50 @@ public class VentanaPrincipal extends JFrame {
         gestionUsuarios.cerrarSesion();
         panelUsuario.limpiarFormulario();
         refrescarCarrito();
-        JOptionPane.showMessageDialog(this, "Sesión cerrada.");
+        mostrarMensaje("Sesión cerrada.", "Información", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void actualizarDatosUsuario() {
         Cliente logueado = gestionUsuarios.getUsuarioLogueado();
         if (logueado == null) {
-            JOptionPane.showMessageDialog(this, "Debe iniciar sesión para actualizar sus datos.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            mostrarMensaje("Debe iniciar sesión para actualizar sus datos.", "Aviso", JOptionPane.WARNING_MESSAGE);
             return;
         }
         Cliente datos = panelUsuario.construirClienteDesdeFormulario(logueado.getId(), logueado.getCorreo());
         String error = gestionUsuarios.actualizarUsuario(datos, panelUsuario.obtenerPasswordIngresada());
         if (error != null) {
-            JOptionPane.showMessageDialog(this, error, "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarMensaje(error, "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         panelUsuario.cargarDatosUsuario(gestionUsuarios.getUsuarioLogueado());
         refrescarCarrito();
-        JOptionPane.showMessageDialog(this, "Datos actualizados correctamente.");
+        mostrarMensaje("Datos actualizados correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void eliminarCuentaUsuario() {
         if (gestionUsuarios.getUsuarioLogueado() == null) {
-            JOptionPane.showMessageDialog(this, "Debe iniciar sesión para eliminar su cuenta.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            mostrarMensaje("Debe iniciar sesión para eliminar su cuenta.", "Aviso", JOptionPane.WARNING_MESSAGE);
             return;
         }
         JPasswordField campoPass = new JPasswordField();
-        int op = JOptionPane.showConfirmDialog(this,
+        int op = JOptionPane.showConfirmDialog(
+                this,
                 new Object[]{"Esta acción eliminará su cuenta de forma permanente.", "Ingrese su contraseña para confirmar:", campoPass},
-                "Eliminar cuenta", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-        if (op != JOptionPane.OK_OPTION) return;
+                "Eliminar cuenta",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.WARNING_MESSAGE
+        );
+        if (op != JOptionPane.OK_OPTION) {
+            return;
+        }
 
         if (gestionUsuarios.eliminarUsuarioLogueado(new String(campoPass.getPassword()))) {
             panelUsuario.limpiarFormulario();
             refrescarCarrito();
             refrescarLibros();
-            JOptionPane.showMessageDialog(this, "Su cuenta fue eliminada correctamente.");
+            mostrarMensaje("Su cuenta fue eliminada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(this, "Contraseña incorrecta. No se eliminó la cuenta.", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarMensaje("Contraseña incorrecta. No se eliminó la cuenta.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -137,17 +147,21 @@ public class VentanaPrincipal extends JFrame {
             "Nueva Contraseña (mín. " + IGestionUsuarios.LONGITUD_MINIMA_CONTRASENA + " caracteres):", txtNuevaPass
         };
 
-        int opcion = JOptionPane.showConfirmDialog(this, formulario, "Restablecer Contraseña",
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        int opcion = JOptionPane.showConfirmDialog(
+                this,
+                formulario,
+                "Restablecer Contraseña",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
 
         if (opcion == JOptionPane.OK_OPTION) {
             String error = gestionUsuarios.restablecerContrasena(
                     txtIdRec.getText(), txtCorreoRec.getText(), new String(txtNuevaPass.getPassword()));
             if (error != null) {
-                JOptionPane.showMessageDialog(this, error, "Error al restablecer", JOptionPane.ERROR_MESSAGE);
+                mostrarMensaje(error, "Error al restablecer", JOptionPane.ERROR_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(this, "¡Contraseña restablecida con éxito! Ya puede iniciar sesión.",
-                        "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                mostrarMensaje("¡Contraseña restablecida con éxito! Ya puede iniciar sesión.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             }
         }
     }
@@ -169,94 +183,124 @@ public class VentanaPrincipal extends JFrame {
             refrescarLibros();
             return;
         }
-        List<Libro> filtrados = gestionLibros.listarLibros().stream()
-                .filter(l -> l.getIsbn().toLowerCase().contains(q)
-                        || l.getTitulo().toLowerCase().contains(q)
-                        || l.getAutor().toLowerCase().contains(q)
-                        || l.getCategoria().toLowerCase().contains(q))
-                .collect(Collectors.toList());
+
+        List<Libro> filtrados = new ArrayList<>();
+        List<Libro> todos = gestionLibros.listarLibros();
+        for (Libro l : todos) {
+            if (l != null && coincideBusqueda(l, q)) {
+                filtrados.add(l);
+            }
+        }
         panelLibros.actualizarTabla(filtrados);
+    }
+
+    private boolean coincideBusqueda(Libro l, String consulta) {
+        return contieneTexto(l.getIsbn(), consulta)
+                || contieneTexto(l.getTitulo(), consulta)
+                || contieneTexto(l.getAutor(), consulta)
+                || contieneTexto(l.getCategoria(), consulta);
+    }
+
+    private boolean contieneTexto(String campo, String consulta) {
+        return campo != null && campo.toLowerCase().contains(consulta);
     }
 
     public void abrirDialogoLibro(Libro existente) {
         DialogoLibro dialogo = new DialogoLibro(this, existente);
         dialogo.setVisible(true);
         Libro resultado = dialogo.getLibroResultado();
-        if (resultado != null) {
-            String error = (existente != null) ? gestionLibros.actualizarLibro(resultado) : gestionLibros.registrarLibro(resultado);
-            if (error != null) {
-                JOptionPane.showMessageDialog(this, error, "Error de Validación", JOptionPane.ERROR_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(this, "¡Libro guardado con éxito!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                refrescarLibros();
-                refrescarCarrito();
-            }
+        if (resultado == null) {
+            return;
+        }
+
+        String error = (existente != null)
+                ? gestionLibros.actualizarLibro(resultado)
+                : gestionLibros.registrarLibro(resultado);
+
+        if (error != null) {
+            mostrarMensaje(error, "Error de Validación", JOptionPane.ERROR_MESSAGE);
+        } else {
+            mostrarMensaje("¡Libro guardado con éxito!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            refrescarLibros();
+            refrescarCarrito();
         }
     }
 
     public void editarLibroSeleccionado() {
         String isbn = panelLibros.getIsbnSeleccionado();
         if (isbn == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione un libro para editar.");
+            mostrarMensaje("Seleccione un libro para editar.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         Libro libro = gestionLibros.buscarLibroPorIsbn(isbn);
-        if (libro != null) abrirDialogoLibro(libro);
+        if (libro != null) {
+            abrirDialogoLibro(libro);
+        }
     }
 
     public void eliminarLibroSeleccionado() {
         String isbn = panelLibros.getIsbnSeleccionado();
         if (isbn == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione un libro para eliminar.");
+            mostrarMensaje("Seleccione un libro para eliminar.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        int confirm = JOptionPane.showConfirmDialog(this,
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
                 "¿Desea eliminar permanentemente el libro con ISBN " + isbn + "?",
-                "Confirmar Eliminación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                "Confirmar Eliminación",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
         if (confirm == JOptionPane.YES_OPTION) {
             if (gestionLibros.eliminarLibro(isbn)) {
-                JOptionPane.showMessageDialog(this, "Libro eliminado correctamente.");
+                mostrarMensaje("Libro eliminado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 refrescarLibros();
                 refrescarCarrito();
             } else {
-                JOptionPane.showMessageDialog(this, "No se pudo eliminar el libro.", "Error", JOptionPane.ERROR_MESSAGE);
+                mostrarMensaje("No se pudo eliminar el libro.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
     public void agregarLibroAlCarrito() {
-        if (gestionUsuarios.getUsuarioLogueado() == null) {
-            JOptionPane.showMessageDialog(this, "Debe iniciar sesión primero en la pestaña 'Usuario'.");
+        if (!haySesionActiva("Debe iniciar sesión primero en la pestaña 'Usuario'.")) {
             return;
         }
         String isbn = panelLibros.getIsbnSeleccionado();
         if (isbn == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione un libro del catálogo.");
+            mostrarMensaje("Seleccione un libro del catálogo.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         Libro l = gestionLibros.buscarLibroPorIsbn(isbn);
-        if (l != null) {
-            String cantStr = JOptionPane.showInputDialog(this, "Ingrese la cantidad a comprar:", "1");
-            if (cantStr != null) {
-                try {
-                    int cant = Integer.parseInt(cantStr.trim());
-                    if (cant <= 0) {
-                        JOptionPane.showMessageDialog(this, "La cantidad debe ser mayor a 0.");
-                        return;
-                    }
-                    ItemCarrito existente = gestionCompras.obtenerCarritoActual().buscarItem(isbn);
-                    int enCarrito = (existente != null) ? existente.getCantidad() : 0;
-                    if (enCarrito + cant > l.getStock()) {
-                        JOptionPane.showMessageDialog(this, "Stock insuficiente. Disponible: " + l.getStock() + " (en carrito: " + enCarrito + ").");
-                        return;
-                    }
-                    gestionCompras.agregarAlCarrito(l, cant);
-                    refrescarCarrito();
-                    JOptionPane.showMessageDialog(this, "Libro añadido al carrito con éxito.");
-                } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(this, "Cantidad inválida.");
-                }
+        if (l == null) {
+            return;
+        }
+
+        String cantStr = JOptionPane.showInputDialog(this, "Ingrese la cantidad a comprar:", "1");
+        if (cantStr == null) {
+            return;
+        }
+        try {
+            int cant = Integer.parseInt(cantStr.trim());
+            if (cant <= 0) {
+                mostrarMensaje("La cantidad debe ser mayor a 0.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
             }
+            ItemCarrito existente = gestionCompras.obtenerCarritoActual().buscarItem(isbn);
+            int enCarrito = (existente != null) ? existente.getCantidad() : 0;
+            if (enCarrito + cant > l.getStock()) {
+                mostrarMensaje(
+                        "Stock insuficiente. Disponible: " + l.getStock() + " (en carrito: " + enCarrito + ").",
+                        "Stock insuficiente",
+                        JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
+            gestionCompras.agregarAlCarrito(l, cant);
+            refrescarCarrito();
+            mostrarMensaje("Libro añadido al carrito con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (NumberFormatException e) {
+            mostrarMensaje("Cantidad inválida.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -267,73 +311,87 @@ public class VentanaPrincipal extends JFrame {
     }
 
     public void actualizarCantidadCarrito() {
-        if (gestionUsuarios.getUsuarioLogueado() == null) {
-            JOptionPane.showMessageDialog(this, "Debe iniciar sesión primero en la pestaña 'Usuario'.");
+        if (!haySesionActiva("Debe iniciar sesión primero en la pestaña 'Usuario'.")) {
             return;
         }
         String isbn = panelCarrito.getIsbnUnicoSeleccionado();
         if (isbn == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione un solo libro del carrito para actualizar su cantidad.");
+            mostrarMensaje("Seleccione un solo libro del carrito para actualizar su cantidad.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         int cantActual = panelCarrito.getCantidadUnicaSeleccionada();
         String cantStr = JOptionPane.showInputDialog(this, "Ingrese la nueva cantidad:", String.valueOf(cantActual));
-        if (cantStr != null) {
-            try {
-                int cant = Integer.parseInt(cantStr.trim());
-                String error = gestionCompras.actualizarCantidadCarrito(isbn, cant);
-                if (error != null) {
-                    JOptionPane.showMessageDialog(this, error, "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    refrescarCarrito();
-                    JOptionPane.showMessageDialog(this, "Cantidad actualizada correctamente.");
-                }
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Cantidad inválida.");
+        if (cantStr == null) {
+            return;
+        }
+        try {
+            int cant = Integer.parseInt(cantStr.trim());
+            String error = gestionCompras.actualizarCantidadCarrito(isbn, cant);
+            if (error != null) {
+                mostrarMensaje(error, "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                refrescarCarrito();
+                mostrarMensaje("Cantidad actualizada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             }
+        } catch (NumberFormatException e) {
+            mostrarMensaje("Cantidad inválida.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     public void eliminarDelCarrito() {
-        if (gestionUsuarios.getUsuarioLogueado() == null) {
-            JOptionPane.showMessageDialog(this, "Debe iniciar sesión primero en la pestaña 'Usuario'.");
+        if (!haySesionActiva("Debe iniciar sesión primero en la pestaña 'Usuario'.")) {
             return;
         }
         List<String> isbns = panelCarrito.getIsbnsSeleccionados();
         if (isbns.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Seleccione al menos un libro del carrito para eliminar.");
+            mostrarMensaje("Seleccione al menos un libro del carrito para eliminar.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        int confirm = JOptionPane.showConfirmDialog(this,
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
                 "¿Desea eliminar " + isbns.size() + " libro(s) del carrito?",
-                "Confirmar Eliminación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                "Confirmar Eliminación",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
         if (confirm == JOptionPane.YES_OPTION) {
             if (gestionCompras.eliminarDelCarrito(isbns)) {
-                JOptionPane.showMessageDialog(this, "Libro(s) eliminado(s) del carrito correctamente.");
+                mostrarMensaje("Libro(s) eliminado(s) del carrito correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 refrescarCarrito();
             } else {
-                JOptionPane.showMessageDialog(this, "No se pudo eliminar del carrito.", "Error", JOptionPane.ERROR_MESSAGE);
+                mostrarMensaje("No se pudo eliminar del carrito.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
     public void realizarCompra() {
-        if (gestionUsuarios.getUsuarioLogueado() == null) {
-            JOptionPane.showMessageDialog(this, "Debe iniciar sesión para realizar la compra.");
+        if (!haySesionActiva("Debe iniciar sesión para realizar la compra.")) {
             return;
         }
         String errorPago = gestionCompras.registrarPago(panelCarrito.obtenerDatosPago());
         if (errorPago != null) {
-            JOptionPane.showMessageDialog(this, errorPago, "Error en los datos de pago", JOptionPane.ERROR_MESSAGE);
+            mostrarMensaje(errorPago, "Error en los datos de pago", JOptionPane.ERROR_MESSAGE);
             return;
         }
         if (gestionCompras.finalizarCompra()) {
             panelCarrito.limpiarFormularioPago();
-            JOptionPane.showMessageDialog(this, "¡Gracias por tu compra! Se ha procesado tu orden con éxito.", "Compra Exitosa", JOptionPane.INFORMATION_MESSAGE);
+            mostrarMensaje("¡Gracias por tu compra! Se ha procesado tu orden con éxito.", "Compra Exitosa", JOptionPane.INFORMATION_MESSAGE);
             refrescarCarrito();
             refrescarLibros();
         } else {
-            JOptionPane.showMessageDialog(this, "El carrito está vacío o ocurrió un error al procesar la compra.", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarMensaje("El carrito está vacío o ocurrió un error al procesar la compra.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private boolean haySesionActiva(String mensajeAviso) {
+        if (gestionUsuarios.getUsuarioLogueado() == null) {
+            mostrarMensaje(mensajeAviso, "Aviso", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
+    private void mostrarMensaje(String mensaje, String titulo, int tipo) {
+        JOptionPane.showMessageDialog(this, mensaje, titulo, tipo);
     }
 }
