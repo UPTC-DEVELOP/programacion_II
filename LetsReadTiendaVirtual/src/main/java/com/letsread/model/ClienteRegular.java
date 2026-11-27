@@ -9,4 +9,7 @@ public class ClienteRegular extends Cliente {
     public double calcularDescuento(double totalCompra) {
         return 0.0; // Los clientes regulares no tienen descuento
     }
+
+    @Override
+    public String getTipo() { return "Regular"; }
 }
