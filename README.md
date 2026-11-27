@@ -22,6 +22,17 @@ Todo se guarda en MariaDB y en archivos JSON de la carpeta `datos/`.
 
 Paquetes dentro de `co.edu.uptc.tienda`: `modelo`, `interfaz`, `negocio`, `persistencia`, `gui` y `excepcion`.
 
+### 4. Validaciones y consultas adicionales
+
+- Consulta de disponibilidad de libros.
+- Validación de ISBN registrado.
+- Identificación de clientes Premium.
+- Consulta de correo electrónico y dirección de envío.
+- Consulta de cantidades y subtotales del carrito.
+- Cálculo de impuestos del carrito.
+- Consulta de información de los libros agregados.
+- Validación de los registros del carrito.
+
 ## Integrantes
 
 - Maicol Gutierrez: módulo de libros.
