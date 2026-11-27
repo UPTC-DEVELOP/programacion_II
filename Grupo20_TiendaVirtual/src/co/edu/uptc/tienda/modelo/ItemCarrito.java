@@ -43,4 +43,7 @@ public class ItemCarrito {
     public String obtenerTituloLibro() {
     return libro.getTitulo();
 }
+    public String obtenerAutorLibro() {
+    return libro.getAutor();
+}
 }
