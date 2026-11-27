@@ -15,15 +15,17 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+// Persistencia MySQL transaccional para registrar compras, descontar stock y consultar historial
 public class RepositorioCompraMySQL implements IRepositorioCompra {
 
+    // Registra la compra, sus ítems y el descuento de stock en una única transacción
     @Override
     public boolean registrarCompra(Cliente cliente, Carrito carrito, String metodoPago) {
-        if (cliente == null || cliente.getId() == null || carrito == null || carrito.estaVacio()) {
+        if (cliente == null || esVacio(cliente.getId()) || carrito == null || carrito.estaVacio()) {
             return false;
         }
 
-        String clienteId = cliente.getId();
+        String clienteId = cliente.getId().trim();
         try (Connection conn = ConexionMySQL.obtenerConexion()) {
             conn.setAutoCommit(false);
             try {
@@ -33,11 +35,11 @@ public class RepositorioCompraMySQL implements IRepositorioCompra {
                 conn.commit();
                 return true;
             } catch (SQLException e) {
-                conn.rollback();
+                rollbackSilencioso(conn);
                 System.err.println("Rollback en compra de cliente " + clienteId + ": " + e.getMessage());
                 return false;
             } finally {
-                conn.setAutoCommit(true);
+                restaurarAutoCommit(conn);
             }
         } catch (SQLException e) {
             System.err.println("Error de conexión en RepositorioCompraMySQL: " + e.getMessage());
@@ -45,10 +47,11 @@ public class RepositorioCompraMySQL implements IRepositorioCompra {
         }
     }
 
+    // Consulta el historial de compras del cliente ordenado de la más reciente a la más antigua
     @Override
     public List<Compra> obtenerComprasPorCliente(String clienteId) {
         List<Compra> compras = new ArrayList<>();
-        if (clienteId == null || clienteId.trim().isEmpty()) {
+        if (esVacio(clienteId)) {
             return compras;
         }
 
@@ -70,6 +73,7 @@ public class RepositorioCompraMySQL implements IRepositorioCompra {
         return compras;
     }
 
+    // Mapea una fila de compras junto con sus ítems asociados
     private Compra mapearCompra(Connection conn, ResultSet rs) throws SQLException {
         int idCompra = rs.getInt("id");
         Compra compra = new Compra();
@@ -86,6 +90,7 @@ public class RepositorioCompraMySQL implements IRepositorioCompra {
         return compra;
     }
 
+    // Calcula desglose de subtotal, IVA y descuento a partir de los ítems y el total en BD
     private void calcularTotalesCompra(Compra compra, List<ItemCarrito> items, double totalBd) {
         Carrito aux = new Carrito(compra.getClienteId());
         aux.setItems(items);
@@ -96,6 +101,7 @@ public class RepositorioCompraMySQL implements IRepositorioCompra {
         compra.setTotalPagado(totalBd);
     }
 
+    // Recupera los ítems de una compra uniendo con la tabla de libros
     private List<ItemCarrito> obtenerItems(Connection conn, int compraId) throws SQLException {
         List<ItemCarrito> items = new ArrayList<>();
         String sql = "SELECT ci.libro_isbn, ci.cantidad, ci.precio_unitario, "
@@ -108,13 +114,17 @@ public class RepositorioCompraMySQL implements IRepositorioCompra {
             ps.setInt(1, compraId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    items.add(new ItemCarrito(mapearLibro(rs), rs.getInt("cantidad"), rs.getDouble("precio_unitario")));
+                    items.add(new ItemCarrito(
+                            mapearLibro(rs),
+                            rs.getInt("cantidad"),
+                            rs.getDouble("precio_unitario")));
                 }
             }
         }
         return items;
     }
 
+    // Construye un objeto Libro a partir de las columnas seleccionadas del detalle de compra
     private Libro mapearLibro(ResultSet rs) throws SQLException {
         Libro libro = new Libro();
         libro.setIsbn(rs.getString("libro_isbn"));
@@ -131,6 +141,7 @@ public class RepositorioCompraMySQL implements IRepositorioCompra {
         return libro;
     }
 
+    // Inserta el encabezado de la compra y retorna la clave primaria autogenerada
     private int insertarCompra(Connection conn, String clienteId, double total) throws SQLException {
         String sql = "INSERT INTO compras (cliente_id, total) VALUES (?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -146,6 +157,7 @@ public class RepositorioCompraMySQL implements IRepositorioCompra {
         }
     }
 
+    // Inserta los ítems comprados y descuenta stock verificando disponibilidad en BD
     private void guardarItemsYStock(Connection conn, int compraId, Carrito carrito) throws SQLException {
         String sqlItem = "INSERT INTO compra_items (compra_id, libro_isbn, cantidad, precio_unitario) VALUES (?, ?, ?, ?)";
         String sqlStock = "UPDATE libros SET stock = stock - ? WHERE isbn = ? AND stock >= ?";
@@ -153,21 +165,22 @@ public class RepositorioCompraMySQL implements IRepositorioCompra {
         try (PreparedStatement psItem = conn.prepareStatement(sqlItem);
              PreparedStatement psStock = conn.prepareStatement(sqlStock)) {
             for (ItemCarrito it : carrito.getItems()) {
-                if (it == null || it.getLibro() == null) {
+                if (it == null || it.getLibro() == null || esVacio(it.getLibro().getIsbn())) {
                     continue;
                 }
+                String isbn = it.getLibro().getIsbn().trim();
                 double precioUnitario = it.getPrecioUnitarioOverride() != null
                         ? it.getPrecioUnitarioOverride()
                         : it.getLibro().getPrecioVenta();
 
                 psItem.setInt(1, compraId);
-                psItem.setString(2, it.getLibro().getIsbn());
+                psItem.setString(2, isbn);
                 psItem.setInt(3, it.getCantidad());
                 psItem.setDouble(4, precioUnitario);
                 psItem.addBatch();
 
                 psStock.setInt(1, it.getCantidad());
-                psStock.setString(2, it.getLibro().getIsbn());
+                psStock.setString(2, isbn);
                 psStock.setInt(3, it.getCantidad());
                 psStock.addBatch();
             }
@@ -180,10 +193,39 @@ public class RepositorioCompraMySQL implements IRepositorioCompra {
         }
     }
 
+    // Limpia los ítems del carrito del cliente dentro de la transacción de compra
     private void vaciarCarrito(Connection conn, String clienteId) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement("DELETE FROM carrito_items WHERE cliente_id = ?")) {
             ps.setString(1, clienteId);
             ps.executeUpdate();
         }
+    }
+
+    private void rollbackSilencioso(Connection conn) {
+        if (conn == null) {
+            return;
+        }
+        try {
+            conn.rollback();
+        } catch (SQLException ex) {
+            System.err.println("Error en rollback de compra: " + ex.getMessage());
+        }
+    }
+
+    private void restaurarAutoCommit(Connection conn) {
+        if (conn == null) {
+            return;
+        }
+        try {
+            if (!conn.isClosed()) {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException ex) {
+            System.err.println("Error restaurando autoCommit en compra: " + ex.getMessage());
+        }
+    }
+
+    private boolean esVacio(String texto) {
+        return texto == null || texto.trim().isEmpty();
     }
 }

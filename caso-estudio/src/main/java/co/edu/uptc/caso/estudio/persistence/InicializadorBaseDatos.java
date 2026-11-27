@@ -4,11 +4,18 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+// Crea las tablas requeridas por la tienda virtual si aún no existen en MySQL
 public class InicializadorBaseDatos {
 
-    private InicializadorBaseDatos() {}
+    private InicializadorBaseDatos() {
+    }
 
+    // Ejecuta las sentencias DDL de creación de tablas de forma idempotente
     public static void inicializarTablas(Connection conn) throws SQLException {
+        if (conn == null) {
+            return;
+        }
+
         String sqlLibros = "CREATE TABLE IF NOT EXISTS libros ("
                 + "isbn VARCHAR(30) PRIMARY KEY,"
                 + "titulo VARCHAR(200) NOT NULL,"

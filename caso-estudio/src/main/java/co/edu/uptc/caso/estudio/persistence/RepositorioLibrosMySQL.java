@@ -9,19 +9,22 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+// Persistencia MySQL para el catálogo e inventario de libros
 public class RepositorioLibrosMySQL implements IRepositorioLibros {
 
+    // Inserta un nuevo libro en la tabla libros
     @Override
     public boolean guardarLibro(Libro l) {
-        if (l == null || l.getIsbn() == null) {
+        if (l == null || esVacio(l.getIsbn())) {
             return false;
         }
-        String sql = "INSERT INTO libros (titulo, autor, anio, categoria, editorial, paginas, precio, stock, formato, porcentaje_iva, isbn) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO libros (titulo, autor, anio, categoria, editorial, paginas, "
+                + "precio, stock, formato, porcentaje_iva, isbn) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConexionMySQL.obtenerConexion();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             asignarParametrosComunes(ps, l);
-            ps.setString(11, l.getIsbn());
+            ps.setString(11, l.getIsbn().trim());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error guardando libro en MySQL: " + e.getMessage());
@@ -29,9 +32,10 @@ public class RepositorioLibrosMySQL implements IRepositorioLibros {
         }
     }
 
+    // Busca un libro por su ISBN exacto
     @Override
     public Libro buscarPorIsbn(String isbn) {
-        if (isbn == null) {
+        if (esVacio(isbn)) {
             return null;
         }
         String sql = "SELECT * FROM libros WHERE isbn = ?";
@@ -49,6 +53,7 @@ public class RepositorioLibrosMySQL implements IRepositorioLibros {
         return null;
     }
 
+    // Obtiene todos los libros registrados en MySQL
     @Override
     public List<Libro> obtenerTodos() {
         List<Libro> libros = new ArrayList<>();
@@ -65,16 +70,18 @@ public class RepositorioLibrosMySQL implements IRepositorioLibros {
         return libros;
     }
 
+    // Actualiza un libro existente identificado por ISBN
     @Override
     public boolean actualizarLibro(Libro l) {
-        if (l == null || l.getIsbn() == null) {
+        if (l == null || esVacio(l.getIsbn())) {
             return false;
         }
-        String sql = "UPDATE libros SET titulo=?, autor=?, anio=?, categoria=?, editorial=?, paginas=?, precio=?, stock=?, formato=?, porcentaje_iva=? WHERE isbn=?";
+        String sql = "UPDATE libros SET titulo=?, autor=?, anio=?, categoria=?, editorial=?, "
+                + "paginas=?, precio=?, stock=?, formato=?, porcentaje_iva=? WHERE isbn=?";
         try (Connection conn = ConexionMySQL.obtenerConexion();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             asignarParametrosComunes(ps, l);
-            ps.setString(11, l.getIsbn());
+            ps.setString(11, l.getIsbn().trim());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error actualizando libro en MySQL: " + e.getMessage());
@@ -82,9 +89,10 @@ public class RepositorioLibrosMySQL implements IRepositorioLibros {
         }
     }
 
+    // Elimina un libro por ISBN
     @Override
     public boolean eliminarLibro(String isbn) {
-        if (isbn == null) {
+        if (esVacio(isbn)) {
             return false;
         }
         String sql = "DELETE FROM libros WHERE isbn = ?";
@@ -98,6 +106,7 @@ public class RepositorioLibrosMySQL implements IRepositorioLibros {
         }
     }
 
+    // Asigna los parámetros compartidos entre INSERT y UPDATE
     private void asignarParametrosComunes(PreparedStatement ps, Libro l) throws SQLException {
         ps.setString(1, l.getTitulo());
         ps.setString(2, l.getAutor());
@@ -111,6 +120,7 @@ public class RepositorioLibrosMySQL implements IRepositorioLibros {
         ps.setDouble(10, l.getPorcentajeIva());
     }
 
+    // Construye una instancia de dominio Libro desde un ResultSet
     private Libro mapearLibro(ResultSet rs) throws SQLException {
         return FabricaLibros.crear(
                 rs.getString("isbn"),
@@ -123,7 +133,10 @@ public class RepositorioLibrosMySQL implements IRepositorioLibros {
                 rs.getDouble("precio"),
                 rs.getInt("stock"),
                 rs.getString("formato"),
-                rs.getDouble("porcentaje_iva")
-        );
+                rs.getDouble("porcentaje_iva"));
+    }
+
+    private boolean esVacio(String texto) {
+        return texto == null || texto.trim().isEmpty();
     }
 }

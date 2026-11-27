@@ -9,16 +9,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+// Persistencia JSON para el registro y consulta histórica de compras
 public class RepositorioCompraJson implements IRepositorioCompra {
 
     private final ManejadorArchivoJson<Compra> manejadorJson;
 
     public RepositorioCompraJson() {
         String ruta = ConfiguracionTienda.obtener("ruta.json.compras", "data/compras.json");
-        Type tipoLista = new TypeToken<ArrayList<Compra>>() {}.getType();
+        Type tipoLista = new TypeToken<ArrayList<Compra>>() {
+        }.getType();
         this.manejadorJson = new ManejadorArchivoJson<>(ruta, tipoLista);
     }
 
+    // Construye y guarda una nueva compra si el cliente y el carrito son válidos
     @Override
     public boolean registrarCompra(Cliente cliente, Carrito carrito, String metodoPago) {
         if (cliente == null || cliente.getId() == null || carrito == null || carrito.estaVacio()) {
@@ -32,6 +35,7 @@ public class RepositorioCompraJson implements IRepositorioCompra {
         return true;
     }
 
+    // Filtra y retorna todas las compras asociadas al identificador del cliente
     @Override
     public List<Compra> obtenerComprasPorCliente(String clienteId) {
         List<Compra> resultado = new ArrayList<>();
