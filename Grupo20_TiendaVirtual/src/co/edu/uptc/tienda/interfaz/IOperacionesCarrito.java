@@ -3,6 +3,7 @@ package co.edu.uptc.tienda.interfaz;
 import java.util.List;
 
 import co.edu.uptc.tienda.excepcion.CarritoExcepcion;
+import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.modelo.ItemCarrito;
 import co.edu.uptc.tienda.modelo.Libro;
 
@@ -22,7 +23,7 @@ public interface IOperacionesCarrito {
 
     void finalizarCompra() throws CarritoExcepcion;
 
-    List<String> sincronizarConCatalogo(List<Libro> catalogo) throws CarritoExcepcion;
+    List<String> sincronizarConCatalogo(List<Libro> catalogo, List<Cliente> clientes) throws CarritoExcepcion;
 
     void asignarCliente(String idCliente) throws CarritoExcepcion;
 

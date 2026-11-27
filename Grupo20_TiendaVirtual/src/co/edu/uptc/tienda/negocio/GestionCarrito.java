@@ -8,6 +8,7 @@ import co.edu.uptc.tienda.excepcion.LibroExcepcion;
 import co.edu.uptc.tienda.interfaz.IGestionCarrito;
 import co.edu.uptc.tienda.interfaz.IPersistenciaCarrito;
 import co.edu.uptc.tienda.modelo.Carrito;
+import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.modelo.ItemCarrito;
 import co.edu.uptc.tienda.modelo.Libro;
 import co.edu.uptc.tienda.modelo.RegistroCarrito;
@@ -19,6 +20,7 @@ public class GestionCarrito implements IGestionCarrito {
     private final ControlLibro controlLibro;
     private final List<RegistroCarrito> otrosClientes = new ArrayList<>();
     private List<Libro> catalogo = new ArrayList<>();
+    private List<Cliente> clientes = new ArrayList<>();
     private boolean recuperado;
 
     public GestionCarrito(Carrito carrito, List<IPersistenciaCarrito> persistencias, ControlLibro controlLibro) {
@@ -193,10 +195,12 @@ public class GestionCarrito implements IGestionCarrito {
     }
 
     @Override
-    public List<String> sincronizarConCatalogo(List<Libro> catalogo) throws CarritoExcepcion {
+    public List<String> sincronizarConCatalogo(List<Libro> catalogo, List<Cliente> clientes)
+            throws CarritoExcepcion {
         List<String> avisos = new ArrayList<>();
         boolean cambio = false;
         this.catalogo = catalogo;
+        this.clientes = clientes;
         if (!recuperado && !catalogo.isEmpty()) {
             recuperado = true;
             boolean descartado = recuperar(catalogo, avisos);
@@ -208,6 +212,18 @@ public class GestionCarrito implements IGestionCarrito {
         if (quitados > 0) {
             avisos.add("De los carritos de otros clientes se quitaron libros que ya no están en el catálogo: "
                     + quitados + ".");
+            cambio = true;
+        }
+        int sinCliente = otrosClientes.size();
+        otrosClientes.removeIf(registro -> !existeCliente(registro.getIdCliente()));
+        sinCliente -= otrosClientes.size();
+        if (carrito.getIdCliente() != null && !existeCliente(carrito.getIdCliente())) {
+            sinCliente += carrito.getItems().size();
+            carrito.vaciar();
+            carrito.setIdCliente(null);
+        }
+        if (sinCliente > 0) {
+            avisos.add("Se borraron los carritos de los clientes que ya no existen.");
             cambio = true;
         }
         if (revisarItems(avisos)) {
@@ -272,6 +288,10 @@ public class GestionCarrito implements IGestionCarrito {
                 avisos.add("Se descartó un registro repetido, sin cliente o sin cantidad del carrito guardado (ISBN "
                         + registro.getIsbn() + ").");
                 descartado = true;
+            } else if (!existeCliente(registro.getIdCliente())) {
+                avisos.add("El cliente " + registro.getIdCliente()
+                        + " del carrito guardado ya no existe y se descartó su libro (ISBN " + registro.getIsbn() + ").");
+                descartado = true;
             } else {
                 otrosClientes.add(registro);
             }
@@ -291,6 +311,15 @@ public class GestionCarrito implements IGestionCarrito {
             }
         }
         return null;
+    }
+
+    private boolean existeCliente(String idCliente) {
+        for (Cliente cliente : clientes) {
+            if (cliente.getId().equals(idCliente)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Libro buscarEnCatalogo(List<Libro> catalogo, String isbn) {

@@ -57,7 +57,7 @@ public class EventosCarrito implements ActionListener {
     public void actualizarDatos(List<Libro> catalogo, List<Cliente> clientes) {
         List<String> avisos = new ArrayList<>();
         try {
-            avisos = gestion.sincronizarConCatalogo(catalogo);
+            avisos = gestion.sincronizarConCatalogo(catalogo, clientes);
         } catch (CarritoExcepcion ex) {
             avisos.add(ex.getMessage());
         }
