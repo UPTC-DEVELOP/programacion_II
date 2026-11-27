@@ -17,11 +17,11 @@ import co.edu.uptc.tienda.negocio.ClienteConfig;
 
 public class EventosCliente implements ActionListener {
 
-    public final static String GUARDAR = "Guardar";
+    public final static String GUARDAR = "Añadir";
     public final static String BUSCAR = "Buscar";
-    public final static String ACTUALIZAR = "Actualizar";
-    public final static String ELIMINAR = "Eliminar";
-    public final static String LISTAR = "Listar";
+    public final static String ACTUALIZAR = "Cambiar";
+    public final static String ELIMINAR = "Borrar";
+    public final static String LISTAR = "Leer";
     public final static String LIMPIAR = "Limpiar";
 
     private PanelCliente panelCliente;

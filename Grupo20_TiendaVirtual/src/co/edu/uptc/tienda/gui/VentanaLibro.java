@@ -38,7 +38,7 @@ public class VentanaLibro extends JFrame {
     public VentanaLibro() {
         this(new ControlLibro());
     }
-
+//prueba
     public VentanaLibro(ControlLibro controlLibro) {
 
         setTitle("Gestión de Libros - Tienda Virtual de Libros");
@@ -67,16 +67,16 @@ public class VentanaLibro extends JFrame {
                 new GridLayout(10, 2, 8, 8)
         );
 
-        lblIsbn = new JLabel("Esriba el ISBN del libro:");
-        lblTitulo = new JLabel("Escriba el Título del libro:");
-        lblAutor = new JLabel("Escriba el Autor del libro:");
-        lblAnio = new JLabel("Escriba el Año de publicación del libro:");
-        lblEditorial = new JLabel("Escriba la Editorial del libro:");
-        lblPaginas = new JLabel("Escriba Número de páginas del libro:");
-        lblPrecio = new JLabel("Escriba el Precio del libro:");
-        lblIva = new JLabel("Escriba el Porcentaje IVA del libro:");
-        lblStock = new JLabel("Escriba la Cantidad disponible de ese libro:");
-        lblFormato = new JLabel("Ecriba el Formato del libro:");
+        lblIsbn = new JLabel("Ingrese el ISBN del libro:");
+        lblTitulo = new JLabel("Ingrese el título del libro:");
+        lblAutor = new JLabel("Ingrese el autor del libro:");
+        lblAnio = new JLabel("Ingrese el año de publicación del libro:");
+        lblEditorial = new JLabel("Ingrese la editorial del libro:");
+        lblPaginas = new JLabel("Ingrese el número de páginas del libro:");
+        lblPrecio = new JLabel("Ingrese el precio del libro:");
+        lblIva = new JLabel("Ingrese el porcentaje de IVA del libro:");
+        lblStock = new JLabel("Ingrese la cantidad disponible del libro:");
+        lblFormato = new JLabel("Ingrese el formato del libro:");
 
         txtIsbn = new JTextField();
         txtTitulo = new JTextField();
