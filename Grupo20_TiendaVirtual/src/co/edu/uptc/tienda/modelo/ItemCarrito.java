@@ -46,4 +46,7 @@ public class ItemCarrito {
     public String obtenerAutorLibro() {
     return libro.getAutor();
 }
+    public double obtenerPrecioUnitario() {
+    return libro.getPrecio();
+}
 }
