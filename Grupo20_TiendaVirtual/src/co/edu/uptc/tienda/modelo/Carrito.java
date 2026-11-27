@@ -66,4 +66,13 @@ public class Carrito {
     public boolean contieneLibro(String isbn) {
     return buscarItem(isbn) != null;
 }
+    public int obtenerCantidadDeUnLibro(String isbn) {
+    ItemCarrito item = buscarItem(isbn);
+
+    if (item == null) {
+        return 0;
+    }
+
+    return item.getCantidad();
+}
 }
