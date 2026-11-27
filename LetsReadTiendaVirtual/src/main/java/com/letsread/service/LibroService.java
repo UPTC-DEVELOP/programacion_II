@@ -30,6 +30,7 @@ public class LibroService {
     }
 
     public void registrar(Libro nuevoLibro) throws Exception {
+        validar(nuevoLibro);
         if (buscarPorIsbn(nuevoLibro.getIsbn()) != null) {
             throw new Exception("Ya existe un libro registrado con el ISBN: " + nuevoLibro.getIsbn());
         }
@@ -39,6 +40,7 @@ public class LibroService {
     }
 
     public void actualizar(String isbnOriginal, Libro datosActualizados) throws Exception {
+        validar(datosActualizados);
         Libro existente = buscarPorIsbn(isbnOriginal);
         if (existente == null) {
             throw new Exception("No se encontró el libro a actualizar.");
@@ -76,5 +78,20 @@ public class LibroService {
         repositorio.eliminar(libro.getIsbn());
         ArchivoTxtDAO.registrarOperacion("Admin eliminó el libro: " + libro.getTitulo()
                 + " (ISBN: " + isbn + ")");
+    }
+
+    private void validar(Libro libro) throws Exception {
+        if (esVacio(libro.getIsbn()) || esVacio(libro.getTitulo()) || esVacio(libro.getAutor())
+                || esVacio(libro.getCategoria()) || esVacio(libro.getEditorial())) {
+            throw new Exception("Todos los campos de texto son obligatorios.");
+        }
+        if (libro.getNumeroPaginas() <= 0 || libro.getPrecioVenta() < 0
+                || libro.getCantidadInventario() < 0) {
+            throw new Exception("Páginas debe ser mayor a 0; Precio y Stock no pueden ser negativos.");
+        }
+    }
+
+    private boolean esVacio(String texto) {
+        return texto == null || texto.trim().isEmpty();
     }
 }
