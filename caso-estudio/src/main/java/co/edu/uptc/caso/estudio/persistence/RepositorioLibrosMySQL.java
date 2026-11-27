@@ -13,8 +13,10 @@ public class RepositorioLibrosMySQL implements IRepositorioLibros {
 
     @Override
     public boolean guardarLibro(Libro l) {
-        if (l == null || l.getIsbn() == null) return false;
-        String sql = "INSERT INTO libros (titulo, autor, anio, categoria, editorial, paginas, precio, stock, formato, porcentaje_iva, isbn) "
+        if (l == null || l.getIsbn() == null) {
+            return false;
+        }
+        String sql = "INSERT INTO libros (titulo, autor, anio, categoria, editorial, paginas, precio_venta, stock, formato, porcentaje_iva, isbn) "
                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConexionMySQL.obtenerConexion();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -29,13 +31,17 @@ public class RepositorioLibrosMySQL implements IRepositorioLibros {
 
     @Override
     public Libro buscarPorIsbn(String isbn) {
-        if (isbn == null) return null;
+        if (isbn == null) {
+            return null;
+        }
         String sql = "SELECT * FROM libros WHERE isbn = ?";
         try (Connection conn = ConexionMySQL.obtenerConexion();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, isbn.trim());
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return mapearLibro(rs);
+                if (rs.next()) {
+                    return mapearLibro(rs);
+                }
             }
         } catch (SQLException e) {
             System.err.println("Error buscando libro por ISBN: " + e.getMessage());
@@ -61,8 +67,10 @@ public class RepositorioLibrosMySQL implements IRepositorioLibros {
 
     @Override
     public boolean actualizarLibro(Libro l) {
-        if (l == null || l.getIsbn() == null) return false;
-        String sql = "UPDATE libros SET titulo=?, autor=?, anio=?, categoria=?, editorial=?, paginas=?, precio=?, stock=?, formato=?, porcentaje_iva=? WHERE isbn=?";
+        if (l == null || l.getIsbn() == null) {
+            return false;
+        }
+        String sql = "UPDATE libros SET titulo=?, autor=?, anio=?, categoria=?, editorial=?, paginas=?, precio_venta=?, stock=?, formato=?, porcentaje_iva=? WHERE isbn=?";
         try (Connection conn = ConexionMySQL.obtenerConexion();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             asignarParametrosComunes(ps, l);
@@ -76,7 +84,9 @@ public class RepositorioLibrosMySQL implements IRepositorioLibros {
 
     @Override
     public boolean eliminarLibro(String isbn) {
-        if (isbn == null) return false;
+        if (isbn == null) {
+            return false;
+        }
         String sql = "DELETE FROM libros WHERE isbn = ?";
         try (Connection conn = ConexionMySQL.obtenerConexion();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -110,7 +120,7 @@ public class RepositorioLibrosMySQL implements IRepositorioLibros {
                 rs.getString("categoria"),
                 rs.getString("editorial"),
                 rs.getInt("paginas"),
-                rs.getDouble("precio"),
+                rs.getDouble("precio_venta"),
                 rs.getInt("stock"),
                 rs.getString("formato"),
                 rs.getDouble("porcentaje_iva")
