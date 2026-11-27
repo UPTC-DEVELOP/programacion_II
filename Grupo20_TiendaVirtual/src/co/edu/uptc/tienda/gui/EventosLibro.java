@@ -106,6 +106,8 @@ public class EventosLibro implements ActionListener {
                     || paginasTexto.isEmpty() || precioTexto.isEmpty()
                     || ivaTexto.isEmpty() || stockTexto.isEmpty()) {
 
+            	//textos que salen a datos erroneos o incompletos
+            	
                 JOptionPane.showMessageDialog(
                         ventana,
                         "Todos los campos son obligatorios.",

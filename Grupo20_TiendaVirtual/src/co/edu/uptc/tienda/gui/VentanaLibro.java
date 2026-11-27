@@ -38,7 +38,7 @@ public class VentanaLibro extends JFrame {
     public VentanaLibro() {
         this(new ControlLibro());
     }
-//prueba
+
     public VentanaLibro(ControlLibro controlLibro) {
 
         setTitle("Gestión de Libros - Tienda Virtual de Libros");

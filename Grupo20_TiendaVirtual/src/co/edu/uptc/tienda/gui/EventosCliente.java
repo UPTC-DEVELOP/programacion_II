@@ -17,6 +17,8 @@ import co.edu.uptc.tienda.negocio.ClienteConfig;
 
 public class EventosCliente implements ActionListener {
 
+	//texto de los botones
+	
     public final static String GUARDAR = "Añadir";
     public final static String BUSCAR = "Buscar";
     public final static String ACTUALIZAR = "Cambiar";
@@ -62,6 +64,8 @@ public class EventosCliente implements ActionListener {
 
             clienteConfig.guardar(cliente);
 
+            //textos a eventos completados
+            
             panelCliente.mostrarMensajeExito("Registro exitoso", "Cliente registrado correctamente.");
             panelCliente.limpiarCampos();
         }
