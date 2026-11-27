@@ -63,4 +63,7 @@ public class Carrito {
 
     return subtotal;
 }
+    public boolean contieneLibro(String isbn) {
+    return buscarItem(isbn) != null;
+}
 }
