@@ -1,6 +1,7 @@
 package co.edu.uptc.caso.estudio.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Carrito {
@@ -42,7 +43,8 @@ public class Carrito {
         }
         return null;
     }
-    // Reemplaza la cantidad del item, Retorna false si la cantidad es <= 0 o el ISBN no está
+
+    // Reemplaza la cantidad del item. Retorna false si la cantidad es <= 0 o el ISBN no está
     public boolean actualizarCantidad(String isbn, int cantidad) {
         if (cantidad <= 0) return false;
         ItemCarrito item = buscarItem(isbn);
@@ -50,10 +52,20 @@ public class Carrito {
         item.setCantidad(cantidad);
         return true;
     }
+
     // Elimina todos los items cuyo ISBN esté en la lista. Retorna true si quitó al menos uno
     public boolean eliminarItems(List<String> isbns) {
         if (isbns == null || items == null) return false;
-        return items.removeIf(item -> item.getLibro() != null && isbns.contains(item.getLibro().getIsbn()));
+        boolean eliminado = false;
+        Iterator<ItemCarrito> it = items.iterator();
+        while (it.hasNext()) {
+            ItemCarrito item = it.next();
+            if (item.getLibro() != null && isbns.contains(item.getLibro().getIsbn())) {
+                it.remove();
+                eliminado = true;
+            }
+        }
+        return eliminado;
     }
 
     public void vaciar() {
@@ -66,34 +78,47 @@ public class Carrito {
 
     public double calcularSubtotalSinIva() {
         if (items == null) return 0.0;
-        return items.stream()
-                .filter(item -> item.getLibro() != null)
-                .mapToDouble(ItemCarrito::getSubtotalSinIva)
-                .sum();
+        double subtotal = 0.0;
+        for (ItemCarrito item : items) {
+            if (item != null && item.getLibro() != null) {
+                subtotal += item.getSubtotalSinIva();
+            }
+        }
+        return subtotal;
     }
 
     public double calcularTotalImpuestos() {
         if (items == null) return 0.0;
-        return items.stream()
-                .filter(item -> item.getLibro() != null)
-                .mapToDouble(ItemCarrito::getValorIva)
-                .sum();
+        double impuestos = 0.0;
+        for (ItemCarrito item : items) {
+            if (item != null && item.getLibro() != null) {
+                impuestos += item.getValorIva();
+            }
+        }
+        return impuestos;
     }
 
     public double calcularTotal() {
         if (items == null) return 0.0;
-        return items.stream()
-                .filter(item -> item.getLibro() != null)
-                .mapToDouble(ItemCarrito::getSubtotalConIva)
-                .sum();
+        double total = 0.0;
+        for (ItemCarrito item : items) {
+            if (item != null && item.getLibro() != null) {
+                total += item.getSubtotalConIva();
+            }
+        }
+        return total;
     }
 
     // Polimorfismo (LSP): delega el descuento a Cliente (Regular = 0, Premium = 10%)
     public double calcularDescuento(Cliente cliente) {
-        return cliente != null ? cliente.calcularDescuento(calcularTotal()) : 0.0;
+        if (cliente == null) return 0.0;
+        return cliente.calcularDescuento(calcularTotal());
     }
+
     // Total con IVA menos el descuento del cliente (Regular = 0%, Premium = 10%)
     public double calcularTotalFinal(Cliente cliente) {
-        return calcularTotal() - calcularDescuento(cliente);
+        double totalConIva = calcularTotal();
+        double descuento = cliente != null ? cliente.calcularDescuento(totalConIva) : 0.0;
+        return totalConIva - descuento;
     }
 }
