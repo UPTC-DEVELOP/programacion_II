@@ -131,4 +131,7 @@ public class Libro {
     public boolean validarStock(int cantidad) {
         return cantidad > 0 && cantidad <= stock;
     }
+    public boolean tieneStockDisponible() {
+    return stock > 0;
+}
 }
