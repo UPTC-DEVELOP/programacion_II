@@ -123,6 +123,9 @@ public void guardar(Usuario usuario) throws PersistenciaException {
 	if (usuario.getCorreo() == null || usuario.getCorreo().isBlank()) {
 	    throw new PersistenciaException("El correo electrónico es obligatorio.");
 	}
+	if (usuario.getCorreo().trim().length() > 150) {
+	    throw new PersistenciaException("El correo electrónico no puede superar los 150 caracteres.");
+	}
 	if (!usuario.getCorreo().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
 	    throw new PersistenciaException("El correo electrónico no tiene un formato válido.");
 	}
