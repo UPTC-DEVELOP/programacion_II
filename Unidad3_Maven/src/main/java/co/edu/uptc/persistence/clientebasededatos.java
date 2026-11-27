@@ -136,7 +136,9 @@ public void guardar(Usuario usuario) throws PersistenciaException {
 	if (!cliente.getTelefono().matches("\\d+")) {
 	    throw new PersistenciaException("El teléfono solo debe contener números.");
 	}
-
+	if (cliente.getTelefono().length() < 7 || cliente.getTelefono().length() > 10) {
+	    throw new PersistenciaException("El teléfono debe tener entre 7 y 10 dígitos.");
+	}
 	if (cliente.getDireccionEnvio() == null || cliente.getDireccionEnvio().isBlank()) {
 	    throw new PersistenciaException("La dirección de envío es obligatoria.");
 	}
