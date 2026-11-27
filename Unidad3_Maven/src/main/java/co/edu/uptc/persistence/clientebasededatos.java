@@ -133,6 +133,9 @@ public void guardar(Usuario usuario) throws PersistenciaException {
 	if (cliente.getTelefono() == null || cliente.getTelefono().isBlank()) {
 	    throw new PersistenciaException("El teléfono es obligatorio.");
 	}
+	if (!cliente.getTelefono().equals(cliente.getTelefono().trim())) {
+	    throw new PersistenciaException("El teléfono no debe contener espacios al inicio o al final.");
+	}
 	if (!cliente.getTelefono().matches("\\d+")) {
 	    throw new PersistenciaException("El teléfono solo debe contener números.");
 	}
