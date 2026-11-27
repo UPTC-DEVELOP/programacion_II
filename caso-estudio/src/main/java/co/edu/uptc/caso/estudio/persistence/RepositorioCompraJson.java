@@ -8,7 +8,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class RepositorioCompraJson implements IRepositorioCompra {
 
@@ -26,17 +25,7 @@ public class RepositorioCompraJson implements IRepositorioCompra {
             return false;
         }
 
-        Compra compra = new Compra();
-        compra.setIdCompra("CMP-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
-        compra.setClienteId(cliente.getId());
-        compra.setNombreCliente(cliente.getNombreCompleto());
-        compra.setItems(new ArrayList<>(carrito.getItems()));
-        compra.setSubtotalSinIva(carrito.calcularSubtotalSinIva());
-        compra.setTotalImpuestos(carrito.calcularTotalImpuestos());
-        compra.setDescuentoAplicado(carrito.calcularDescuento(cliente));
-        compra.setTotalPagado(carrito.calcularTotalFinal(cliente));
-        compra.setMetodoPago(metodoPago);
-
+        Compra compra = new Compra(generarIdCompra(), cliente, carrito, metodoPago);
         List<Compra> compras = manejadorJson.leerLista();
         compras.add(compra);
         manejadorJson.guardarLista(compras);
@@ -45,11 +34,21 @@ public class RepositorioCompraJson implements IRepositorioCompra {
 
     @Override
     public List<Compra> obtenerComprasPorCliente(String clienteId) {
+        List<Compra> resultado = new ArrayList<>();
         if (clienteId == null) {
-            return new ArrayList<>();
+            return resultado;
         }
-        return manejadorJson.leerLista().stream()
-                .filter(c -> clienteId.equals(c.getClienteId()))
-                .collect(Collectors.toList());
+
+        List<Compra> todas = manejadorJson.leerLista();
+        for (Compra compra : todas) {
+            if (compra != null && clienteId.equals(compra.getClienteId())) {
+                resultado.add(compra);
+            }
+        }
+        return resultado;
+    }
+
+    private String generarIdCompra() {
+        return "CMP-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 }
