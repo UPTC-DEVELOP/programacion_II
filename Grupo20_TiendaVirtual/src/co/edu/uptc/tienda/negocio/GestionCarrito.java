@@ -150,7 +150,10 @@ public class GestionCarrito implements IGestionCarrito {
     private List<RegistroCarrito> leerGuardado(List<String> avisos) {
         for (IPersistenciaCarrito persistencia : persistencias) {
             try {
-                return persistencia.leer();
+                List<RegistroCarrito> registros = persistencia.leer();
+                if (!registros.isEmpty()) {
+                    return registros;
+                }
             } catch (CarritoExcepcion e) {
                 avisos.add(e.getMessage());
             }
