@@ -22,3 +22,12 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# Carpetas de compilacion (Eclipse y Maven)
+bin/
+target/
+
+# Credenciales y archivos generados
+db.properties
+carrito_letsread.json
+registro_operaciones_letsread.txt
