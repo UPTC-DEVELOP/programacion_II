@@ -75,4 +75,13 @@ public class Carrito {
 
     return item.getCantidad();
 }
+    public double obtenerImpuestoTotal() {
+    double impuestoTotal = 0;
+
+    for (ItemCarrito item : items) {
+        impuestoTotal += item.obtenerImpuestoItem();
+    }
+
+    return impuestoTotal;
+}
 }
