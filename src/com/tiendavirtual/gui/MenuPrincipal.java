@@ -7,7 +7,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import com.tiendavirtual.controlador.LibroController;
 import com.tiendavirtual.negocio.LibroService;
-import com.tiendavirtual.repositorio.LibroRepositoryMemoria;
+import com.tiendavirtual.repositorio.LibroRepositoryMySQL;
 import com.tiendavirtual.negocio.GestionCliente;
 public class MenuPrincipal extends JFrame {
 private GestionCliente gestionCliente;
@@ -27,7 +27,7 @@ public MenuPrincipal(GestionCliente gestionCliente) {
         JButton btnVentas = new JButton("GESTIÓN DE VENTAS");
         JButton btnSalir = new JButton("CERRAR SESIÓN");
         btnLibros.addActionListener(e -> {
-            LibroRepositoryMemoria repositorio = new LibroRepositoryMemoria();
+            LibroRepositoryMySQL repositorio = new LibroRepositoryMySQL();
             LibroService servicio = new LibroService(repositorio);
             LibroController controlador = new LibroController(servicio);
 
