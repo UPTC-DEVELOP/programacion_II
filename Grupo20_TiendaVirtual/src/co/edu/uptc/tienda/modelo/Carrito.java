@@ -54,4 +54,13 @@ public class Carrito {
 
     return total;
 }
+    public double obtenerSubtotalTotal() {
+    double subtotal = 0;
+
+    for (ItemCarrito item : items) {
+        subtotal += item.obtenerSubtotalItem();
+    }
+
+    return subtotal;
+}
 }
