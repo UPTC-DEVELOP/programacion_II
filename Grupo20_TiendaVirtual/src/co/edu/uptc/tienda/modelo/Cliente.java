@@ -20,9 +20,13 @@ public class Cliente {
         this.tipoCliente = tipoCliente;
     }
 
-    public double obtenerPorcentajeDescuento() {
-        return "Premium".equalsIgnoreCase(tipoCliente == null ? null : tipoCliente.trim()) ? 10 : 0;
-    }
+public boolean esPremium() {
+    return "Premium".equalsIgnoreCase(tipoCliente == null ? null : tipoCliente.trim());
+}
+
+public double obtenerPorcentajeDescuento() {
+    return esPremium() ? 10 : 0;
+}
 
 	public String getId() {
 		return id;
