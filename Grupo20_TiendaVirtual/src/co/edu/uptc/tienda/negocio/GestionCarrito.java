@@ -118,7 +118,8 @@ public class GestionCarrito implements IGestionCarrito {
         boolean cambio = false;
         if (!recuperado && !catalogo.isEmpty()) {
             recuperado = true;
-            cambio = recuperar(catalogo, avisos);
+            boolean descartado = recuperar(catalogo, avisos);
+            cambio = descartado || !carrito.estaVacio();
         }
         for (ItemCarrito item : new ArrayList<>(carrito.getItems())) {
             Libro libro = item.getLibro();
