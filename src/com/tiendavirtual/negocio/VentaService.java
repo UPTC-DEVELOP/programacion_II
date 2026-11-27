@@ -3,14 +3,35 @@ package com.tiendavirtual.negocio;
 import java.util.List;
 
 import com.tiendavirtual.modelo.Venta;
+import com.tiendavirtual.repositorio.LibroRepository;
 import com.tiendavirtual.repositorio.VentaRepository;
 
 public class VentaService {
 
     private VentaRepository repositorio;
+    private LibroRepository libros;
 
     public VentaService(VentaRepository repositorio) {
         this.repositorio = repositorio;
+    }
+
+    public VentaService(VentaRepository repositorio, LibroRepository libros) {
+        this.repositorio = repositorio;
+        this.libros = libros;
+    }
+
+    private void validarLibro(Venta venta) {
+        String isbn = venta.getIsbn();
+
+        if (isbn == null || isbn.trim().isEmpty()) {
+            throw new IllegalArgumentException(
+                "El ISBN del libro es obligatorio.");
+        }
+
+        if (libros != null && libros.buscarPorIsbn(isbn.trim()) == null) {
+            throw new IllegalArgumentException(
+                "No existe un libro con ese ISBN.");
+        }
     }
 
     public void registrar(Venta venta) {
@@ -31,6 +52,7 @@ public class VentaService {
                 "El ID de venta ya existe.");
         }
 
+        validarLibro(venta);
         repositorio.guardarVenta(venta);
     }
 
@@ -70,6 +92,7 @@ public class VentaService {
                 "El monto debe ser mayor que cero.");
         }
 
+        validarLibro(venta);
         repositorio.actualizarVenta(venta);
     }
 }

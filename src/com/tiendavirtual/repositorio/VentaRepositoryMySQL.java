@@ -16,8 +16,8 @@ public class VentaRepositoryMySQL implements VentaRepository {
     public void guardarVenta(Venta venta) {
 
         String sql = "INSERT INTO ventas "
-                   + "(id_venta, id_cliente, fecha, total) "
-                   + "VALUES (?, ?, ?, ?)";
+                   + "(id_venta, id_cliente, fecha, total, isbn) "
+                   + "VALUES (?, ?, ?, ?, ?)";
 
         try (Connection con = Conexion.conectar();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -26,6 +26,7 @@ public class VentaRepositoryMySQL implements VentaRepository {
             ps.setInt(2, venta.getIdCliente());
             ps.setString(3, venta.getFecha());
             ps.setDouble(4, venta.getMontoTotal());
+            ps.setString(5, venta.getIsbn());
 
             ps.executeUpdate();
 
@@ -104,7 +105,7 @@ public class VentaRepositoryMySQL implements VentaRepository {
     public void actualizarVenta(Venta venta) {
 
         String sql = "UPDATE ventas SET "
-                   + "id_cliente = ?, fecha = ?, total = ? "
+                   + "id_cliente = ?, fecha = ?, total = ?, isbn = ? "
                    + "WHERE id_venta = ?";
 
         try (Connection con = Conexion.conectar();
@@ -113,7 +114,8 @@ public class VentaRepositoryMySQL implements VentaRepository {
             ps.setInt(1, venta.getIdCliente());
             ps.setString(2, venta.getFecha());
             ps.setDouble(3, venta.getMontoTotal());
-            ps.setString(4, venta.getId());
+            ps.setString(4, venta.getIsbn());
+            ps.setString(5, venta.getId());
 
             int filas = ps.executeUpdate();
 
@@ -134,7 +136,8 @@ public class VentaRepositoryMySQL implements VentaRepository {
             rs.getString("id_venta"),
             rs.getString("fecha"),
             rs.getDouble("total"),
-            rs.getInt("id_cliente")
+            rs.getInt("id_cliente"),
+            rs.getString("isbn")
         );
     }
 }

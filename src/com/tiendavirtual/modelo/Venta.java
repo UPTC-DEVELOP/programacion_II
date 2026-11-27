@@ -6,6 +6,12 @@ public class Venta {
     private String fecha;
     private double montoTotal;
     private int idCliente;
+    private String isbn;
+
+    public Venta(String id, String fecha, double montoTotal, int idCliente, String isbn) {
+        this(id, fecha, montoTotal, idCliente);
+        this.isbn = isbn;
+    }
 
     public Venta(String id, String fecha, double montoTotal, int idCliente) {
         this.id = id;
@@ -36,6 +42,14 @@ public class Venta {
 
     public void setMontoTotal(double montoTotal) {
         this.montoTotal = montoTotal;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
     }
 
     public int getIdCliente() {

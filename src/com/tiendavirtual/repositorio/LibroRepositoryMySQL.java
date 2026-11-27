@@ -84,7 +84,8 @@ public class LibroRepositoryMySQL implements LibroRepository {
 
     @Override
     public Libro buscarPorIsbn(String isbn) {
-        String sql = "SELECT * FROM libros WHERE isbn=?";
+        String sql = "SELECT l.*, EXISTS (SELECT 1 FROM ventas v WHERE v.isbn = l.isbn) AS tiene_ventas "
+                + "FROM libros l WHERE l.isbn=?";
 
         try (Connection con = Conexion.conectar();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -107,7 +108,8 @@ public class LibroRepositoryMySQL implements LibroRepository {
     @Override
     public List<Libro> listar() {
         List<Libro> libros = new ArrayList<>();
-        String sql = "SELECT * FROM libros";
+        String sql = "SELECT l.*, EXISTS (SELECT 1 FROM ventas v WHERE v.isbn = l.isbn) AS tiene_ventas "
+                + "FROM libros l";
 
         try (Connection con = Conexion.conectar();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -125,7 +127,7 @@ public class LibroRepositoryMySQL implements LibroRepository {
     }
 
     private Libro convertirLibro(ResultSet rs) throws SQLException {
-        return new Libro(
+        Libro libro = new Libro(
                 rs.getString("isbn"),
                 rs.getString("titulo"),
                 rs.getString("autor"),
@@ -138,5 +140,7 @@ public class LibroRepositoryMySQL implements LibroRepository {
                 rs.getString("formato"),
                 rs.getDouble("iva")
         );
+        libro.setTieneVentasAsociadas(rs.getBoolean("tiene_ventas"));
+        return libro;
     }
 }

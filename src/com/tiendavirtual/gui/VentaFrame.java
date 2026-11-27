@@ -10,18 +10,19 @@ import javax.swing.table.DefaultTableModel;
 import com.tiendavirtual.controlador.VentaController;
 import com.tiendavirtual.modelo.Venta;
 import com.tiendavirtual.negocio.VentaService;
+import com.tiendavirtual.repositorio.LibroRepositoryMySQL;
 import com.tiendavirtual.repositorio.VentaRepositoryMySQL;
 
 public class VentaFrame extends JFrame {
 
-    private JTextField txtId, txtFecha, txtMonto, txtCliente;
+    private JTextField txtId, txtFecha, txtMonto, txtCliente, txtIsbn;
     private JTable tabla;
     private DefaultTableModel modelo;
     private VentaController controller;
 
     public VentaFrame() {
         VentaRepositoryMySQL repositorio = new VentaRepositoryMySQL();
-        VentaService servicio = new VentaService(repositorio);
+        VentaService servicio = new VentaService(repositorio, new LibroRepositoryMySQL());
         controller = new VentaController(servicio);
 
         setTitle("Gestión de Ventas");
@@ -29,12 +30,13 @@ public class VentaFrame extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        JPanel formulario = new JPanel(new GridLayout(5, 2, 8, 8));
+        JPanel formulario = new JPanel(new GridLayout(6, 2, 8, 8));
 
         txtId = new JTextField();
         txtFecha = new JTextField();
         txtMonto = new JTextField();
         txtCliente = new JTextField();
+        txtIsbn = new JTextField();
 
         formulario.add(new JLabel("ID de venta:"));
         formulario.add(txtId);
@@ -44,6 +46,8 @@ public class VentaFrame extends JFrame {
         formulario.add(txtMonto);
         formulario.add(new JLabel("ID del cliente:"));
         formulario.add(txtCliente);
+        formulario.add(new JLabel("ISBN del libro:"));
+        formulario.add(txtIsbn);
 
         JButton btnRegistrar = new JButton("Registrar");
         JButton btnConsultar = new JButton("Consultar");
@@ -60,7 +64,7 @@ public class VentaFrame extends JFrame {
         botones.add(btnListar);
 
         modelo = new DefaultTableModel(
-            new String[]{"ID", "Fecha", "Monto", "ID Cliente"}, 0
+            new String[]{"ID", "Fecha", "Monto", "ID Cliente", "ISBN"}, 0
         );
 
         tabla = new JTable(modelo);
@@ -91,9 +95,11 @@ public class VentaFrame extends JFrame {
         String fecha = txtFecha.getText().trim();
         String montoTexto = txtMonto.getText().trim();
         String clienteTexto = txtCliente.getText().trim();
+        String isbn = txtIsbn.getText().trim();
 
         if (id.isEmpty() || fecha.isEmpty()
-                || montoTexto.isEmpty() || clienteTexto.isEmpty()) {
+                || montoTexto.isEmpty() || clienteTexto.isEmpty()
+                || isbn.isEmpty()) {
             throw new IllegalArgumentException(
                 "Complete todos los campos."
             );
@@ -102,7 +108,7 @@ public class VentaFrame extends JFrame {
         double monto = Double.parseDouble(montoTexto);
         int cliente = Integer.parseInt(clienteTexto);
 
-        return new Venta(id, fecha, monto, cliente);
+        return new Venta(id, fecha, monto, cliente, isbn);
     }
 
     private String obtenerIdSeleccionado() {
@@ -126,6 +132,8 @@ public class VentaFrame extends JFrame {
         txtFecha.setText(modelo.getValueAt(fila, 1).toString());
         txtMonto.setText(modelo.getValueAt(fila, 2).toString());
         txtCliente.setText(modelo.getValueAt(fila, 3).toString());
+        Object isbnFila = modelo.getValueAt(fila, 4);
+        txtIsbn.setText(isbnFila == null ? "" : isbnFila.toString());
     }
 
     private void registrar() {
@@ -171,6 +179,7 @@ public class VentaFrame extends JFrame {
             txtFecha.setText(venta.getFecha());
             txtMonto.setText(String.valueOf(venta.getMontoTotal()));
             txtCliente.setText(String.valueOf(venta.getIdCliente()));
+            txtIsbn.setText(venta.getIsbn() == null ? "" : venta.getIsbn());
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(
@@ -246,7 +255,8 @@ public class VentaFrame extends JFrame {
                 venta.getId(),
                 venta.getFecha(),
                 venta.getMontoTotal(),
-                venta.getIdCliente()
+                venta.getIdCliente(),
+                venta.getIsbn()
             });
         }
     }
@@ -256,6 +266,7 @@ public class VentaFrame extends JFrame {
         txtFecha.setText("");
         txtMonto.setText("");
         txtCliente.setText("");
+        txtIsbn.setText("");
         tabla.clearSelection();
     }
 }
