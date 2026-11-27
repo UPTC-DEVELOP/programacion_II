@@ -22,5 +22,17 @@
     "ivaPorcentaje": 19.0,
     "stock": 20,
     "formato": "Físico"
+  },
+  {
+    "isbn": "9789588617190",
+    "titulo": "Tormenta de Espadas",
+    "autor": "George R R martin",
+    "anioPublicacion": 2005,
+    "editorial": "Plaza \u0026 Janés",
+    "numPaginas": 1176,
+    "precio": 40000.0,
+    "ivaPorcentaje": 19.0,
+    "stock": 30,
+    "formato": "Físico"
   }
 ]
