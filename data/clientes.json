@@ -30,5 +30,21 @@
     "contrasenia": "12345678",
     "fechaRegistro": "2026-11-12 22:46:24.319",
     "intentosFallidos": 0
+  },
+  {
+    "idCliente": 3,
+    "tipoCliente": "REGULAR",
+    "primerNombre": "carlos",
+    "otrosNombres": "",
+    "primerApellido": "caez",
+    "otrosApellidos": "",
+    "tipoIdentificacion": "cc",
+    "identificacion": "123",
+    "correoElectronico": "carlos.caez01@uptc.edu.co",
+    "celular": "3218252499",
+    "direccion": "cra  1 n 11 1",
+    "contrasenia": "87654321",
+    "fechaRegistro": "2026-11-27 12:11:46.027",
+    "intentosFallidos": 0
   }
 ]

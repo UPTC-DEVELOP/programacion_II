@@ -62,7 +62,7 @@ public class PanelLogin extends JPanel {
 		txtContrasena.requestFocusInWindow();
 	}
 
-	// Permite iniciar sesión presionando Enter
+	// Permite iniciar sesión 
 	public JButton getBotonIngresar() {
 		return btnIngresar;
 	}

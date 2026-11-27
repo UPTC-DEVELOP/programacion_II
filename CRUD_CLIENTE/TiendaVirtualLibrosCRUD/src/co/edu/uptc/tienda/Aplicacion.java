@@ -36,10 +36,15 @@ public class Aplicacion {
 			e.printStackTrace();
 		}
 
-		// Los clientes se guardan en data/clientes.json
-		IRepositorioCliente repositorioCliente = new ClienteJSON();
+		//Persistencia de cliente
+		//IRepositorioCliente repositorioCliente = new ClienteJSON();
+		 IRepositorioCliente repositorioCliente = new co.edu.uptc.tienda.persistencia.BaseDeDatosCliente(); 
+
 		IGestionCliente gestionCliente = new GestionCliente(repositorioCliente);
-		IGestionLibro gestionLibro = new GestionLibro(new BaseDeDatosLibro());
+
+		// Persistencia de libros
+		IGestionLibro gestionLibro = new GestionLibro(new BaseDeDatosLibro()); 
+		// IGestionLibro gestionLibro = new GestionLibro(new co.edu.uptc.tienda.persistencia.LibroJSON()); // data/libros.json
 		IGestionFactura gestionFactura = new GestorFactura(new BaseDeDatosFactura());
 
 		// Se gestiona la Autenticación con el gestAutenticacion
@@ -51,7 +56,7 @@ public class Aplicacion {
 		// Compra: convierte el carrito en factura
 		IGestionCompra gestionCompra = new GestionCompra(gestionCarrito, gestionFactura);
 
-		// Se corre el programa en otro Hilo.
+	
 		SwingUtilities.invokeLater(() -> {
 
 			PanelCentral panelCentral = new PanelCentral(new PanelCliente(gestionCliente), new PanelLibro(gestionLibro),

@@ -33,7 +33,7 @@ public class VentanaPrincipal extends JFrame {
 	private final PanelLogin panelLogin;
 	private final Evento evento;
 
-	// Cliente que inició sesión (null mientras no haya sesión)
+	// Cliente que inició sesión 
 	private Cliente clienteAutenticado;
 
 	public VentanaPrincipal(IGestionAutenticacion gestionAutenticacion, PanelCentral panelCentral,
