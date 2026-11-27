@@ -112,6 +112,9 @@ public void guardar(Usuario usuario) throws PersistenciaException {
 	if (usuario.getNombreCompleto() == null || usuario.getNombreCompleto().isBlank()) {
 	    throw new PersistenciaException("El nombre del cliente es obligatorio.");
 	}
+	if (usuario.getNombreCompleto().trim().length() < 3) {
+	    throw new PersistenciaException("El nombre debe tener al menos 3 caracteres.");
+	}
 
 	if (usuario.getCorreo() == null || usuario.getCorreo().isBlank()) {
 	    throw new PersistenciaException("El correo electrónico es obligatorio.");
