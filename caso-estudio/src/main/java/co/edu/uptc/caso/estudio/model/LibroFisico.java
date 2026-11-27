@@ -7,8 +7,10 @@ public class LibroFisico extends Libro {
     }
 
     public LibroFisico(String isbn, String titulo, String autor, int anio, String categoria,
-                       String editorial, int paginas, double precioVenta, int stock, double porcentajeIva) {
-        super(isbn, titulo, autor, anio, categoria, editorial, paginas, precioVenta, stock, "Físico", porcentajeIva);
+                       String editorial, int paginas, double precioVenta, int stock,
+                       double porcentajeIva) {
+        super(isbn, titulo, autor, anio, categoria, editorial, paginas,
+                precioVenta, stock, "Físico", porcentajeIva);
     }
 
     @Override

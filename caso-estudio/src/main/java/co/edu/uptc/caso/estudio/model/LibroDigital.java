@@ -7,8 +7,10 @@ public class LibroDigital extends Libro {
     }
 
     public LibroDigital(String isbn, String titulo, String autor, int anio, String categoria,
-                        String editorial, int paginas, double precioVenta, int stock, double porcentajeIva) {
-        super(isbn, titulo, autor, anio, categoria, editorial, paginas, precioVenta, stock, "Digital", porcentajeIva);
+                        String editorial, int paginas, double precioVenta, int stock,
+                        double porcentajeIva) {
+        super(isbn, titulo, autor, anio, categoria, editorial, paginas,
+                precioVenta, stock, "Digital", porcentajeIva);
     }
 
     @Override
