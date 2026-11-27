@@ -24,10 +24,19 @@ public final class Validador {
 		}
     }
     public static void correo(String valor) throws ValidacionException {
+
         obligatorio(valor, "correo");
-        if (!CORREO.matcher(valor.trim()).matches()) {
-			throw new ValidacionException("El correo no tiene un formato válido.");
-		}
+
+        if (!valor.equals(valor.trim())) {
+            throw new ValidacionException(
+                "El correo electrónico no debe tener espacios al inicio o al final."
+            );
+        }
+
+        if (!CORREO.matcher(valor).matches()) {
+            throw new ValidacionException("El correo no tiene un formato válido.");
+        }
+
     }
     public static void telefono(String valor) throws ValidacionException {
         obligatorio(valor, "teléfono");

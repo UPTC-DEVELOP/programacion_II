@@ -123,6 +123,11 @@ public void guardar(Usuario usuario) throws PersistenciaException {
 	if (usuario.getCorreo() == null || usuario.getCorreo().isBlank()) {
 	    throw new PersistenciaException("El correo electrónico es obligatorio.");
 	}
+	if (!usuario.getCorreo().equals(usuario.getCorreo().trim())) {
+	    throw new PersistenciaException(
+	        "El correo electrónico no debe tener espacios al inicio o al final."
+	    );
+	}
 	if (usuario.getCorreo().trim().length() > 150) {
 	    throw new PersistenciaException("El correo electrónico no puede superar los 150 caracteres.");
 	}

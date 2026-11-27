@@ -20,3 +20,4 @@
 [2026-11-26 19:22:25] [INFO] otilio@uptc.edu.co - Cliente registrado
 [2026-11-26 19:35:12] [INFO] safia@uptc.edu.co - Cliente registrado
 [2026-11-26 19:36:21] [INFO] vas@uptc.edu.co - Cliente registrado
+[2026-11-27 15:28:59] [INFO] camilo@gmail.com - Cliente registrado
