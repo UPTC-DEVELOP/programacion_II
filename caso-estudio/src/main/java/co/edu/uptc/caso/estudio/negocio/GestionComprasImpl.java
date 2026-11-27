@@ -138,6 +138,7 @@ public class GestionComprasImpl implements IGestionCompras {
     public String registrarPago(PagoDto pago) {
         if (pago == null) return "Datos de pago inválidos.";
         if (obtenerCarritoActual().estaVacio()) return "El carrito está vacío.";
+        this.datosTransferencia = null; 
         if (MetodoPago.TARJETA.getEtiqueta().equalsIgnoreCase(pago.getMetodo())) {
             if (pago.getBanco() == null || pago.getBanco().isBlank()) return "Seleccione un banco.";
             if (pago.getNumeroTarjeta() == null || !pago.getNumeroTarjeta().matches(REGEX_TARJETA)) return "Número de tarjeta inválido (16 dígitos).";
@@ -145,9 +146,9 @@ public class GestionComprasImpl implements IGestionCompras {
             if (pago.getExpiracion() == null || !pago.getExpiracion().matches(REGEX_EXPIRACION)) return "Fecha de expiración inválida (MM/AA).";            YearMonth vencimiento = YearMonth.parse(pago.getExpiracion(), DateTimeFormatter.ofPattern("MM/yy"));
             if (vencimiento.isBefore(YearMonth.now())) return "La tarjeta se encuentra vencida.";
             this.datosTransferencia = new DatosTransferencia(pago.getBanco(), pago.getNumeroTarjeta(), pago.getCvv(), pago.getExpiracion(), null);
-        } else if (MetodoPago.TRANSFERENCIA.getEtiqueta().equalsIgnoreCase(pago.getMetodo())) {
-            if (pago.getNumeroNequi() == null || !pago.getNumeroNequi().matches("3\\d{9}")) return "Número de Nequi inválido (10 dígitos empezando por 3).";
+        }  else if (MetodoPago.TRANSFERENCIA.getEtiqueta().equalsIgnoreCase(pago.getMetodo())) {
             if (pago.getNumeroNequi() == null || !pago.getNumeroNequi().matches(REGEX_NEQUI)) return "Número de Nequi inválido (10 dígitos empezando por 3).";
+            this.datosTransferencia = new DatosTransferencia(DatosTransferencia.NEQUI, null, null, null, pago.getNumeroNequi());
         } else {
             return "Método de pago no válido.";
         }
