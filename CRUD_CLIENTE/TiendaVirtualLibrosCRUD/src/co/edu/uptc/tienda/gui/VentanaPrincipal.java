@@ -7,6 +7,7 @@ import co.edu.uptc.tienda.gui.clientes.PanelCliente;
 import co.edu.uptc.tienda.gui.compras.PanelCarritoCompras;
 import co.edu.uptc.tienda.gui.compras.PanelCatalogo;
 import co.edu.uptc.tienda.modelo.Cliente;
+import co.edu.uptc.tienda.negocio.GestionCarrito;
 import co.edu.uptc.tienda.negocio.IGestionAutenticacion;
 import co.edu.uptc.tienda.negocio.IGestionCarrito;
 import co.edu.uptc.tienda.negocio.IGestionCompra;
@@ -55,7 +56,7 @@ public class VentanaPrincipal extends JFrame {
 
 		evento = new Evento();
 		evento.registrarAccion(Evento.LOGIN, this::loguear);
-		evento.registrarAccion(Evento.REGISTRARSE, this::registrarseCliente);
+		evento.registrarAccion(Evento.REGISTRARSE, this::registrarCliente);
 		panelLogin = new PanelLogin(evento);
 
 		evento.registrarAccion(Evento.CERRAR_SESION, this::cerrarSesion);
@@ -74,6 +75,16 @@ public class VentanaPrincipal extends JFrame {
 
 		add(panelLogin);
 		getRootPane().setDefaultButton(panelLogin.getBotonIngresar());
+
+		addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
+			public void windowClosing(java.awt.event.WindowEvent e) {
+				if (gestionCarrito instanceof GestionCarrito gc) {
+					gc.cerrarSesionCliente();
+				}
+			}
+		});
+
 	}
 
 	private void loguear() {
@@ -91,7 +102,6 @@ public class VentanaPrincipal extends JFrame {
 				"Inicio de sesión exitoso", JOptionPane.INFORMATION_MESSAGE);
 
 		if (clienteAutenticado.getTipoCliente().name().equals("ADMIN")) {
-
 			setTitle("Tienda Virtual de Libros - " + clienteAutenticado.getPrimerNombre() + " ("
 					+ clienteAutenticado.getTipoCliente() + ")");
 
@@ -102,8 +112,10 @@ public class VentanaPrincipal extends JFrame {
 			setLocationRelativeTo(null);
 			add(this.panelCentral);
 			this.panelCentral.setVisible(Boolean.TRUE);
-
 		} else {
+			if (this.gestionCarrito instanceof GestionCarrito gc) {
+				gc.establecerClienteActivo(clienteAutenticado);
+			}
 
 			setTitle("Tienda Virtual de Libros - " + clienteAutenticado.getPrimerNombre() + " ("
 					+ clienteAutenticado.getTipoCliente() + ")");
@@ -118,12 +130,13 @@ public class VentanaPrincipal extends JFrame {
 			setLocationRelativeTo(null);
 			this.pestanasCliente.setVisible(Boolean.TRUE);
 		}
-
 	}
 
 	private void cerrarSesion() {
-		// El carrito pertenece a la sesión: el siguiente cliente empieza vacío
-		this.gestionCarrito.vaciar();
+		if (this.gestionCarrito instanceof GestionCarrito gc) {
+			gc.cerrarSesionCliente();
+		}
+		this.clienteAutenticado = null;
 		this.panelCarrito.setCliente(null);
 
 		this.pestanasCliente.setVisible(Boolean.FALSE);
@@ -134,7 +147,7 @@ public class VentanaPrincipal extends JFrame {
 		setLocationRelativeTo(null);
 	}
 
-	private void registrarseCliente() {
+	private void registrarCliente() {
 		panelCliente.abrirDialogoCliente(null);
 	}
 

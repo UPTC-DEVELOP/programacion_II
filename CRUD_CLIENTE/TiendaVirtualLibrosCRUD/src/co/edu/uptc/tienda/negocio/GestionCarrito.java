@@ -6,94 +6,181 @@ import java.util.List;
 import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.modelo.ItemCarrito;
 import co.edu.uptc.tienda.modelo.Libro;
+import co.edu.uptc.tienda.persistencia.PersistenciaCarritoJSON;
 
 public class GestionCarrito implements IGestionCarrito {
 
-	private final List<ItemCarrito> items;
+    private final List<ItemCarrito> items;
+    private final IPersistenciaCarrito persistenciaCarrito;
+    private final IRepositorioLibro repositorioLibro;
+    private String clienteActualClave;
 
-	public GestionCarrito() {
-		this.items = new ArrayList<>();
-	}
+    public GestionCarrito() {
+        this(new PersistenciaCarritoJSON(), null);
+    }
 
-	@Override
-	public void agregarLibro(Libro libro, int cantidad) {
-		if (libro == null) {
-			throw new NegocioException("Seleccione un libro del catálogo.");
-		}
+    public GestionCarrito(IPersistenciaCarrito persistenciaCarrito, IRepositorioLibro repositorioLibro) {
+        this.items = new ArrayList<>();
+        this.persistenciaCarrito = persistenciaCarrito;
+        this.repositorioLibro = repositorioLibro;
+    }
 
-		if (cantidad <= 0) {
-			throw new NegocioException("La cantidad debe ser mayor a 0.");
-		}
+    public void establecerClienteActivo(Cliente cliente) {
+        this.clienteActualClave = extraerClaveCliente(cliente);
+        cargarDesdePersistencia();
+    }
 
-		ItemCarrito itemExistente = buscarItem(libro.getIsbn());
-		int cantidadEnCarrito = itemExistente != null ? itemExistente.getCantidad() : 0;
+    public void cerrarSesionCliente() {
+        if (this.clienteActualClave != null && this.persistenciaCarrito != null) {
+            this.persistenciaCarrito.guardarCarritoCliente(this.clienteActualClave, this.items);
+        }
+        this.clienteActualClave = null;
+        this.items.clear();
+    }
 
-		if (cantidadEnCarrito + cantidad > libro.getStockDisponible()) {
-			throw new NegocioException("Stock insuficiente para '" + libro.getTitulo() + "'. Disponibles: "
-					+ libro.getStockDisponible() + ", en el carrito: " + cantidadEnCarrito + ".");
-		}
+    @Override
+    public void agregarLibro(Libro libro, int cantidad) {
+        if (libro == null) {
+            throw new NegocioException("Seleccione un libro del catálogo.");
+        }
 
-		if (itemExistente != null) {
-			itemExistente.setCantidad(cantidadEnCarrito + cantidad);
-		} else {
-			items.add(new ItemCarrito(libro, cantidad));
-		}
-	}
+        if (cantidad <= 0) {
+            throw new NegocioException("La cantidad debe ser mayor a 0.");
+        }
 
-	@Override
-	public void quitarLibro(String isbn) {
-		if (!items.removeIf(item -> item.getLibro().getIsbn().equals(isbn))) {
-			throw new NegocioException("El libro con ISBN " + isbn + " no está en el carrito.");
-		}
-	}
+        ItemCarrito itemExistente = buscarItem(libro.getIsbn());
+        int cantidadEnCarrito = itemExistente != null ? itemExistente.getCantidad() : 0;
 
-	@Override
-	public void vaciar() {
-		items.clear();
-	}
+        if (cantidadEnCarrito + cantidad > libro.getStockDisponible()) {
+            throw new NegocioException("Stock insuficiente para '" + libro.getTitulo() + "'. Disponibles: "
+                    + libro.getStockDisponible() + ", en el carrito: " + cantidadEnCarrito + ".");
+        }
 
-	@Override
-	public List<ItemCarrito> listarItems() {
-		return new ArrayList<>(items);
-	}
+        if (itemExistente != null) {
+            itemExistente.setCantidad(cantidadEnCarrito + cantidad);
+        } else {
+            items.add(new ItemCarrito(libro, cantidad));
+        }
 
-	@Override
-	public boolean estaVacio() {
-		return items.isEmpty();
-	}
+        guardarEnPersistencia();
+    }
 
-	@Override
-	public double calcularSubtotal() {
-		double subtotal = 0;
-		for (ItemCarrito item : items) {
-			subtotal += item.getSubtotal();
-		}
-		return redondear(subtotal);
-	}
+    @Override
+    public void quitarLibro(String isbn) {
+        if (!items.removeIf(item -> item.getLibro() != null
+                && item.getLibro().getIsbn() != null
+                && item.getLibro().getIsbn().equals(isbn))) {
+            throw new NegocioException("El libro con ISBN " + isbn + " no está en el carrito.");
+        }
 
-	@Override
-	public double calcularDescuento(Cliente cliente) {
-		if (cliente == null) {
-			return 0;
-		}
-		return redondear(cliente.calcularDescuento(calcularSubtotal()));
-	}
+        guardarEnPersistencia();
+    }
 
-	@Override
-	public double calcularTotal(Cliente cliente) {
-		return redondear(calcularSubtotal() - calcularDescuento(cliente));
-	}
+    @Override
+    public void vaciar() {
+        items.clear();
+        if (this.clienteActualClave != null && this.persistenciaCarrito != null) {
+            this.persistenciaCarrito.eliminarCarritoCliente(this.clienteActualClave);
+        }
+    }
 
-	private ItemCarrito buscarItem(String isbn) {
-		for (ItemCarrito item : items) {
-			if (item.getLibro().getIsbn().equals(isbn)) {
-				return item;
-			}
-		}
-		return null;
-	}
+    @Override
+    public List<ItemCarrito> listarItems() {
+        return new ArrayList<>(items);
+    }
 
-	private double redondear(double valor) {
-		return Math.round(valor * 100.0) / 100.0;
-	}
+    @Override
+    public boolean estaVacio() {
+        return items.isEmpty();
+    }
+
+    @Override
+    public double calcularSubtotal() {
+        double subtotal = 0;
+        for (ItemCarrito item : items) {
+            subtotal += item.getSubtotal();
+        }
+        return redondear(subtotal);
+    }
+
+    @Override
+    public double calcularDescuento(Cliente cliente) {
+        if (cliente == null) {
+            return 0;
+        }
+        return redondear(cliente.calcularDescuento(calcularSubtotal()));
+    }
+
+    @Override
+    public double calcularTotal(Cliente cliente) {
+        return redondear(calcularSubtotal() - calcularDescuento(cliente));
+    }
+
+    private void cargarDesdePersistencia() {
+        this.items.clear();
+        if (this.clienteActualClave == null || this.persistenciaCarrito == null || this.repositorioLibro == null) {
+            return;
+        }
+
+        List<IPersistenciaCarrito.ItemGuardadoCarrito> guardados =
+                this.persistenciaCarrito.cargarCarritoCliente(this.clienteActualClave);
+        if (guardados == null || guardados.isEmpty()) {
+            return;
+        }
+
+        List<Libro> catalogo = this.repositorioLibro.listar();
+        if (catalogo == null || catalogo.isEmpty()) {
+            return;
+        }
+
+        for (IPersistenciaCarrito.ItemGuardadoCarrito guardado : guardados) {
+            if (guardado == null || guardado.getIsbn() == null || guardado.getCantidad() <= 0) {
+                continue;
+            }
+            for (Libro libro : catalogo) {
+                if (libro != null && libro.getIsbn() != null
+                        && libro.getIsbn().trim().equalsIgnoreCase(guardado.getIsbn().trim())) {
+                    int cantidadAjustada = Math.min(guardado.getCantidad(), libro.getStockDisponible());
+                    if (cantidadAjustada > 0) {
+                        this.items.add(new ItemCarrito(libro, cantidadAjustada));
+                    }
+                    break;
+                }
+            }
+        }
+
+        guardarEnPersistencia();
+    }
+
+    private void guardarEnPersistencia() {
+        if (this.clienteActualClave != null && this.persistenciaCarrito != null) {
+            this.persistenciaCarrito.guardarCarritoCliente(this.clienteActualClave, this.items);
+        }
+    }
+
+    private String extraerClaveCliente(Cliente cliente) {
+        if (cliente == null) {
+            return null;
+        }
+        if (cliente.getCorreoElectronico() != null && !cliente.getCorreoElectronico().isBlank()) {
+            return cliente.getCorreoElectronico().trim().toLowerCase();
+        }
+        if (cliente.getIdentificacion() != null && !cliente.getIdentificacion().isBlank()) {
+            return cliente.getIdentificacion().trim();
+        }
+        return null;
+    }
+
+    private ItemCarrito buscarItem(String isbn) {
+        for (ItemCarrito item : items) {
+            if (item.getLibro() != null && isbn.equals(item.getLibro().getIsbn())) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    private double redondear(double valor) {
+        return Math.round(valor * 100.0) / 100.0;
+    }
 }

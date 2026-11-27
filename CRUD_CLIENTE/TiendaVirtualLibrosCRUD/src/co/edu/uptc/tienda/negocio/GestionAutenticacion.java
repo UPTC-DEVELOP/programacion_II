@@ -1,6 +1,5 @@
 package co.edu.uptc.tienda.negocio;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -16,12 +15,8 @@ public class GestionAutenticacion implements IGestionAutenticacion {
 	private Properties adminProps;
 	private static final int LONGITUD_MINIMA_CONTRASENA = 8;
 
-	// Formato básico: texto@dominio.extension
 	private static final Pattern FORMATO_CORREO = Pattern.compile("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
-	// si se quiere que solo termine en @uptc.edu,co
-	// private static final String DOMINIO_PERMITIDO = "@uptc.edu.co";
 
-	// Mensaje único para no revelar si el usuario existe o no
 	private static final String CREDENCIALES_INVALIDAS = "Correo o contraseña incorrectos.";
 
 	private final IRepositorioCliente repositorioCliente;
@@ -101,7 +96,7 @@ public class GestionAutenticacion implements IGestionAutenticacion {
 		if (correo == null || correo.trim().isEmpty()) {
 			throw new NegocioException("Ingrese el Correo electrónico.");
 		}
-//	// si se quiere que solo termine en @uptc.edu,co
+
 		if (!FORMATO_CORREO.matcher(correo.trim()).matches()) {
 			throw new NegocioException("Ingrese un Correo electrónico válido (ejemplo: usuario@dominio.com).");
 		}

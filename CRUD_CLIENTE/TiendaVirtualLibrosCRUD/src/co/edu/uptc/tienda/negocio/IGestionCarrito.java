@@ -6,11 +6,8 @@ import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.modelo.ItemCarrito;
 import co.edu.uptc.tienda.modelo.Libro;
 
-
 public interface IGestionCarrito {
 
-	//suma la cantidad
-	 
 	void agregarLibro(Libro libro, int cantidad);
 
 	void quitarLibro(String isbn);
@@ -23,9 +20,6 @@ public interface IGestionCarrito {
 
 	double calcularSubtotal();
 
-	
-	 //Descuento según el tipo de cliente
-	
 	double calcularDescuento(Cliente cliente);
 
 	double calcularTotal(Cliente cliente);
