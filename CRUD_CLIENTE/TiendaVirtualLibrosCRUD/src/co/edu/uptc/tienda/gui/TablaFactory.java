@@ -7,7 +7,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class TablaFactory {
 
-	public static DefaultTableModel crearModeloNoEditable(String[] columnas) {
+	public static DefaultTableModel crearModeloNoEditable(String[] columnas) {	
 		return new DefaultTableModel(columnas, 0) {
 			private static final long serialVersionUID = 1L;
 

@@ -6,7 +6,6 @@ import co.edu.uptc.tienda.modelo.Libro;
 import co.edu.uptc.tienda.modelo.LibroDigital;
 import co.edu.uptc.tienda.modelo.LibroFisico;
 
-
 public enum TipoLibro {
 
 	FISICO {

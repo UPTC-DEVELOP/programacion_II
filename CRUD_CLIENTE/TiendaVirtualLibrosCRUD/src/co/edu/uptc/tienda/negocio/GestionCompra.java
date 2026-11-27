@@ -8,12 +8,16 @@ import co.edu.uptc.tienda.modelo.Factura;
 public class GestionCompra implements IGestionCompra {
 
 	private final IGestionCarrito gestionCarrito;
+	private final IGestionFactura gestionFactura;
 
 	private int siguienteNumeroFactura;
 
-	public GestionCompra(IGestionCarrito gestionCarrito) {
+	public GestionCompra(IGestionCarrito gestionCarrito, IGestionFactura gestionFactura) {
 		this.gestionCarrito = gestionCarrito;
-		this.siguienteNumeroFactura = 1;
+		this.gestionFactura = gestionFactura;
+		this.siguienteNumeroFactura = gestionFactura != null
+				? Math.max(1, gestionFactura.obtenerSiguienteNumeroFactura())
+				: 1;
 	}
 
 	@Override

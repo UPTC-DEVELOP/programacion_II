@@ -6,18 +6,22 @@ import javax.swing.UIManager;
 import co.edu.uptc.tienda.gui.PanelCentral;
 import co.edu.uptc.tienda.gui.VentanaPrincipal;
 import co.edu.uptc.tienda.gui.clientes.PanelCliente;
+import co.edu.uptc.tienda.gui.facturas.PanelFactura;
 import co.edu.uptc.tienda.gui.libros.PanelLibro;
 import co.edu.uptc.tienda.negocio.GestionAutenticacion;
 import co.edu.uptc.tienda.negocio.GestionCarrito;
 import co.edu.uptc.tienda.negocio.GestionCliente;
 import co.edu.uptc.tienda.negocio.GestionCompra;
 import co.edu.uptc.tienda.negocio.GestionLibro;
+import co.edu.uptc.tienda.negocio.GestorFactura;
 import co.edu.uptc.tienda.negocio.IGestionAutenticacion;
 import co.edu.uptc.tienda.negocio.IGestionCarrito;
 import co.edu.uptc.tienda.negocio.IGestionCliente;
 import co.edu.uptc.tienda.negocio.IGestionCompra;
+import co.edu.uptc.tienda.negocio.IGestionFactura;
 import co.edu.uptc.tienda.negocio.IGestionLibro;
 import co.edu.uptc.tienda.negocio.IRepositorioCliente;
+import co.edu.uptc.tienda.persistencia.BaseDeDatosFactura;
 import co.edu.uptc.tienda.persistencia.BaseDeDatosLibro;
 import co.edu.uptc.tienda.persistencia.ClienteJSON;
 
@@ -25,7 +29,6 @@ public class Aplicacion {
 
 	public static void main(String[] args) {
 
-		// Interfaz Gráfica
 		try {
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (Exception e) {
@@ -37,23 +40,24 @@ public class Aplicacion {
 		IRepositorioCliente repositorioCliente = new ClienteJSON();
 		IGestionCliente gestionCliente = new GestionCliente(repositorioCliente);
 		IGestionLibro gestionLibro = new GestionLibro(new BaseDeDatosLibro());
+		IGestionFactura gestionFactura = new GestorFactura(new BaseDeDatosFactura());
 
 		// Se gestiona la Autenticación con el gestAutenticacion
 		IGestionAutenticacion gestionAutenticacion = new GestionAutenticacion(repositorioCliente);
 
-		// Carrito de compras de la sesión (en memoria)
+		// Carrito de compras de la sesión
 		IGestionCarrito gestionCarrito = new GestionCarrito();
 
 		// Compra: convierte el carrito en factura
-		IGestionCompra gestionCompra = new GestionCompra(gestionCarrito);
+		IGestionCompra gestionCompra = new GestionCompra(gestionCarrito, gestionFactura);
 
 		// Se corre el programa en otro Hilo.
 		SwingUtilities.invokeLater(() -> {
 
-			PanelCentral panelCentral = new PanelCentral(new PanelCliente(gestionCliente),
-					new PanelLibro(gestionLibro));
+			PanelCentral panelCentral = new PanelCentral(new PanelCliente(gestionCliente), new PanelLibro(gestionLibro),
+					new PanelFactura(gestionFactura));
 			VentanaPrincipal ventana = new VentanaPrincipal(gestionAutenticacion, panelCentral,
-					new PanelCliente(gestionCliente), gestionLibro, gestionCarrito, gestionCompra);
+					new PanelCliente(gestionCliente), gestionLibro, gestionCarrito, gestionCompra, gestionFactura);
 			ventana.setVisible(Boolean.TRUE);
 
 		});

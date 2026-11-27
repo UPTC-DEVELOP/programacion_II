@@ -21,6 +21,7 @@ import co.edu.uptc.tienda.modelo.ItemCarrito;
 import co.edu.uptc.tienda.negocio.GestorFactura;
 import co.edu.uptc.tienda.negocio.IGestionCarrito;
 import co.edu.uptc.tienda.negocio.IGestionCompra;
+import co.edu.uptc.tienda.negocio.IGestionFactura;
 import co.edu.uptc.tienda.negocio.NegocioException;
 
 public class PanelCarritoCompras extends JPanel {
@@ -37,12 +38,15 @@ public class PanelCarritoCompras extends JPanel {
 
 	private final IGestionCarrito gestionCarrito;
 	private final IGestionCompra gestionCompra;
+	private final IGestionFactura gestionFactura;
 	private Cliente cliente;
 	private Runnable accionVerCatalogo;
 
-	public PanelCarritoCompras(IGestionCarrito gestionCarrito, IGestionCompra gestionCompra) {
+	public PanelCarritoCompras(IGestionCarrito gestionCarrito, IGestionCompra gestionCompra,
+			IGestionFactura gestionFactura) {
 		this.gestionCarrito = gestionCarrito;
 		this.gestionCompra = gestionCompra;
+		this.gestionFactura = gestionFactura;
 
 		setLayout(new BorderLayout(10, 10));
 
@@ -179,8 +183,7 @@ public class PanelCarritoCompras extends JPanel {
 		}
 
 		// Guardar automáticamente la factura en la Base de Datos
-		GestorFactura gestorFactura = new GestorFactura();
-		boolean guardadoExitoso = gestorFactura.procesarYGuardarFactura(factura);
+		boolean guardadoExitoso = gestionFactura.procesarYGuardarFactura(factura);
 
 		if (!guardadoExitoso) {
 			JOptionPane.showMessageDialog(this,

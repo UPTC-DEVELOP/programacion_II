@@ -6,19 +6,21 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import co.edu.uptc.tienda.gui.clientes.PanelCliente;
+import co.edu.uptc.tienda.gui.facturas.PanelFactura;
 import co.edu.uptc.tienda.gui.libros.PanelLibro;
 
 public class PanelCentral extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	public PanelCentral(PanelCliente panelCliente, PanelLibro panelLibro) {
+	public PanelCentral(PanelCliente panelCliente, PanelLibro panelLibro, PanelFactura panelFactura) {
 
 		setLayout(new BorderLayout());
 
 		JTabbedPane panelPestana = new JTabbedPane();
 		panelPestana.addTab("Cliente", panelCliente);
 		panelPestana.addTab("Libro", panelLibro);
+		panelPestana.addTab("Facturas", panelFactura);
 
 		add(panelPestana);
 	}

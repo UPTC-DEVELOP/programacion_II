@@ -6,15 +6,13 @@ import java.util.List;
 
 public class Factura {
 
-	private final int numero;
-	private final LocalDateTime fecha;
-	private final Cliente cliente;
-	private final List<ItemCarrito> items;
-	private final double subtotal;
-	private final double descuento;
-	private final double total;
-
-	// Pendiente agregar los datos de la factura que faltan, por ejemplo:
+	private int numero;
+	private LocalDateTime fecha;
+	private Cliente cliente;
+	private List<ItemCarrito> items;
+	private double subtotal;
+	private double descuento;
+	private double total;
 
 	public Factura(int numero, LocalDateTime fecha, Cliente cliente, List<ItemCarrito> items, double subtotal,
 			double descuento, double total) {
@@ -25,6 +23,38 @@ public class Factura {
 		this.subtotal = subtotal;
 		this.descuento = descuento;
 		this.total = total;
+	}
+
+	public void setNumero(int numero) {
+		this.numero = numero;
+	}
+
+	public void setFecha(LocalDateTime fecha) {
+		this.fecha = fecha;
+	}
+
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
+	}
+
+	public void setItems(List<ItemCarrito> items) {
+		this.items = items;
+	}
+
+	public void setSubtotal(double subtotal) {
+		this.subtotal = subtotal;
+	}
+
+	public void setDescuento(double descuento) {
+		this.descuento = descuento;
+	}
+
+	public void setTotal(double total) {
+		this.total = total;
+	}
+
+	public Factura() {
+
 	}
 
 	public int getNumero() {

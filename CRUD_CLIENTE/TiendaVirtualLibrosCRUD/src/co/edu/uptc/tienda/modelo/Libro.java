@@ -33,6 +33,9 @@ public abstract class Libro {
 		this.stockDisponible = stockDisponible;
 	}
 
+	public Libro() {
+	}
+
 	public Long getIdLibro() {
 		return idLibro;
 	}

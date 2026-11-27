@@ -10,6 +10,7 @@ import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.negocio.IGestionAutenticacion;
 import co.edu.uptc.tienda.negocio.IGestionCarrito;
 import co.edu.uptc.tienda.negocio.IGestionCompra;
+import co.edu.uptc.tienda.negocio.IGestionFactura;
 import co.edu.uptc.tienda.negocio.IGestionLibro;
 import co.edu.uptc.tienda.negocio.NegocioException;
 
@@ -20,6 +21,7 @@ public class VentanaPrincipal extends JFrame {
 	private final IGestionAutenticacion gestionAutenticacion;
 	private final IGestionLibro gestionLibro;
 	private final IGestionCarrito gestionCarrito;
+	private final IGestionFactura gestionFactura;
 
 	private final PanelCentral panelCentral;
 	private final PanelCatalogo panelCatalogo;
@@ -36,10 +38,11 @@ public class VentanaPrincipal extends JFrame {
 
 	public VentanaPrincipal(IGestionAutenticacion gestionAutenticacion, PanelCentral panelCentral,
 			PanelCliente panelCliente, IGestionLibro gestionLibro, IGestionCarrito gestionCarrito,
-			IGestionCompra gestionCompra) {
+			IGestionCompra gestionCompra, IGestionFactura gestionFactura) {
 		this.gestionAutenticacion = gestionAutenticacion;
 		this.gestionLibro = gestionLibro;
 		this.gestionCarrito = gestionCarrito;
+		this.gestionFactura = gestionFactura;
 
 		this.panelCentral = panelCentral;
 		this.panelCliente = panelCliente;
@@ -57,7 +60,7 @@ public class VentanaPrincipal extends JFrame {
 
 		evento.registrarAccion(Evento.CERRAR_SESION, this::cerrarSesion);
 		panelCatalogo = new PanelCatalogo(gestionLibro, gestionCarrito, evento);
-		panelCarrito = new PanelCarritoCompras(gestionCarrito, gestionCompra);
+		panelCarrito = new PanelCarritoCompras(gestionCarrito, gestionCompra, gestionFactura);
 
 		pestanasCliente = new JTabbedPane();
 		pestanasCliente.addTab("Catálogo", panelCatalogo);
@@ -65,7 +68,8 @@ public class VentanaPrincipal extends JFrame {
 		// Al abrir la pestaña del carrito se muestran los libros agregados desde el
 		// catálogo
 		pestanasCliente.addChangeListener(e -> panelCarrito.actualizar());
-		// Desde el carrito, el botón "Agregar libros del catálogo" abre la pestaña Catálogo
+		// Desde el carrito, el botón "Agregar libros del catálogo" abre la pestaña
+		// Catálogo
 		panelCarrito.setAccionVerCatalogo(() -> pestanasCliente.setSelectedComponent(panelCatalogo));
 
 		add(panelLogin);
