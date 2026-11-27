@@ -75,4 +75,7 @@ public double obtenerPorcentajeDescuento() {
 	public void setTipoCliente(String tipoCliente) {
 		this.tipoCliente = tipoCliente;
 	}
+	public boolean tieneCorreoElectronico() {
+    return correoElectronico != null && !correoElectronico.trim().isEmpty();
+}
 }
