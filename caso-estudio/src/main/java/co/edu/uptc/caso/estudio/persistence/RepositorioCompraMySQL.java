@@ -2,12 +2,18 @@ package co.edu.uptc.caso.estudio.persistence;
 
 import co.edu.uptc.caso.estudio.model.Carrito;
 import co.edu.uptc.caso.estudio.model.Cliente;
+import co.edu.uptc.caso.estudio.model.Compra;
 import co.edu.uptc.caso.estudio.model.ItemCarrito;
+import co.edu.uptc.caso.estudio.model.Libro;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RepositorioCompraMySQL implements IRepositorioCompra {
 
@@ -40,6 +46,112 @@ public class RepositorioCompraMySQL implements IRepositorioCompra {
         }
     }
 
+    @Override
+    public List<Compra> obtenerComprasPorCliente(String clienteId) {
+        List<Compra> compras = new ArrayList<>();
+        if (clienteId == null || clienteId.trim().isEmpty()) {
+            return compras;
+        }
+
+        String sql = "SELECT c.id, c.cliente_id, c.fecha, c.total, u.nombre_completo "
+                + "FROM compras c "
+                + "LEFT JOIN usuarios u ON c.cliente_id = u.id "
+                + "WHERE c.cliente_id = ? "
+                + "ORDER BY c.fecha DESC, c.id DESC";
+
+        try (Connection conn = ConexionMySQL.obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, clienteId.trim());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Compra compra = mapearCompra(conn, rs);
+                    compras.add(compra);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al consultar compras del cliente " + clienteId + ": " + e.getMessage());
+        }
+
+        return compras;
+    }
+
+    private Compra mapearCompra(Connection conn, ResultSet rs) throws SQLException {
+        int idCompraInt = rs.getInt("id");
+        Compra compra = new Compra();
+        compra.setIdCompra(String.valueOf(idCompraInt));
+        compra.setClienteId(rs.getString("cliente_id"));
+        compra.setNombreCliente(rs.getString("nombre_completo"));
+
+        Timestamp ts = rs.getTimestamp("fecha");
+        compra.setFecha(ts != null ? ts.toLocalDateTime() : LocalDateTime.now());
+
+        List<ItemCarrito> items = obtenerItemsCompra(conn, idCompraInt);
+        compra.setItems(items);
+
+        double totalBd = rs.getDouble("total");
+        aplicarDesgloseFinanciero(compra, items, totalBd);
+        return compra;
+    }
+
+    private void aplicarDesgloseFinanciero(Compra compra, List<ItemCarrito> items, double totalBd) {
+        Carrito auxiliar = new Carrito(compra.getClienteId());
+        auxiliar.setItems(items);
+
+        double subtotalSinIva = auxiliar.calcularSubtotalSinIva();
+        double totalImpuestos = auxiliar.calcularTotalImpuestos();
+        double totalBrutoConIva = auxiliar.calcularTotal();
+        double descuento = totalBrutoConIva > totalBd ? (totalBrutoConIva - totalBd) : 0.0;
+
+        compra.setSubtotalSinIva(subtotalSinIva);
+        compra.setTotalImpuestos(totalImpuestos);
+        compra.setDescuentoAplicado(descuento);
+        compra.setTotalPagado(totalBd);
+    }
+
+    private List<ItemCarrito> obtenerItemsCompra(Connection conn, int compraId) throws SQLException {
+        List<ItemCarrito> items = new ArrayList<>();
+        String sql = "SELECT ci.libro_isbn, ci.cantidad, ci.precio_unitario, "
+                + "l.titulo, l.autor, l.anio, l.categoria, l.editorial, l.paginas, "
+                + "l.precio, l.stock, l.formato, l.porcentaje_iva "
+                + "FROM compra_items ci "
+                + "INNER JOIN libros l ON ci.libro_isbn = l.isbn "
+                + "WHERE ci.compra_id = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, compraId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    items.add(mapearItemCompra(rs));
+                }
+            }
+        }
+        return items;
+    }
+
+    private ItemCarrito mapearItemCompra(ResultSet rs) throws SQLException {
+        Libro libro = mapearLibro(rs);
+        int cantidad = rs.getInt("cantidad");
+        double precioUnitario = rs.getDouble("precio_unitario");
+        return new ItemCarrito(libro, cantidad, precioUnitario);
+    }
+
+    private Libro mapearLibro(ResultSet rs) throws SQLException {
+        Libro libro = new Libro();
+        libro.setIsbn(rs.getString("libro_isbn"));
+        libro.setTitulo(rs.getString("titulo"));
+        libro.setAutor(rs.getString("autor"));
+        libro.setAnio(rs.getInt("anio"));
+        libro.setCategoria(rs.getString("categoria"));
+        libro.setEditorial(rs.getString("editorial"));
+        libro.setPaginas(rs.getInt("paginas"));
+        libro.setPrecioVenta(rs.getDouble("precio"));
+        libro.setStock(rs.getInt("stock"));
+        libro.setFormato(rs.getString("formato"));
+        libro.setPorcentajeIva(rs.getDouble("porcentaje_iva"));
+        return libro;
+    }
+
     private int insertarCabeceraCompra(Connection conn, String clienteId, double total) throws SQLException {
         String sql = "INSERT INTO compras (cliente_id, total) VALUES (?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -63,7 +175,7 @@ public class RepositorioCompraMySQL implements IRepositorioCompra {
              PreparedStatement psStock = conn.prepareStatement(sqlStock)) {
 
             for (ItemCarrito it : carrito.getItems()) {
-                if (it.getLibro() == null) continue;
+                if (it == null || it.getLibro() == null) continue;
 
                 psItem.setInt(1, compraId);
                 psItem.setString(2, it.getLibro().getIsbn());
