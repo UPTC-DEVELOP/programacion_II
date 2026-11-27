@@ -45,4 +45,13 @@ public class Carrito {
     public boolean estaVacio() {
         return items.isEmpty();
     }
+    public int obtenerCantidadTotalProductos() {
+    int total = 0;
+
+    for (ItemCarrito item : items) {
+        total += item.getCantidad();
+    }
+
+    return total;
+}
 }
