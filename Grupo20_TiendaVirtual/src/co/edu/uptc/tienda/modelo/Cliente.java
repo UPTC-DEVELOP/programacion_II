@@ -78,4 +78,7 @@ public double obtenerPorcentajeDescuento() {
 	public boolean tieneCorreoElectronico() {
     return correoElectronico != null && !correoElectronico.trim().isEmpty();
 }
+	public boolean tieneDireccionEnvio() {
+    return direccionEnvio != null && !direccionEnvio.trim().isEmpty();
+}
 }
