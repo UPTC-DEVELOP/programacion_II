@@ -27,14 +27,26 @@ CREATE TABLE IF NOT EXISTS cliente (
 );
 
 CREATE TABLE IF NOT EXISTS carrito (
+    id_cliente VARCHAR(20) NOT NULL,
     isbn VARCHAR(13) NOT NULL,
-    id_cliente VARCHAR(20),
     cantidad INT NOT NULL,
-    PRIMARY KEY (isbn)
+    PRIMARY KEY (id_cliente, isbn)
 );
+
+DELETE FROM carrito WHERE id_cliente IS NULL;
+
+ALTER TABLE carrito DROP FOREIGN KEY IF EXISTS fk_carrito_cliente;
+
+ALTER TABLE carrito
+    MODIFY id_cliente VARCHAR(20) NOT NULL,
+    ADD INDEX IF NOT EXISTS idx_carrito_isbn (isbn),
+    DROP PRIMARY KEY,
+    ADD PRIMARY KEY (id_cliente, isbn);
 
 ALTER TABLE carrito
     ADD CONSTRAINT fk_carrito_libro FOREIGN KEY IF NOT EXISTS (isbn)
-        REFERENCES libros (isbn) ON DELETE CASCADE ON UPDATE CASCADE,
+        REFERENCES libros (isbn) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE carrito
     ADD CONSTRAINT fk_carrito_cliente FOREIGN KEY IF NOT EXISTS (id_cliente)
-        REFERENCES cliente (id) ON DELETE SET NULL ON UPDATE CASCADE;
+        REFERENCES cliente (id) ON DELETE CASCADE ON UPDATE CASCADE;
