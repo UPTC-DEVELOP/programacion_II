@@ -43,7 +43,7 @@ public class PanelCliente extends JPanel {
         campoCorreo = new JTextField(15);
         campoDireccion = new JTextField(15);
         campoCelular = new JTextField(15);
-        campoTipoCliente = new JComboBox<>(new String[] { "Regular", "Premium" });
+        campoTipoCliente = new JComboBox<>(new String[] { "Regular / Estándar", "Premium" });
 
         botonGuardar = new JButton(EventosCliente.GUARDAR);
         botonBuscar = new JButton(EventosCliente.BUSCAR);
