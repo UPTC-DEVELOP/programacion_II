@@ -67,16 +67,16 @@ public class VentanaLibro extends JFrame {
                 new GridLayout(10, 2, 8, 8)
         );
 
-        lblIsbn = new JLabel("ISBN:");
-        lblTitulo = new JLabel("Título:");
-        lblAutor = new JLabel("Autor:");
-        lblAnio = new JLabel("Año de publicación:");
-        lblEditorial = new JLabel("Editorial:");
-        lblPaginas = new JLabel("Número de páginas:");
-        lblPrecio = new JLabel("Precio:");
-        lblIva = new JLabel("Porcentaje IVA:");
-        lblStock = new JLabel("Cantidad disponible:");
-        lblFormato = new JLabel("Formato:");
+        lblIsbn = new JLabel("Ingrese el ISBN del libro:");
+        lblTitulo = new JLabel("Ingrese el título del libro:");
+        lblAutor = new JLabel("Ingrese el autor del libro:");
+        lblAnio = new JLabel("Ingrese el año de publicación del libro:");
+        lblEditorial = new JLabel("Ingrese la editorial del libro:");
+        lblPaginas = new JLabel("Ingrese el número de páginas del libro:");
+        lblPrecio = new JLabel("Ingrese el precio del libro:");
+        lblIva = new JLabel("Ingrese el porcentaje de IVA del libro:");
+        lblStock = new JLabel("Ingrese la cantidad disponible del libro:");
+        lblFormato = new JLabel("Ingrese el formato del libro:");
 
         txtIsbn = new JTextField();
         txtTitulo = new JTextField();
