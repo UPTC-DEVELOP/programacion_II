@@ -153,6 +153,9 @@ public class FichaLibroCatalogo extends PanelBase {
     this.btnVerDetalles.addActionListener(
       (e) -> getEvento().manejar(ControladorExploradorCatalogo.CATALOGO_VER_DETALLES, idLibro)
     );
+    
+    // ocultar el botón ver detalles
+    this.btnVerDetalles.setVisible(false);
   }
   
   /// Muestra los campos del formato impreso si el libro ofrece el formato impreso.

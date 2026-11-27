@@ -1,0 +1,3 @@
+INSERT INTO tienda_libros_gr9.empleado (id_empleado,id_usuario,tipo_documento,numero_documento,nombres,apellidos) VALUES (1,1,'CC','201','Rocío','Gómez');
+INSERT INTO tienda_libros_gr9.empleado (id_empleado,id_usuario,tipo_documento,numero_documento,nombres,apellidos) VALUES (2,2,'CC','202','Ricardo','Rojas');
+INSERT INTO tienda_libros_gr9.empleado (id_empleado,id_usuario,tipo_documento,numero_documento,nombres,apellidos) VALUES (3,3,'CC','203','Pablo','Ruiz');

@@ -67,7 +67,7 @@ public class PanelContenidoPrincipal extends PanelBase {
     setLayout(this.layoutCartas);
     
     // crear el panel para el inicio de sesión del usuario
-    this.panelLogin = (PanelLogin) new PanelLogin().construir();
+    this.panelLogin = (PanelLogin) new PanelLogin(getEvento()).construir();
     add(this.panelLogin, PanelContenidoPrincipal.PANEL_INICIO_SESION);
     
     // crear el panel para la gestión del catálogo
@@ -80,7 +80,8 @@ public class PanelContenidoPrincipal extends PanelBase {
     add(this.panelGestionVentas, PanelContenidoPrincipal.PANEL_GESTION_VENTAS);
     
     // crear el panel para la gestión de clientes
-    this.panelGestionClientes = (PanelGestionClientes) new PanelGestionClientes(getEvento()).construir();    add(this.panelGestionClientes, PanelContenidoPrincipal.PANEL_GESTION_CLIENTES);
+    this.panelGestionClientes = (PanelGestionClientes) new PanelGestionClientes(getEvento()).construir();
+    add(this.panelGestionClientes, PanelContenidoPrincipal.PANEL_GESTION_CLIENTES);
     
     // crear el panel para la administración del sistema
     this.panelAdministracionSistema = (PanelAdministracionSistema) new PanelAdministracionSistema()

@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS libro (
 );
     
 
--- crear la tabla formato_libro
+--         Crear la tabla formato_libro
 
 CREATE TABLE IF NOT EXISTS formato_libro (
   id_formato_libro BIGINT NOT NULL AUTO_INCREMENT,
@@ -145,10 +145,151 @@ CREATE TABLE IF NOT EXISTS formato_libro (
 );
 
 
--- Crear la tabla Cliente
+--         Crear la tabla usuario
+
+-- hash_contrasena es VARCHAR(44) porque el Base64 de un hash de 32 bytes con PBKDF2 y 256 bits
+--  = 44 caracteres
+
+-- sal es VARCHAR(24) porque el Base64 de un hash de 16 bytes con PBKDF2 y 256 bits
+--  = 24 caracteres
+
+CREATE TABLE IF NOT EXISTS usuario (
+  id_usuario BIGINT NOT NULL AUTO_INCREMENT,
+  correo_electronico VARCHAR(120) NOT NULL, 
+  hash_contrasena VARCHAR(44) NOT NULL, 
+  sal VARCHAR(24) NOT NULL,
+  habilitado BOOLEAN NOT NULL DEFAULT TRUE,
+
+  -- Restricción de clave primaria
+  PRIMARY KEY (id_usuario),
+
+  -- Restricciones de valores únicos
+  CONSTRAINT uq_usuario_correo
+    UNIQUE (correo_electronico),
+  
+  -- Restricción que permite que un cliente tenga la clave foránea compuesta (id_usuario, correo_electronico)
+  CONSTRAINT uq_usuario_id_correo
+    UNIQUE (id_usuario, correo_electronico),
+    
+    -- Restricciones de texto no vacío y de longitud
+  CONSTRAINT ck_usuario_correo_no_vacio
+    CHECK (CHAR_LENGTH(TRIM(correo_electronico)) > 0),
+
+  CONSTRAINT ck_usuario_hash_longitud
+    CHECK (CHAR_LENGTH(hash_contrasena) = 44),
+
+  CONSTRAINT ck_usuario_sal_longitud
+    CHECK (CHAR_LENGTH(sal) = 24)
+);
+
+
+--         Crear la tabla empleado 
+
+CREATE TABLE IF NOT EXISTS empleado (
+  id_empleado BIGINT NOT NULL AUTO_INCREMENT,
+  id_usuario BIGINT NOT NULL,
+  tipo_documento VARCHAR(3) NOT NULL,
+  numero_documento VARCHAR(20) NOT NULL,
+  nombres VARCHAR(100) NOT NULL,
+  apellidos VARCHAR(100) NOT NULL,
+  
+  -- restricción de clave primaria
+  PRIMARY KEY (id_empleado),
+  
+  -- restricción de que un usuario aparezca solo una vez como empleado
+  CONSTRAINT uq_empleado_usuario
+    UNIQUE (id_usuario),
+    
+  -- restricción de identificación única del empleado 
+  CONSTRAINT uq_empleado_identificacion 
+    UNIQUE (tipo_documento, numero_documento),
+    
+  -- restricción de clave foránea
+  CONSTRAINT fk_empleado_id_usuario
+    FOREIGN KEY (id_usuario)
+    REFERENCES usuario (id_usuario)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  
+  -- restricciones de valores válidos
+  
+  CONSTRAINT ck_empleado_tipo_documento_valido 
+    CHECK (tipo_documento IN ('CC', 'CE')),
+    
+  -- restricciones de texto no vacío
+  CONSTRAINT ck_empleado_nombres_no_vacios
+    CHECK (CHAR_LENGTH(TRIM(nombres)) > 0),
+
+  CONSTRAINT ck_empleado_apellidos_no_vacios
+    CHECK (CHAR_LENGTH(TRIM(apellidos)) > 0), 
+    
+  CONSTRAINT ck_empleado_numero_documento_no_vacio  
+    CHECK (CHAR_LENGTH(TRIM(numero_documento)) > 0)
+);
+
+-- Trigger para que al eliminar un empleado también se elimine su cuenta de usuario, y no quede 
+--   un usuario que inicie sesión pero sin ser empleado.
+CREATE TRIGGER IF NOT EXISTS trg_empleado_eliminar_usuario
+  AFTER DELETE ON empleado
+  FOR EACH ROW
+  DELETE FROM usuario WHERE id_usuario = OLD.id_usuario;
+
+
+--         Crear la tabla usuario_rol 
+
+-- el rol de cada usuario
+-- un usuario puede tener varios roles
+
+CREATE TABLE IF NOT EXISTS usuario_rol (
+  id_usuario BIGINT NOT NULL,
+  rol VARCHAR(3) NOT NULL,
+  
+  -- restricción de clave primaria
+  PRIMARY KEY (id_usuario, rol),
+  
+  -- restricción de clave foránea
+  --   nota: ON DELELE CASCADE para que al eliminar un usuario también se eliminen sus roles asociados
+  CONSTRAINT fk_usuario_rol_id_usuario
+    FOREIGN KEY (id_usuario)
+    REFERENCES usuario (id_usuario)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  
+  -- restricción de valores válidos
+    
+  -- CAT: gestor catálogo.  VEN: gestor ventas.  CLI: cliente.  ADM: administrador
+  CONSTRAINT ck_usuario_rol_rol_valido 
+    CHECK (rol IN ('CAT', 'VEN', 'CLI', 'ADM'))
+);
+
+
+--         Crear la tabla rol_permiso 
+
+-- dice los permisos específicos que cada rol tiene
+CREATE TABLE IF NOT EXISTS rol_permiso (
+  rol VARCHAR(3) NOT NULL, 
+  permiso VARCHAR(62) NOT NULL,
+  
+  -- restricción de clave primaria
+  PRIMARY KEY (rol, permiso),
+  
+  -- restricción de valores válidos
+  
+  -- CAT: gestor catálogo.  VEN: gestor ventas.  CLI: cliente.  ADM: administrador
+  CONSTRAINT ck_rol_permiso_rol_valido 
+    CHECK (rol IN ('CAT', 'VEN', 'CLI', 'ADM'))
+);
+
+
+--         Crear la tabla cliente 
+
+-- nota: ya no se hace el CHECK para correo_electronico porque MariaDB no permite hacer CHECK en una 
+--       clave foránea que tiene ON UPDATE CASCADE. De todas maneras, el CHECK de correo electrónico 
+--       se hace en la tabla padre usuario. 
 
 CREATE TABLE IF NOT EXISTS cliente (
   id_cliente BIGINT NOT NULL AUTO_INCREMENT,
+  id_usuario BIGINT NOT NULL,
   tipo_documento VARCHAR(10) NOT NULL,
   numero_documento VARCHAR(20) NOT NULL,
   nombres VARCHAR(100) NOT NULL,
@@ -161,13 +302,25 @@ CREATE TABLE IF NOT EXISTS cliente (
   -- Restricción de clave primaria
   PRIMARY KEY (id_cliente),
 
-  -- Restricciones de valores únicos
+   -- Restricciones de valores únicos
   CONSTRAINT uq_cliente_documento
     UNIQUE (tipo_documento, numero_documento),
 
   CONSTRAINT uq_cliente_correo
     UNIQUE (correo_electronico),
 
+  -- un usuario es un solo cliente
+  CONSTRAINT uq_cliente_usuario
+    UNIQUE (id_usuario),
+    
+  -- restricción de clave foránea
+  -- el cliente recibe el correo electrónico de la tabla usuario
+  CONSTRAINT fk_cliente_usuario_correo
+    FOREIGN KEY (id_usuario, correo_electronico)
+    REFERENCES usuario (id_usuario, correo_electronico)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+    
   -- Restricciones de textos no vacíos
   CONSTRAINT ck_cliente_nombres_no_vacios
     CHECK (CHAR_LENGTH(TRIM(nombres)) > 0),
@@ -175,11 +328,15 @@ CREATE TABLE IF NOT EXISTS cliente (
   CONSTRAINT ck_cliente_apellidos_no_vacios
     CHECK (CHAR_LENGTH(TRIM(apellidos)) > 0),
 
-  CONSTRAINT ck_cliente_correo_no_vacio
-    CHECK (CHAR_LENGTH(TRIM(correo_electronico)) > 0),
-
   -- Restricción de tipos de cliente válidos
   CONSTRAINT ck_cliente_tipo_valido
-    CHECK (tipo_cliente IN ('REGULAR', 'PREMIUM'))
+    CHECK (tipo_cliente IN ('REGULAR', 'PREMIUM'))  
 );
+
+-- Trigger para que al eliminar un cliente también se elimine su cuenta de usuario, y no quede 
+--   un usuario que inicie sesión pero sin ser cliente.
+CREATE TRIGGER IF NOT EXISTS trg_cliente_eliminar_usuario
+  AFTER DELETE ON cliente
+  FOR EACH ROW
+  DELETE FROM usuario WHERE id_usuario = OLD.id_usuario;
 

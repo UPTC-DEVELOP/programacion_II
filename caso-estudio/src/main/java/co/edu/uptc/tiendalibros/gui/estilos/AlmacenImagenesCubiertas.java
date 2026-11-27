@@ -1,7 +1,6 @@
 //
 package co.edu.uptc.tiendalibros.gui.estilos;
 
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -10,9 +9,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+
+import net.coobird.thumbnailator.Thumbnails;
 
 /// Representa un almacén que contiene las imágenes de las cubiertas de los libros.
 public class AlmacenImagenesCubiertas {
@@ -65,27 +65,11 @@ public class AlmacenImagenesCubiertas {
     try {
       // obtener la ruta completa de la imagen: directorio + nombreArchivo
       Path rutaImagen = directorio.get().resolve(nombreArchivo);
-      // leer el archivo de imagen
-      BufferedImage imagenOriginal = ImageIO.read(rutaImagen.toFile());
+      // usar la librería thumbnailator para cargar la imagen y escalarla
+      BufferedImage imagenEscalada = Thumbnails.of(rutaImagen.toFile())
+        .size(anchoMaximo, altoMaximo)
+        .asBufferedImage();
       
-      // si el archivo leído no es una imagen soportada, tampoco se carga nada
-      if (imagenOriginal == null) {
-        return Optional.empty();
-      }
-      // aplicar esta fórmula conocida para ajustar el tamaño de una imagen sin que se deforme
-      // calcular cuál dimensión (ancho o alto) tiene la menor proporción: (máximo / original)
-      double escala = Math.min(
-        (double) anchoMaximo / imagenOriginal.getWidth(),
-        (double) altoMaximo / imagenOriginal.getHeight()
-      );
-      
-      // calcular el ancho en píxeles redondeando la multiplicación de la dimensión por la escala.
-      // Mínimo 1 píxel
-      int ancho = Math.max(1, (int) Math.round(imagenOriginal.getWidth() * escala));
-      int alto = Math.max(1, (int) Math.round(imagenOriginal.getHeight() * escala));
-      
-      // crear una nueva imagen con los nuevos ancho y alto, y un escalado fiel 
-      Image imagenEscalada = imagenOriginal.getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
       // devolver el nuevo ícono
       return Optional.of(new ImageIcon(imagenEscalada));
     } catch (IllegalArgumentException | IOException excepcion) {

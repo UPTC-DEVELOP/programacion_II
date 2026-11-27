@@ -13,6 +13,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
@@ -125,7 +126,9 @@ public class AplicadorEstilos {
     this.componente.setForeground(PaletaColores.TEXTO_PRINCIPAL.color());
     this.componente.setBackground(Color.WHITE);
     this.componente.setMinimumSize(new Dimension(80, AplicadorEstilos.ALTO_CAMPO));
-    this.componente.setPreferredSize(new Dimension(this.componente.getPreferredSize().width, AplicadorEstilos.ALTO_CAMPO));
+    this.componente.setPreferredSize(
+      new Dimension(this.componente.getPreferredSize().width, AplicadorEstilos.ALTO_CAMPO)
+    );
     return this;
   }
   
@@ -136,6 +139,23 @@ public class AplicadorEstilos {
     if (this.componente instanceof JTextField campo) {
       campo.setColumns(columnas);
       bordeCampoNormal();
+    }
+    return this;
+  }
+  
+  /// Aplica el estilo de un texto de varias líneas que se visualiza como una etiqueta: no
+  /// editable, sin fondo, sin borde y con el texto centrado.
+  ///
+  /// No fija el alto preferido. El alto preferido depende las líneas del texto final.
+  public AplicadorEstilos textoMultilinea() {
+    if (this.componente instanceof JTextPane panelTexto) {
+      // dar la apariencia de una etiqueta tradicional
+      panelTexto.setEditable(false);
+      panelTexto.setFocusable(false);
+      panelTexto.setOpaque(false);
+      panelTexto.setBorder(BorderFactory.createEmptyBorder(8, 4, 8, 4));
+      panelTexto.setFont(Fuentes.FUENTE_BOTON.fuente());
+      panelTexto.setForeground(PaletaColores.TEXTO_PRINCIPAL.color());
     }
     return this;
   }
@@ -225,7 +245,7 @@ public class AplicadorEstilos {
     return this;
   }
   
-  // Aplica el estilo de botón con el ícono de ver detalles.
+  /// Aplica el estilo de botón con el ícono de ver detalles.
   public AplicadorEstilos botonVerDetalles() {
     boton();
     if (this.componente instanceof JButton boton) {
@@ -233,6 +253,36 @@ public class AplicadorEstilos {
         .isPresent()) {
         boton.setIcon(
           IconoImagen.VER_DETALLES.icono()
+            .get()
+        );
+      }
+    }
+    return this;
+  }
+  
+  /// Aplica el estilo de botón con el ícono de iniciar sesión.
+  public AplicadorEstilos botonIniciarSesion() {
+    boton();
+    if (this.componente instanceof JButton boton) {
+      if (IconoImagen.INICIAR_SESION.icono()
+        .isPresent()) {
+        boton.setIcon(
+          IconoImagen.INICIAR_SESION.icono()
+            .get()
+        );
+      }
+    }
+    return this;
+  }
+  
+  /// Aplica el estilo de botón con el ícono de registrarse como usuario.
+  public AplicadorEstilos botonRegistrarse() {
+    boton();
+    if (this.componente instanceof JButton boton) {
+      if (IconoImagen.REGISTRARSE.icono()
+        .isPresent()) {
+        boton.setIcon(
+          IconoImagen.REGISTRARSE.icono()
             .get()
         );
       }
@@ -392,11 +442,11 @@ public class AplicadorEstilos {
   
   /// Estilo del conjunto de pestañas: fuente y colores de texto.
   public AplicadorEstilos pestanas() {
-  this.componente.setFont(Fuentes.FUENTE_PESTANA.fuente());
-  this.componente.setForeground(PaletaColores.TEXTO_PRINCIPAL.color());
-  
-  return this;
-}
+    this.componente.setFont(Fuentes.FUENTE_PESTANA.fuente());
+    this.componente.setForeground(PaletaColores.TEXTO_PRINCIPAL.color());
+    
+    return this;
+  }
   
   /// Marca el botón de navegación como el módulo activo que se está visualizando.
   public AplicadorEstilos moduloActivo() {
@@ -425,6 +475,5 @@ public class AplicadorEstilos {
       )
     );
   }
-
   
 }

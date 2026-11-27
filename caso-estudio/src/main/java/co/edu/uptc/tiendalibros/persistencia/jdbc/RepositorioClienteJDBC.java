@@ -61,11 +61,12 @@ public class RepositorioClienteJDBC extends RepositorioJDBCBase<Cliente>
   protected PreparedStatement crearComandoSQLActualizar(
       Connection conexion, Cliente cliente) throws SQLException {
 
-    String sql = "UPDATE cliente SET "
-        + "tipo_documento = ?, numero_documento = ?, nombres = ?, "
-        + "apellidos = ?, correo_electronico = ?, telefono = ?, "
-        + "direccion_envio = ?, tipo_cliente = ? "
-        + "WHERE id_cliente = ?";
+    // se actualiza el correo electrónico en la tabla usuario
+    String sql = "UPDATE cliente c JOIN usuario u ON u.id_usuario = c.id_usuario SET "
+      + "c.tipo_documento = ?, c.numero_documento = ?, c.nombres = ?, "
+      + "c.apellidos = ?, u.correo_electronico = ?, c.telefono = ?, "
+      + "c.direccion_envio = ?, c.tipo_cliente = ? "
+      + "WHERE c.id_cliente = ?";
 
     PreparedStatement comando = conexion.prepareStatement(sql);
 

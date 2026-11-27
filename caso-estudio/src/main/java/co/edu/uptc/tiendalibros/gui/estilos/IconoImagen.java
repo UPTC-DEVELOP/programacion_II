@@ -27,7 +27,10 @@ public enum IconoImagen {
   EXPLORAR_CATALOGO("catalogo-4.png"),
   PESTANA_CATALOGO("catalogo-7.png"),
   AGREGAR_AL_CARRITO("agregar-al-carrito-1.png"),
-  VER_DETALLES("ver-detalles-1.png");
+  VER_DETALLES("ver-detalles-1.png"),
+  INICIAR_SESION("iniciar-sesion-1.png"),
+  CERRAR_SESION("cerrar-sesion-1.png"),
+  REGISTRARSE("registrarse-1.png");
   
   /// Tamaño del lado predeterminado que tendrá la imagen del ícono. Se mide en pixeles.
   private static final int LADO_PREDETERMINADO = 20;
