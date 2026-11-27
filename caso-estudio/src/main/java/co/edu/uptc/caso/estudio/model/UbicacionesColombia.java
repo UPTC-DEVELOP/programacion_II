@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UbicacionesColombia {
+
     private static final Map<String, String[]> DEPARTAMENTOS_CIUDADES = new HashMap<>();
 
     static {
@@ -27,14 +28,20 @@ public class UbicacionesColombia {
         });
     }
 
-    public static String[] getDepartamentos() {
-        return DEPARTAMENTOS_CIUDADES.keySet().toArray(new String[0]);
+    private UbicacionesColombia() {
     }
 
+    // Retorna copia del arreglo de departamentos para proteger el estado interno
+    public static String[] getDepartamentos() {
+        String[] keys = DEPARTAMENTOS_CIUDADES.keySet().toArray(new String[0]);
+        return keys.clone();
+    }
+
+    // Retorna copia del arreglo de ciudades del departamento indicado
     public static String[] getCiudades(String departamento) {
         if (departamento == null || !DEPARTAMENTOS_CIUDADES.containsKey(departamento)) {
             return new String[0];
         }
-        return DEPARTAMENTOS_CIUDADES.get(departamento);
+        return DEPARTAMENTOS_CIUDADES.get(departamento).clone();
     }
 }

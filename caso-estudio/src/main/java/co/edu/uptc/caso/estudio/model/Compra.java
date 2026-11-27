@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Compra {
+
     private String idCompra;
     private String clienteId;
     private String nombreCliente;
@@ -40,6 +41,7 @@ public class Compra {
         }
     }
 
+    // Crea copias defensivas de cada ítem para preservar la instantánea histórica de la compra
     private List<ItemCarrito> copiarItems(List<ItemCarrito> origen) {
         List<ItemCarrito> copia = new ArrayList<>();
         if (origen == null) {
@@ -47,7 +49,9 @@ public class Compra {
         }
         for (ItemCarrito item : origen) {
             if (item != null) {
-                copia.add(item);
+                ItemCarrito clon = new ItemCarrito(item.getLibro(), item.getCantidad());
+                clon.setPrecioUnitarioOverride(item.getPrecioUnitarioOverride());
+                copia.add(clon);
             }
         }
         return copia;
