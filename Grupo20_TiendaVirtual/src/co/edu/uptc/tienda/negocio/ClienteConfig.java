@@ -12,6 +12,10 @@ public class ClienteConfig {
         gestionCliente = new GestionCliente();
     }
 
+    public String getAvisoCarga() {
+        return gestionCliente.getAvisoCarga();
+    }
+
     public void guardar(Cliente cliente) {
         gestionCliente.guardar(cliente);
     }

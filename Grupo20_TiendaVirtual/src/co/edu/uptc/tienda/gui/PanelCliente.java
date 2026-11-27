@@ -73,7 +73,7 @@ public class PanelCliente extends JPanel {
         panelFormulario.add(new JLabel("Escriba la Dirección de vivienda del cliente:"));
         panelFormulario.add(campoDireccion);
 
-        panelFormulario.add(new JLabel("Escriba el numero Celular del cliente:"));
+        panelFormulario.add(new JLabel("Escriba el número Celular del cliente:"));
         panelFormulario.add(campoCelular);
 
         panelFormulario.add(new JLabel("Seleccione el Tipo de cliente:"));

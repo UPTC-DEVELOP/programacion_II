@@ -40,13 +40,16 @@ public class ItemCarrito {
             throw new IllegalArgumentException("La cantidad debe ser mayor que 0.");
         }
     }
+
     public String obtenerTituloLibro() {
-    return libro.getTitulo();
-}
+        return libro.getTitulo();
+    }
+
     public String obtenerAutorLibro() {
-    return libro.getAutor();
-}
+        return libro.getAutor();
+    }
+
     public double obtenerPrecioUnitario() {
-    return libro.getPrecio();
-}
+        return libro.getPrecio();
+    }
 }

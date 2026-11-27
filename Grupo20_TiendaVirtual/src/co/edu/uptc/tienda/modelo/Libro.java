@@ -131,10 +131,12 @@ public class Libro {
     public boolean validarStock(int cantidad) {
         return cantidad > 0 && cantidad <= stock;
     }
+
     public boolean tieneStockDisponible() {
-    return stock > 0;
-}
+        return stock > 0;
+    }
+
     public boolean tieneIsbnRegistrado() {
-    return isbn != null && !isbn.trim().isEmpty();
-}
+        return isbn != null && !isbn.trim().isEmpty();
+    }
 }

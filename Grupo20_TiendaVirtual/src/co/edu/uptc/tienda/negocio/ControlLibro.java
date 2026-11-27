@@ -111,7 +111,9 @@ public class ControlLibro {
         List<String> errores = new ArrayList<>();
         for (LibroDAO persistencia : persistencias) {
             try {
-                persistencia.actualizar(libro);
+                if (!persistencia.actualizar(libro)) {
+                    persistencia.registrar(libro);
+                }
             } catch (LibroExcepcion e) {
                 errores.add(e.getMessage());
             }

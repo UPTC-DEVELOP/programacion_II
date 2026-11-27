@@ -16,6 +16,10 @@ public class GestionCliente implements IGestionCliente {
         clienteLogueado = null;
     }
 
+    public String getAvisoCarga() {
+        return localCliente.getAvisoCarga();
+    }
+
     @Override
     public void guardar(Cliente cliente) {
         // Revisa que todos los campos estén llenos y con datos validos

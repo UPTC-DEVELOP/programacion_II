@@ -544,7 +544,7 @@ public class EventosLibro implements ActionListener {
                 libro.getIsbn(),
                 libro.getTitulo(),
                 libro.getAutor(),
-                "$ " + libro.getPrecio(),
+                String.format("$%,.2f", libro.getPrecio()),
                 libro.getStock()
             };
 
