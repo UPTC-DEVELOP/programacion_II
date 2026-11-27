@@ -8,6 +8,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
@@ -19,7 +20,7 @@ import co.edu.uptc.tiendalibros.negocio.ResultadoValidacion;
 
 /// Representa el formulario para registrar, consultar y editar clientes.
 public class FormularioCliente
-    extends FormularioElementoBase<ElementoVistaCliente, Cliente> {
+  extends FormularioElementoBase<ElementoVistaCliente, Object> {
 
   /// Campos utilizados para capturar los datos del cliente.
   private JComboBox<String> cmbTipoDocumento;
@@ -30,6 +31,11 @@ public class FormularioCliente
   private JTextField txtTelefono;
   private JTextField txtDireccionEnvio;
   private JComboBox<String> cmbTipoCliente;
+  
+  private JPasswordField txtContrasena;
+  private JPasswordField txtConfirmacionContrasena;
+  
+  private JPanel panelCampos;
 
   /// Crea un formulario de clientes asociado al manejador de eventos.
   ///
@@ -45,47 +51,50 @@ public class FormularioCliente
 
     Border sinBorde = BorderFactory.createEmptyBorder(3, 3, 3, 3);
 
-    JPanel panelCampos = new JPanel(new GridLayout(0, 2, 5, 5));
-    panelCampos.setBorder(sinBorde);
+    this.panelCampos = new JPanel(new GridLayout(0, 2, 5, 5));
+    this.panelCampos.setBorder(sinBorde);
 
     // Campo para seleccionar el tipo de documento.
     this.cmbTipoDocumento = new JComboBox<>(
         new String[] {"CC", "TI", "CE", "PA", "RC"}
     );
-    agregarCampo(panelCampos, "Tipo de documento:", this.cmbTipoDocumento);
+    agregarCampo(this.panelCampos, "Tipo de documento:", this.cmbTipoDocumento);
 
     // Campo para ingresar el número de documento.
     this.txtNumeroDocumento = new JTextField(30);
-    agregarCampo(panelCampos, "Número de documento:", this.txtNumeroDocumento);
+    agregarCampo(this.panelCampos, "Número de documento:", this.txtNumeroDocumento);
 
     // Campo para ingresar los nombres.
     this.txtNombres = new JTextField(30);
-    agregarCampo(panelCampos, "Nombres:", this.txtNombres);
+    agregarCampo(this.panelCampos, "Nombres:", this.txtNombres);
 
     // Campo para ingresar los apellidos.
     this.txtApellidos = new JTextField(30);
-    agregarCampo(panelCampos, "Apellidos:", this.txtApellidos);
+    agregarCampo(this.panelCampos, "Apellidos:", this.txtApellidos);
 
     // Campo para ingresar el correo electrónico.
     this.txtCorreoElectronico = new JTextField(30);
-    agregarCampo(panelCampos, "Correo electrónico:", this.txtCorreoElectronico);
+    agregarCampo(this.panelCampos, "Correo electrónico:", this.txtCorreoElectronico);
 
     // Campo para ingresar el teléfono.
     this.txtTelefono = new JTextField(30);
-    agregarCampo(panelCampos, "Teléfono:", this.txtTelefono);
+    agregarCampo(this.panelCampos, "Teléfono:", this.txtTelefono);
 
     // Campo para ingresar la dirección de envío.
     this.txtDireccionEnvio = new JTextField(30);
-    agregarCampo(panelCampos, "Dirección de envío:", this.txtDireccionEnvio);
+    agregarCampo(this.panelCampos, "Dirección de envío:", this.txtDireccionEnvio);
 
     // Campo para seleccionar el tipo de cliente.
     this.cmbTipoCliente = new JComboBox<>(
         new String[] {"REGULAR", "PREMIUM"}
     );
-    agregarCampo(panelCampos, "Tipo de cliente:", this.cmbTipoCliente);
+    agregarCampo(this.panelCampos, "Tipo de cliente:", this.cmbTipoCliente);
 
+    this.txtContrasena = new JPasswordField(30);
+    this.txtConfirmacionContrasena = new JPasswordField(30);
+    
     getPanelCampos().setLayout(new BorderLayout());
-    getPanelCampos().add(panelCampos, BorderLayout.NORTH);
+    getPanelCampos().add(this.panelCampos, BorderLayout.NORTH);
   }
 
   /// Agrega una etiqueta y un campo al panel del formulario.
@@ -119,6 +128,11 @@ public class FormularioCliente
     this.txtTelefono.setText(cliente.getTelefono());
     this.txtDireccionEnvio.setText(cliente.getDireccionEnvio());
     this.cmbTipoCliente.setSelectedItem(cliente.getTipoCliente());
+    
+    agregarCampo(this.panelCampos, "Contraseña:", this.txtContrasena);
+    agregarCampo(this.panelCampos, "Confirmar contraseña:", this.txtConfirmacionContrasena);
+    this.txtContrasena.setText("");
+    this.txtConfirmacionContrasena.setText("");
   }
 
   /// Obtiene el resultado de la validación del formulario.
@@ -133,12 +147,12 @@ public class FormularioCliente
   ///
   /// @return Cliente construido con los datos del formulario.
   @Override
-  public Cliente capturarDatos() {
+  public Object capturarDatos() {
     Cliente clienteActual = getElementoVista().getElemento();
 
     Long id = clienteActual != null ? clienteActual.getId() : null;
 
-    return new Cliente(
+    Cliente cliente = new Cliente(
         id,
         (String) this.cmbTipoDocumento.getSelectedItem(),
         this.txtNumeroDocumento.getText(),
@@ -148,6 +162,18 @@ public class FormularioCliente
         this.txtTelefono.getText(),
         this.txtDireccionEnvio.getText(),
         (String) this.cmbTipoCliente.getSelectedItem()
+    );
+    
+    // al editar, solo se envían los datos del cliente
+    if (id != null) {
+      return cliente;
+    }
+    
+    // al registrar, se envían también las contraseñas
+    return new DatosRegistroCliente(
+      cliente,
+      this.txtContrasena.getPassword(),
+      this.txtConfirmacionContrasena.getPassword()
     );
   }
 
@@ -168,7 +194,11 @@ public class FormularioCliente
   /// Obtiene la ruta del evento encargado de guardar un cliente.
   @Override
   protected String getRutaEventoGuardar() {
-    return ControladorCliente.CLIENTE_GUARDAR;
+    // return ControladorCliente.CLIENTE_GUARDAR;
+    boolean nuevo = getElementoVista().getElemento()
+      .getId() == null;
+    
+    return nuevo ? ControladorCliente.CLIENTE_REGISTRAR : ControladorCliente.CLIENTE_GUARDAR;
   }
 
   /// Obtiene la ruta del evento encargado de eliminar un cliente.

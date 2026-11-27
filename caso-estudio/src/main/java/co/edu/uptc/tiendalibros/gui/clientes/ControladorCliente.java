@@ -7,6 +7,8 @@ import java.util.Optional;
 import co.edu.uptc.tiendalibros.gui.avisos.Aviso;
 import co.edu.uptc.tiendalibros.gui.componentes.ControladorBase;
 import co.edu.uptc.tiendalibros.gui.eventos.EnrutadorEventos;
+import co.edu.uptc.tiendalibros.gui.login.ControladorLogin;
+import co.edu.uptc.tiendalibros.gui.navegacion.ControladorNavegacion;
 import co.edu.uptc.tiendalibros.modelo.Cliente;
 import co.edu.uptc.tiendalibros.negocio.GestionCliente;
 import co.edu.uptc.tiendalibros.negocio.ResultadoValidacion;
@@ -32,6 +34,9 @@ public class ControladorCliente extends ControladorBase {
 
   /// Evento para eliminar un cliente.
   public static final String CLIENTE_ELIMINAR = "cliente.eliminar";
+  
+  /// Evento para registrar un cliente nuevo con su cuenta.
+  public static final String CLIENTE_REGISTRAR = "cliente.registrar";
 
   /// Panel principal de gestión de clientes.
   private PanelGestionClientes panelClientes;
@@ -176,6 +181,38 @@ public class ControladorCliente extends ControladorBase {
       mostrarAviso(Aviso.advertencia(excepcion.getMessage()));
     }
   }
+  
+  /// Registra un cliente nuevo con su cuenta de usuario.
+  ///
+  /// @param elemento Datos del registro: el cliente y sus contraseñas.
+  public void registrar(Object elemento) {
+    
+    if (elemento == null || !(elemento instanceof DatosRegistroCliente datos)) {
+      return;
+    }
+    
+    try {
+      
+      this.gestorCliente.registrar(datos.cliente(), datos.contrasena(), datos.confirmacion());
+      
+      this.panelClientes.cerrarFormulario();
+      
+      // vuelve a la pantalla de inicio de sesión
+      getEnrutador().manejarEvento(ControladorNavegacion.NAVEGACION_INICIO_SESION);
+      
+      mostrarAviso(Aviso.exito("Te registraste correctamente. Ya puedes iniciar sesión."));
+      
+    } catch (ReglaNegocioException excepcion) {
+      
+      ResultadoValidacion errores = new ResultadoValidacion();
+      
+      errores.agregarGeneral(excepcion.getMessage());
+      
+      this.panelClientes.mostrarFormulario(new ElementoVistaCliente(datos.cliente(), errores));
+      
+      mostrarAviso(Aviso.advertencia(excepcion.getMessage()));
+    }
+  }
 
   /// Elimina un cliente utilizando su identificador.
   ///
@@ -234,6 +271,16 @@ public class ControladorCliente extends ControladorBase {
     getEnrutador().registrarEvento(
       ControladorCliente.CLIENTE_ELIMINAR,
       (elemento) -> eliminar(elemento)
+    );
+    
+    getEnrutador().registrarEvento(
+      ControladorLogin.LOGIN_REGISTRAR,
+      (elemento) -> nuevo()
+    );
+    
+    getEnrutador().registrarEvento(
+      ControladorCliente.CLIENTE_REGISTRAR,
+      (datos) -> registrar(datos)
     );
   }
 }

@@ -1,26 +1,46 @@
 
 package co.edu.uptc.tiendalibros.negocio;
 
+import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioCliente;
+import co.edu.uptc.tiendalibros.interfaces.IRepositorioUsuario;
 import co.edu.uptc.tiendalibros.modelo.Cliente;
+import co.edu.uptc.tiendalibros.modelo.Rol;
+import co.edu.uptc.tiendalibros.modelo.Usuario;
 import co.edu.uptc.tiendalibros.negocio.excepciones.ReglaNegocioException;
 import co.edu.uptc.tiendalibros.negocio.excepciones.ViolacionElementoNoExisteException;
+import co.edu.uptc.tiendalibros.negocio.seguridad.GestionSeguridad;
 
 /// Gestiona las operaciones y reglas de negocio relacionadas con los clientes.
 public class GestionCliente {
 
   /// Repositorio utilizado para almacenar y consultar los clientes.
   private final IRepositorioCliente repositorio;
+  
+  /// Repositorio de las cuentas de usuario. Un cliente que se registra necesita una cuenta.
+  private final IRepositorioUsuario repositorioUsuario;
+  
+  /// Gestor de seguridad. Valida y protege la contraseña del cliente que se registra.
+  private final GestionSeguridad gestorSeguridad;
 
   /// Crea la gestión de clientes utilizando el repositorio indicado.
   ///
   /// @param repositorio Repositorio encargado de almacenar los clientes.
-  public GestionCliente(IRepositorioCliente repositorio) {
+  public GestionCliente(
+    IRepositorioCliente repositorio,
+    IRepositorioUsuario repositorioUsuario,
+    GestionSeguridad gestorSeguridad
+  ) {
     this.repositorio = repositorio;
+    this.repositorioUsuario = repositorioUsuario;
+    this.gestorSeguridad = gestorSeguridad;
   }
+  
+  
 
   /// Guarda un cliente después de validar sus datos.
   ///
@@ -29,6 +49,12 @@ public class GestionCliente {
   public Cliente guardar(Cliente cliente) {
 
     validar(cliente);
+    
+    if (cliente.getId() == null) {
+      throw new ReglaNegocioException(
+        "Un cliente nuevo se crea desde 'Registrarse', porque necesita una cuenta con contraseña."
+      );
+    }
 
     // Comprueba que el cliente exista cuando se está actualizando.
     if (cliente.getId() != null &&
@@ -68,6 +94,78 @@ public class GestionCliente {
 
         throw new ReglaNegocioException(excepcion.getMessage());
     }
+}
+
+public Cliente registrar(Cliente cliente, char[] contrasena, char[] confirmacion) {
+  
+  try {
+    
+    validar(cliente);
+    
+    // un cliente que se registra siempre empieza como REGULAR
+    cliente.setTipoCliente("REGULAR");
+    
+    ResultadoValidacion erroresContrasena = this.gestorSeguridad.validarContrasena(contrasena);
+    
+    if (erroresContrasena.hayErrores()) {
+      String error = erroresContrasena.getPorAtributo()
+        .get("contrasena")
+        .getFirst();
+      throw new ReglaNegocioException("Error de contraseña: " + error);
+    }
+    
+    if (!Arrays.equals(contrasena, confirmacion)) {
+      throw new ReglaNegocioException("La confirmación no coincide con la contraseña.");
+    }
+    
+    // Comprueba que no exista otro cliente con el mismo documento.
+    for (Cliente registrado : this.repositorio.listar()) {
+      
+      if (cliente.getTipoDocumento()
+        .trim()
+        .equalsIgnoreCase(
+          registrado.getTipoDocumento()
+            .trim()
+        ) &&
+        cliente.getNumeroDocumento()
+          .trim()
+          .equals(
+            registrado.getNumeroDocumento()
+              .trim()
+          )) {
+        
+        throw new ReglaNegocioException("Ya existe un cliente con ese documento.");
+      }
+    }
+    
+    // Comprueba que no exista una cuenta con el mismo correo.
+    if (this.repositorioUsuario.buscarPorCorreo(
+      cliente.getCorreoElectronico()
+        .trim()
+    )
+      .isPresent()) {
+      
+      throw new ReglaNegocioException("Ya existe una cuenta con ese correo electrónico.");
+    }
+    
+    Usuario cuenta = new Usuario(
+      cliente.getCorreoElectronico()
+        .trim(),
+      this.gestorSeguridad.protegerContrasena(contrasena),
+      true,
+      EnumSet.of(Rol.CLIENTE)
+    );
+    
+    this.repositorioUsuario.registrarCliente(cuenta, cliente);
+    
+    return cliente;
+    
+  } finally {
+    
+    // las contraseñas no deben quedar en la memoria
+    Arrays.fill(contrasena, '\0');
+    Arrays.fill(confirmacion, '\0');
+  }
 }
 
   /// Valida los datos obligatorios de un cliente.
