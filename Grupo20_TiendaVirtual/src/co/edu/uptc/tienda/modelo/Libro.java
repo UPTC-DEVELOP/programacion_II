@@ -134,4 +134,7 @@ public class Libro {
     public boolean tieneStockDisponible() {
     return stock > 0;
 }
+    public boolean tieneIsbnRegistrado() {
+    return isbn != null && !isbn.trim().isEmpty();
+}
 }
