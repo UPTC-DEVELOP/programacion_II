@@ -16,7 +16,7 @@ public class RepositorioLibrosMySQL implements IRepositorioLibros {
         if (l == null || l.getIsbn() == null) {
             return false;
         }
-        String sql = "INSERT INTO libros (titulo, autor, anio, categoria, editorial, paginas, precio_venta, stock, formato, porcentaje_iva, isbn) "
+        String sql = "INSERT INTO libros (titulo, autor, anio, categoria, editorial, paginas, precio, stock, formato, porcentaje_iva, isbn) "
                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConexionMySQL.obtenerConexion();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -70,7 +70,7 @@ public class RepositorioLibrosMySQL implements IRepositorioLibros {
         if (l == null || l.getIsbn() == null) {
             return false;
         }
-        String sql = "UPDATE libros SET titulo=?, autor=?, anio=?, categoria=?, editorial=?, paginas=?, precio_venta=?, stock=?, formato=?, porcentaje_iva=? WHERE isbn=?";
+        String sql = "UPDATE libros SET titulo=?, autor=?, anio=?, categoria=?, editorial=?, paginas=?, precio=?, stock=?, formato=?, porcentaje_iva=? WHERE isbn=?";
         try (Connection conn = ConexionMySQL.obtenerConexion();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             asignarParametrosComunes(ps, l);
@@ -120,7 +120,7 @@ public class RepositorioLibrosMySQL implements IRepositorioLibros {
                 rs.getString("categoria"),
                 rs.getString("editorial"),
                 rs.getInt("paginas"),
-                rs.getDouble("precio_venta"),
+                rs.getDouble("precio"),
                 rs.getInt("stock"),
                 rs.getString("formato"),
                 rs.getDouble("porcentaje_iva")
