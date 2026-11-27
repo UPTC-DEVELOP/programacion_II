@@ -33,6 +33,9 @@ public class GestionCarrito implements IGestionCarrito {
 
     @Override
     public void agregarLibro(Libro libro, int cantidad) throws CarritoExcepcion {
+        if (carrito.getIdCliente() == null) {
+            throw new CarritoExcepcion("Seleccione un cliente antes de agregar libros.");
+        }
         if (libro == null) {
             throw new CarritoExcepcion("Debe seleccionar un libro.");
         }
