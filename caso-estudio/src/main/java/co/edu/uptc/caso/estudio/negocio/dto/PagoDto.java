@@ -1,6 +1,8 @@
 package co.edu.uptc.caso.estudio.negocio.dto;
 
+// Objeto de transferencia inmutable con los datos ingresados para procesar un pago
 public class PagoDto {
+
     private final String metodo;
     private final String banco;
     private final String numeroTarjeta;
@@ -8,7 +10,8 @@ public class PagoDto {
     private final String cvv;
     private final String numeroNequi;
 
-    public PagoDto(String metodo, String banco, String numeroTarjeta, String expiracion, String cvv, String numeroNequi) {
+    public PagoDto(String metodo, String banco, String numeroTarjeta,
+                   String expiracion, String cvv, String numeroNequi) {
         this.metodo = metodo;
         this.banco = banco;
         this.numeroTarjeta = numeroTarjeta;
@@ -17,10 +20,27 @@ public class PagoDto {
         this.numeroNequi = numeroNequi;
     }
 
-    public String getMetodo() { return metodo; }
-    public String getBanco() { return banco; }
-    public String getNumeroTarjeta() { return numeroTarjeta; }
-    public String getExpiracion() { return expiracion; }
-    public String getCvv() { return cvv; }
-    public String getNumeroNequi() { return numeroNequi; }
+    public String getMetodo() {
+        return metodo;
+    }
+
+    public String getBanco() {
+        return banco;
+    }
+
+    public String getNumeroTarjeta() {
+        return numeroTarjeta;
+    }
+
+    public String getExpiracion() {
+        return expiracion;
+    }
+
+    public String getCvv() {
+        return cvv;
+    }
+
+    public String getNumeroNequi() {
+        return numeroNequi;
+    }
 }
