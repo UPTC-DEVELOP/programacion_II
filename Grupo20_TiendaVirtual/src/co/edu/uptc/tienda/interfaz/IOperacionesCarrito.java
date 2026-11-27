@@ -20,6 +20,8 @@ public interface IOperacionesCarrito {
 
     void vaciar() throws CarritoExcepcion;
 
+    void finalizarCompra() throws CarritoExcepcion;
+
     List<String> sincronizarConCatalogo(List<Libro> catalogo) throws CarritoExcepcion;
 
     void asignarCliente(String idCliente) throws CarritoExcepcion;

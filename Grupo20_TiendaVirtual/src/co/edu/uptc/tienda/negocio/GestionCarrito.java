@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.edu.uptc.tienda.excepcion.CarritoExcepcion;
+import co.edu.uptc.tienda.excepcion.LibroExcepcion;
 import co.edu.uptc.tienda.interfaz.IGestionCarrito;
 import co.edu.uptc.tienda.interfaz.IPersistenciaCarrito;
 import co.edu.uptc.tienda.modelo.Carrito;
@@ -15,11 +16,13 @@ public class GestionCarrito implements IGestionCarrito {
 
     private final Carrito carrito;
     private final List<IPersistenciaCarrito> persistencias;
+    private final ControlLibro controlLibro;
     private boolean recuperado;
 
-    public GestionCarrito(Carrito carrito, List<IPersistenciaCarrito> persistencias) {
+    public GestionCarrito(Carrito carrito, List<IPersistenciaCarrito> persistencias, ControlLibro controlLibro) {
         this.carrito = carrito;
         this.persistencias = persistencias;
+        this.controlLibro = controlLibro;
         this.recuperado = false;
     }
 
@@ -93,6 +96,46 @@ public class GestionCarrito implements IGestionCarrito {
         String clienteAntes = carrito.getIdCliente();
         carrito.vaciar();
         guardarODeshacer(itemsAntes, clienteAntes);
+    }
+
+    @Override
+    public void finalizarCompra() throws CarritoExcepcion {
+        if (carrito.estaVacio()) {
+            throw new CarritoExcepcion("El carrito está vacío.");
+        }
+        if (carrito.getIdCliente() == null) {
+            throw new CarritoExcepcion("Debe seleccionar un cliente para finalizar la compra.");
+        }
+        for (ItemCarrito item : carrito.getItems()) {
+            Libro libro = item.getLibro();
+            if (item.getCantidad() > libro.getStock()) {
+                throw new CarritoExcepcion("No hay inventario suficiente de \"" + libro.getTitulo() + "\". Solicitado: "
+                        + item.getCantidad() + ", disponible: " + libro.getStock() + ".");
+            }
+        }
+        List<String> avisos = new ArrayList<>();
+        for (ItemCarrito item : carrito.getItems()) {
+            Libro libro = item.getLibro();
+            try {
+                controlLibro.actualizarLibro(libro.getIsbn(), libro.getTitulo(), libro.getAutor(),
+                        libro.getAnioPublicacion(), libro.getEditorial(), libro.getNumPaginas(), libro.getPrecio(),
+                        libro.getIvaPorcentaje(), libro.getStock() - item.getCantidad(), libro.getFormato());
+            } catch (LibroExcepcion e) {
+                if (!avisos.contains(e.getMessage())) {
+                    avisos.add(e.getMessage());
+                }
+            }
+        }
+        carrito.vaciar();
+        try {
+            guardar();
+        } catch (CarritoExcepcion e) {
+            avisos.add(e.getMessage());
+        }
+        if (!avisos.isEmpty()) {
+            throw new CarritoExcepcion("La compra se finalizó, pero hubo problemas al guardar:\n"
+                    + String.join("\n", avisos));
+        }
     }
 
     @Override

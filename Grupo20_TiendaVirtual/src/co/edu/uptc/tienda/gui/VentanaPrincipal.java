@@ -45,7 +45,7 @@ public class VentanaPrincipal extends JFrame implements ChangeListener {
         List<IPersistenciaCarrito> persistencias = new ArrayList<>();
         persistencias.add(new CarritoBD());
         persistencias.add(new CarritoJson("datos/carrito.json"));
-        IGestionCarrito gestion = new GestionCarrito(new Carrito(), persistencias);
+        IGestionCarrito gestion = new GestionCarrito(new Carrito(), persistencias, controlLibro);
         panelCarrito = new PanelCarrito();
         eventosCarrito = new EventosCarrito(panelCarrito, gestion);
         panelCarrito.setEventos(eventosCarrito);
