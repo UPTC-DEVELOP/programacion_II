@@ -23,4 +23,10 @@ public class RegistroCarrito {
     public int getCantidad() {
         return cantidad;
     }
+    public boolean tieneDatosValidos() {
+    return idCliente != null && !idCliente.trim().isEmpty()
+            && isbn != null && !isbn.trim().isEmpty()
+            && cantidad > 0;
+}
+    
 }
