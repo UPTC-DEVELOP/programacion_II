@@ -17,6 +17,8 @@ public class GestionCarrito implements IGestionCarrito {
     private final Carrito carrito;
     private final List<IPersistenciaCarrito> persistencias;
     private final ControlLibro controlLibro;
+    private final List<RegistroCarrito> otrosClientes = new ArrayList<>();
+    private List<Libro> catalogo = new ArrayList<>();
     private boolean recuperado;
 
     public GestionCarrito(Carrito carrito, List<IPersistenciaCarrito> persistencias, ControlLibro controlLibro) {
@@ -148,9 +150,41 @@ public class GestionCarrito implements IGestionCarrito {
         if (igual) {
             return;
         }
-        List<ItemCarrito> itemsAntes = copiarItems();
+        cargarCliente(idCliente);
+        List<String> avisos = new ArrayList<>();
+        if (revisarItems(avisos)) {
+            try {
+                guardar();
+            } catch (CarritoExcepcion e) {
+                avisos.add(e.getMessage());
+            }
+        }
+        if (!avisos.isEmpty()) {
+            throw new CarritoExcepcion(String.join("\n", avisos));
+        }
+    }
+
+    private void cargarCliente(String idCliente) {
+        if (carrito.getIdCliente() != null) {
+            for (ItemCarrito item : carrito.getItems()) {
+                otrosClientes.add(new RegistroCarrito(carrito.getIdCliente(), item.getLibro().getIsbn(),
+                        item.getCantidad()));
+            }
+        }
+        carrito.vaciar();
         carrito.setIdCliente(idCliente);
-        guardarODeshacer(itemsAntes, actual);
+        if (idCliente == null) {
+            return;
+        }
+        for (RegistroCarrito registro : new ArrayList<>(otrosClientes)) {
+            if (registro.getIdCliente().equals(idCliente)) {
+                otrosClientes.remove(registro);
+                Libro libro = buscarEnCatalogo(catalogo, registro.getIsbn());
+                if (libro != null) {
+                    carrito.agregarItem(new ItemCarrito(libro, registro.getCantidad()));
+                }
+            }
+        }
     }
 
     @Override
@@ -162,11 +196,35 @@ public class GestionCarrito implements IGestionCarrito {
     public List<String> sincronizarConCatalogo(List<Libro> catalogo) throws CarritoExcepcion {
         List<String> avisos = new ArrayList<>();
         boolean cambio = false;
+        this.catalogo = catalogo;
         if (!recuperado && !catalogo.isEmpty()) {
             recuperado = true;
             boolean descartado = recuperar(catalogo, avisos);
-            cambio = descartado || !carrito.estaVacio();
+            cambio = descartado || !carrito.estaVacio() || !otrosClientes.isEmpty();
         }
+        int quitados = otrosClientes.size();
+        otrosClientes.removeIf(registro -> buscarEnCatalogo(catalogo, registro.getIsbn()) == null);
+        quitados -= otrosClientes.size();
+        if (quitados > 0) {
+            avisos.add("De los carritos de otros clientes se quitaron libros que ya no están en el catálogo: "
+                    + quitados + ".");
+            cambio = true;
+        }
+        if (revisarItems(avisos)) {
+            cambio = true;
+        }
+        if (cambio) {
+            try {
+                guardar();
+            } catch (CarritoExcepcion e) {
+                avisos.add(e.getMessage());
+            }
+        }
+        return avisos;
+    }
+
+    private boolean revisarItems(List<String> avisos) {
+        boolean cambio = false;
         for (ItemCarrito item : new ArrayList<>(carrito.getItems())) {
             Libro libro = item.getLibro();
             if (!catalogo.contains(libro)) {
@@ -184,14 +242,7 @@ public class GestionCarrito implements IGestionCarrito {
                 cambio = true;
             }
         }
-        if (cambio) {
-            try {
-                guardar();
-            } catch (CarritoExcepcion e) {
-                avisos.add(e.getMessage());
-            }
-        }
-        return avisos;
+        return cambio;
     }
 
     private List<RegistroCarrito> leerGuardado(List<String> avisos) {
@@ -216,18 +267,30 @@ public class GestionCarrito implements IGestionCarrito {
                 avisos.add("El libro con ISBN " + registro.getIsbn()
                         + " del carrito guardado no está en el catálogo y se descartó.");
                 descartado = true;
-            } else if (registro.getCantidad() <= 0 || carrito.buscarItem(libro.getIsbn()) != null) {
-                avisos.add("Se descartó un registro repetido o sin cantidad del carrito guardado (ISBN "
+            } else if (registro.getIdCliente() == null || registro.getCantidad() <= 0
+                    || buscarRegistro(registro.getIdCliente(), registro.getIsbn()) != null) {
+                avisos.add("Se descartó un registro repetido, sin cliente o sin cantidad del carrito guardado (ISBN "
                         + registro.getIsbn() + ").");
                 descartado = true;
             } else {
-                if (carrito.estaVacio()) {
-                    carrito.setIdCliente(registro.getIdCliente());
-                }
-                carrito.agregarItem(new ItemCarrito(libro, registro.getCantidad()));
+                otrosClientes.add(registro);
             }
         }
+        if (!otrosClientes.isEmpty()) {
+            String idCliente = carrito.getIdCliente();
+            carrito.setIdCliente(null);
+            cargarCliente(idCliente != null ? idCliente : otrosClientes.get(0).getIdCliente());
+        }
         return descartado;
+    }
+
+    private RegistroCarrito buscarRegistro(String idCliente, String isbn) {
+        for (RegistroCarrito registro : otrosClientes) {
+            if (registro.getIdCliente().equals(idCliente) && registro.getIsbn().equals(isbn)) {
+                return registro;
+            }
+        }
+        return null;
     }
 
     private Libro buscarEnCatalogo(List<Libro> catalogo, String isbn) {
@@ -276,9 +339,12 @@ public class GestionCarrito implements IGestionCarrito {
         if (!recuperado) {
             return errores;
         }
-        List<RegistroCarrito> registros = new ArrayList<>();
-        for (ItemCarrito item : carrito.getItems()) {
-            registros.add(new RegistroCarrito(carrito.getIdCliente(), item.getLibro().getIsbn(), item.getCantidad()));
+        List<RegistroCarrito> registros = new ArrayList<>(otrosClientes);
+        if (carrito.getIdCliente() != null) {
+            for (ItemCarrito item : carrito.getItems()) {
+                registros.add(new RegistroCarrito(carrito.getIdCliente(), item.getLibro().getIsbn(),
+                        item.getCantidad()));
+            }
         }
         for (IPersistenciaCarrito persistencia : persistencias) {
             try {
