@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -67,7 +68,9 @@ public class VentanaPrincipal extends JFrame implements ChangeListener {
 
     public static void main(String[] args) {
 
-        VentanaPrincipal ventana = new VentanaPrincipal();
-        ventana.setVisible(true);
+        SwingUtilities.invokeLater(() -> {
+            VentanaPrincipal ventana = new VentanaPrincipal();
+            ventana.setVisible(true);
+        });
     }
 }
