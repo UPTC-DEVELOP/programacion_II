@@ -60,7 +60,7 @@ public class PanelCliente extends JPanel {
         add(titulo, BorderLayout.NORTH);
 
         JPanel panelFormulario = new JPanel(new GridLayout(6, 2, 8, 8));
-
+// texto que sale en la interfaz de usuario
         panelFormulario.add(new JLabel("Escriba el ID del cliente:"));
         panelFormulario.add(campoId);
 
