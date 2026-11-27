@@ -3,10 +3,24 @@ package co.edu.uptc.caso.estudio.gui;
 import co.edu.uptc.caso.estudio.model.ItemCarrito;
 import co.edu.uptc.caso.estudio.model.enums.MetodoPago;
 import co.edu.uptc.caso.estudio.negocio.dto.PagoDto;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
 public class PanelCarrito extends JPanel {
@@ -15,10 +29,15 @@ public class PanelCarrito extends JPanel {
     private DefaultTableModel modeloTablaCarrito;
     private JTable tablaCarrito;
     private JLabel lblTotalCarrito;
-    private JComboBox<String> cbMetodoPago, cbBanco;
-    private JTextField txtTarjeta, txtExp, txtNequi;
+    private JComboBox<String> cbMetodoPago;
+    private JComboBox<String> cbBanco;
+    private JTextField txtTarjeta;
+    private JTextField txtExp;
+    private JTextField txtNequi;
     private JPasswordField txtCvv;
-    private JPanel panelDatosTarjeta, panelDatosNequi;
+    private JPanel panelDatosTarjeta;
+    private JPanel panelDatosNequi;
+    private JPanel panelPago;
 
     public PanelCarrito(Evento evento) {
         setLayout(new BorderLayout(10, 10));
@@ -30,8 +49,11 @@ public class PanelCarrito extends JPanel {
         String[] columnas = {"ISBN", "Título", "Cantidad", "Precio Unitario", "Subtotal"};
         modeloTablaCarrito = new DefaultTableModel(columnas, 0) {
             private static final long serialVersionUID = 1L;
+
             @Override
-            public boolean isCellEditable(int row, int column) { return false; }
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
         };
         tablaCarrito = new JTable(modeloTablaCarrito);
         tablaCarrito.setAutoCreateRowSorter(true);
@@ -46,14 +68,22 @@ public class PanelCarrito extends JPanel {
         lblTotalCarrito = new JLabel("Total Compra: $0.00", SwingConstants.RIGHT);
         lblTotalCarrito.setFont(new Font("SansSerif", Font.BOLD, 16));
         panelInferior.add(lblTotalCarrito, BorderLayout.NORTH);
+        panelInferior.add(crearPanelPago(evento), BorderLayout.CENTER);
 
-        JPanel panelPago = new JPanel(new BorderLayout(10, 5));
+        add(panelInferior, BorderLayout.SOUTH);
+    }
+
+    private JPanel crearPanelPago(Evento evento) {
+        panelPago = new JPanel(new BorderLayout(10, 5));
         panelPago.setBorder(BorderFactory.createTitledBorder("Pasarela de Pago"));
 
-        JPanel panelCamposPago = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 5));
-
-        cbMetodoPago = new JComboBox<>(new String[]{MetodoPago.TARJETA.getEtiqueta(), MetodoPago.TRANSFERENCIA.getEtiqueta()});
-        cbBanco = new JComboBox<>(new String[]{"Bancolombia", "Davivienda", "Banco de Bogotá", "BBVA"});
+        cbMetodoPago = new JComboBox<>(new String[]{
+            MetodoPago.TARJETA.getEtiqueta(),
+            MetodoPago.TRANSFERENCIA.getEtiqueta()
+        });
+        cbBanco = new JComboBox<>(new String[]{
+            "Bancolombia", "Davivienda", "Banco de Bogotá", "BBVA"
+        });
 
         txtTarjeta = new JTextField(13);
         txtExp = new JTextField(5);
@@ -61,23 +91,28 @@ public class PanelCarrito extends JPanel {
         txtNequi = new JTextField(10);
 
         panelDatosTarjeta = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        panelDatosTarjeta.add(new JLabel("Banco:")); panelDatosTarjeta.add(cbBanco);
-        panelDatosTarjeta.add(new JLabel("Tarjeta:")); panelDatosTarjeta.add(txtTarjeta);
-        panelDatosTarjeta.add(new JLabel("MM/AA:")); panelDatosTarjeta.add(txtExp);
-        panelDatosTarjeta.add(new JLabel("CVV:")); panelDatosTarjeta.add(txtCvv);
+        panelDatosTarjeta.add(new JLabel("Banco:"));
+        panelDatosTarjeta.add(cbBanco);
+        panelDatosTarjeta.add(new JLabel("Tarjeta:"));
+        panelDatosTarjeta.add(txtTarjeta);
+        panelDatosTarjeta.add(new JLabel("MM/AA:"));
+        panelDatosTarjeta.add(txtExp);
+        panelDatosTarjeta.add(new JLabel("CVV:"));
+        panelDatosTarjeta.add(txtCvv);
 
         panelDatosNequi = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        panelDatosNequi.add(new JLabel("Número Nequi:")); panelDatosNequi.add(txtNequi);
+        panelDatosNequi.add(new JLabel("Número Nequi:"));
+        panelDatosNequi.add(txtNequi);
         panelDatosNequi.setVisible(false);
 
-        cbMetodoPago.addActionListener(_ -> {
-            boolean esTarjeta = MetodoPago.TARJETA.getEtiqueta().equals(cbMetodoPago.getSelectedItem());
-            panelDatosTarjeta.setVisible(esTarjeta);
-            panelDatosNequi.setVisible(!esTarjeta);
-            panelPago.revalidate();
-            panelPago.repaint();
+        cbMetodoPago.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                alternarCamposPago();
+            }
         });
 
+        JPanel panelCamposPago = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 5));
         panelCamposPago.add(new JLabel("Método:"));
         panelCamposPago.add(cbMetodoPago);
         panelCamposPago.add(panelDatosTarjeta);
@@ -89,9 +124,15 @@ public class PanelCarrito extends JPanel {
 
         panelPago.add(panelCamposPago, BorderLayout.CENTER);
         panelPago.add(btnFinalizar, BorderLayout.EAST);
+        return panelPago;
+    }
 
-        panelInferior.add(panelPago, BorderLayout.CENTER);
-        add(panelInferior, BorderLayout.SOUTH);
+    private void alternarCamposPago() {
+        boolean esTarjeta = MetodoPago.TARJETA.getEtiqueta().equals(cbMetodoPago.getSelectedItem());
+        panelDatosTarjeta.setVisible(esTarjeta);
+        panelDatosNequi.setVisible(!esTarjeta);
+        panelPago.revalidate();
+        panelPago.repaint();
     }
 
     private JButton crearBoton(String texto, String comando, Evento evento) {
@@ -105,27 +146,40 @@ public class PanelCarrito extends JPanel {
         modeloTablaCarrito.setRowCount(0);
         if (items != null) {
             for (ItemCarrito it : items) {
-                if (it.getLibro() == null) continue;
+                if (it == null || it.getLibro() == null) {
+                    continue;
+                }
+                double precioUnitario = it.getPrecioUnitarioOverride() != null
+                        ? it.getPrecioUnitarioOverride()
+                        : it.getLibro().getPrecioVenta();
                 double subtotal = it.getSubtotalConIva();
                 modeloTablaCarrito.addRow(new Object[]{
-                    it.getLibro().getIsbn(), it.getLibro().getTitulo(),
-                    it.getCantidad(), it.getLibro().getPrecioVenta(), subtotal
+                    it.getLibro().getIsbn(),
+                    it.getLibro().getTitulo(),
+                    it.getCantidad(),
+                    precioUnitario,
+                    subtotal
                 });
             }
         }
         lblTotalCarrito.setText("Total Compra: $" + String.format("%.2f", totalFinal));
     }
-    // convierte la fila de la vista a la del modelo, porque la tabla puede estar ordenada por el usuario
+
+    // Convierte la fila de la vista a la del modelo, porque la tabla puede estar ordenada por el usuario
     public String getIsbnUnicoSeleccionado() {
         int[] filas = tablaCarrito.getSelectedRows();
-        if (filas.length != 1) return null;
+        if (filas.length != 1) {
+            return null;
+        }
         int filaModelo = tablaCarrito.convertRowIndexToModel(filas[0]);
         return (String) modeloTablaCarrito.getValueAt(filaModelo, 0);
     }
 
     public int getCantidadUnicaSeleccionada() {
         int[] filas = tablaCarrito.getSelectedRows();
-        if (filas.length != 1) return 0;
+        if (filas.length != 1) {
+            return 0;
+        }
         int filaModelo = tablaCarrito.convertRowIndexToModel(filas[0]);
         Object val = modeloTablaCarrito.getValueAt(filaModelo, 2);
         return (val instanceof Number) ? ((Number) val).intValue() : 0;
@@ -139,7 +193,8 @@ public class PanelCarrito extends JPanel {
         }
         return isbns;
     }
-    // recoge los campos del formulario; la validación real la hace GestionComprasImpl.registrarPago
+
+    // Recoge los campos del formulario; la validación real la hace GestionComprasImpl.registrarPago
     public PagoDto obtenerDatosPago() {
         return new PagoDto(
             (String) cbMetodoPago.getSelectedItem(),
