@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+// Implementación de reglas de negocio de compras con respaldo MySQL -> JSON y log TXT
 public class GestionComprasImpl implements IGestionCompras {
 
     private static final String ID_CLIENTE_ANONIMO = "anonimo";
@@ -51,16 +52,21 @@ public class GestionComprasImpl implements IGestionCompras {
         this.registradorTxt = registradorTxt;
     }
 
+    // Obtiene el carrito del usuario autenticado priorizando MySQL y respaldando en JSON
     @Override
     public Carrito obtenerCarritoActual() {
-        Cliente logueado = gestionUsuarios.getUsuarioLogueado();
+        Cliente logueado = obtenerUsuarioLogueado();
         if (logueado == null) {
             return new Carrito(ID_CLIENTE_ANONIMO);
         }
 
-        Carrito carrito = repoCarritoMySQL.obtenerCarritoPorCliente(logueado.getId());
+        Carrito carrito = repoCarritoMySQL != null
+                ? repoCarritoMySQL.obtenerCarritoPorCliente(logueado.getId())
+                : null;
         if (carrito == null || carrito.estaVacio()) {
-            Carrito respaldoJson = repoCarritoJson.obtenerCarritoPorCliente(logueado.getId());
+            Carrito respaldoJson = repoCarritoJson != null
+                    ? repoCarritoJson.obtenerCarritoPorCliente(logueado.getId())
+                    : null;
             if (respaldoJson != null && !respaldoJson.estaVacio()) {
                 carrito = respaldoJson;
             }
@@ -72,6 +78,7 @@ public class GestionComprasImpl implements IGestionCompras {
         return carrito;
     }
 
+    // Actualiza referencias de libros del carrito y elimina ítems que ya no existen
     private void refrescarLibrosDelCarrito(Carrito carrito) {
         if (carrito == null || carrito.getItems() == null) {
             return;
@@ -79,9 +86,10 @@ public class GestionComprasImpl implements IGestionCompras {
         Iterator<ItemCarrito> it = carrito.getItems().iterator();
         while (it.hasNext()) {
             ItemCarrito item = it.next();
-            Libro actual = (item != null && item.getLibro() != null)
-                    ? gestionLibros.buscarLibroPorIsbn(item.getLibro().getIsbn())
-                    : null;
+            Libro actual = null;
+            if (item != null && item.getLibro() != null && gestionLibros != null) {
+                actual = gestionLibros.buscarLibroPorIsbn(item.getLibro().getIsbn());
+            }
             if (actual == null) {
                 it.remove();
             } else {
@@ -90,9 +98,10 @@ public class GestionComprasImpl implements IGestionCompras {
         }
     }
 
+    // Agrega un libro al carrito si hay sesión activa y stock suficiente
     @Override
     public void agregarAlCarrito(Libro libro, int cantidad) {
-        if (gestionUsuarios.getUsuarioLogueado() == null || libro == null || cantidad <= 0) {
+        if (obtenerUsuarioLogueado() == null || libro == null || cantidad <= 0) {
             return;
         }
 
@@ -100,21 +109,29 @@ public class GestionComprasImpl implements IGestionCompras {
         ItemCarrito existente = c.buscarItem(libro.getIsbn());
         int cantidadActual = (existente != null) ? existente.getCantidad() : 0;
 
-        Libro libroActualizado = gestionLibros.buscarLibroPorIsbn(libro.getIsbn());
-        int stockDisponible = (libroActualizado != null) ? libroActualizado.getStock() : libro.getStock();
+        Libro libroActualizado = gestionLibros != null
+                ? gestionLibros.buscarLibroPorIsbn(libro.getIsbn())
+                : null;
+        int stockDisponible = (libroActualizado != null)
+                ? libroActualizado.getStock()
+                : libro.getStock();
 
         if (cantidadActual + cantidad > stockDisponible) {
             return;
         }
 
-        c.agregarItem(libro, cantidad);
+        c.agregarItem(libroActualizado != null ? libroActualizado : libro, cantidad);
         sincronizarCarrito(c);
     }
 
+    // Actualiza la cantidad de un ítem validando sesión, cantidad positiva y stock disponible
     @Override
     public String actualizarCantidadCarrito(String isbn, int nuevaCantidad) {
-        if (gestionUsuarios.getUsuarioLogueado() == null) {
+        if (obtenerUsuarioLogueado() == null) {
             return "Debe iniciar sesión primero.";
+        }
+        if (esVacio(isbn)) {
+            return "ISBN inválido.";
         }
         if (nuevaCantidad <= 0) {
             return "La cantidad debe ser mayor a 0.";
@@ -126,7 +143,7 @@ public class GestionComprasImpl implements IGestionCompras {
             return "El libro no se encuentra en el carrito.";
         }
 
-        Libro l = gestionLibros.buscarLibroPorIsbn(isbn);
+        Libro l = gestionLibros != null ? gestionLibros.buscarLibroPorIsbn(isbn) : null;
         if (l != null && nuevaCantidad > l.getStock()) {
             return "Stock insuficiente. Disponible: " + l.getStock();
         }
@@ -136,9 +153,10 @@ public class GestionComprasImpl implements IGestionCompras {
         return null;
     }
 
+    // Elimina los libros indicados del carrito y sincroniza los repositorios
     @Override
     public boolean eliminarDelCarrito(List<String> isbns) {
-        if (gestionUsuarios.getUsuarioLogueado() == null || isbns == null || isbns.isEmpty()) {
+        if (obtenerUsuarioLogueado() == null || isbns == null || isbns.isEmpty()) {
             return false;
         }
 
@@ -150,15 +168,21 @@ public class GestionComprasImpl implements IGestionCompras {
         return eliminado;
     }
 
+    // Vacía el carrito del usuario actual en MySQL y JSON
     @Override
     public void vaciarCarrito() {
-        Cliente logueado = gestionUsuarios.getUsuarioLogueado();
+        Cliente logueado = obtenerUsuarioLogueado();
         if (logueado != null) {
-            repoCarritoMySQL.vaciarCarrito(logueado.getId());
-            repoCarritoJson.vaciarCarrito(logueado.getId());
+            if (repoCarritoMySQL != null) {
+                repoCarritoMySQL.vaciarCarrito(logueado.getId());
+            }
+            if (repoCarritoJson != null) {
+                repoCarritoJson.vaciarCarrito(logueado.getId());
+            }
         }
     }
 
+    // Valida y almacena temporalmente los datos del método de pago seleccionado
     @Override
     public String registrarPago(PagoDto pago) {
         if (pago == null) {
@@ -178,8 +202,9 @@ public class GestionComprasImpl implements IGestionCompras {
         return "Método de pago no válido.";
     }
 
+    // Valida campos, formato y fecha de expiración para pago con tarjeta
     private String validarPagoTarjeta(PagoDto pago) {
-        if (pago.getBanco() == null || pago.getBanco().trim().isEmpty()) {
+        if (esVacio(pago.getBanco())) {
             return "Seleccione un banco.";
         }
         if (pago.getNumeroTarjeta() == null || !pago.getNumeroTarjeta().matches(REGEX_TARJETA)) {
@@ -192,7 +217,9 @@ public class GestionComprasImpl implements IGestionCompras {
             return "Fecha de expiración inválida (MM/AA).";
         }
 
-        YearMonth vencimiento = YearMonth.parse(pago.getExpiracion(), DateTimeFormatter.ofPattern("MM/yy"));
+        YearMonth vencimiento = YearMonth.parse(
+                pago.getExpiracion(),
+                DateTimeFormatter.ofPattern("MM/yy"));
         if (vencimiento.isBefore(YearMonth.now())) {
             return "La tarjeta se encuentra vencida.";
         }
@@ -206,6 +233,7 @@ public class GestionComprasImpl implements IGestionCompras {
         return null;
     }
 
+    // Valida número celular colombiano para pagos vía Nequi
     private String validarPagoTransferencia(PagoDto pago) {
         if (pago.getNumeroNequi() == null || !pago.getNumeroNequi().matches(REGEX_NEQUI)) {
             return "Número de Nequi inválido (10 dígitos empezando por 3).";
@@ -219,9 +247,10 @@ public class GestionComprasImpl implements IGestionCompras {
         return null;
     }
 
+    // Verifica disponibilidad, registra la compra, descuenta stock y limpia el pago temporal
     @Override
     public boolean finalizarCompra() {
-        Cliente logueado = gestionUsuarios.getUsuarioLogueado();
+        Cliente logueado = obtenerUsuarioLogueado();
         if (logueado == null) {
             return false;
         }
@@ -230,23 +259,61 @@ public class GestionComprasImpl implements IGestionCompras {
         if (c == null || c.estaVacio() || datosTransferencia == null) {
             return false;
         }
+        if (!tieneStockSuficiente(c)) {
+            return false;
+        }
 
         String infoPago = datosTransferencia.getBanco();
-        boolean compraMySQL = repoCompraMySQL.registrarCompra(logueado, c, infoPago);
-        boolean compraJson = repoCompraJson.registrarCompra(logueado, c, infoPago);
+        boolean compraMySQL = repoCompraMySQL != null
+                && repoCompraMySQL.registrarCompra(logueado, c, infoPago);
+        boolean compraJson = repoCompraJson != null
+                && repoCompraJson.registrarCompra(logueado, c, infoPago);
 
         this.datosTransferencia = null;
         if (!compraMySQL && !compraJson) {
             return false;
         }
 
+        descontarStockCarrito(c);
         registrarOperacionCompra(logueado, c, infoPago);
         return true;
     }
 
+    // Comprueba que cada ítem del carrito tenga stock disponible antes de confirmar la compra
+    private boolean tieneStockSuficiente(Carrito carrito) {
+        if (carrito == null || carrito.getItems() == null) {
+            return false;
+        }
+        for (ItemCarrito item : carrito.getItems()) {
+            if (item == null || item.getLibro() == null || item.getCantidad() <= 0) {
+                return false;
+            }
+            Libro actual = gestionLibros != null
+                    ? gestionLibros.buscarLibroPorIsbn(item.getLibro().getIsbn())
+                    : item.getLibro();
+            if (actual == null || actual.getStock() < item.getCantidad()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Descuenta del inventario la cantidad comprada de cada libro
+    private void descontarStockCarrito(Carrito carrito) {
+        if (gestionLibros == null || carrito == null || carrito.getItems() == null) {
+            return;
+        }
+        for (ItemCarrito item : carrito.getItems()) {
+            if (item != null && item.getLibro() != null && item.getCantidad() > 0) {
+                gestionLibros.ajustarStock(item.getLibro().getIsbn(), -item.getCantidad());
+            }
+        }
+    }
+
+    // Calcula el total final a pagar aplicando el descuento del cliente autenticado
     @Override
     public double calcularTotalFinal() {
-        Cliente logueado = gestionUsuarios.getUsuarioLogueado();
+        Cliente logueado = obtenerUsuarioLogueado();
         Carrito carrito = obtenerCarritoActual();
         if (carrito == null || carrito.estaVacio()) {
             return 0.0;
@@ -254,15 +321,21 @@ public class GestionComprasImpl implements IGestionCompras {
         return carrito.calcularTotalFinal(logueado);
     }
 
+    // Consulta el historial de compras del usuario autenticado con respaldo en JSON
+    @Override
     public List<Compra> obtenerHistorialCompras() {
-        Cliente logueado = gestionUsuarios.getUsuarioLogueado();
-        if (logueado == null || logueado.getId() == null) {
+        Cliente logueado = obtenerUsuarioLogueado();
+        if (logueado == null || esVacio(logueado.getId())) {
             return new ArrayList<>();
         }
 
-        List<Compra> compras = repoCompraMySQL.obtenerComprasPorCliente(logueado.getId());
+        List<Compra> compras = repoCompraMySQL != null
+                ? repoCompraMySQL.obtenerComprasPorCliente(logueado.getId())
+                : null;
         if (compras == null || compras.isEmpty()) {
-            List<Compra> respaldoJson = repoCompraJson.obtenerComprasPorCliente(logueado.getId());
+            List<Compra> respaldoJson = repoCompraJson != null
+                    ? repoCompraJson.obtenerComprasPorCliente(logueado.getId())
+                    : null;
             if (respaldoJson != null) {
                 return respaldoJson;
             }
@@ -270,15 +343,21 @@ public class GestionComprasImpl implements IGestionCompras {
         return compras != null ? compras : new ArrayList<>();
     }
 
+    // Persiste el estado actual del carrito en MySQL y JSON
     private void sincronizarCarrito(Carrito carrito) {
-        Cliente logueado = gestionUsuarios.getUsuarioLogueado();
+        Cliente logueado = obtenerUsuarioLogueado();
         if (logueado == null || carrito == null) {
             return;
         }
-        repoCarritoMySQL.guardarCarrito(carrito);
-        repoCarritoJson.guardarCarrito(carrito);
+        if (repoCarritoMySQL != null) {
+            repoCarritoMySQL.guardarCarrito(carrito);
+        }
+        if (repoCarritoJson != null) {
+            repoCarritoJson.guardarCarrito(carrito);
+        }
     }
 
+    // Registra en el archivo TXT un resumen de la compra realizada
     private void registrarOperacionCompra(Cliente cliente, Carrito carrito, String metodoPago) {
         if (registradorTxt != null) {
             registradorTxt.registrar(
@@ -286,5 +365,13 @@ public class GestionComprasImpl implements IGestionCompras {
                     + " | Metodo: " + metodoPago
                     + " | Total: " + String.format("%.2f", carrito.calcularTotalFinal(cliente)));
         }
+    }
+
+    private Cliente obtenerUsuarioLogueado() {
+        return gestionUsuarios != null ? gestionUsuarios.getUsuarioLogueado() : null;
+    }
+
+    private boolean esVacio(String texto) {
+        return texto == null || texto.trim().isEmpty();
     }
 }
