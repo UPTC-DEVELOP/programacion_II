@@ -12,6 +12,7 @@ public class ConexionBD {
 	private static final String USUARIO = "root";
 	private static final String CLAVE = "";
 
+
 	private ConexionBD() {
 	}
 

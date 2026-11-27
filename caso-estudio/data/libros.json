@@ -1,20 +1,8 @@
 [
   {
-    "isbn": "10-20-30",
-    "tituloLibro": "cien años de soledad",
-    "autor": "Gabriel garcia marquez",
-    "fechaPublicacion": 2025,
-    "categoria": "Novela",
-    "editorial": "america",
-    "paginas": 200,
-    "precioVenta": 50000.0,
-    "cantidadDisponible": 10,
-    "formato": "fisico"
-  },
-  {
     "isbn": "20-30-40",
-    "tituloLibro": "El peofesor",
-    "autor": "jhon",
+    "tituloLibro": "El Profesor",
+    "autor": "Jhon Katzenbach",
     "fechaPublicacion": 2020,
     "categoria": "Novela",
     "editorial": "paramerica",
@@ -24,15 +12,63 @@
     "formato": "fisico"
   },
   {
-    "isbn": "SB-10-30A",
-    "tituloLibro": "PERSONAS DESCONOCIDAS",
-    "autor": "JHON",
-    "fechaPublicacion": 2015,
+    "isbn": "9789585118591",
+    "tituloLibro": "Satanás",
+    "autor": "Mario Mendoza",
+    "fechaPublicacion": 2002,
     "categoria": "Novela",
-    "editorial": "IBANEZ",
-    "paginas": 540,
+    "editorial": "Planeta",
+    "paginas": 288,
+    "precioVenta": 48000.0,
+    "cantidadDisponible": 10,
+    "formato": "fisico"
+  },
+  {
+    "isbn": "10-10-20s",
+    "tituloLibro": "PERSONAS DESCONOCIDAS",
+    "autor": "JOHN KATSENBACH",
+    "fechaPublicacion": 2016,
+    "categoria": "Cienciaficcion",
+    "editorial": "GEMINIS SAS",
+    "paginas": 478,
     "precioVenta": 55000.0,
-    "cantidadDisponible": 20,
+    "cantidadDisponible": 10,
+    "formato": "fisico"
+  },
+  {
+    "isbn": "20-21-14s",
+    "tituloLibro": "EL PRINCIPITO",
+    "autor": "Antoine de Saint-Exupéry",
+    "fechaPublicacion": 1900,
+    "categoria": "Novela",
+    "editorial": "Éditions Gallimard",
+    "paginas": 110,
+    "precioVenta": 55000.0,
+    "cantidadDisponible": 10,
+    "formato": "fisico"
+  },
+  {
+    "isbn": "55555-1",
+    "tituloLibro": "EL TUNEL",
+    "autor": "ERNESTO SABATO",
+    "fechaPublicacion": 1948,
+    "categoria": "Novela",
+    "editorial": "SUR",
+    "paginas": 180,
+    "precioVenta": 40000.0,
+    "cantidadDisponible": 15,
+    "formato": "fisico"
+  },
+  {
+    "isbn": "9788441532106",
+    "tituloLibro": "Código Limpio",
+    "autor": "Robert C. Martin",
+    "fechaPublicacion": 2012,
+    "categoria": "Novela",
+    "editorial": "Anaya Multimedia",
+    "paginas": 464,
+    "precioVenta": 145000.0,
+    "cantidadDisponible": 8,
     "formato": "fisico"
   }
 ]

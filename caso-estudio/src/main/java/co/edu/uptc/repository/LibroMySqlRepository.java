@@ -1,6 +1,5 @@
 package co.edu.uptc.repository;
 
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

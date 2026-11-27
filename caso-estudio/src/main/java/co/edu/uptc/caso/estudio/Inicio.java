@@ -1,5 +1,6 @@
 package co.edu.uptc.caso.estudio;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import co.edu.uptc.controller.ClienteControlador;
 import co.edu.uptc.controller.Evento;
@@ -8,7 +9,9 @@ import co.edu.uptc.controller.SesionControlador;
 import co.edu.uptc.gui.VentanaPrincipal;
 import co.edu.uptc.interfaces.IGestionCliente;
 import co.edu.uptc.interfaces.ILibreria;
+import co.edu.uptc.interfaces.ILibroRepositorio;
 import co.edu.uptc.repository.ClienteBD;
+import co.edu.uptc.repository.LibroDobleRepositorio;
 import co.edu.uptc.repository.LibroJsonRepositorio;
 import co.edu.uptc.repository.LibroMySqlRepository;
 import co.edu.uptc.repository.LocalLibro;
@@ -20,7 +23,16 @@ public class Inicio {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-        	ILibreria libreria = new Libreria(new LibroMySqlRepository());
+        	//ILibreria libreria = new Libreria(new LibroMySqlRepository());
+        	//ILibreria libreria = new Libreria(new LibroJsonRepositorio("data/libros.json"));
+        	
+        	ILibroRepositorio repositorio = new LibroDobleRepositorio(
+        	        new LibroMySqlRepository(),
+        	        new LibroJsonRepositorio("data/libros.json"));
+
+        	ILibreria libreria = new Libreria(repositorio);
+        	
+        	
         	IGestionCliente gestionCliente = new GestionCliente(new ClienteBD());
 
             Evento evento = new Evento();
