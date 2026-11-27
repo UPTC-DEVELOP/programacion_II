@@ -1,6 +1,7 @@
 package co.edu.uptc.caso.estudio.model;
 
 public class Cliente {
+
     private String id;
     private String nombreCompleto;
     private String correo;
@@ -12,9 +13,11 @@ public class Cliente {
     private double porcentajeDescuento;
     private String contrasenaHash;
 
-    public Cliente() {}
+    public Cliente() {
+    }
 
-    public Cliente(String id, String nombreCompleto, String correo, String direccionEnvio, String telefono, String tipoCliente) {
+    public Cliente(String id, String nombreCompleto, String correo, String direccionEnvio,
+                   String telefono, String tipoCliente) {
         this(id, nombreCompleto, correo, direccionEnvio, "", "", telefono, tipoCliente);
     }
 
@@ -33,27 +36,93 @@ public class Cliente {
 
     // Método polimórfico (LSP / OCP): cada subclase define su propio descuento
     public double calcularDescuento(double totalCompra) {
+        // Evita aplicar descuentos sobre montos nulos, cero o negativos
+        if (totalCompra <= 0.0 || porcentajeDescuento <= 0.0) {
+            return 0.0;
+        }
         return totalCompra * getPorcentajeDescuento();
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-    public String getNombreCompleto() { return nombreCompleto; }
-    public void setNombreCompleto(String nombreCompleto) { this.nombreCompleto = nombreCompleto; }
-    public String getCorreo() { return correo; }
-    public void setCorreo(String correo) { this.correo = correo; }
-    public String getDireccionEnvio() { return direccionEnvio; }
-    public void setDireccionEnvio(String direccionEnvio) { this.direccionEnvio = direccionEnvio; }
-    public String getDepartamento() { return departamento == null ? "" : departamento; }
-    public void setDepartamento(String departamento) { this.departamento = departamento; }
-    public String getCiudad() { return ciudad == null ? "" : ciudad; }
-    public void setCiudad(String ciudad) { this.ciudad = ciudad; }
-    public String getTelefono() { return telefono; }
-    public void setTelefono(String telefono) { this.telefono = telefono; }
-    public String getTipoCliente() { return tipoCliente; }
-    public void setTipoCliente(String tipoCliente) { this.tipoCliente = tipoCliente; }
-    public double getPorcentajeDescuento() { return porcentajeDescuento; }
-    protected void setPorcentajeDescuento(double porcentajeDescuento) { this.porcentajeDescuento = porcentajeDescuento; }
-    public String getContrasenaHash() { return contrasenaHash; }
-    public void setContrasenaHash(String contrasenaHash) { this.contrasenaHash = contrasenaHash; }
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getNombreCompleto() {
+        return nombreCompleto;
+    }
+
+    public void setNombreCompleto(String nombreCompleto) {
+        this.nombreCompleto = nombreCompleto;
+    }
+
+    public String getCorreo() {
+        return correo;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
+    public String getDireccionEnvio() {
+        return direccionEnvio;
+    }
+
+    public void setDireccionEnvio(String direccionEnvio) {
+        this.direccionEnvio = direccionEnvio;
+    }
+
+    // Retorna cadena vacía si el departamento es nulo para evitar fallos en la GUI
+    public String getDepartamento() {
+        return departamento == null ? "" : departamento;
+    }
+
+    public void setDepartamento(String departamento) {
+        this.departamento = departamento;
+    }
+
+    // Retorna cadena vacía si la ciudad es nula para evitar fallos en la GUI
+    public String getCiudad() {
+        return ciudad == null ? "" : ciudad;
+    }
+
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getTipoCliente() {
+        return tipoCliente;
+    }
+
+    public void setTipoCliente(String tipoCliente) {
+        this.tipoCliente = tipoCliente;
+    }
+
+    public double getPorcentajeDescuento() {
+        return porcentajeDescuento;
+    }
+
+    // Protegido para que solo la clase y sus subclases ajusten el porcentaje de descuento
+    protected void setPorcentajeDescuento(double porcentajeDescuento) {
+        this.porcentajeDescuento = porcentajeDescuento;
+    }
+
+    public String getContrasenaHash() {
+        return contrasenaHash;
+    }
+
+    public void setContrasenaHash(String contrasenaHash) {
+        this.contrasenaHash = contrasenaHash;
+    }
 }

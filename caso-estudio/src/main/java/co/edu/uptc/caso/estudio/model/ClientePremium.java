@@ -2,6 +2,7 @@ package co.edu.uptc.caso.estudio.model;
 
 public class ClientePremium extends Cliente {
 
+    // Porcentaje de descuento fijo (10 %) para clientes con membresía premium
     private static final double DESCUENTO_PREMIUM = 0.10;
 
     public ClientePremium() {
@@ -15,8 +16,12 @@ public class ClientePremium extends Cliente {
         setPorcentajeDescuento(DESCUENTO_PREMIUM);
     }
 
+    // Aplica el descuento premium únicamente sobre compras con total positivo
     @Override
     public double calcularDescuento(double totalCompra) {
+        if (totalCompra <= 0.0) {
+            return 0.0;
+        }
         return totalCompra * DESCUENTO_PREMIUM;
     }
 }

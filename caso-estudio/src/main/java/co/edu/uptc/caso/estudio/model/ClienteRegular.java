@@ -13,6 +13,7 @@ public class ClienteRegular extends Cliente {
         setPorcentajeDescuento(0.0);
     }
 
+    // Los clientes regulares no tienen descuento porcentual adicional
     @Override
     public double calcularDescuento(double totalCompra) {
         return 0.0;
