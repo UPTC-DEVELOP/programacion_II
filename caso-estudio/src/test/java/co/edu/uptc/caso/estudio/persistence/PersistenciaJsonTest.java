@@ -5,8 +5,11 @@ import co.edu.uptc.caso.estudio.model.FabricaClientes;
 import co.edu.uptc.caso.estudio.model.Libro;
 import com.google.gson.reflect.TypeToken;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import junit.framework.TestCase;
@@ -38,8 +41,10 @@ public class PersistenciaJsonTest extends TestCase {
 
     // Verifica que leer un archivo inexistente o vacio devuelva una lista vacia sin fallar
     public void testLeerArchivoInexistenteOVacioRetornaListaVacia() {
-        Type tipoListaLibros = new TypeToken<List<Libro>>() {}.getType();
-        ManejadorArchivoJson<Libro> manejador = new ManejadorArchivoJson<>(archivoTempLibros.getAbsolutePath(), tipoListaLibros);
+        Type tipoListaLibros = new TypeToken<List<Libro>>() {
+        }.getType();
+        ManejadorArchivoJson<Libro> manejador = new ManejadorArchivoJson<>(
+                archivoTempLibros.getAbsolutePath(), tipoListaLibros);
 
         List<Libro> resultado = manejador.leerLista();
         assertNotNull("La lista retornada nunca debe ser null", resultado);
@@ -47,14 +52,17 @@ public class PersistenciaJsonTest extends TestCase {
 
         // Probamos tambien con una ruta que aun no existe en disco
         File noExiste = new File(archivoTempLibros.getParent(), "no_existe_" + System.nanoTime() + ".json");
-        ManejadorArchivoJson<Libro> manejadorInexistente = new ManejadorArchivoJson<>(noExiste.getAbsolutePath(), tipoListaLibros);
+        ManejadorArchivoJson<Libro> manejadorInexistente = new ManejadorArchivoJson<>(
+                noExiste.getAbsolutePath(), tipoListaLibros);
         assertTrue("Una ruta inexistente debe devolver lista vacia", manejadorInexistente.leerLista().isEmpty());
     }
 
     // Comprueba que los libros guardados en JSON se recuperen con todos sus atributos intactos
     public void testGuardarYLeerListaLibrosJson() {
-        Type tipoListaLibros = new TypeToken<List<Libro>>() {}.getType();
-        ManejadorArchivoJson<Libro> manejador = new ManejadorArchivoJson<>(archivoTempLibros.getAbsolutePath(), tipoListaLibros);
+        Type tipoListaLibros = new TypeToken<List<Libro>>() {
+        }.getType();
+        ManejadorArchivoJson<Libro> manejador = new ManejadorArchivoJson<>(
+                archivoTempLibros.getAbsolutePath(), tipoListaLibros);
 
         Libro l1 = new Libro("978-10", "Cien Anos de Soledad", "Gabriel Garcia Marquez", 1967,
                 "Novela", "Sudamericana", 471, 65000, 12, "Físico", 19);
@@ -73,8 +81,10 @@ public class PersistenciaJsonTest extends TestCase {
 
     // Valida la serializacion de clientes incluyendo adaptadores de LocalDate/LocalDateTime
     public void testGuardarYLeerListaClientesJson() {
-        Type tipoListaClientes = new TypeToken<List<Cliente>>() {}.getType();
-        ManejadorArchivoJson<Cliente> manejador = new ManejadorArchivoJson<>(archivoTempClientes.getAbsolutePath(), tipoListaClientes);
+        Type tipoListaClientes = new TypeToken<List<Cliente>>() {
+        }.getType();
+        ManejadorArchivoJson<Cliente> manejador = new ManejadorArchivoJson<>(
+                archivoTempClientes.getAbsolutePath(), tipoListaClientes);
 
         Cliente c1 = FabricaClientes.crear("2001", "Camila Ortiz", "camila@uptc.edu.co",
                 "Calle 18 # 9-10", "Boyaca", "Tunja", "3112223344", "PREMIUM", "claveSegura1");
@@ -89,12 +99,15 @@ public class PersistenciaJsonTest extends TestCase {
 
     // Asegura que si el archivo JSON esta corrupto el manejador no rompa la aplicacion
     public void testArchivoJsonCorruptoReiniciaListaVacia() throws Exception {
-        try (FileWriter writer = new FileWriter(archivoTempLibros)) {
+        try (Writer writer = new OutputStreamWriter(
+                new FileOutputStream(archivoTempLibros), StandardCharsets.UTF_8)) {
             writer.write("{ json_invalido_sin_cerrar: [ 1, 2, ");
         }
 
-        Type tipoListaLibros = new TypeToken<List<Libro>>() {}.getType();
-        ManejadorArchivoJson<Libro> manejador = new ManejadorArchivoJson<>(archivoTempLibros.getAbsolutePath(), tipoListaLibros);
+        Type tipoListaLibros = new TypeToken<List<Libro>>() {
+        }.getType();
+        ManejadorArchivoJson<Libro> manejador = new ManejadorArchivoJson<>(
+                archivoTempLibros.getAbsolutePath(), tipoListaLibros);
 
         List<Libro> resultado = manejador.leerLista();
         assertNotNull("Ante un JSON corrupto no debe retornar null", resultado);

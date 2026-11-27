@@ -58,6 +58,7 @@ public class GestionLibrosTest extends TestCase {
 
         assertNull("La actualizacion valida no debe retornar error", error);
         Libro actualizado = gestionLibros.buscarLibroPorIsbn("978-5");
+        assertNotNull("Debe encontrar el libro actualizado", actualizado);
         assertEquals(145000.0, actualizado.getPrecioVenta(), 0.01);
         assertEquals(12, actualizado.getStock());
     }
@@ -69,17 +70,23 @@ public class GestionLibrosTest extends TestCase {
         gestionLibros.registrarLibro(libro);
 
         gestionLibros.ajustarStock("978-3", -3);
-        assertEquals(5, gestionLibros.buscarLibroPorIsbn("978-3").getStock());
+        Libro trasPrimerAjuste = gestionLibros.buscarLibroPorIsbn("978-3");
+        assertNotNull("Debe existir el libro tras restar 3 unidades", trasPrimerAjuste);
+        assertEquals(5, trasPrimerAjuste.getStock());
 
         // No debe bajar de 0 aunque se resten mas unidades de las disponibles
         gestionLibros.ajustarStock("978-3", -20);
-        assertEquals(0, gestionLibros.buscarLibroPorIsbn("978-3").getStock());
+        Libro trasSegundoAjuste = gestionLibros.buscarLibroPorIsbn("978-3");
+        assertNotNull("Debe existir el libro tras restar 20 unidades", trasSegundoAjuste);
+        assertEquals(0, trasSegundoAjuste.getStock());
     }
 
     // Verifica que al listar el catalogo devuelva todos los libros registrados
     public void testListarCatalogoLibros() {
-        gestionLibros.registrarLibro(new Libro("978-6", "Libro A", "Autor A", 2021, "Ficcion", "Ed", 150, 50000, 3, "Digital", 5));
-        gestionLibros.registrarLibro(new Libro("978-7", "Libro B", "Autor B", 2022, "Historia", "Ed", 220, 70000, 5, "Físico", 19));
+        gestionLibros.registrarLibro(new Libro("978-6", "Libro A", "Autor A", 2021,
+                "Ficcion", "Ed", 150, 50000, 3, "Digital", 5));
+        gestionLibros.registrarLibro(new Libro("978-7", "Libro B", "Autor B", 2022,
+                "Historia", "Ed", 220, 70000, 5, "Físico", 19));
 
         List<Libro> catalogo = gestionLibros.listarLibros();
         assertEquals("El catalogo debe tener exactamente 2 libros", 2, catalogo.size());
@@ -107,7 +114,9 @@ public class GestionLibrosTest extends TestCase {
 
         @Override
         public boolean actualizarLibro(Libro libro) {
-            if (!libros.containsKey(libro.getIsbn())) return false;
+            if (!libros.containsKey(libro.getIsbn())) {
+                return false;
+            }
             libros.put(libro.getIsbn(), libro);
             return true;
         }

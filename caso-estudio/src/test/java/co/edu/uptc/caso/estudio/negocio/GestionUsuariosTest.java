@@ -35,8 +35,7 @@ public class GestionUsuariosTest extends TestCase {
         Cliente cliente = FabricaClientes.crear(
                 "1001", "Laura Gomez", "laura@uptc.edu.co",
                 "Calle 10 # 4-20", "Boyaca", "Tunja", "3101234567",
-                "REGULAR", "clave123"
-        );
+                "REGULAR", "clave123");
 
         String error = gestionUsuarios.registrarCliente(cliente);
         assertNull("No deberia retornar error al registrar un cliente valido", error);
@@ -46,8 +45,10 @@ public class GestionUsuariosTest extends TestCase {
 
     // Comprueba que el sistema rechace el registro si el correo ya existe
     public void testNoPermiteRegistrarCorreoDuplicado() {
-        Cliente c1 = FabricaClientes.crear("1001", "Laura", "laura@uptc.edu.co", "Dir 1", "Boyaca", "Tunja", "3101234567", "REGULAR", "clave123");
-        Cliente c2 = FabricaClientes.crear("1002", "Pedro", "laura@uptc.edu.co", "Dir 2", "Boyaca", "Tunja", "3107654321", "REGULAR", "clave456");
+        Cliente c1 = FabricaClientes.crear("1001", "Laura", "laura@uptc.edu.co", "Dir 1",
+                "Boyaca", "Tunja", "3101234567", "REGULAR", "clave123");
+        Cliente c2 = FabricaClientes.crear("1002", "Pedro", "laura@uptc.edu.co", "Dir 2",
+                "Boyaca", "Tunja", "3107654321", "REGULAR", "clave456");
 
         gestionUsuarios.registrarCliente(c1);
         String error = gestionUsuarios.registrarCliente(c2);
@@ -58,25 +59,29 @@ public class GestionUsuariosTest extends TestCase {
 
     // Valida que no deje registrar usuarios con contrasenas cortas
     public void testValidacionContrasenaCorta() {
-        Cliente c = FabricaClientes.crear("1003", "Ana", "ana@uptc.edu.co", "Dir 1", "Boyaca", "Tunja", "3101234567", "REGULAR", "123");
+        Cliente c = FabricaClientes.crear("1003", "Ana", "ana@uptc.edu.co", "Dir 1",
+                "Boyaca", "Tunja", "3101234567", "REGULAR", "123");
         String error = gestionUsuarios.registrarCliente(c);
         assertNotNull("Debe rechazar contrasenas menores a 4 caracteres", error);
     }
 
     // Revisa que el login funcione con credenciales correctas y cargue el usuario activo
     public void testInicioSesionExitoso() {
-        Cliente c = FabricaClientes.crear("1004", "Carlos", "carlos@uptc.edu.co", "Dir 1", "Boyaca", "Tunja", "3101234567", "PREMIUM", "segura99");
+        Cliente c = FabricaClientes.crear("1004", "Carlos", "carlos@uptc.edu.co", "Dir 1",
+                "Boyaca", "Tunja", "3101234567", "PREMIUM", "segura99");
         gestionUsuarios.registrarCliente(c);
 
         boolean okLogin = gestionUsuarios.iniciarSesion(new CredencialDto("carlos@uptc.edu.co", "segura99"));
         assertTrue("El login valido debe retornar true", okLogin);
-        assertNotNull("Debe haber un usuario logueado", gestionUsuarios.getUsuarioLogueado());
-        assertEquals("1004", gestionUsuarios.getUsuarioLogueado().getId());
+        Cliente logueado = gestionUsuarios.getUsuarioLogueado();
+        assertNotNull("Debe haber un usuario logueado", logueado);
+        assertEquals("1004", logueado.getId());
     }
 
     // Asegura que el inicio de sesion falle cuando la contrasena no coincide
     public void testInicioSesionContrasenaIncorrecta() {
-        Cliente c = FabricaClientes.crear("1005", "Marta", "marta@uptc.edu.co", "Dir 1", "Boyaca", "Tunja", "3101234567", "REGULAR", "claveOk");
+        Cliente c = FabricaClientes.crear("1005", "Marta", "marta@uptc.edu.co", "Dir 1",
+                "Boyaca", "Tunja", "3101234567", "REGULAR", "claveOk");
         gestionUsuarios.registrarCliente(c);
 
         boolean okLogin = gestionUsuarios.iniciarSesion(new CredencialDto("marta@uptc.edu.co", "claveMala"));
@@ -86,7 +91,8 @@ public class GestionUsuariosTest extends TestCase {
 
     // Verifica que al cerrar sesion el usuario activo vuelva a quedar en null
     public void testCerrarSesionLimpiaUsuarioActivo() {
-        Cliente c = FabricaClientes.crear("1006", "Diego", "diego@uptc.edu.co", "Dir 1", "Boyaca", "Tunja", "3109876543", "REGULAR", "clave123");
+        Cliente c = FabricaClientes.crear("1006", "Diego", "diego@uptc.edu.co", "Dir 1",
+                "Boyaca", "Tunja", "3109876543", "REGULAR", "clave123");
         gestionUsuarios.registrarCliente(c);
         gestionUsuarios.iniciarSesion(new CredencialDto("diego@uptc.edu.co", "clave123"));
 
@@ -106,25 +112,62 @@ public class GestionUsuariosTest extends TestCase {
     private static class RepoUsuarioMemoria implements IRepositorioUsuario {
         private final Map<String, Cliente> datos = new HashMap<>();
 
-        @Override public boolean guardarUsuario(Cliente cliente) { datos.put(cliente.getId(), cliente); return true; }
-        @Override public boolean actualizarUsuario(Cliente cliente) { datos.put(cliente.getId(), cliente); return true; }
-        @Override public boolean eliminarUsuario(String id) { return datos.remove(id) != null; }
-        @Override public Cliente buscarPorCorreo(String correo) {
+        @Override
+        public boolean guardarUsuario(Cliente cliente) {
+            datos.put(cliente.getId(), cliente);
+            return true;
+        }
+
+        @Override
+        public boolean actualizarUsuario(Cliente cliente) {
+            datos.put(cliente.getId(), cliente);
+            return true;
+        }
+
+        @Override
+        public boolean eliminarUsuario(String id) {
+            return datos.remove(id) != null;
+        }
+
+        @Override
+        public Cliente buscarPorCorreo(String correo) {
             for (Cliente c : datos.values()) {
-                if (c.getCorreo().equalsIgnoreCase(correo)) return c;
+                if (c.getCorreo().equalsIgnoreCase(correo)) {
+                    return c;
+                }
             }
             return null;
         }
-        @Override public Cliente buscarPorId(String id) { return datos.get(id); }
-        @Override public List<Cliente> obtenerTodos() { return new ArrayList<>(datos.values()); }
+
+        @Override
+        public Cliente buscarPorId(String id) {
+            return datos.get(id);
+        }
+
+        @Override
+        public List<Cliente> obtenerTodos() {
+            return new ArrayList<>(datos.values());
+        }
     }
 
     // Simula el almacenamiento de carritos en memoria
     private static class RepoCarritoMemoria implements IRepositorioCarrito {
         private final Map<String, Carrito> carritos = new HashMap<>();
 
-        @Override public Carrito obtenerCarritoPorCliente(String clienteId) { return carritos.get(clienteId); }
-        @Override public boolean guardarCarrito(Carrito carrito) { carritos.put(carrito.getClienteId(), carrito); return true; }
-        @Override public boolean vaciarCarrito(String clienteId) { carritos.remove(clienteId); return true; }
+        @Override
+        public Carrito obtenerCarritoPorCliente(String clienteId) {
+            return carritos.get(clienteId);
+        }
+
+        @Override
+        public boolean guardarCarrito(Carrito carrito) {
+            carritos.put(carrito.getClienteId(), carrito);
+            return true;
+        }
+
+        @Override
+        public boolean vaciarCarrito(String clienteId) {
+            return carritos.remove(clienteId) != null;
+        }
     }
 }

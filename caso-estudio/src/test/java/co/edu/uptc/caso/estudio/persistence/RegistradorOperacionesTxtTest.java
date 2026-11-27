@@ -1,6 +1,7 @@
 package co.edu.uptc.caso.estudio.persistence;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import junit.framework.TestCase;
@@ -29,7 +30,7 @@ public class RegistradorOperacionesTxtTest extends TestCase {
         RegistradorOperacionesTxt registrador = new RegistradorOperacionesTxt(archivoLogTemp.getAbsolutePath());
         registrador.registrar("LOGIN: Usuario diego@uptc.edu.co inicio sesion");
 
-        List<String> lineas = Files.readAllLines(archivoLogTemp.toPath());
+        List<String> lineas = Files.readAllLines(archivoLogTemp.toPath(), StandardCharsets.UTF_8);
         assertEquals("Debe haber exactamente 1 linea registrada", 1, lineas.size());
         assertTrue("La linea debe iniciar con corchete de marca de tiempo", lineas.get(0).startsWith("["));
         assertTrue("La linea debe contener el mensaje registrado",
@@ -42,7 +43,7 @@ public class RegistradorOperacionesTxtTest extends TestCase {
         registrador.registrar("LIBRO: Registrado ISBN 978-10");
         registrador.registrar("COMPRA: Factura generada por $65000");
 
-        List<String> lineas = Files.readAllLines(archivoLogTemp.toPath());
+        List<String> lineas = Files.readAllLines(archivoLogTemp.toPath(), StandardCharsets.UTF_8);
         assertEquals("Debe conservar ambas lineas registradas", 2, lineas.size());
         assertTrue(lineas.get(0).contains("978-10"));
         assertTrue(lineas.get(1).contains("Factura generada"));
