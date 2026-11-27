@@ -24,3 +24,9 @@ hs_err_pid*
 replay_pid*
 /bin/
 /target/
+
+# Datos de acceso locales (nunca subir a Git)
+config.properties
+
+# Persistencia local de pruebas
+libros.json

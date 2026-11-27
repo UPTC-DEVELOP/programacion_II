@@ -8,10 +8,10 @@ public class LibroFrame extends JFrame {
  private final JTable tabla=new JTable(m);
  public LibroFrame(LibroController c){this.c=c;setTitle("Tienda Virtual - CRUD Libros");setDefaultCloseOperation(EXIT_ON_CLOSE);setSize(1200,680);setLocationRelativeTo(null);build();listar();}
  private void build(){
-  JPanel root=new JPanel(new BorderLayout(8,8));root.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));JLabel h=new JLabel("CRUD DE LIBROS",SwingConstants.CENTER);h.setFont(new Font("Arial",Font.BOLD,22));root.add(h,BorderLayout.NORTH);
+  JPanel root=new JPanel(new BorderLayout(8,8));root.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));JLabel h=new JLabel("CRUD DE LIBROS",SwingConstants.CENTER);h.setFont(new Font("Arial",Font.BOLD,22));
   JPanel f=new JPanel(new GridLayout(6,4,6,6));f.setBorder(BorderFactory.createTitledBorder("Datos del libro"));
   add(f,"ISBN",isbn);add(f,"Título",titulo);add(f,"Autor",autor);add(f,"Año",anio);add(f,"Categoría",cat);add(f,"Editorial",edit);add(f,"Páginas",pag);add(f,"Precio",precio);add(f,"Stock",stock);add(f,"Formato",formato);add(f,"IVA",iva);
-  JButton calc=new JButton("Calcular precio + IVA");calc.addActionListener(e->calcular());f.add(calc);root.add(f,BorderLayout.NORTH);
+  JButton calc=new JButton("Calcular precio + IVA");calc.addActionListener(e->calcular());f.add(calc);JPanel norte=new JPanel(new BorderLayout());norte.add(h,BorderLayout.NORTH);norte.add(f,BorderLayout.CENTER);root.add(norte,BorderLayout.NORTH);
   JPanel center=new JPanel(new BorderLayout());center.setBorder(BorderFactory.createTitledBorder("Libros"));center.add(new JScrollPane(tabla),BorderLayout.CENTER);
   JPanel b=new JPanel();String[] bs={"Registrar","Actualizar","Eliminar","Listar","Limpiar"};JButton[] j=new JButton[5];for(int i=0;i<5;i++){j[i]=new JButton(bs[i]);b.add(j[i]);}
   j[0].addActionListener(e->registrar());j[1].addActionListener(e->actualizar());j[2].addActionListener(e->eliminar());j[3].addActionListener(e->listar());j[4].addActionListener(e->limpiar());center.add(b,BorderLayout.SOUTH);root.add(center,BorderLayout.CENTER);

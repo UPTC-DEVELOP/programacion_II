@@ -1,0 +1,5 @@
+# Copie este archivo como config.properties y complete sus datos.
+# config.properties está en .gitignore: NO se sube a Git.
+db.url=jdbc:mysql://localhost:3306/tienda_virtual_libros
+db.user=root
+db.password=

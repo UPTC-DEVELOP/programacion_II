@@ -36,7 +36,7 @@ public class RegistroClienteFrame extends JFrame {
 
         setTitle("REGISTRO DE CLIENTE");
         setSize(450, 420);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
         setLayout(new GridLayout(8, 2, 5, 5));
