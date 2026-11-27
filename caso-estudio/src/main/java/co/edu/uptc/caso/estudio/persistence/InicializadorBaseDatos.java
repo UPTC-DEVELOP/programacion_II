@@ -17,7 +17,7 @@ public class InicializadorBaseDatos {
                 + "categoria VARCHAR(80),"
                 + "editorial VARCHAR(100),"
                 + "paginas INT NOT NULL,"
-                + "precio_venta DOUBLE NOT NULL,"
+                + "precio DOUBLE NOT NULL,"
                 + "stock INT NOT NULL,"
                 + "formato VARCHAR(30) NOT NULL,"
                 + "porcentaje_iva DOUBLE NOT NULL)";
