@@ -61,22 +61,22 @@ public class PanelCliente extends JPanel {
 
         JPanel panelFormulario = new JPanel(new GridLayout(6, 2, 8, 8));
 
-        panelFormulario.add(new JLabel("ID:"));
+        panelFormulario.add(new JLabel("Escriba el ID del cliente:"));
         panelFormulario.add(campoId);
 
-        panelFormulario.add(new JLabel("Nombre completo:"));
+        panelFormulario.add(new JLabel("Escriba el Nombre completo del usuario:"));
         panelFormulario.add(campoNombre);
 
-        panelFormulario.add(new JLabel("Correo:"));
+        panelFormulario.add(new JLabel("Escriba el Correo del usuario:"));
         panelFormulario.add(campoCorreo);
 
-        panelFormulario.add(new JLabel("Dirección:"));
+        panelFormulario.add(new JLabel("Escriba la Dirección de vivienda del cliente:"));
         panelFormulario.add(campoDireccion);
 
-        panelFormulario.add(new JLabel("Celular:"));
+        panelFormulario.add(new JLabel("Escriba el numero Celular del cliente:"));
         panelFormulario.add(campoCelular);
 
-        panelFormulario.add(new JLabel("Tipo de cliente:"));
+        panelFormulario.add(new JLabel("Seleccione el Tipo de cliente:"));
         panelFormulario.add(campoTipoCliente);
 
         add(panelFormulario, BorderLayout.CENTER);
