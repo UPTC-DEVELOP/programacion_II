@@ -43,6 +43,7 @@ public class PanelCarrito extends JPanel {
     private JButton btnCambiar;
     private JButton btnEliminar;
     private JButton btnVaciar;
+    private JButton btnFinalizar;
     private JTable tablaItems;
     private DefaultTableModel modeloTabla;
     private JLabel lblSubtotal;
@@ -60,11 +61,13 @@ public class PanelCarrito extends JPanel {
         btnEliminar.setActionCommand(EventosCarrito.ELIMINAR);
         btnVaciar.setActionCommand(EventosCarrito.VACIAR);
         cmbClientes.setActionCommand(EventosCarrito.CLIENTE);
+        btnFinalizar.setActionCommand(EventosCarrito.FINALIZAR);
         btnAgregar.addActionListener(eventos);
         btnCambiar.addActionListener(eventos);
         btnEliminar.addActionListener(eventos);
         btnVaciar.addActionListener(eventos);
         cmbClientes.addActionListener(eventos);
+        btnFinalizar.addActionListener(eventos);
     }
 
     private void initComponents() {
@@ -144,7 +147,12 @@ public class PanelCarrito extends JPanel {
         panelTotales.add(lblDescuento);
         panelTotales.add(new JLabel("Total:"));
         panelTotales.add(lblTotal);
-        panelSur.add(panelTotales, BorderLayout.EAST);
+
+        JPanel panelCompra = new JPanel(new BorderLayout(5, 5));
+        btnFinalizar = new JButton(EventosCarrito.FINALIZAR);
+        panelCompra.add(panelTotales, BorderLayout.CENTER);
+        panelCompra.add(btnFinalizar, BorderLayout.SOUTH);
+        panelSur.add(panelCompra, BorderLayout.EAST);
 
         add(panelSur, BorderLayout.SOUTH);
     }
@@ -223,6 +231,11 @@ public class PanelCarrito extends JPanel {
 
     public void mostrarAlerta(String titulo, String mensaje) {
         JOptionPane.showMessageDialog(this, mensaje, titulo, JOptionPane.WARNING_MESSAGE);
+    }
+
+    public void mostrarCompraFinalizada(double total) {
+        JOptionPane.showMessageDialog(this, "La compra se finalizó. Total pagado: " + formatear(total)
+                + "\nEl inventario de los libros se actualizó.", "Compra", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public boolean confirmar(String mensaje) {

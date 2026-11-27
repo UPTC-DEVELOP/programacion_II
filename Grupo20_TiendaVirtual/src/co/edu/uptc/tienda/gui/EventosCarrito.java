@@ -17,6 +17,7 @@ public class EventosCarrito implements ActionListener {
     public final static String ELIMINAR = "Eliminar";
     public final static String VACIAR = "Vaciar carrito";
     public final static String CLIENTE = "Cliente";
+    public final static String FINALIZAR = "Finalizar compra";
 
     private final PanelCarrito panel;
     private final IGestionCarrito gestion;
@@ -41,6 +42,8 @@ public class EventosCarrito implements ActionListener {
                 vaciar();
             } else if (evento.equals(CLIENTE)) {
                 asignarCliente();
+            } else if (evento.equals(FINALIZAR)) {
+                finalizarCompra();
             }
         } catch (CarritoExcepcion ex) {
             error = ex.getMessage();
@@ -94,6 +97,19 @@ public class EventosCarrito implements ActionListener {
         }
         if (panel.confirmar("¿Desea vaciar el carrito?")) {
             gestion.vaciar();
+        }
+    }
+
+    private void finalizarCompra() throws CarritoExcepcion {
+        if (gestion.obtenerItems().isEmpty()) {
+            throw new CarritoExcepcion("El carrito está vacío.");
+        }
+        Cliente cliente = panel.getClienteSeleccionado();
+        double porcentaje = cliente == null ? 0 : cliente.obtenerPorcentajeDescuento();
+        double total = gestion.calcularTotal(porcentaje);
+        if (panel.confirmar("¿Desea finalizar la compra?")) {
+            gestion.finalizarCompra();
+            panel.mostrarCompraFinalizada(total);
         }
     }
 
