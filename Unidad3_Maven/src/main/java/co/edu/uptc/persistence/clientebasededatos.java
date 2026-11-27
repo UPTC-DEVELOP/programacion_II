@@ -116,6 +116,10 @@ public void guardar(Usuario usuario) throws PersistenciaException {
 	    throw new PersistenciaException("El nombre debe tener al menos 3 caracteres.");
 	}
 
+	if (usuario.getNombreCompleto().trim().length() > 150) {
+	    throw new PersistenciaException("El nombre no puede superar los 150 caracteres.");
+	}
+
 	if (usuario.getCorreo() == null || usuario.getCorreo().isBlank()) {
 	    throw new PersistenciaException("El correo electrónico es obligatorio.");
 	}
