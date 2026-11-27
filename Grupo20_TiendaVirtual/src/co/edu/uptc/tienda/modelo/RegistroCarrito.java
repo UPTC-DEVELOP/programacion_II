@@ -28,5 +28,8 @@ public class RegistroCarrito {
             && isbn != null && !isbn.trim().isEmpty()
             && cantidad > 0;
 }
+    public boolean correspondeACliente(String id) {
+    return idCliente != null && idCliente.equals(id);
+}
     
 }
