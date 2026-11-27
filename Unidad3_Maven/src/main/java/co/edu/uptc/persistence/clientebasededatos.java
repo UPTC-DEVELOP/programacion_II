@@ -140,7 +140,9 @@ public void guardar(Usuario usuario) throws PersistenciaException {
 	if (cliente.getDireccionEnvio() == null || cliente.getDireccionEnvio().isBlank()) {
 	    throw new PersistenciaException("La dirección de envío es obligatoria.");
 	}
-	
+	if (cliente.getDireccionEnvio().trim().length() < 5) {
+	    throw new PersistenciaException("La dirección debe tener al menos 5 caracteres.");
+	}
 	
 	Optional<Usuario> existente = buscarPorCorreo(cliente.getCorreo());
 

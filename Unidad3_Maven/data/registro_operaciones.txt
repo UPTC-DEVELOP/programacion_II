@@ -16,3 +16,5 @@
 [2026-11-25 18:24:10] [INFO] fercha@uptc.edu.co - Inicio de sesión
 [2026-11-25 19:36:15] [INFO] cristiancamilo@uptc.edu.co - Cliente registrado
 [2026-11-25 19:36:47] [INFO] cristiancamilo@uptc.edu.co - Inicio de sesión
+[2026-11-26 19:20:37] [INFO] osman@uptc.edu.co - Cliente registrado
+[2026-11-26 19:22:25] [INFO] otilio@uptc.edu.co - Cliente registrado
