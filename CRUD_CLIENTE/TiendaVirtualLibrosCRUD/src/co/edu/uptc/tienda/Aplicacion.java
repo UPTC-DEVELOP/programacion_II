@@ -43,15 +43,12 @@ public class Aplicacion {
 
 		IGestionCliente gestionCliente = new GestionCliente(repositorioCliente);
 
-<<<<<<< HEAD
 		// Libros y facturas en base de datos
 		IRepositorioLibro repositorioLibro = new BaseDeDatosLibro();
 		IGestionLibro gestionLibro = new GestionLibro(repositorioLibro);
-=======
-		// Persistencia de libros
-		IGestionLibro gestionLibro = new GestionLibro(new BaseDeDatosLibro()); 
+ 
 		// IGestionLibro gestionLibro = new GestionLibro(new co.edu.uptc.tienda.persistencia.LibroJSON()); // data/libros.json
->>>>>>> c5a5384c642648e0d78672165c4d44efebf6b804
+
 		IGestionFactura gestionFactura = new GestorFactura(new BaseDeDatosFactura());
 
 		// Se gestiona la Autenticación con el gestor de autenticación
