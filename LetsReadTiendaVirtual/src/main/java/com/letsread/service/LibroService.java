@@ -79,7 +79,19 @@ public class LibroService {
         ArchivoTxtDAO.registrarOperacion("Admin eliminó el libro: " + libro.getTitulo()
                 + " (ISBN: " + isbn + ")");
     }
+    /** Si el repositorio esta vacio, lo llena con los libros iniciales. */
+    public void sembrarSiVacio(List<Libro> iniciales) {
+        if (repositorio.listar().isEmpty()) {
+            for (Libro libro : iniciales) {
+                repositorio.guardar(libro);
+            }
+        }
+    }
 
+    /** Guarda el inventario y la marca de ventas despues de una compra. */
+    public void registrarVenta(Libro libro) {
+        repositorio.actualizar(libro);
+    }
     private void validar(Libro libro) throws Exception {
         if (esVacio(libro.getIsbn()) || esVacio(libro.getTitulo()) || esVacio(libro.getAutor())
                 || esVacio(libro.getCategoria()) || esVacio(libro.getEditorial())) {
