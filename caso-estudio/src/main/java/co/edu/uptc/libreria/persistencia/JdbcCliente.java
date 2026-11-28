@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,30 +15,30 @@ public class JdbcCliente implements IGestionCliente {
 
 	@Override
 	public void guardar(Cliente cliente) {
-		String consulta = "INSERT INTO clientes (correo, nombre_completo, direccion_envio, telefono, tipo) VALUES ('"
-				+ cliente.getCorreo() + "', '"
-				+ cliente.getNombreCompleto() + "', '"
-				+ cliente.getDireccionEnvio() + "', '"
-				+ cliente.getTelefono() + "', '"
-				+ cliente.getTipo().name() + "')";
-		ejecutarActualizacion(consulta, "registrar");
+		String consulta = "INSERT INTO clientes (correo, nombre_completo, direccion_envio, telefono, tipo) VALUES (?, ?, ?, ?, ?)";
+		ejecutarActualizacion(consulta, "registrar",
+				cliente.getCorreo(),
+				cliente.getNombreCompleto(),
+				cliente.getDireccionEnvio(),
+				cliente.getTelefono(),
+				cliente.getTipo().name());
 	}
 
-	
 	@Override
 	public void actualizar(Cliente cliente) {
-		String consulta = "UPDATE clientes SET nombre_completo = '" + cliente.getNombreCompleto()
-				+ "', direccion_envio = '" + cliente.getDireccionEnvio()
-				+ "', telefono = '" + cliente.getTelefono()
-				+ "', tipo = '" + cliente.getTipo().name()
-				+ "' WHERE correo = '" + cliente.getCorreo() + "'";
-		ejecutarActualizacion(consulta, "actualizar");
+		String consulta = "UPDATE clientes SET nombre_completo = ?, direccion_envio = ?, telefono = ?, tipo = ? WHERE correo = ?";
+		ejecutarActualizacion(consulta, "actualizar",
+				cliente.getNombreCompleto(),
+				cliente.getDireccionEnvio(),
+				cliente.getTelefono(),
+				cliente.getTipo().name(),
+				cliente.getCorreo());
 	}
 
 	@Override
 	public void eliminar(String correo) {
-		String consulta = "DELETE FROM clientes WHERE correo = '" + correo + "'";
-		ejecutarActualizacion(consulta, "eliminar");
+		String consulta = "DELETE FROM clientes WHERE correo = ?";
+		ejecutarActualizacion(consulta, "eliminar", correo);
 	}
 
 	@Override
@@ -47,27 +46,29 @@ public class JdbcCliente implements IGestionCliente {
 		Cliente cliente = null;
 		try (
 				Connection conex = ConexionBD.getConnection();
-			     Statement estatuto = conex.createStatement();
-			     ResultSet rs = estatuto.executeQuery("SELECT * FROM clientes WHERE correo = '" + correo + "'")) {
-				
+				PreparedStatement estatuto = conex.prepareStatement("SELECT * FROM clientes WHERE correo = ?")) {
+
+			estatuto.setString(1, correo);
+			try (ResultSet rs = estatuto.executeQuery()) {
 				if (rs.next()) {
 					cliente = armarCliente(rs);
 				}
-	            
-			} catch (SQLException e) {
-				System.out.println(e.getMessage());
-				throw new IllegalStateException("No se pudo consultar el cliente");
 			}
-			return cliente;
+
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			throw new IllegalStateException("No se pudo consultar el cliente");
 		}
+		return cliente;
+	}
 
 	@Override
 	public List<Cliente> listar() {
 		ConexionBD conex = new ConexionBD();
 		List<Cliente> clientes = new ArrayList<Cliente>();
 		try {
-			Statement estatuto = conex.getConnection().createStatement();
-			ResultSet rs = estatuto.executeQuery("SELECT * FROM clientes");
+			PreparedStatement estatuto = conex.getConnection().prepareStatement("SELECT * FROM clientes");
+			ResultSet rs = estatuto.executeQuery();
 			while (rs.next()) {
 				clientes.add(armarCliente(rs));
 			}
@@ -81,11 +82,14 @@ public class JdbcCliente implements IGestionCliente {
 		return clientes;
 	}
 
-	private void ejecutarActualizacion(String consulta, String accion) {
+	private void ejecutarActualizacion(String consulta, String accion, String... parametros) {
 		ConexionBD conex = new ConexionBD();
 		try {
-			Statement estatuto = conex.getConnection().createStatement();
-			estatuto.executeUpdate(consulta);
+			PreparedStatement estatuto = conex.getConnection().prepareStatement(consulta);
+			for (int i = 0; i < parametros.length; i++) {
+				estatuto.setString(i + 1, parametros[i]);
+			}
+			estatuto.executeUpdate();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 			throw new IllegalStateException("No se pudo " + accion + " el cliente");
