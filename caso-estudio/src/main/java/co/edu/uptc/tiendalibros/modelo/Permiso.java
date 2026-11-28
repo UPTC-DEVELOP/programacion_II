@@ -81,6 +81,8 @@ public enum Permiso {
   
   /// Crear cuentas de usuario para los empleados.
   CUENTA_CREAR_EMPLEADO,
+  /// Editar los datos de los empleados.
+  CUENTA_EDITAR_EMPLEADO,
   /// Asignar roles a las cuentas de los empleados.
   CUENTA_ASIGNAR_ROLES,
   /// Habilitar o deshabilitar cuentas de usuario.

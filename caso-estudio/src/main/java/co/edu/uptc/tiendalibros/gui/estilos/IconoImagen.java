@@ -30,7 +30,8 @@ public enum IconoImagen {
   VER_DETALLES("ver-detalles-1.png"),
   INICIAR_SESION("iniciar-sesion-1.png"),
   CERRAR_SESION("cerrar-sesion-1.png"),
-  REGISTRARSE("registrarse-1.png");
+  REGISTRARSE("registrarse-1.png"),
+  EMPLEADOS("empleados-1.png");
   
   /// Tamaño del lado predeterminado que tendrá la imagen del ícono. Se mide en pixeles.
   private static final int LADO_PREDETERMINADO = 20;

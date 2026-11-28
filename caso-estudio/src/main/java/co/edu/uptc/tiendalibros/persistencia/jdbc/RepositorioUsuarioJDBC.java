@@ -15,11 +15,9 @@ import co.edu.uptc.tiendalibros.gui.errores.GestorErrores;
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioUsuario;
 import co.edu.uptc.tiendalibros.modelo.Cliente;
 import co.edu.uptc.tiendalibros.modelo.ContrasenaProtegida;
-import co.edu.uptc.tiendalibros.modelo.Empleado;
 import co.edu.uptc.tiendalibros.modelo.Permiso;
 import co.edu.uptc.tiendalibros.modelo.Rol;
 import co.edu.uptc.tiendalibros.modelo.Usuario;
-import co.edu.uptc.tiendalibros.negocio.ErrorTecnicoSistemaException;
 
 /// Representa el repositorio que guarda las cuentas de usuario en una base de datos
 /// relacional usando la tecnología JDBC.
@@ -93,13 +91,10 @@ public class RepositorioUsuarioJDBC extends RepositorioJDBCBase<Usuario> impleme
     + "(id_usuario, tipo_documento, numero_documento, nombres, apellidos, correo_electronico, "
     + "telefono, direccion_envio, tipo_cliente) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
   
-  /// Comando SQL para insertar un empleado cuando se crea con su cuenta.
-  private static final String SQL_INSERTAR_EMPLEADO = "INSERT INTO empleado "
-    + "(id_usuario, tipo_documento, numero_documento, nombres, apellidos) VALUES (?, ?, ?, ?, ?)";
   
-  /// Comando SQL para eliminar un empleado. En la base de datos, se ejecuta el trigger para
-  /// también eliminar la cuenta de usuario.
-  private static final String SQL_ELIMINAR_EMPLEADO = "DELETE FROM empleado WHERE id_empleado = ?";
+  /// Comando SQL para contar las cuentas habilitadas que tienen un rol.
+  private static final String SQL_CONTAR_CUENTAS_CON_ROL = "SELECT COUNT(*) FROM usuario u "
+    + "JOIN usuario_rol ur ON ur.id_usuario = u.id_usuario WHERE ur.rol = ? AND u.habilitado = TRUE";
   
   /// Objeto que mantiene la conexión con la base de datos.
   private final ConexionBaseDatos conexionBaseDatos;
@@ -153,34 +148,25 @@ public class RepositorioUsuarioJDBC extends RepositorioJDBCBase<Usuario> impleme
     });
   }
   
-  @Override
-  public Empleado crearEmpleado(Usuario usuario, Empleado empleado) {
-    // la cuenta y el empleado deben ser nuevos
-    if ((usuario == null) || (empleado == null) || (usuario.getId() != null) || (empleado.getId() != null)) {
-      throw new IllegalArgumentException("Para crear un empleado se necesita una cuenta y un empleado nuevos.");
-    }
-    
-    // guardar todo en una transacción: cuenta, roles y cliente
-    return this.conexionBaseDatos.ejecutarEnTransaccion((conexion) -> {
-      Usuario guardado = guardarCuentaNueva(conexion, usuario);
-      return insertarEmpleado(conexion, guardado, empleado);
-    });
-  }
   
   @Override
-  public boolean eliminarEmpleado(Long idEmpleado) {
-    // si el ID es nulo, no se elimina nada
-    if (idEmpleado == null) {
-      throw new IllegalArgumentException("Error: No se puede eliminar un empleado con ID nulo");
+  public int contarCuentasHabilitadasConRol(Rol rol) {
+    if (rol == null) {
+      throw new IllegalArgumentException("Error: No se pueden contar las cuentas de un rol nulo");
     }
     
-    // eliminar el empleado en una transacción
-    return this.conexionBaseDatos.ejecutarEnTransaccion((conexion) -> {
-      try (PreparedStatement comando = conexion.prepareStatement(SQL_ELIMINAR_EMPLEADO)) {
-        comando.setLong(1, idEmpleado);
-        return (comando.executeUpdate() > 0);
+    try (
+      Connection conexion = abrirConexion();
+      PreparedStatement comando = conexion.prepareStatement(SQL_CONTAR_CUENTAS_CON_ROL)) {
+      comando.setString(1, rol.getAbreviatura());
+      
+      try (ResultSet fila = comando.executeQuery()) {
+        fila.next();
+        return fila.getInt(1);
       }
-    });
+    } catch (SQLException excepcion) {
+      throw traducirExcepcion("contar cuentas habilitadas por rol", excepcion);
+    }
   }
   
   /// Guarda una cuenta nueva y sus roles usando una conexión compartida.
@@ -216,37 +202,6 @@ public class RepositorioUsuarioJDBC extends RepositorioJDBCBase<Usuario> impleme
       comando.setString(8, cliente.getDireccionEnvio());
       comando.setString(9, cliente.getTipoCliente());
       comando.executeUpdate();
-    }
-  }
-  
-  /// Inserta el empleado de una cuenta recién guardada usando una conexión compartida.
-  ///
-  /// @param conexion Conexión con la transacción abierta.
-  /// @param usuario  Cuenta ya guardada con ID.
-  /// @param empleado Datos del empleado.
-  /// @return El empleado guardado, con su ID.
-  /// @throws SQLException Si ocurre un error al insertar.
-  private Empleado insertarEmpleado(Connection conexion, Usuario usuario, Empleado empleado) throws SQLException {
-    try (
-      PreparedStatement comando = conexion
-        .prepareStatement(SQL_INSERTAR_EMPLEADO, Statement.RETURN_GENERATED_KEYS)) {
-      comando.setLong(1, usuario.getId());
-      comando.setString(2, empleado.getTipoDocumento());
-      comando.setString(3, empleado.getNumeroDocumento());
-      comando.setString(4, empleado.getNombres());
-      comando.setString(5, empleado.getApellidos());
-      comando.executeUpdate();
-      
-      try (ResultSet ids = comando.getGeneratedKeys()) {
-        if (ids.next()) {
-          return new Empleado(
-            ids.getLong(1), usuario.getId(), empleado.getTipoDocumento(),
-            empleado.getNumeroDocumento(),
-            empleado.getNombres(), empleado.getApellidos()
-          );
-        }
-      }
-      throw new ErrorTecnicoSistemaException("La base de datos no devolvió el ID del empleado guardado.", null);
     }
   }
   

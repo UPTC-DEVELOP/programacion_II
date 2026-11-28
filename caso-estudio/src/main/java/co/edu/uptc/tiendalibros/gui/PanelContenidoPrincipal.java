@@ -84,7 +84,7 @@ public class PanelContenidoPrincipal extends PanelBase {
     add(this.panelGestionClientes, PanelContenidoPrincipal.PANEL_GESTION_CLIENTES);
     
     // crear el panel para la administración del sistema
-    this.panelAdministracionSistema = (PanelAdministracionSistema) new PanelAdministracionSistema()
+    this.panelAdministracionSistema = (PanelAdministracionSistema) new PanelAdministracionSistema(getEvento())
       .construir();
     add(this.panelAdministracionSistema, PanelContenidoPrincipal.PANEL_ADMINISTRACION_SISTEMA);
     

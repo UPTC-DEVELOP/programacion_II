@@ -3,7 +3,7 @@ package co.edu.uptc.tiendalibros.interfaces;
 import java.util.Optional;
 
 import co.edu.uptc.tiendalibros.modelo.Cliente;
-import co.edu.uptc.tiendalibros.modelo.Empleado;
+import co.edu.uptc.tiendalibros.modelo.Rol;
 import co.edu.uptc.tiendalibros.modelo.Usuario;
 
 /// Representa el repositorio de datos que almacena las cuentas de usuario, con sus roles
@@ -41,23 +41,10 @@ public interface IRepositorioUsuario extends IRepositorioSoloConsultas<Usuario> 
   /// @throws IllegalArgumentException Si algún argumento es nulo o ya tiene ID.
   Usuario registrarCliente(Usuario usuario, Cliente cliente);
   
-  /// Crea un empleado nuevo: guarda su cuenta de usuario, sus roles y sus datos de empleado
-  /// en una sola transacción.
-  /// 
-  /// Si algún paso falla, no se guarda nada.
+  /// Cuenta las cuentas de usuario habilitadas que tienen el rol especificado.
   ///
-  /// @param usuario  Cuenta de usuario nueva sin ID.
-  /// @param empleado Datos del empleado nuevo sin ID.
-  /// @return El empleado guardado, con su ID y el ID de su cuenta.
-  /// @throws IllegalArgumentException Si algún argumento es nulo, o si ya tiene ID.
-  Empleado crearEmpleado(Usuario usuario, Empleado empleado);
-  
-  /// Elimina el empleado con el ID especificado.
-  /// 
-  /// El repositorio también eliminará la cuenta de usuario del empleado y sus roles.
-  ///
-  /// @param idEmpleado ID del empleado, pero no el ID de su cuenta de usuario.
-  /// @return `true` si el empleado se eliminó. `false` si no se encontró.
-  /// @throws IllegalArgumentException Si el ID es nulo.
-  boolean eliminarEmpleado(Long idEmpleado);
+  /// @param rol Rol que se quiere contar.
+  /// @return Cantidad de cuentas habilitadas con ese rol.
+  /// @throws IllegalArgumentException Si el rol es nulo.
+  int contarCuentasHabilitadasConRol(Rol rol);
 }

@@ -28,6 +28,7 @@ INSERT INTO tienda_libros_gr9.rol_permiso (rol,permiso) VALUES ('CLI','CALIFICAC
 INSERT INTO tienda_libros_gr9.rol_permiso (rol,permiso) VALUES ('ADM','ACCEDER_EXPLORADOR_CATALOGO');
 INSERT INTO tienda_libros_gr9.rol_permiso (rol,permiso) VALUES ('ADM','ACCEDER_ADMINISTRACION');
 INSERT INTO tienda_libros_gr9.rol_permiso (rol,permiso) VALUES ('ADM','CUENTA_CREAR_EMPLEADO');
+INSERT INTO tienda_libros_gr9.rol_permiso (rol,permiso) VALUES ('ADM','CUENTA_EDITAR_EMPLEADO');
 INSERT INTO tienda_libros_gr9.rol_permiso (rol,permiso) VALUES ('ADM','CUENTA_ASIGNAR_ROLES');
 INSERT INTO tienda_libros_gr9.rol_permiso (rol,permiso) VALUES ('ADM','CUENTA_HABILITAR_DESHABILITAR');
 INSERT INTO tienda_libros_gr9.rol_permiso (rol,permiso) VALUES ('ADM','CUENTA_ELIMINAR_EMPLEADO');

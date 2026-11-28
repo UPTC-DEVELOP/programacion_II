@@ -1,6 +1,7 @@
 //
 package co.edu.uptc.tiendalibros.gui;
 
+import co.edu.uptc.tiendalibros.gui.administracion.ControladorEmpleado;
 import co.edu.uptc.tiendalibros.gui.autor.ControladorAutor;
 import co.edu.uptc.tiendalibros.gui.catalogo.ControladorExploradorCatalogo;
 import co.edu.uptc.tiendalibros.gui.categoria.ControladorCategoria;
@@ -16,6 +17,7 @@ import co.edu.uptc.tiendalibros.interfaces.IRepositorioAutorLibro;
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioCategoria;
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioCliente;
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioEditorial;
+import co.edu.uptc.tiendalibros.interfaces.IRepositorioEmpleado;
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioLibro;
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioLibroConFormatos;
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioUsuario;
@@ -24,6 +26,7 @@ import co.edu.uptc.tiendalibros.negocio.GestionCategoria;
 import co.edu.uptc.tiendalibros.negocio.GestionCliente;
 import co.edu.uptc.tiendalibros.negocio.catalogo.GestionExploradorCatalogo;
 import co.edu.uptc.tiendalibros.negocio.editorial.GestionEditorial;
+import co.edu.uptc.tiendalibros.negocio.empleado.GestionEmpleado;
 import co.edu.uptc.tiendalibros.negocio.libro.GestionLibro;
 import co.edu.uptc.tiendalibros.negocio.seguridad.GestionSeguridad;
 import co.edu.uptc.tiendalibros.negocio.seguridad.IProtectorContrasena;
@@ -34,6 +37,7 @@ import co.edu.uptc.tiendalibros.persistencia.jdbc.ConexionBaseDatos;
 import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioCategoriaJDBC;
 import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioClienteJDBC;
 import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioEditorialJDBC;
+import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioEmpleadoJDBC;
 import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioFormatoLibroJDBC;
 import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioLibroConFormatosJDBC;
 import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioLibroJDBC;
@@ -116,7 +120,14 @@ public class Aplicacion {
     
     // crear los gestores de lógica del negocio
     // gestor de la seguridad
-    IRepositorioUsuario repositorioUsuario = new RepositorioUsuarioJDBC(this.conexionBaseDatos);
+    RepositorioUsuarioJDBC repositorioUsuarioJDBC = new RepositorioUsuarioJDBC(this.conexionBaseDatos);
+    IRepositorioUsuario repositorioUsuario = repositorioUsuarioJDBC;
+    // el repositorio de empleados coordina al de usuarios para guardar la cuenta de cada
+    // empleado
+    IRepositorioEmpleado repositorioEmpleado = new RepositorioEmpleadoJDBC(
+      this.conexionBaseDatos, repositorioUsuarioJDBC
+    );
+    
     SesionUsuario sesionUsuario = new SesionUsuario();
     IProtectorContrasena protectorContrasena = new ProtectorContrasenaPBKDF2();
     GestionSeguridad gestorSeguridad = new GestionSeguridad(repositorioUsuario, protectorContrasena, sesionUsuario);
@@ -140,6 +151,11 @@ public class Aplicacion {
     
     // Gestor para la lógica de negocio de clientes.
     GestionCliente gestorCliente = new GestionCliente(repositorioCliente, repositorioUsuario, gestorSeguridad);
+    
+    // Gestor para la lógica de negocio de los empleados.
+    GestionEmpleado gestorEmpleado = new GestionEmpleado(
+      repositorioEmpleado, repositorioUsuario, gestorSeguridad, sesionUsuario
+    );
     
     // crear los controladores que intermedian entre la interfaz gráfica y la capa de lógica
     
@@ -182,6 +198,14 @@ public class Aplicacion {
         this.enrutadorEventos, contenidoPrincipal.getPanelGestionCatalogo()
           .getPanelLibros(),
         gestorLibro, gestorCategoria, gestorEditorial
+      ),
+      
+      // controlador par la gestión de empleados
+      new ControladorEmpleado(
+        this.enrutadorEventos,
+        contenidoPrincipal.getPanelAdministracionSistema()
+          .getPanelEmpleados(),
+        gestorEmpleado
       ),
       
       // Controlador para la gestión de clientes.

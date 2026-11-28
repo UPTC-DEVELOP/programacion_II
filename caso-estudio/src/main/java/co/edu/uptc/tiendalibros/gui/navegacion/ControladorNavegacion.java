@@ -2,6 +2,7 @@ package co.edu.uptc.tiendalibros.gui.navegacion;
 
 import co.edu.uptc.tiendalibros.gui.ControladorVentanaPrincipal;
 import co.edu.uptc.tiendalibros.gui.PanelContenidoPrincipal;
+import co.edu.uptc.tiendalibros.gui.administracion.ControladorEmpleado;
 import co.edu.uptc.tiendalibros.gui.catalogo.ControladorExploradorCatalogo;
 import co.edu.uptc.tiendalibros.gui.componentes.ControladorBase;
 import co.edu.uptc.tiendalibros.gui.editorial.ControladorEditorial;
@@ -247,10 +248,14 @@ public class ControladorNavegacion extends ControladorBase {
     getEnrutador()
       .registrarEvento(
         ControladorNavegacion.NAVEGACION_ADMINISTRACION,
-        (elemento) -> mostrarPanel(
-          PanelContenidoPrincipal.PANEL_ADMINISTRACION_SISTEMA,
-          ControladorNavegacion.NAVEGACION_ADMINISTRACION
-        )
+        (elemento) -> {
+          mostrarPanel(
+            PanelContenidoPrincipal.PANEL_ADMINISTRACION_SISTEMA,
+            ControladorNavegacion.NAVEGACION_ADMINISTRACION
+          );
+          // cargar la lista de empleados
+          getEnrutador().manejarEvento(ControladorEmpleado.EMPLEADO_INICIO);
+        }
       );
     
     // asociar el evento de mostrar el panel de exploración del catálogo
