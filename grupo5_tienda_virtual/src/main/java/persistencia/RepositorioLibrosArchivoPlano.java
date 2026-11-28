@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import model.FormatoLibro;
@@ -59,9 +60,42 @@ public class RepositorioLibrosArchivoPlano implements IRepositorio<Libro> {
     @Override
     public void cargar() {
         libros.clear();
+        libros.addAll(leerTodos());
+    }
+
+    @Override
+    public List<Libro> listarUltimos(int limite) {
+        List<Libro> todos = leerTodos();
+        if (limite <= 0 || todos.isEmpty()) {
+            return new ArrayList<Libro>();
+        }
+        int desde = Math.max(0, todos.size() - limite);
+        List<Libro> ultimos = new ArrayList<Libro>(todos.subList(desde, todos.size()));
+        Collections.reverse(ultimos);
+        return ultimos;
+    }
+
+    @Override
+    public List<Libro> listarPagina(int inicio, int cantidad) {
+        List<Libro> todos = leerTodos();
+        int desde = Math.max(0, inicio);
+        int hasta = Math.min(todos.size(), desde + Math.max(0, cantidad));
+        if (desde >= hasta) {
+            return new ArrayList<Libro>();
+        }
+        return new ArrayList<Libro>(todos.subList(desde, hasta));
+    }
+
+    @Override
+    public int contar() {
+        return leerTodos().size();
+    }
+
+    private List<Libro> leerTodos() {
+        List<Libro> leidos = new ArrayList<Libro>();
         File archivo = new File(rutaArchivo);
         if (!archivo.exists()) {
-            return;
+            return leidos;
         }
 
         try (BufferedReader reader = new BufferedReader(
@@ -73,11 +107,12 @@ public class RepositorioLibrosArchivoPlano implements IRepositorio<Libro> {
                 if (linea.trim().isEmpty()) {
                     continue;
                 }
-                libros.add(parsearLinea(linea, numeroLinea));
+                leidos.add(parsearLinea(linea, numeroLinea));
             }
         } catch (IOException e) {
             throw new PersistenciaException("Error al leer el archivo de libros: " + rutaArchivo, e);
         }
+        return leidos;
     }
 
     /**

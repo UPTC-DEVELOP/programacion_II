@@ -96,67 +96,114 @@ public class RepositorioLibrosBD implements IRepositorio<Libro> {
     
     @Override
     public void cargar() {
-        libros.clear(); 
-        
-        // SE LIMPIA LA LISTA ACTUAL PARA EVITAR DUPLICACIÓN DE DATOS
-        
-        String sql = "SELECT isbn, titulo, autor, anio_publicacion, categoria, editorial, " +
-                     "numero_paginas, precio, porcentaje_iva, cantidad_disponible, formato FROM libros";
+        libros.clear();
+        String sql = "SELECT isbn, titulo, autor, anio_publicacion, categoria, editorial, "
+                + "numero_paginas, precio, porcentaje_iva, cantidad_disponible, formato "
+                + "FROM libros ORDER BY rowid ASC";
 
         try (Connection conn = obtenerConexion();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-
-            // SE RECORRE CADA FILA RECUPERADA DESDE LA BASE DE DATOS
-        	
             while (rs.next()) {
-                String isbn = rs.getString("isbn");
-                String titulo = rs.getString("titulo");
-                String autor = rs.getString("autor");
-                int anioPublicacion = rs.getInt("anio_publicacion");
-                String categoria = rs.getString("categoria");
-                String editorial = rs.getString("editorial");
-                int numeroPaginas = rs.getInt("numero_paginas");
-                double precio = rs.getDouble("precio");
-                double porcentajeIva = rs.getDouble("porcentaje_iva");
-                int cantidadDisponible = rs.getInt("cantidad_disponible");
-                String formatoStr = rs.getString("formato");
-
-                // SE CONVIERTE EL TEXTO DEL FORMATO A SU TIPO ENUM CORRESPONDIENTE
-                
-                if (formatoStr == null || formatoStr.isBlank()) {
-                    throw new PersistenciaException(
-                            "El libro " + isbn + " no tiene formato en la BD");
-                }
-
-                FormatoLibro formato;
-                try {
-                    formato = FormatoLibro.valueOf(formatoStr.trim().toUpperCase(Locale.ROOT));
-                } catch (IllegalArgumentException e) {
-                    throw new PersistenciaException(
-                            "Formato invalido para el libro " + isbn + ": " + formatoStr, e);
-                }
-
-                // SE CONSTRUYE EL OBJETO LIBRO MEDIANTE SETTERS Y SE AÑADE A LA LISTA
-                
-                Libro libro = new Libro();
-                libro.setIsbn(isbn);
-                libro.setTitulo(titulo);
-                libro.setAutor(autor);
-                libro.setAnioPublicacion(anioPublicacion);
-                libro.setCategoria(categoria);
-                libro.setEditorial(editorial);
-                libro.setNumeroPaginas(numeroPaginas);
-                libro.setPrecio(precio);
-                libro.setPorcentajeIva(porcentajeIva);
-                libro.setCantidadDisponible(cantidadDisponible);
-                libro.setFormato(formato);
-                libros.add(libro);
+                libros.add(mapearLibro(rs));
             }
         } catch (SQLException e) {
             throw new PersistenciaException(
                     "No se pudieron leer los libros de la BD", e);
         }
+    }
+
+    @Override
+    public List<Libro> listarUltimos(int limite) {
+        if (limite <= 0) {
+            return new ArrayList<Libro>();
+        }
+        String sql = "SELECT isbn, titulo, autor, anio_publicacion, categoria, editorial, "
+                + "numero_paginas, precio, porcentaje_iva, cantidad_disponible, formato "
+                + "FROM libros ORDER BY rowid DESC LIMIT ?";
+        try (Connection conn = obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, limite);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<Libro> ultimos = new ArrayList<Libro>();
+                while (rs.next()) {
+                    ultimos.add(mapearLibro(rs));
+                }
+                return ultimos;
+            }
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudieron leer los ultimos libros de la BD", e);
+        }
+    }
+
+    @Override
+    public List<Libro> listarPagina(int inicio, int cantidad) {
+        if (inicio < 0 || cantidad <= 0) {
+            return new ArrayList<Libro>();
+        }
+        String sql = "SELECT isbn, titulo, autor, anio_publicacion, categoria, editorial, "
+                + "numero_paginas, precio, porcentaje_iva, cantidad_disponible, formato "
+                + "FROM libros ORDER BY rowid ASC LIMIT ? OFFSET ?";
+        try (Connection conn = obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, cantidad);
+            ps.setInt(2, inicio);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<Libro> pagina = new ArrayList<Libro>();
+                while (rs.next()) {
+                    pagina.add(mapearLibro(rs));
+                }
+                return pagina;
+            }
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudo leer la pagina de libros de la BD", e);
+        }
+    }
+
+    @Override
+    public int contar() {
+        String sql = "SELECT COUNT(*) FROM libros";
+        try (Connection conn = obtenerConexion();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            return rs.next() ? rs.getInt(1) : 0;
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudo contar los libros de la BD", e);
+        }
+    }
+
+    private Libro mapearLibro(ResultSet rs) throws SQLException {
+        String isbn = rs.getString("isbn");
+        String formatoStr = rs.getString("formato");
+        if (formatoStr == null || formatoStr.isBlank()) {
+            throw new PersistenciaException(
+                    "El libro " + isbn + " no tiene formato en la BD");
+        }
+
+        FormatoLibro formato;
+        try {
+            formato = FormatoLibro.valueOf(formatoStr.trim().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            throw new PersistenciaException(
+                    "Formato invalido para el libro " + isbn + ": " + formatoStr, e);
+        }
+
+        Libro libro = new Libro();
+        libro.setIsbn(isbn);
+        libro.setTitulo(rs.getString("titulo"));
+        libro.setAutor(rs.getString("autor"));
+        libro.setAnioPublicacion(rs.getInt("anio_publicacion"));
+        libro.setCategoria(rs.getString("categoria"));
+        libro.setEditorial(rs.getString("editorial"));
+        libro.setNumeroPaginas(rs.getInt("numero_paginas"));
+        libro.setPrecio(rs.getDouble("precio"));
+        libro.setPorcentajeIva(rs.getDouble("porcentaje_iva"));
+        libro.setCantidadDisponible(rs.getInt("cantidad_disponible"));
+        libro.setFormato(formato);
+        return libro;
     }
 
     // SE PERSISTEN DEFINITIVAMENTE TODOS LOS LIBROS EN LA BASE DE DATOS SQLITE

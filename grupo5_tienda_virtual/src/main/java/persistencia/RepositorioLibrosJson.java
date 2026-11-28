@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -59,15 +60,45 @@ public class RepositorioLibrosJson implements IRepositorio<Libro> {
     @Override
     public void cargar() {
         libros.clear();
+        libros.addAll(leerArchivo());
+    }
+
+    @Override
+    public List<Libro> listarUltimos(int limite) {
+        List<Libro> todos = leerArchivo();
+        if (limite <= 0 || todos.isEmpty()) {
+            return new ArrayList<Libro>();
+        }
+        int desde = Math.max(0, todos.size() - limite);
+        List<Libro> ultimos = new ArrayList<Libro>(todos.subList(desde, todos.size()));
+        Collections.reverse(ultimos);
+        return ultimos;
+    }
+
+    @Override
+    public List<Libro> listarPagina(int inicio, int cantidad) {
+        List<Libro> todos = leerArchivo();
+        int desde = Math.max(0, inicio);
+        int hasta = Math.min(todos.size(), desde + Math.max(0, cantidad));
+        if (desde >= hasta) {
+            return new ArrayList<Libro>();
+        }
+        return new ArrayList<Libro>(todos.subList(desde, hasta));
+    }
+
+    @Override
+    public int contar() {
+        return leerArchivo().size();
+    }
+
+    private List<Libro> leerArchivo() {
         if (!Files.exists(archivo)) {
-            return;
+            return new ArrayList<Libro>();
         }
         try {
             String json = Files.readString(archivo, StandardCharsets.UTF_8);
             List<Libro> leidos = gson.fromJson(json, tipoLista);
-            if (leidos != null) {
-                libros.addAll(leidos);
-            }
+            return leidos != null ? leidos : new ArrayList<Libro>();
         } catch (IOException | JsonParseException e) {
             throw new PersistenciaException(
                     "No se pudo leer " + archivo.toAbsolutePath(), e);
