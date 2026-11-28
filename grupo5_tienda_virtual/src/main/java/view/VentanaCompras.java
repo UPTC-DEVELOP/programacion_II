@@ -90,7 +90,10 @@ public class VentanaCompras extends JFrame {
         add(crearTablaCarrito(), BorderLayout.CENTER);
         add(crearPanelInferior(), BorderLayout.SOUTH);
         
-        new EventosCompras(this, controladorCompras, controladorCarrito).registrarEventos();
+        EventosCompras eventos = new EventosCompras(this, controladorCompras, controladorCarrito);
+        eventos.registrarEventos();
+        // Muestra el carrito recuperado de JSON al abrir la ventana.
+        eventos.refrescarVista();
     }
     
     

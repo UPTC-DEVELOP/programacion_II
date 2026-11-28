@@ -133,6 +133,11 @@ public class EventosCompras extends Eventos {
         vista.getTxtCantidad().setText(String.valueOf(cantidad));
     }
 
+    /** Refresca la tabla y los totales con el carrito ya cargado. */
+    public void refrescarVista() {
+        actualizarTabla();
+    }
+
     private void actualizarTabla() {
         DefaultTableModel modeloTabla = vista.getModeloTabla();
         modeloTabla.setRowCount(0);
