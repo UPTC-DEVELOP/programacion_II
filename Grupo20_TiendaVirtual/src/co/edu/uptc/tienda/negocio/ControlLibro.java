@@ -3,7 +3,9 @@ package co.edu.uptc.tienda.negocio;
 import java.util.ArrayList;
 import java.util.List;
 
+import co.edu.uptc.tienda.excepcion.CompraExcepcion;
 import co.edu.uptc.tienda.excepcion.LibroExcepcion;
+import co.edu.uptc.tienda.interfaz.IGestionCompra;
 import co.edu.uptc.tienda.modelo.Libro;
 import co.edu.uptc.tienda.persistencia.LibroDAO;
 import co.edu.uptc.tienda.persistencia.LibroDAOJSON;
@@ -13,6 +15,7 @@ public class ControlLibro {
 
     private List<Libro> libros;
     private List<LibroDAO> persistencias;
+    private IGestionCompra compras;
     private String avisoCarga;
 
     public ControlLibro() {
@@ -20,7 +23,12 @@ public class ControlLibro {
     }
 
     public ControlLibro(List<LibroDAO> persistencias) {
+        this(persistencias, new GestionCompra());
+    }
+
+    public ControlLibro(List<LibroDAO> persistencias, IGestionCompra compras) {
         this.persistencias = persistencias;
+        this.compras = compras;
         libros = new ArrayList<>();
         cargar();
     }
@@ -158,6 +166,10 @@ public class ControlLibro {
             return false;
         }
 
+        if (tieneVentas(isbn)) {
+            throw new LibroExcepcion("No se puede eliminar el libro porque tiene ventas asociadas.");
+        }
+
         libros.remove(libro);
 
         List<String> errores = new ArrayList<>();
@@ -170,6 +182,14 @@ public class ControlLibro {
         }
         avisarErrores(errores);
         return true;
+    }
+
+    public boolean tieneVentas(String isbn) throws LibroExcepcion {
+        try {
+            return compras.tieneVentas(isbn);
+        } catch (CompraExcepcion e) {
+            throw new LibroExcepcion("No se pudo revisar si el libro tiene ventas:\n" + e.getMessage());
+        }
     }
 
     public List<Libro> listarLibros() {
