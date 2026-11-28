@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -57,8 +58,41 @@ public class RepositorioComprasArchivoPlano implements IRepositorio<Compra> {
     @Override
     public void cargar() {
         compras.clear();
+        compras.addAll(leerTodas());
+    }
+
+    @Override
+    public List<Compra> listarUltimos(int limite) {
+        if (limite <= 0) {
+            return new ArrayList<Compra>();
+        }
+        List<Compra> todas = leerTodas();
+        todas.sort(Comparator.comparingLong(Compra::getId).reversed());
+        int hasta = Math.min(limite, todas.size());
+        return new ArrayList<Compra>(todas.subList(0, hasta));
+    }
+
+    @Override
+    public List<Compra> listarPagina(int inicio, int cantidad) {
+        if (inicio < 0 || cantidad <= 0) {
+            return new ArrayList<Compra>();
+        }
+        List<Compra> todas = leerTodas();
+        todas.sort(Comparator.comparingLong(Compra::getId));
+        int desde = Math.min(inicio, todas.size());
+        int hasta = Math.min(todas.size(), desde + cantidad);
+        return new ArrayList<Compra>(todas.subList(desde, hasta));
+    }
+
+    @Override
+    public int contar() {
+        return leerTodas().size();
+    }
+
+    private List<Compra> leerTodas() {
+        List<Compra> leidas = new ArrayList<Compra>();
         if (!Files.exists(archivo)) {
-            return;
+            return leidas;
         }
 
         Map<Long, Compra> comprasPorId = new LinkedHashMap<Long, Compra>();
@@ -123,7 +157,8 @@ public class RepositorioComprasArchivoPlano implements IRepositorio<Compra> {
                     "No se pudo leer " + archivo.toAbsolutePath(), e);
         }
 
-        compras.addAll(comprasPorId.values());
+        leidas.addAll(comprasPorId.values());
+        return leidas;
     }
 
     private long siguienteId() {

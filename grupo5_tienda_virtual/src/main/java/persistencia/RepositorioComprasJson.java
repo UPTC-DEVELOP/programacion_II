@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -59,15 +60,45 @@ public class RepositorioComprasJson implements IRepositorio<Compra> {
     @Override
     public void cargar() {
         compras.clear();
+        compras.addAll(leerArchivo());
+    }
+
+    @Override
+    public List<Compra> listarUltimos(int limite) {
+        if (limite <= 0) {
+            return new ArrayList<Compra>();
+        }
+        List<Compra> todas = leerArchivo();
+        todas.sort(Comparator.comparingLong(Compra::getId).reversed());
+        int hasta = Math.min(limite, todas.size());
+        return new ArrayList<Compra>(todas.subList(0, hasta));
+    }
+
+    @Override
+    public List<Compra> listarPagina(int inicio, int cantidad) {
+        if (inicio < 0 || cantidad <= 0) {
+            return new ArrayList<Compra>();
+        }
+        List<Compra> todas = leerArchivo();
+        todas.sort(Comparator.comparingLong(Compra::getId));
+        int desde = Math.min(inicio, todas.size());
+        int hasta = Math.min(todas.size(), desde + cantidad);
+        return new ArrayList<Compra>(todas.subList(desde, hasta));
+    }
+
+    @Override
+    public int contar() {
+        return leerArchivo().size();
+    }
+
+    private List<Compra> leerArchivo() {
         if (!Files.exists(archivo)) {
-            return;
+            return new ArrayList<Compra>();
         }
         try {
             String json = Files.readString(archivo, StandardCharsets.UTF_8);
             List<Compra> leidas = gson.fromJson(json, tipoLista);
-            if (leidas != null) {
-                compras.addAll(leidas);
-            }
+            return leidas != null ? leidas : new ArrayList<Compra>();
         } catch (IOException | JsonParseException e) {
             throw new PersistenciaException(
                     "No se pudo leer " + archivo.toAbsolutePath(), e);

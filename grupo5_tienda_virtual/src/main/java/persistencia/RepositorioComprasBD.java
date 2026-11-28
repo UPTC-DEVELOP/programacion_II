@@ -54,52 +54,117 @@ public class RepositorioComprasBD implements IRepositorio<Compra> {
     @Override
     public void cargar() {
         compras.clear();
-
-        String sqlCompras = "SELECT id, fecha, metodo_pago, correo_cliente, total "
+        String sql = "SELECT id, fecha, metodo_pago, correo_cliente, total "
                 + "FROM compras ORDER BY id";
-        String sqlDetalle = "SELECT isbn, titulo, cantidad, precio_unitario, porcentaje_iva "
-                + "FROM detalle_compra WHERE compra_id = ?";
-
-        try (Connection conexion = conectar()) {
-
-            try (Statement st = conexion.createStatement();
-                    ResultSet rs = st.executeQuery(sqlCompras)) {
-                while (rs.next()) {
-                    Compra compra = new Compra();
-                    compra.setId(rs.getLong("id"));
-                    String fecha = rs.getString("fecha");
-                    if (fecha != null && !fecha.isBlank()) {
-                        compra.setFecha(LocalDate.parse(fecha));
-                    }
-                    compra.setMetodoPago(rs.getString("metodo_pago"));
-                    compra.setCorreoCliente(rs.getString("correo_cliente"));
-                    compra.setTotal(rs.getDouble("total"));
-                    compras.add(compra);
-                }
+        try (Connection conexion = conectar();
+                Statement st = conexion.createStatement();
+                ResultSet rs = st.executeQuery(sql)) {
+            List<Compra> leidas = new ArrayList<Compra>();
+            while (rs.next()) {
+                leidas.add(mapearCompra(rs));
             }
-
-            try (PreparedStatement ps = conexion.prepareStatement(sqlDetalle)) {
-                for (Compra compra : compras) {
-                    ps.setLong(1, compra.getId());
-                    try (ResultSet detalle = ps.executeQuery()) {
-                        while (detalle.next()) {
-                            Libro libro = new Libro();
-                            libro.setIsbn(detalle.getString("isbn"));
-                            libro.setTitulo(detalle.getString("titulo"));
-                            libro.setPrecio(detalle.getDouble("precio_unitario"));
-                            libro.setPorcentajeIva(detalle.getDouble("porcentaje_iva"));
-                            libro.setCantidadDisponible(0);
-
-                            ItemCompra item = new ItemCompra(
-                                    libro, detalle.getInt("cantidad"));
-                            compra.agregarItem(item);
-                        }
-                    }
-                }
-            }
+            cargarDetalles(conexion, leidas);
+            compras.addAll(leidas);
         } catch (SQLException e) {
             throw new PersistenciaException(
                     "No se pudieron leer las compras de la BD", e);
+        }
+    }
+
+    @Override
+    public List<Compra> listarUltimos(int limite) {
+        if (limite <= 0) {
+            return new ArrayList<Compra>();
+        }
+        String sql = "SELECT id, fecha, metodo_pago, correo_cliente, total "
+                + "FROM compras ORDER BY id DESC LIMIT ?";
+        try (Connection conexion = conectar();
+                PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setInt(1, limite);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<Compra> ultimas = new ArrayList<Compra>();
+                while (rs.next()) {
+                    ultimas.add(mapearCompra(rs));
+                }
+                cargarDetalles(conexion, ultimas);
+                return ultimas;
+            }
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudieron leer las ultimas compras de la BD", e);
+        }
+    }
+
+    @Override
+    public List<Compra> listarPagina(int inicio, int cantidad) {
+        if (inicio < 0 || cantidad <= 0) {
+            return new ArrayList<Compra>();
+        }
+        String sql = "SELECT id, fecha, metodo_pago, correo_cliente, total "
+                + "FROM compras ORDER BY id ASC LIMIT ? OFFSET ?";
+        try (Connection conexion = conectar();
+                PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setInt(1, cantidad);
+            ps.setInt(2, inicio);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<Compra> pagina = new ArrayList<Compra>();
+                while (rs.next()) {
+                    pagina.add(mapearCompra(rs));
+                }
+                cargarDetalles(conexion, pagina);
+                return pagina;
+            }
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudo leer la pagina de compras de la BD", e);
+        }
+    }
+
+    @Override
+    public int contar() {
+        String sql = "SELECT COUNT(*) FROM compras";
+        try (Connection conexion = conectar();
+                Statement st = conexion.createStatement();
+                ResultSet rs = st.executeQuery(sql)) {
+            return rs.next() ? rs.getInt(1) : 0;
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudo contar las compras de la BD", e);
+        }
+    }
+
+    private Compra mapearCompra(ResultSet rs) throws SQLException {
+        Compra compra = new Compra();
+        compra.setId(rs.getLong("id"));
+        String fecha = rs.getString("fecha");
+        if (fecha != null && !fecha.isBlank()) {
+            compra.setFecha(LocalDate.parse(fecha));
+        }
+        compra.setMetodoPago(rs.getString("metodo_pago"));
+        compra.setCorreoCliente(rs.getString("correo_cliente"));
+        compra.setTotal(rs.getDouble("total"));
+        return compra;
+    }
+
+    private void cargarDetalles(Connection conexion, List<Compra> comprasLeidas)
+            throws SQLException {
+        String sql = "SELECT isbn, titulo, cantidad, precio_unitario, porcentaje_iva "
+                + "FROM detalle_compra WHERE compra_id = ?";
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            for (Compra compra : comprasLeidas) {
+                ps.setLong(1, compra.getId());
+                try (ResultSet detalle = ps.executeQuery()) {
+                    while (detalle.next()) {
+                        Libro libro = new Libro();
+                        libro.setIsbn(detalle.getString("isbn"));
+                        libro.setTitulo(detalle.getString("titulo"));
+                        libro.setPrecio(detalle.getDouble("precio_unitario"));
+                        libro.setPorcentajeIva(detalle.getDouble("porcentaje_iva"));
+                        libro.setCantidadDisponible(0);
+                        compra.agregarItem(new ItemCompra(libro, detalle.getInt("cantidad")));
+                    }
+                }
+            }
         }
     }
 
