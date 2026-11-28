@@ -62,7 +62,12 @@ public class ControladorLibro implements IServicioLibros {
     // LISTADO COMPLETO DE LIBROS (RF04)
     @Override
     public List<Libro> listar() {
-        return repositorio.listarUltimos(10);
+        return listarUltimos(10);
+    }
+
+    @Override
+    public List<Libro> listarUltimos(int limite) {
+        return repositorio.listarUltimos(limite);
     }
 
     // BUSCAR UN LIBRO POR SU CODIGO ISBN (RF09)

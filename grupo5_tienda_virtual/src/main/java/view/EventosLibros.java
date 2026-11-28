@@ -56,7 +56,7 @@ public class EventosLibros extends Eventos {
                 txtPaginas, txtPrecio, txtIva, txtCantidad, tblLibros, modeloTabla));
 
         btnBuscar.addActionListener(e -> buscarLibros(txtBuscar, modeloTabla));
-        btnLimpiarBusqueda.addActionListener(e -> actualizarTabla(controladorLibro.listar(), modeloTabla));
+        btnLimpiarBusqueda.addActionListener(e -> actualizarTabla(controladorLibro.listarUltimos(10), modeloTabla));
 
         btnLimpiar.addActionListener(e -> limpiarCampos(
                 txtISBN, txtTitulo, txtAutor, txtAnio, txtCategoria, txtEditorial,
@@ -82,7 +82,7 @@ public class EventosLibros extends Eventos {
             }
         });
 
-        actualizarTabla(controladorLibro.listar(), modeloTabla);
+        actualizarTabla(controladorLibro.listarUltimos(10), modeloTabla);
     }
 
     private void registrarLibro(
@@ -97,7 +97,7 @@ public class EventosLibros extends Eventos {
                     txtPaginas, txtPrecio, txtIva, txtCantidad, cmbFormato);
             if (controladorLibro.registrar(libro)) {
                 mostrarInfo("Libro registrado exitosamente.");
-                actualizarTabla(controladorLibro.listar(), modeloTabla);
+                actualizarTabla(controladorLibro.listarUltimos(10), modeloTabla);
                 limpiarCampos(txtISBN, txtTitulo, txtAutor, txtAnio, txtCategoria, txtEditorial,
                         txtPaginas, txtPrecio, txtIva, txtCantidad, tblLibros);
             } else if (controladorLibro.buscar(libro.getIsbn()) != null) {
@@ -123,7 +123,7 @@ public class EventosLibros extends Eventos {
                     txtPaginas, txtPrecio, txtIva, txtCantidad, cmbFormato);
             if (controladorLibro.actualizar(isbn, datosNuevos)) {
                 mostrarInfo("Libro actualizado correctamente.");
-                actualizarTabla(controladorLibro.listar(), modeloTabla);
+                actualizarTabla(controladorLibro.listarUltimos(10), modeloTabla);
                 limpiarCampos(txtISBN, txtTitulo, txtAutor, txtAnio, txtCategoria, txtEditorial,
                         txtPaginas, txtPrecio, txtIva, txtCantidad, tblLibros);
             } else if (controladorLibro.buscar(isbn) == null) {
@@ -150,7 +150,7 @@ public class EventosLibros extends Eventos {
         if (confirmar("\u00bfEst\u00e1 seguro de eliminar el libro?")) {
             if (controladorLibro.eliminar(isbn)) {
                 mostrarInfo("Libro eliminado con \u00e9xito.");
-                actualizarTabla(controladorLibro.listar(), modeloTabla);
+                actualizarTabla(controladorLibro.listarUltimos(10), modeloTabla);
                 limpiarCampos(txtISBN, txtTitulo, txtAutor, txtAnio, txtCategoria, txtEditorial,
                         txtPaginas, txtPrecio, txtIva, txtCantidad, tblLibros);
             } else if (controladorLibro.buscar(isbn) == null) {

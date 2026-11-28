@@ -16,6 +16,8 @@ public interface IServicioLibros {
 
     List<Libro> listar();
 
+    List<Libro> listarUltimos(int limite);
+
     Libro buscar(String isbn);
 
     List<Libro> buscarPorCriterio(String criterio);
