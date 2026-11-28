@@ -156,7 +156,7 @@ public class EventosLibros extends Eventos {
             } else if (controladorLibro.buscar(isbn) == null) {
                 mostrarError("No se encontr\u00f3 un libro con el ISBN ingresado.");
             } else {
-                mostrarError("No se pudo eliminar el libro. Verifique el almacenamiento.");
+                mostrarError("No se pudo eliminar el libro. Verifique si tiene ventas asociadas o el almacenamiento.");
             }
         }
     }

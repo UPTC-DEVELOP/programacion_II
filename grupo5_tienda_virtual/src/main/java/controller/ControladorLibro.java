@@ -5,6 +5,7 @@ import java.util.List;
 import model.Libro;
 import persistencia.IRepositorio;
 import persistencia.PersistenciaException;
+import service.IConsultaVentas;
 import service.IServicioLibros;
 
 /**
@@ -18,15 +19,22 @@ public class ControladorLibro implements IServicioLibros {
 
     private final IRepositorio<Libro> repositorio;
     private final ControladorOperaciones operaciones;
+    private final IConsultaVentas consultaVentas;
 
     public ControladorLibro(IRepositorio<Libro> repositorio) {
-        this(repositorio, null);
+        this(repositorio, null, null);
     }
 
     public ControladorLibro(IRepositorio<Libro> repositorio,
             ControladorOperaciones operaciones) {
+        this(repositorio, operaciones, null);
+    }
+
+    public ControladorLibro(IRepositorio<Libro> repositorio,
+            ControladorOperaciones operaciones, IConsultaVentas consultaVentas) {
         this.repositorio = repositorio;
         this.operaciones = operaciones;
+        this.consultaVentas = consultaVentas;
     }
 
     // REGISTRO DE UN NUEVO LIBRO (RF01)
@@ -129,6 +137,9 @@ public class ControladorLibro implements IServicioLibros {
     public boolean eliminar(String isbn) {
         Libro actual = buscar(isbn);
         if (actual == null) {
+            return false;
+        }
+        if (consultaVentas != null && consultaVentas.tieneVentas(isbn)) {
             return false;
         }
         try {

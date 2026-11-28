@@ -11,6 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import controller.ConsultaVentas;
 import controller.ControladorCompras;
 import controller.ControladorLibro;
 import model.CarritoCompras;
@@ -41,6 +42,26 @@ class FlujosPersistenciaTest {
                 new RepositorioComprasJson(ruta("compras.json")), "JSON");
         probarCompra(new RepositorioLibrosBD(ruta("tienda.db")),
                 new RepositorioComprasBD(ruta("tienda.db")), "BD");
+    }
+
+    @Test
+    void noEliminaLibroConVentas() {
+        IRepositorio<Compra> repoCompras =
+                new RepositorioComprasArchivoPlano(ruta("ventas_compras.txt"));
+        ConsultaVentas consultaVentas = new ConsultaVentas(repoCompras);
+        ControladorLibro libros = new ControladorLibro(
+                new RepositorioLibrosArchivoPlano(ruta("ventas_libros.txt")), null, consultaVentas);
+        Libro libro = libro("VENTA-1", 5);
+        assertTrue(libros.registrar(libro));
+
+        ControladorCompras compras = new ControladorCompras(repoCompras, libros);
+        CarritoCompras carrito = new CarritoCompras();
+        carrito.agregarLibro(libro, 1);
+        assertTrue(compras.finalizarCompra(
+                new ClienteRegular("Cliente venta", "venta@correo.com", "1"),
+                carrito, "Efectivo").isExitoso());
+
+        assertFalse(libros.eliminar("VENTA-1"));
     }
 
     @Test

@@ -4,6 +4,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import config.ProjectConfig;
+import controller.ConsultaVentas;
 import controller.ControladorCliente;
 import controller.ControladorCompras;
 import controller.ControladorLibro;
@@ -37,8 +38,10 @@ public class Main {
                             new ControladorOperaciones(new RegistroOperacionesTXT());
                     IServicioClientes controladorClientes =
                             new ControladorCliente(ProjectConfig.clientes(), operaciones);
+                    ConsultaVentas consultaVentas =
+                            new ConsultaVentas(ProjectConfig.compras());
                     IServicioLibros controladorLibros =
-                            new ControladorLibro(ProjectConfig.libros(), operaciones);
+                            new ControladorLibro(ProjectConfig.libros(), operaciones, consultaVentas);
                     IServicioCompras controladorCompras =
                             new ControladorCompras(
                                     ProjectConfig.compras(), controladorLibros, operaciones);
