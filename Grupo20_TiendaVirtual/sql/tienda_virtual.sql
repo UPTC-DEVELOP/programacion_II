@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS libros (
     titulo VARCHAR(150) NOT NULL,
     autor VARCHAR(100) NOT NULL,
     anio_publicacion INT NOT NULL,
+    categoria VARCHAR(50),
     editorial VARCHAR(100) NOT NULL,
     num_paginas INT NOT NULL,
     precio DOUBLE NOT NULL,
@@ -15,6 +16,8 @@ CREATE TABLE IF NOT EXISTS libros (
     formato VARCHAR(20),
     PRIMARY KEY (isbn)
 );
+
+ALTER TABLE libros ADD COLUMN IF NOT EXISTS categoria VARCHAR(50) AFTER anio_publicacion;
 
 CREATE TABLE IF NOT EXISTS cliente (
     id VARCHAR(20) NOT NULL,
