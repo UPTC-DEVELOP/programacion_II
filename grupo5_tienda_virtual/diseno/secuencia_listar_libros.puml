@@ -1,0 +1,25 @@
+@startuml
+title Listar libros - flujo independiente
+
+actor Usuario
+participant "EventosLibros" as UI
+participant "ControladorLibro" as Ctrl
+participant "IRepositorio<Libro>" as Repo
+participant "Almacenamiento\n(BD / JSON / plano)" as Storage
+
+Usuario -> UI : abrir lista de libros
+UI -> Ctrl : listarUltimos(10)
+Ctrl -> Repo : listarUltimos(10)
+Repo -> Storage : SELECT ... LIMIT 10 / leer archivo
+Storage --> Repo : filas encontradas
+Repo --> Ctrl : List<Libro>
+Ctrl --> UI : List<Libro>
+UI --> Usuario : mostrar los 10 libros
+
+note right of UI
+  Este flujo empieza despues del guardado.
+  La lista se consulta de nuevo al almacenamiento.
+  No se usa la lista que quedo en memoria.
+end note
+
+@enduml
