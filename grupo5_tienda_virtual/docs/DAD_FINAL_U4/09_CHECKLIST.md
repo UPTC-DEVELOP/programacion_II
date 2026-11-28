@@ -33,12 +33,12 @@
 | Estructura del DAD | 15% | 40% | 6.0 |
 | Pruebas JUnit | 15% | 100% | 15.0 |
 | Capturas generales/Eclipse | 10% | 100% | 10.0 |
-| Capturas por operación CRUD | 15% | 20% | 3.0 |
+| Capturas por operación CRUD | 15% | 70% | 10.5 |
 | Pruebas cruzadas | 10% | 0% | 0.0 |
 | Script SQL | 10% | 0% | 0.0 |
 | Integración | 10% | 50% | 5.0 |
 | Cronograma | 5% | 0% | 0.0 |
-| **Total** | **100%** |  | **54.0%** |
+| **Total** | **100%** |  | **61.5%** |
 
 ## Lectura
 

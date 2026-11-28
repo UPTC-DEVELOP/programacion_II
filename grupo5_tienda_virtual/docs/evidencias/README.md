@@ -19,6 +19,33 @@
 | `capturas/07_recibo.png` | Recibo con subtotal, IVA, descuento y total |
 | `capturas/08_historial_compras.png` | Historial de compras |
 
+### Capturas por operación CRUD
+
+En `crud/` están las capturas específicas por operación, a pantalla completa con Eclipse detrás:
+
+| Archivo | Operación |
+|---|---|
+| `crud/PI-CLI-01_crear_formulario.png` | Formulario de registro de cliente |
+| `crud/PI-CLI-02_listar.png` | Listado de clientes |
+| `crud/PI-CLI-03_actualizar.png` | Datos actualizados del cliente |
+| `crud/PI-CLI-04_eliminar.png` | Listado después de eliminar un cliente |
+| `crud/PI-LIB-01_crear_formulario.png` | Formulario de registro de libro |
+| `crud/PI-LIB-02_listar.png` | Catálogo/listado de libros |
+| `crud/PI-LIB-03_actualizar.png` | Libro actualizado |
+| `crud/PI-LIB-04_eliminar.png` | Listado después de eliminar un libro |
+| `crud/PI-COM-01_carrito.png` | Carrito con productos |
+| `crud/PI-COM-02_recibo.png` | Recibo de compra |
+| `crud/PI-COM-03_historial.png` | Historial de compras |
+
+Los errores y validaciones se evidencian en los logs de `pruebas/`:
+- Correo/contraseña inválidos.
+- Cliente duplicado.
+- Libro con datos inválidos.
+- Libro con ventas.
+- Stock insuficiente.
+- Compra inválida.
+- Fallo de guardado.
+
 ### Capturas con Eclipse detrás
 
 En `capturas_eclipse/` están las mismas 8 ventanas, pero en pantalla completa

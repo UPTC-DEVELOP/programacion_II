@@ -72,3 +72,6 @@ Listar historial: EventosHistorialCompras → ControladorCompras → IRepositori
 - `capturas_eclipse/06_compras_carrito.png`
 - `capturas_eclipse/07_recibo.png`
 - `capturas_eclipse/08_historial_compras.png`
+- `crud/PI-COM-01_carrito.png`
+- `crud/PI-COM-02_recibo.png`
+- `crud/PI-COM-03_historial.png`

@@ -67,3 +67,7 @@ Vista → Eventos → IServicioClientes → ControladorCliente → IRepositorio 
 - `capturas_eclipse/02_registro_cliente.png`
 - `capturas_eclipse/03_gestion_clientes.png`
 - `capturas_eclipse/05_mi_cuenta.png`
+- `crud/PI-CLI-01_crear_formulario.png`
+- `crud/PI-CLI-02_listar.png`
+- `crud/PI-CLI-03_actualizar.png`
+- `crud/PI-CLI-04_eliminar.png`

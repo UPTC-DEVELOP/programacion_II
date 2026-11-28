@@ -32,7 +32,7 @@ Esta carpeta es la **base** para construir el DAD final de Unidad 4. Todavía no
 | Pruebas JUnit | 16/16 |
 | Capturas generales | Completas |
 | Capturas con Eclipse | Completas |
-| Capturas por operación CRUD | Parcial |
+| Capturas por operación CRUD | Parcial: 11 capturas |
 | Pruebas cruzadas | Pendiente |
 | Script SQL | Pendiente |
 | DAD final redactado | En construcción |
