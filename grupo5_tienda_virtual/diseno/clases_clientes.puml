@@ -1,0 +1,106 @@
+@startuml ClasesClientes
+title Diagrama de clases - Gestion de Clientes (RF05, RF06, RF07)
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam nodesep 50
+skinparam ranksep 50
+
+package "model" {
+  abstract class Cliente {
+    - nombreCompleto : String
+    - correo : String
+    - direccion : String
+    - telefono : String
+    - contrasena : String
+    - compras : List<Compra>
+    + calcularDescuento() : double
+    + equals(otro) : boolean
+    + hashCode() : int
+  }
+
+  class ClienteRegular {
+    + calcularDescuento() : double
+  }
+
+  class ClientePremium {
+    {static} + DESCUENTO : double = 0.10
+    + calcularDescuento() : double
+  }
+}
+
+package "persistencia" {
+  interface "IRepositorioConsulta<T>" as IConsulta {
+    + listar() : List<T>
+    + listarUltimos(limite) : List<T>
+    + listarPagina(inicio, cantidad) : List<T>
+    + contar() : int
+    + buscar(criterio) : List<T>
+  }
+
+  interface "IRepositorio<T>" as IRepo {
+    + insertar(elemento) : void
+    + actualizar(elemento) : void
+    + eliminarPersistente(elemento) : boolean
+  }
+
+  class RepositorioClientesArchivoPlano
+  class RepositorioClientesJson
+  class RepositorioClientesBD
+}
+
+package "service" {
+  interface IServicioClientes {
+    + registrar(cliente) : boolean
+    + registrarCliente(tipo, nombre, correo,\ndireccion, telefono, contrasena) : boolean
+    + listar() : List<Cliente>
+    + listarUltimos(limite) : List<Cliente>
+    + buscar(correo) : Cliente
+    + actualizarDatos(correo, nombre, direccion, telefono) : boolean
+    + eliminar(correo) : boolean
+    + iniciarSesion(correo, contrasena) : Cliente
+    + cantidad() : int
+  }
+}
+
+package "controller" {
+  class ControladorCliente {
+    - CORREO_VALIDO : Pattern
+    - repositorio : IRepositorio<Cliente>
+    - operaciones : ControladorOperaciones
+    + registrar(cliente) : boolean
+    + registrarCliente(...) : boolean
+    + actualizarDatos(...) : boolean
+    + eliminar(correo) : boolean
+    - correoValido(correo) : boolean
+    - contrasenaValida(contrasena) : boolean
+  }
+
+  class ControladorOperaciones
+}
+
+package "config" {
+  class ProjectConfig {
+    {static} + clientes() : IRepositorio<Cliente>
+    {static} + clientesArchivoPlano() : IRepositorio<Cliente>
+    {static} + clientesJson() : IRepositorio<Cliente>
+    {static} + clientesBD() : IRepositorio<Cliente>
+  }
+}
+
+Cliente <|-- ClienteRegular
+Cliente <|-- ClientePremium
+
+IConsulta <|-- IRepo
+IRepo <|.. RepositorioClientesArchivoPlano
+IRepo <|.. RepositorioClientesJson
+IRepo <|.. RepositorioClientesBD
+
+IServicioClientes <|.. ControladorCliente
+ControladorCliente --> IRepo : usa
+ControladorCliente --> ControladorOperaciones : registra operacion
+ControladorCliente ..> Cliente : valida y crea
+
+ProjectConfig ..> RepositorioClientesArchivoPlano : crea
+ProjectConfig ..> RepositorioClientesJson : crea
+ProjectConfig ..> RepositorioClientesBD : crea
+@enduml
