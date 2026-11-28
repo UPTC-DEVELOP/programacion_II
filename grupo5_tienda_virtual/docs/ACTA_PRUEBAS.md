@@ -70,6 +70,12 @@ BUILD SUCCESS
 Se ejecutaron las 13 pruebas una por una con `-Dtest=Clase#metodo`.
 Todas pasaron.
 
+Evidencias:
+
+- `docs/evidencias/pruebas/`: logs de las 13 pruebas.
+- `docs/evidencias/capturas/`: capturas de login, clientes, libros, carrito, recibo e historial.
+- `docs/evidencias/README.md`: índice de evidencias.
+
 ## 4. Prueba de cambio de una línea
 
 Se cambió únicamente `ProjectConfig.compras()`:

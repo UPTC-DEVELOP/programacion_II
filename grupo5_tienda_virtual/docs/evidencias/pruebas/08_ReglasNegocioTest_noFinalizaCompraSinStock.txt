@@ -1,0 +1,40 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< TiendaVirtual:TiendaVirtual >---------------------
+[INFO] Building TiendaVirtual 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] Loaded 24665 auto-discovered prefixes for remote repository central (prefixes-central.txt)
+[INFO] Loaded 64 auto-discovered prefixes for remote repository apache.snapshots (prefixes-apache.snapshots.txt)
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ TiendaVirtual ---
+[INFO] skip non existing resourceDirectory C:\Users\juano\OneDrive\Documents\programaciòn 2\programacion_II_grupo5_remoto\grupo5_tienda_virtual\src\main\resources
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ TiendaVirtual ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ TiendaVirtual ---
+[INFO] skip non existing resourceDirectory C:\Users\juano\OneDrive\Documents\programaciòn 2\programacion_II_grupo5_remoto\grupo5_tienda_virtual\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ TiendaVirtual ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ TiendaVirtual ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running controller.ReglasNegocioTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.200 s -- in controller.ReglasNegocioTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.666 s
+[INFO] Finished at: 2026-11-28T11:56:32-05:00
+[INFO] ------------------------------------------------------------------------
