@@ -2,6 +2,7 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -35,6 +36,7 @@ public class VentanaCompras extends JFrame {
 	
 	
     // Campos de selección
+    private JTextField txtBuscarLibro;
     private JComboBox<Libro> cmbLibro;
     private JTextField txtCantidad;
 
@@ -56,6 +58,7 @@ public class VentanaCompras extends JFrame {
     // Botones
     private JButton btnAgregar;
     private JButton btnModificar;
+    private JButton btnBuscarLibro;
     private JButton btnEliminar;
     private JButton btnVaciar;
     private JButton btnComprar;
@@ -77,10 +80,7 @@ public class VentanaCompras extends JFrame {
 
         add(crearPanelSuperior(), BorderLayout.NORTH);
 
-        // CARGAR LOS LIBROS DISPONIBLES EN EL COMBOBOX
-        for (Libro libro : controladorLibro.listar()) {
-            cmbLibro.addItem(libro);
-        }
+        cargarLibrosEnCombo(controladorLibro.listar());
 
         add(crearTablaCarrito(), BorderLayout.CENTER);
         add(crearPanelInferior(), BorderLayout.SOUTH);
@@ -94,11 +94,15 @@ public class VentanaCompras extends JFrame {
 
     	    JPanel panelPrincipal = new JPanel(new BorderLayout(6, 6));
 
-    	    // FILA SUPERIOR: LIBRO Y CANTIDAD
-    	    JPanel panelDatos = new JPanel(new GridLayout(1, 4, 6, 6));
+    	    // FILA SUPERIOR: BUSQUEDA, LIBRO Y CANTIDAD
+    	    JPanel panelDatos = new JPanel(new GridLayout(3, 2, 6, 6));
 
+    	    txtBuscarLibro = new JTextField();
     	    cmbLibro = new JComboBox<Libro>();
     	    txtCantidad = new JTextField();
+
+    	    panelDatos.add(new JLabel("Buscar libro:"));
+    	    panelDatos.add(txtBuscarLibro);
 
     	    panelDatos.add(new JLabel("Libro:"));
     	    panelDatos.add(cmbLibro);
@@ -107,13 +111,15 @@ public class VentanaCompras extends JFrame {
     	    panelDatos.add(txtCantidad);
 
     	    // FILA INFERIOR: BOTONES
-    	    JPanel panelBotones = new JPanel(new GridLayout(1, 2, 6, 6));
+    	    JPanel panelBotones = new JPanel(new GridLayout(1, 3, 6, 6));
 
     	    btnAgregar = new JButton("Agregar al carrito");
     	    btnModificar = new JButton("Modificar cantidad");
+    	    btnBuscarLibro = new JButton("Buscar libro");
 
     	    panelBotones.add(btnAgregar);
     	    panelBotones.add(btnModificar);
+    	    panelBotones.add(btnBuscarLibro);
 
     	    panelPrincipal.add(panelDatos, BorderLayout.NORTH);
     	    panelPrincipal.add(panelBotones, BorderLayout.SOUTH);
@@ -209,6 +215,28 @@ public class VentanaCompras extends JFrame {
         panelPrincipal.add(panelFinal, BorderLayout.SOUTH);
 
         return panelPrincipal;
+    }
+
+    public void cargarLibrosEnCombo(List<Libro> libros) {
+        cmbLibro.removeAllItems();
+        if (libros == null) {
+            return;
+        }
+        for (Libro libro : libros) {
+            cmbLibro.addItem(libro);
+        }
+    }
+
+    public JTextField getTxtBuscarLibro() {
+        return txtBuscarLibro;
+    }
+
+    public JButton getBtnBuscarLibro() {
+        return btnBuscarLibro;
+    }
+
+    public IServicioLibros getControladorLibro() {
+        return controladorLibro;
     }
 
     public Cliente getCliente() {

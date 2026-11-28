@@ -1,5 +1,6 @@
 package view;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.table.DefaultTableModel;
@@ -27,11 +28,25 @@ public class EventosCompras extends Eventos {
         vista.getBtnEliminar().addActionListener(e -> eliminarDelCarrito());
         vista.getBtnVaciar().addActionListener(e -> vaciarCarrito());
         vista.getBtnComprar().addActionListener(e -> finalizarCompra());
+        vista.getBtnBuscarLibro().addActionListener(e -> buscarLibros());
         vista.getTablaCarrito().getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 cargarSeleccion();
             }
         });
+    }
+
+    private void buscarLibros() {
+        String criterio = vista.getTxtBuscarLibro().getText().trim();
+        List<Libro> libros = criterio.isEmpty()
+                ? vista.getControladorLibro().listarUltimos(10)
+                : vista.getControladorLibro().buscarPorCriterio(criterio);
+
+        if (libros.isEmpty()) {
+            mostrarInfo("No se encontraron libros.");
+            return;
+        }
+        vista.cargarLibrosEnCombo(libros);
     }
 
     private void agregarAlCarrito() {

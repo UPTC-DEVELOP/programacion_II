@@ -91,6 +91,7 @@ mvn clean compile
 
 Resultado: **BUILD SUCCESS** con 51 fuentes.
 
-## 7. Limitación conocida
+## 7. Combo de Compras
 
-El combo de Compras solo muestra los últimos 10 libros. Si hay más, hay que buscar o aumentar el límite de selección antes de la sustentación.
+El combo carga los últimos 10 libros y tiene un buscador por ISBN, título o autor.
+Al buscar, la lista se reemplaza con los resultados de la consulta al repositorio.

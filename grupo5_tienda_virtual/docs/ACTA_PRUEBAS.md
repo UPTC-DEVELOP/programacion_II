@@ -108,7 +108,7 @@ Resultado: correcto.
 - Flujo visual completo de Login, Registro, Clientes, Libros y Mi Cuenta.
 - Probar el recibo desde la interfaz.
 - Catálogo y búsqueda separados para cliente.
-- Corregir el combo de Compras: actualmente solo muestra los últimos 10 libros.
+- Combo de Compras corregido: carga los últimos 10 y permite buscar por ISBN, título o autor.
 
 ## 9. Observaciones
 
