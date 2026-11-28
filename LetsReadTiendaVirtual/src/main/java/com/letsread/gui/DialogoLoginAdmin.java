@@ -16,10 +16,10 @@ import javax.swing.JTextField;
 public class DialogoLoginAdmin extends JDialog {
     private static final long serialVersionUID = 1L;
 
-    private static final String ADMIN_USER = "";  //se le puede colocar nombe de admin y 
+    private static final String ADMIN_USER = "admin";  //se le puede colocar nombe de admin y 
    // ontraseña para que no sea tan obvio, pero por motivos de seguridad se deja vacio
     
-    private static final String ADMIN_PASS = "";
+    private static final String ADMIN_PASS = "1234";
 
     private JTextField txtUsuario;
     private JPasswordField txtClave;
