@@ -80,12 +80,18 @@ No se modificó ninguna ventana ni controlador.
 - [x] Carrito: guardar, recargar y vaciar en JSON.
 - [x] Clientes: correo y contraseña inválidos se rechazan.
 - [x] Libros: IVA, año y páginas inválidos se rechazan.
+- [x] Compra sin stock no se guarda.
+- [x] Compra Premium aplica descuento.
+- [x] Compra sin cliente, pago o carrito vacío se rechaza.
+- [x] Login con contraseña incorrecta se rechaza.
+- [x] Libro sin ventas se puede eliminar.
+- [x] Inventario actualiza y rechaza cantidad mayor al stock.
 
 ```bash
 mvn test
 ```
 
-Resultado: **7 tests, 0 fallos**.
+Resultado: **13 pruebas, 0 fallos**, ejecutadas individualmente con Maven.
 
 ## 6. Compilación
 

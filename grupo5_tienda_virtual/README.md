@@ -141,7 +141,7 @@ mvn test
 ```
 
 - `src/test/java/persistencia/FlujosPersistenciaTest.java`
-- 7 pruebas: límite de Clientes, compra persistente, fallo de guardado, eliminación de libro con ventas, carrito JSON, validaciones de Clientes y validaciones de Libros.
+- 13 pruebas: límite de Clientes, compra persistente, fallo de guardado, libro con ventas, carrito JSON, validaciones, stock, descuento Premium, login e inventario.
 
 Pruebas manuales documentadas en `docs/`:
 

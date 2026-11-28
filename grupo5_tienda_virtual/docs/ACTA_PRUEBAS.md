@@ -47,6 +47,12 @@ Se agregó `src/test/java/persistencia/FlujosPersistenciaTest.java` con JUnit 5.
 | Carrito: guardar, recargar y vaciar en JSON | OK |
 | Clientes: correo y contraseña inválidos se rechazan | OK |
 | Libros: IVA/año/páginas inválidos se rechazan | OK |
+| Compra sin stock: no se guarda ni descuenta inventario | OK |
+| Compra Premium: aplica descuento | OK |
+| Compra sin cliente, sin pago o con carrito vacío: rechazada | OK |
+| Login con contraseña incorrecta: rechazado | OK |
+| Eliminar libro sin ventas: permitido | OK |
+| Inventario: actualiza y rechaza cantidad mayor al stock | OK |
 
 Comando:
 
@@ -54,12 +60,15 @@ Comando:
 mvn test
 ```
 
-Resultado:
+Resultado individual con Maven:
 
 ```text
-Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 ```
+
+Se ejecutaron las 13 pruebas una por una con `-Dtest=Clase#metodo`.
+Todas pasaron.
 
 ## 4. Prueba de cambio de una línea
 
