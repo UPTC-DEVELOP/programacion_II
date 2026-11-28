@@ -29,12 +29,13 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
+import com.letsread.service.LibroService;
 
 public class VentanaPrincipal extends JFrame {
     private static final long serialVersionUID = 1L;
     
     private TiendaService service;
-
+    private LibroService libroService;
     private JTabbedPane pestanias;
     // Campos para Iniciar Sesión
     private JTextField txtCorreoLogin;
@@ -54,9 +55,10 @@ public class VentanaPrincipal extends JFrame {
 
     
     
-    public VentanaPrincipal(ClienteService clienteService) {
+    public VentanaPrincipal(ClienteService clienteService, LibroService libroService) {
         this.clienteService = clienteService;
-        service = new TiendaService();
+        this.libroService = libroService;
+        service = new TiendaService(libroService);
 
         setTitle("Let's Read - Tienda Virtual de Libros    YEISSON CRUZ & CRISTTOPHER MORENO  ");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
