@@ -6,23 +6,27 @@ import java.util.List;
 import co.edu.uptc.tienda.excepcion.CompraExcepcion;
 import co.edu.uptc.tienda.interfaz.IGestionCliente;
 import co.edu.uptc.tienda.interfaz.IGestionCompra;
+import co.edu.uptc.tienda.interfaz.IRegistroOperaciones;
 import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.modelo.Compra;
 import co.edu.uptc.tienda.persistencia.LocalCliente;
+import co.edu.uptc.tienda.persistencia.RegistroOperacionesTxt;
 
 public class GestionCliente implements IGestionCliente {
 
     private LocalCliente localCliente;
     private IGestionCompra compras;
+    private IRegistroOperaciones registro;
     private Cliente clienteLogueado;
 
     public GestionCliente() {
-        this(new LocalCliente(), new GestionCompra());
+        this(new LocalCliente(), new GestionCompra(), new RegistroOperacionesTxt("datos/operaciones.txt"));
     }
 
-    public GestionCliente(LocalCliente localCliente, IGestionCompra compras) {
+    public GestionCliente(LocalCliente localCliente, IGestionCompra compras, IRegistroOperaciones registro) {
         this.localCliente = localCliente;
         this.compras = compras;
+        this.registro = registro;
         clienteLogueado = null;
     }
 
@@ -43,6 +47,7 @@ public class GestionCliente implements IGestionCliente {
         
         // Persistencia, guarda los datos con JSON
         localCliente.guardar(cliente);
+        registro.registrar("Clientes", "Registrar cliente", "ID " + cliente.getId() + ", " + cliente.getNombreCompleto());
     }
 
     @Override
@@ -69,6 +74,7 @@ public class GestionCliente implements IGestionCliente {
         if (clienteLogueado != null && clienteLogueado.getId().equals(cliente.getId())) {
             clienteLogueado = cliente;
         }
+        registro.registrar("Clientes", "Actualizar cliente", "ID " + cliente.getId() + ", " + cliente.getNombreCompleto());
     }
 
     @Override
@@ -80,6 +86,7 @@ public class GestionCliente implements IGestionCliente {
         if (clienteLogueado != null && clienteLogueado.getId().equals(id)) {
             clienteLogueado = null;
         }
+        registro.registrar("Clientes", "Eliminar cliente", "ID " + id);
     }
 
     public boolean iniciarSesion(String correo) {
@@ -89,6 +96,7 @@ public class GestionCliente implements IGestionCliente {
         for (Cliente cliente : listar()) {
             if (cliente.getCorreoElectronico().equalsIgnoreCase(correo.trim())) {
                 clienteLogueado = cliente;
+                registro.registrar("Clientes", "Iniciar sesión", "ID " + cliente.getId() + ", " + cliente.getCorreoElectronico());
                 return true;
             }
         }
@@ -96,6 +104,9 @@ public class GestionCliente implements IGestionCliente {
     }
 
     public void cerrarSesion() {
+        if (clienteLogueado != null) {
+            registro.registrar("Clientes", "Cerrar sesión", "ID " + clienteLogueado.getId());
+        }
         clienteLogueado = null;
     }
 
