@@ -470,6 +470,29 @@ public class EventosLibro implements ActionListener {
             return;
         }
 
+        try {
+
+            if (controlLibro.tieneVentas(isbn)) {
+                JOptionPane.showMessageDialog(
+                        ventana,
+                        "No se puede eliminar el libro porque tiene ventas asociadas.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+        } catch (LibroExcepcion e) {
+
+            JOptionPane.showMessageDialog(
+                    ventana,
+                    e.getMessage(),
+                    "Libros",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
         int respuesta = JOptionPane.showConfirmDialog(
                 ventana,
                 "¿Está seguro de eliminar el libro?\n\n"
