@@ -45,6 +45,12 @@ import co.edu.uptc.tiendalibros.persistencia.jdbc.RepositorioUsuarioJDBC;
 import co.edu.uptc.tiendalibros.persistencia.memoria.RepositorioAutorEnMemoria;
 
 /// Representa la aplicación.
+/// 
+/// Orquesta los componentes de abajo hacia arriba en este orden:
+///
+/// 1. los repositorios (persistencia).
+/// 2. los gestores de la lógica del negocio (negocio), que necesitan de los repositorios.
+/// 3. los controladores de la interfaz gráfica, necesitan de los gestores.
 public class Aplicacion {
   
   /// Ventana principal de la aplicación.
@@ -56,14 +62,37 @@ public class Aplicacion {
   /// Objeto que mantiene la conexión con la base de datos.
   private final ConexionBaseDatos conexionBaseDatos;
   
+  // Repositorios: se declaran con el tipo de la interfaz
+  
+  private IRepositorioEditorial repositorioEditorial;
+  private IRepositorioCategoria repositorioCategoria;
+  private IRepositorioLibro repositorioLibro;
+  private IRepositorioLibroConFormatos repositorioLibroConFormatos;
+  private IRepositorioAutor repositorioAutor;
+  private IRepositorioAutorLibro repositorioAutorLibro;
+  private IRepositorioUsuario repositorioUsuario;
+  private IRepositorioEmpleado repositorioEmpleado;
+  private IRepositorioCliente repositorioCliente;
+  
+  // Gestores de la lógica del negocio:. Reciben interfaces de repositorio por el
+  // constructor.
+  
+  private GestionSeguridad gestorSeguridad;
+  private GestionEditorial gestorEditorial;
+  private GestionCategoria gestorCategoria;
+  private GestionAutor gestorAutor;
+  private GestionLibro gestorLibro;
+  private GestionExploradorCatalogo gestorExplorador;
+  private GestionCliente gestorCliente;
+  private GestionEmpleado gestorEmpleado;
+
   /// Crea un nuevo objeto de controlador de aplicación.
   ///
-  /// @param ventana           Ventana principal de la aplicación.
-  /// @param conexionBaseDatos Objeto que mantiene la conexión con la base de datos.
+  /// @param ventana  Ventana principal de la aplicación.
+  /// @param conexion Objeto que mantiene la conexión con la base de datos.
   public Aplicacion(
     VentanaPrincipal ventana,
     ConexionBaseDatos conexion
-  
   ) {
     // asignar la ventana principal
     this.ventanaPrincipal = ventana;
@@ -74,7 +103,9 @@ public class Aplicacion {
     // asignar la conexión con la base de datos
     this.conexionBaseDatos = conexion;
     
-    // continuar creando los otros componentes de la aplicación
+    // orquestar la aplicación de abajo hacia arriba
+    crearRepositorios();
+    crearGestores();
     registrarControladores();
   }
   
@@ -83,90 +114,105 @@ public class Aplicacion {
     this.ventanaPrincipal.setVisible(true);
   }
   
-  /// Registra los controladores de la aplicación.
-  public void registrarControladores() {
-    // panel del contenido principal de la ventana
-    PanelContenidoPrincipal contenidoPrincipal = this.ventanaPrincipal.getPanelContenidoPrincipal();
+  /// Paso 1. Crea los repositorios.
+  private void crearRepositorios() {
+    crearRepositoriosDelCatalogoEnJDBC();
+    crearRepositoriosDeCuentasEnJDBC();
+    crearRepositoriosDeAutores();
+  }
+  
+  /// Crea los repositorios del catálogo (editoriales, categorías, libros y formatos) en la
+  /// base de datos usando la tecnología JDCB.
+  ///
+  private void crearRepositoriosDelCatalogoEnJDBC() {
+    // crear las objetos de los repositorios concretos
+    RepositorioEditorialJDBC editorialJDBC = new RepositorioEditorialJDBC(this.conexionBaseDatos);
+    RepositorioCategoriaJDBC categoriaJDBC = new RepositorioCategoriaJDBC(this.conexionBaseDatos);
+    RepositorioLibroJDBC libroJDBC = new RepositorioLibroJDBC(this.conexionBaseDatos, categoriaJDBC, editorialJDBC);
+    RepositorioFormatoLibroJDBC formatoJDBC = new RepositorioFormatoLibroJDBC(this.conexionBaseDatos);
     
-    // crear los repositorios de datos.
-    
-    // como el repositorio JDBC de libros construye los objetos categoría y editorial de cada
-    // libro, se necesita tener los repositorios JDBC.
-    RepositorioEditorialJDBC repositorioEditorialJDBC = new RepositorioEditorialJDBC(this.conexionBaseDatos);
-    
-    RepositorioCategoriaJDBC repositorioCategoriaJDBC = new RepositorioCategoriaJDBC(this.conexionBaseDatos);
-    
-    // Repositorio para la gestión de clientes.
-    IRepositorioCliente repositorioCliente = new RepositorioClienteJDBC(this.conexionBaseDatos);
-    
-    IRepositorioEditorial repositorioEditorial = repositorioEditorialJDBC;
-    IRepositorioCategoria repositorioCategoria = repositorioCategoriaJDBC;
-    
-    IRepositorioAutor repositorioAutor = new RepositorioAutorEnMemoria();
-    
-    IRepositorioAutorLibro repositorioAutorLibro = new RepositorioAutorLibroEnCSV("datos/autores_libros.csv");
-    
-    RepositorioLibroJDBC repositorioLibroJDBC = new RepositorioLibroJDBC(
-      this.conexionBaseDatos, repositorioCategoriaJDBC, repositorioEditorialJDBC
+    // asignar los objetos concretos a las interfaces
+    this.repositorioEditorial = editorialJDBC;
+    this.repositorioCategoria = categoriaJDBC;
+    this.repositorioLibro = libroJDBC;
+    this.repositorioLibroConFormatos = new RepositorioLibroConFormatosJDBC(
+      this.conexionBaseDatos, libroJDBC, formatoJDBC
     );
+  }
+  
+  /// Crea los repositorios de las cuentas de usuario, los empleados y los clientes en la
+  /// base de datos usando la tecnología JDBC.
+  ///
+  /// El repositorio de empleados coordina al repositorio de usuarios para guardar la cuenta
+  /// de cada empleado en la misma transacción.
+  private void crearRepositoriosDeCuentasEnJDBC() {
+    RepositorioUsuarioJDBC usuarioJDBC = new RepositorioUsuarioJDBC(this.conexionBaseDatos);
     
-    RepositorioFormatoLibroJDBC repositorioFormatoLibroJDBC = new RepositorioFormatoLibroJDBC(this.conexionBaseDatos);
-    
-    IRepositorioLibro repositorioLibro = repositorioLibroJDBC;
-    
-    IRepositorioLibroConFormatos repositorioLibroConFormatos = new RepositorioLibroConFormatosJDBC(
-      this.conexionBaseDatos, repositorioLibroJDBC, repositorioFormatoLibroJDBC
-    );
-    
-    // crear los gestores de lógica del negocio
-    // gestor de la seguridad
-    RepositorioUsuarioJDBC repositorioUsuarioJDBC = new RepositorioUsuarioJDBC(this.conexionBaseDatos);
-    IRepositorioUsuario repositorioUsuario = repositorioUsuarioJDBC;
-    // el repositorio de empleados coordina al de usuarios para guardar la cuenta de cada
-    // empleado
-    IRepositorioEmpleado repositorioEmpleado = new RepositorioEmpleadoJDBC(
-      this.conexionBaseDatos, repositorioUsuarioJDBC
-    );
-    
+    this.repositorioUsuario = usuarioJDBC;
+    this.repositorioEmpleado = new RepositorioEmpleadoJDBC(this.conexionBaseDatos, usuarioJDBC);
+    this.repositorioCliente = new RepositorioClienteJDBC(this.conexionBaseDatos);
+  }
+  
+  /// Crea los repositorios de los autores.
+  private void crearRepositoriosDeAutores() {
+    this.repositorioAutor = new RepositorioAutorEnMemoria();
+    this.repositorioAutorLibro = new RepositorioAutorLibroEnCSV("datos/autores_libros.csv");
+  }
+  
+  /// Paso 2. Crea los gestores de la lógica del negocio.
+  /// 
+  /// Cada gestor recibe los repositorios que necesita como interfaces.
+  private void crearGestores() {
+    // la sesión es la única fuente de información que dice cuál usuario está conectado.
+    // la sesión se comparte entre los gestores para tener la información del usuario
     SesionUsuario sesionUsuario = new SesionUsuario();
     IProtectorContrasena protectorContrasena = new ProtectorContrasenaPBKDF2();
-    GestionSeguridad gestorSeguridad = new GestionSeguridad(repositorioUsuario, protectorContrasena, sesionUsuario);
     
-    GestionEditorial gestorEditorial = new GestionEditorial(repositorioEditorial, repositorioLibro, sesionUsuario);
+    // Gestión de Seguridad
+    this.gestorSeguridad = new GestionSeguridad(this.repositorioUsuario, protectorContrasena, sesionUsuario);
     
-    GestionAutor gestorAutor = new GestionAutor(repositorioAutor);
+    // Gestión del Catálogo
+    this.gestorEditorial = new GestionEditorial(this.repositorioEditorial, this.repositorioLibro, sesionUsuario);
+    this.gestorCategoria = new GestionCategoria(this.repositorioCategoria);
+    this.gestorAutor = new GestionAutor(this.repositorioAutor);
     
-    GestionCategoria gestorCategoria = new GestionCategoria(repositorioCategoria);
-    
-    // el gestor de libros necesita el repositorio de libros, el de libros con formatos,
+    // Gestión de Libros
+    // el gestor de libros necesita de los repositorios de libros, de libros con formatos,
     // editoriales, categorías y asociaciones autor-libro
-    GestionLibro gestorLibro = new GestionLibro(
-      repositorioLibro, repositorioLibroConFormatos, repositorioEditorial, repositorioCategoria,
-      repositorioAutorLibro, sesionUsuario
+    this.gestorLibro = new GestionLibro(
+      this.repositorioLibro, this.repositorioLibroConFormatos, this.repositorioEditorial,
+      this.repositorioCategoria, this.repositorioAutorLibro, sesionUsuario
     );
     
-    // el gestor del explorador del catálogo solo necesita el repositorio de libros con
-    // formatos porque hace la lista únicamente de los libros que se pueden comprar
-    GestionExploradorCatalogo gestorExplorador = new GestionExploradorCatalogo(repositorioLibroConFormatos);
+    // Gestión del Explorador
     
-    // Gestor para la lógica de negocio de clientes.
-    GestionCliente gestorCliente = new GestionCliente(repositorioCliente, repositorioUsuario, gestorSeguridad);
+    // el gestor del explorador del catálogo necesita el repositorio de libros con
+    // formatos para hacer la lista de los libros que se pueden comprar
+    this.gestorExplorador = new GestionExploradorCatalogo(this.repositorioLibroConFormatos);
     
-    // Gestor para la lógica de negocio de los empleados.
-    GestionEmpleado gestorEmpleado = new GestionEmpleado(
-      repositorioEmpleado, repositorioUsuario, gestorSeguridad, sesionUsuario
+    // Gestión de Clientes
+    this.gestorCliente = new GestionCliente(this.repositorioCliente, this.repositorioUsuario, this.gestorSeguridad);
+    
+    // Gestión de Empleados
+    this.gestorEmpleado = new GestionEmpleado(
+      this.repositorioEmpleado, this.repositorioUsuario, this.gestorSeguridad, sesionUsuario
     );
-    
-    // crear los controladores que intermedian entre la interfaz gráfica y la capa de lógica
+  }
+  
+  /// Paso 3. Crea los controladores que intermedian entre la interfaz gráfica y la capa de
+  /// lógica, y les pide que registren sus rutas de eventos.
+  private void registrarControladores() {
+    // panel del contenido principal de la ventana
+    PanelContenidoPrincipal contenidoPrincipal = this.ventanaPrincipal.getPanelContenidoPrincipal();
     
     IControlador[] controladores = {
       new ControladorVentanaPrincipal(this.enrutadorEventos, this.ventanaPrincipal),
       new ControladorNavegacion(
         this.enrutadorEventos, contenidoPrincipal,
-        this.ventanaPrincipal.getMenuNavegacion(), gestorSeguridad
+        this.ventanaPrincipal.getMenuNavegacion(), this.gestorSeguridad
       ),
       
-      new ControladorLogin(this.enrutadorEventos, contenidoPrincipal.getPanelLogin(), gestorSeguridad),
+      new ControladorLogin(this.enrutadorEventos, contenidoPrincipal.getPanelLogin(), this.gestorSeguridad),
       
       // el controlador de editoriales necesita el panel de gestión de libros, y
       // necesita el gestor de lógica de editoriales
@@ -174,45 +220,44 @@ public class Aplicacion {
         this.enrutadorEventos,
         contenidoPrincipal.getPanelGestionCatalogo()
           .getPanelEditoriales(),
-        gestorEditorial
+        this.gestorEditorial
       ),
       
       new ControladorAutor(
         this.enrutadorEventos,
         contenidoPrincipal.getPanelGestionCatalogo()
           .getPanelAutores(),
-        gestorAutor
+        this.gestorAutor
       ),
       
       new ControladorCategoria(
         this.enrutadorEventos,
         contenidoPrincipal.getPanelGestionCatalogo()
           .getPanelCategorias(),
-        gestorCategoria
+        this.gestorCategoria
       ),
       
       // el controlador de libro necesita el panel de gestión de libros y los gestores de
-      // libros,
-      // categorías y editoriales
+      // libros, categorías y editoriales
       new ControladorLibro(
         this.enrutadorEventos, contenidoPrincipal.getPanelGestionCatalogo()
           .getPanelLibros(),
-        gestorLibro, gestorCategoria, gestorEditorial
+        this.gestorLibro, this.gestorCategoria, this.gestorEditorial
       ),
       
-      // controlador par la gestión de empleados
+      // controlador para la gestión de empleados
       new ControladorEmpleado(
         this.enrutadorEventos,
         contenidoPrincipal.getPanelAdministracionSistema()
           .getPanelEmpleados(),
-        gestorEmpleado
+        this.gestorEmpleado
       ),
       
-      // Controlador para la gestión de clientes.
+      // controlador para la gestión de clientes
       new ControladorCliente(
         this.enrutadorEventos,
         contenidoPrincipal.getPanelGestionClientes(),
-        gestorCliente
+        this.gestorCliente
       ),
       
       // el controlador del explorador del catálogo necesita el panel que muestra las fichas
@@ -221,7 +266,7 @@ public class Aplicacion {
         this.enrutadorEventos,
         contenidoPrincipal.getPanelExploracionCatalogo()
           .getPanelExploradorCatalogo(),
-        gestorExplorador
+        this.gestorExplorador
       ),
     
     };
