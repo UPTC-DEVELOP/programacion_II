@@ -4,7 +4,7 @@ import co.uptc.edu.gui.EstiloUI;
 import co.uptc.edu.gui.Navegador;
 import co.uptc.edu.gui.Refrescable;
 import co.uptc.edu.gui.Vista;
-import co.uptc.edu.model.Tienda;
+import co.uptc.edu.controlador.SesionControlador;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,12 +12,12 @@ import java.awt.*;
 
 public class PantallaUsuario extends JPanel implements Refrescable {
 
-    private final Tienda tienda;
+    private final SesionControlador sesion;
     private final JLabel lblUsuarioActual;
 
-    public PantallaUsuario(Tienda tienda, Navegador nav) {
+    public PantallaUsuario(SesionControlador sesion, Navegador nav) {
         super(new BorderLayout());
-        this.tienda = tienda;
+        this.sesion = sesion;
 
         JPanel header = EstiloUI.crearHeaderSuperior("Panel Principal de Cliente");
         lblUsuarioActual = new JLabel("Bienvenido, Cliente");
@@ -51,6 +51,6 @@ public class PantallaUsuario extends JPanel implements Refrescable {
 
     @Override
     public void refrescar() {
-        lblUsuarioActual.setText("Bienvenido, " + tienda.getUsuarioActual());
+        lblUsuarioActual.setText("Bienvenido, " + sesion.getNombreUsuarioActual());
     }
 }

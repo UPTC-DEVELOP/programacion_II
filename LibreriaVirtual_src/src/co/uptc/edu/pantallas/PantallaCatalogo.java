@@ -4,8 +4,9 @@ import co.uptc.edu.gui.EstiloUI;
 import co.uptc.edu.gui.Navegador;
 import co.uptc.edu.gui.Refrescable;
 import co.uptc.edu.gui.Vista;
+import co.uptc.edu.controlador.CarritoControlador;
+import co.uptc.edu.controlador.LibroControlador;
 import co.uptc.edu.model.Libro;
-import co.uptc.edu.model.Tienda;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -15,12 +16,14 @@ import java.text.NumberFormat;
 
 public class PantallaCatalogo extends JPanel implements Refrescable {
 
-    private final Tienda tienda;
+    private final LibroControlador libros;
+    private final CarritoControlador carrito;
     private final JPanel panelCatalogoLibros;
 
-    public PantallaCatalogo(Tienda tienda, Navegador nav) {
+    public PantallaCatalogo(LibroControlador libros, CarritoControlador carrito, Navegador nav) {
         super(new BorderLayout());
-        this.tienda = tienda;
+        this.libros = libros;
+        this.carrito = carrito;
 
         add(EstiloUI.crearHeaderSuperior("Catálogo de Libros Disponible"), BorderLayout.NORTH);
 
@@ -48,7 +51,7 @@ public class PantallaCatalogo extends JPanel implements Refrescable {
         panelCatalogoLibros.removeAll();
         NumberFormat formatter = EstiloUI.formatoMoneda();
 
-        for (Libro libro : tienda.getInventario()) {
+        for (Libro libro : libros.listarInventario()) {
             panelCatalogoLibros.add(crearTarjetaLibro(libro, formatter));
         }
         panelCatalogoLibros.revalidate();
@@ -90,7 +93,7 @@ public class PantallaCatalogo extends JPanel implements Refrescable {
     }
 
     private void agregarAlCarrito(Libro libro) {
-        switch (tienda.agregarAlCarrito(libro)) {
+        switch (carrito.agregarLibro(libro)) {
             case CANTIDAD_INCREMENTADA:
                 JOptionPane.showMessageDialog(this, "Se incrementó la cantidad de '" + libro.getTituloLibro() + "' en el carrito.");
                 break;

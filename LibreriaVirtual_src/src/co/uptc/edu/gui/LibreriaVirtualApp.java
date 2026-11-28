@@ -1,9 +1,11 @@
 package co.uptc.edu.gui;
 
 import co.uptc.edu.config.TiendaConfig;
+import co.uptc.edu.controlador.CarritoControlador;
+import co.uptc.edu.controlador.LibroControlador;
+import co.uptc.edu.controlador.SesionControlador;
+import co.uptc.edu.controlador.UsuarioControlador;
 import co.uptc.edu.pantallas.*;
-import co.uptc.edu.model.Tienda;
-import co.uptc.edu.pantallas.PantallaInventario;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +18,7 @@ public class LibreriaVirtualApp extends JFrame implements Navegador {
     private final CardLayout cardLayout = new CardLayout();
     private final JPanel mainPanel = new JPanel(cardLayout);
     private final Map<Vista, JPanel> pantallas = new EnumMap<>(Vista.class);
-    private final Tienda tienda = new TiendaConfig().getTienda();
+    private final TiendaConfig config = new TiendaConfig();
 
     public LibreriaVirtualApp() {
         setTitle("Sistemas de Gestión - Librería Virtual 'BiblioTech'");
@@ -25,18 +27,24 @@ public class LibreriaVirtualApp extends JFrame implements Navegador {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        tienda.cargarDatosSimulados();
+        config.getTienda().cargarDatosSimulados();
+
+        // Las pantallas solo conocen a los controladores, nunca al modelo ni a la persistencia
+        SesionControlador sesion = config.getSesionControlador();
+        UsuarioControlador usuarios = config.getUsuarioControlador();
+        LibroControlador libros = config.getLibroControlador();
+        CarritoControlador carrito = config.getCarritoControlador();
 
         registrar(Vista.PRESENTACION, new PantallaPresentacion(this));
-        registrar(Vista.LOGIN, new PantallaLogin(tienda, this));
-        registrar(Vista.USUARIO_HOME, new PantallaUsuario(tienda, this));
-        registrar(Vista.CATALOGO, new PantallaCatalogo(tienda, this));
-        registrar(Vista.CARRITO, new PantallaCarrito(tienda, this));
+        registrar(Vista.LOGIN, new PantallaLogin(sesion, this));
+        registrar(Vista.USUARIO_HOME, new PantallaUsuario(sesion, this));
+        registrar(Vista.CATALOGO, new PantallaCatalogo(libros, carrito, this));
+        registrar(Vista.CARRITO, new PantallaCarrito(carrito, this));
         registrar(Vista.ADMIN_HOME, new PantallaAdmin(this));
-        registrar(Vista.INVENTARIO, new PantallaInventario(tienda, this));
-        registrar(Vista.REGISTRO, new PantallaRegistro(tienda, this));
-        registrar(Vista.PERFIL, new PantallaPerfil(tienda, this));
-        registrar(Vista.GESTION_USUARIOS, new PantallaGestionUsuarios(tienda, this));
+        registrar(Vista.INVENTARIO, new PantallaInventario(libros, this));
+        registrar(Vista.REGISTRO, new PantallaRegistro(usuarios, this));
+        registrar(Vista.PERFIL, new PantallaPerfil(sesion, usuarios, this));
+        registrar(Vista.GESTION_USUARIOS, new PantallaGestionUsuarios(usuarios, sesion, this));
 
         add(mainPanel);
         irA(Vista.PRESENTACION);

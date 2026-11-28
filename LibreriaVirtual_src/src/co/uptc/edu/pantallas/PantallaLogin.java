@@ -4,8 +4,7 @@ import co.uptc.edu.gui.EstiloUI;
 import co.uptc.edu.gui.Navegador;
 import co.uptc.edu.gui.Refrescable;
 import co.uptc.edu.gui.Vista;
-import co.uptc.edu.model.Rol;
-import co.uptc.edu.model.Tienda;
+import co.uptc.edu.controlador.SesionControlador;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -14,13 +13,13 @@ import java.awt.*;
 //Pantalla de inicio de sesión con correo y contraseña (RF-01)
 public class PantallaLogin extends JPanel implements Refrescable {
 
-    private final Tienda tienda;
+    private final SesionControlador sesion;
     private final JTextField txtCorreo = new JTextField();
     private final JPasswordField txtPass = new JPasswordField();
 
-    public PantallaLogin(Tienda tienda, Navegador nav) {
+    public PantallaLogin(SesionControlador sesion, Navegador nav) {
         super(new GridBagLayout());
-        this.tienda = tienda;
+        this.sesion = sesion;
         setBackground(EstiloUI.FONDO_LOGIN);
 
         JPanel card = new JPanel(new GridLayout(6, 1, 10, 10));
@@ -66,7 +65,7 @@ public class PantallaLogin extends JPanel implements Refrescable {
             String contrasena = new String(txtPass.getPassword());
             boolean sesionIniciada;
             try {
-                sesionIniciada = tienda.iniciarSesion(txtCorreo.getText(), contrasena);
+                sesionIniciada = sesion.iniciarSesion(txtCorreo.getText(), contrasena);
             } catch (IllegalStateException ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage(),
                         "No se pudo iniciar sesión", JOptionPane.ERROR_MESSAGE);
@@ -74,7 +73,7 @@ public class PantallaLogin extends JPanel implements Refrescable {
             }
             if (sesionIniciada) {
                 txtPass.setText("");
-                nav.irA(tienda.getRolActual() == Rol.ADMIN ? Vista.ADMIN_HOME : Vista.USUARIO_HOME);
+                nav.irA(sesion.esAdministrador() ? Vista.ADMIN_HOME : Vista.USUARIO_HOME);
             } else {
                 JOptionPane.showMessageDialog(this, "Correo o contraseña incorrectos.",
                         "No se pudo iniciar sesión", JOptionPane.ERROR_MESSAGE);
@@ -89,7 +88,7 @@ public class PantallaLogin extends JPanel implements Refrescable {
     //Cada vez que se muestra el login se cierra la sesión anterior y se limpian los campos
     @Override
     public void refrescar() {
-        tienda.cerrarSesion();
+        sesion.cerrarSesion();
         txtCorreo.setText("");
         txtPass.setText("");
     }

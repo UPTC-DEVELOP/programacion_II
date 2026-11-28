@@ -61,8 +61,12 @@ public class Tienda {
 
     public List<Libro> getInventario() { return Collections.unmodifiableList(inventario); }
 
-    //Guarda el libro en la persistencia y lo agrega al inventario. 
+    //Valida el libro, verifica que el ISBN no exista, lo guarda en la persistencia y lo agrega al inventario
     public void agregarLibro(Libro libro) {
+        ValidadorLibro.validar(libro);
+        if (buscarLibro(libro.getIsbn()) != null) {
+            throw new IllegalArgumentException("Ya existe un libro registrado con el ISBN " + libro.getIsbn() + ".");
+        }
         persistenciaLibros.guardar(libro);
         inventario.add(libro);
     }

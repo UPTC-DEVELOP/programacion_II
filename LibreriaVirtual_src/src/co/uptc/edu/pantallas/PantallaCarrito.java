@@ -4,9 +4,8 @@ import co.uptc.edu.gui.EstiloUI;
 import co.uptc.edu.gui.Navegador;
 import co.uptc.edu.gui.Refrescable;
 import co.uptc.edu.gui.Vista;
-import co.uptc.edu.model.CarritoDeCompras;
+import co.uptc.edu.controlador.CarritoControlador;
 import co.uptc.edu.model.ItemCarrito;
-import co.uptc.edu.model.Tienda;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -17,7 +16,7 @@ import java.text.NumberFormat;
 
 public class PantallaCarrito extends JPanel implements Refrescable {
 
-    private final Tienda tienda;
+    private final CarritoControlador carrito;
     private final Navegador nav;
     private final DefaultTableModel tablaModel;
     private final JTable tabla;
@@ -25,9 +24,9 @@ public class PantallaCarrito extends JPanel implements Refrescable {
     private final JLabel lblIva;
     private final JLabel lblTotal;
 
-    public PantallaCarrito(Tienda tienda, Navegador nav) {
+    public PantallaCarrito(CarritoControlador carrito, Navegador nav) {
         super(new BorderLayout());
-        this.tienda = tienda;
+        this.carrito = carrito;
         this.nav = nav;
 
         // Encabezado + barra para ajustar cantidades y eliminar ítems (RF-05)
@@ -61,7 +60,7 @@ public class PantallaCarrito extends JPanel implements Refrescable {
         panelCheckout.setBackground(Color.WHITE);
 
         lblSubtotal = new JLabel("Subtotal: $0", SwingConstants.LEFT);
-        lblIva = new JLabel("IVA (" + (int) (CarritoDeCompras.TASA_IVA * 100) + "%): $0", SwingConstants.LEFT);
+        lblIva = new JLabel("IVA (" + carrito.getPorcentajeIva() + "%): $0", SwingConstants.LEFT);
         lblTotal = new JLabel("Total: $0", SwingConstants.LEFT);
         lblTotal.setFont(new Font("SansSerif", Font.BOLD, 18));
 
@@ -76,12 +75,12 @@ public class PantallaCarrito extends JPanel implements Refrescable {
         JButton btnVolver = new JButton("Seguir Comprando");
         JButton btnComprar = EstiloUI.crearBotonEstilizado("Finalizar Compra", EstiloUI.PRIMARIO);
 
-        btnMas.addActionListener(e -> modificarSeleccionado(isbn -> tienda.incrementarCantidadCarrito(isbn)));
-        btnMenos.addActionListener(e -> modificarSeleccionado(isbn -> tienda.decrementarCantidadCarrito(isbn)));
+        btnMas.addActionListener(e -> modificarSeleccionado(carrito::incrementar));
+        btnMenos.addActionListener(e -> modificarSeleccionado(carrito::decrementar));
         btnCantidad.addActionListener(e -> cambiarCantidad());
         btnEliminar.addActionListener(e -> eliminarSeleccionado());
         btnVaciar.addActionListener(e -> {
-            tienda.vaciarCarrito();
+            carrito.vaciar();
             refrescar();
         });
         btnVolver.addActionListener(e -> nav.irA(Vista.CATALOGO));
@@ -101,7 +100,7 @@ public class PantallaCarrito extends JPanel implements Refrescable {
         tablaModel.setRowCount(0);
         NumberFormat formatter = EstiloUI.formatoMoneda();
 
-        for (ItemCarrito item : tienda.getCarrito()) {
+        for (ItemCarrito item : carrito.getItems()) {
             tablaModel.addRow(new Object[]{
                     item.getLibro().getIsbn(),
                     item.getLibro().getTituloLibro(),
@@ -110,9 +109,9 @@ public class PantallaCarrito extends JPanel implements Refrescable {
                     formatter.format(item.getSubtotal())
             });
         }
-        lblSubtotal.setText("Subtotal: " + formatter.format(tienda.getSubtotalCarrito()));
-        lblIva.setText("IVA (" + (int) (CarritoDeCompras.TASA_IVA * 100) + "%): " + formatter.format(tienda.getIvaCarrito()));
-        lblTotal.setText("Total a pagar: " + formatter.format(tienda.getTotalCarrito()));
+        lblSubtotal.setText("Subtotal: " + formatter.format(carrito.getSubtotal()));
+        lblIva.setText("IVA (" + carrito.getPorcentajeIva() + "%): " + formatter.format(carrito.getIva()));
+        lblTotal.setText("Total a pagar: " + formatter.format(carrito.getTotal()));
     }
 
     //Devuelve el ISBN del ítem seleccionado o null (y avisa) si no hay selección
@@ -153,14 +152,7 @@ public class PantallaCarrito extends JPanel implements Refrescable {
         if (texto == null) {
             return;
         }
-        int cantidad;
-        try {
-            cantidad = Integer.parseInt(texto.trim());
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Ingresa un número entero válido.", "Cantidad no válida", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        modificarSeleccionado(id -> tienda.ajustarCantidadCarrito(id, cantidad));
+        modificarSeleccionado(id -> carrito.ajustarCantidad(id, texto));
     }
 
     private void eliminarSeleccionado() {
@@ -168,25 +160,24 @@ public class PantallaCarrito extends JPanel implements Refrescable {
         if (isbn == null) {
             return;
         }
-        tienda.eliminarDelCarrito(isbn);
+        carrito.eliminar(isbn);
         refrescar();
     }
 
     private void finalizarCompra() {
-        if (tienda.getCarrito().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "El carrito se encuentra vacío.", "Atención", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
+        String comprador;
         try {
-            tienda.finalizarCompra();
-        } catch (IllegalStateException ex) {
+            comprador = carrito.finalizarCompra();
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Atención", JOptionPane.WARNING_MESSAGE);
+            return;
+        } catch (RuntimeException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "No se pudo finalizar la compra", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         JOptionPane.showMessageDialog(this,
-                "¡Gracias por tu compra simulada!\nSe ha generado el recibo digital a nombre de: " + tienda.getUsuarioActual(),
+                "¡Gracias por tu compra simulada!\nSe ha generado el recibo digital a nombre de: " + comprador,
                 "Compra Finalizada", JOptionPane.INFORMATION_MESSAGE);
 
         refrescar();

@@ -4,7 +4,7 @@ import co.uptc.edu.gui.EstiloUI;
 import co.uptc.edu.gui.Navegador;
 import co.uptc.edu.gui.Refrescable;
 import co.uptc.edu.gui.Vista;
-import co.uptc.edu.model.Tienda;
+import co.uptc.edu.controlador.UsuarioControlador;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,7 +12,7 @@ import java.awt.*;
 
 public class PantallaRegistro extends JPanel implements Refrescable {
 
-    private final Tienda tienda;
+    private final UsuarioControlador usuarios;
     private final Navegador nav;
 
     private final JTextField txtNombre = new JTextField();
@@ -23,9 +23,9 @@ public class PantallaRegistro extends JPanel implements Refrescable {
     private final JPasswordField txtPass = new JPasswordField();
     private final JPasswordField txtPass2 = new JPasswordField();
 
-    public PantallaRegistro(Tienda tienda, Navegador nav) {
+    public PantallaRegistro(UsuarioControlador usuarios, Navegador nav) {
         super(new GridBagLayout());
-        this.tienda = tienda;
+        this.usuarios = usuarios;
         this.nav = nav;
         setBackground(EstiloUI.FONDO_LOGIN);
 
@@ -75,15 +75,10 @@ public class PantallaRegistro extends JPanel implements Refrescable {
     }
 
     private void registrar() {
-        String pass = new String(txtPass.getPassword());
-        String pass2 = new String(txtPass2.getPassword());
-        if (!pass.equals(pass2)) {
-            JOptionPane.showMessageDialog(this, "Las contraseñas no coinciden.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
         try {
-            tienda.getGestionUsuarios().registrarCliente(txtNombre.getText(), txtApellido.getText(),
-                    txtCorreo.getText(), txtDireccion.getText(), txtTelefono.getText(), pass);
+            usuarios.registrarCliente(txtNombre.getText(), txtApellido.getText(), txtCorreo.getText(),
+                    txtDireccion.getText(), txtTelefono.getText(),
+                    new String(txtPass.getPassword()), new String(txtPass2.getPassword()));
         } catch (IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Datos inválidos", JOptionPane.ERROR_MESSAGE);
             return;

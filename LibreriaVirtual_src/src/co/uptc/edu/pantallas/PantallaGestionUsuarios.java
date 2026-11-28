@@ -4,8 +4,10 @@ import co.uptc.edu.gui.EstiloUI;
 import co.uptc.edu.gui.Navegador;
 import co.uptc.edu.gui.Refrescable;
 import co.uptc.edu.gui.Vista;
+import co.uptc.edu.controlador.AccesoDenegadoException;
+import co.uptc.edu.controlador.SesionControlador;
+import co.uptc.edu.controlador.UsuarioControlador;
 import co.uptc.edu.model.Rol;
-import co.uptc.edu.model.Tienda;
 import co.uptc.edu.model.Usuario;
 
 import javax.swing.*;
@@ -19,7 +21,8 @@ public class PantallaGestionUsuarios extends JPanel implements Refrescable {
     private static final String CLIENTE = "Cliente";
     private static final String ADMINISTRADOR = "Administrador";
 
-    private final Tienda tienda;
+    private final UsuarioControlador usuarios;
+    private final SesionControlador sesion;
     private final DefaultTableModel tablaModel;
     private final JTable tabla;
     private final TitledBorder bordeFormulario;
@@ -36,9 +39,10 @@ public class PantallaGestionUsuarios extends JPanel implements Refrescable {
     private String correoEditando = null;
     private boolean cargando = false;
 
-    public PantallaGestionUsuarios(Tienda tienda, Navegador nav) {
+    public PantallaGestionUsuarios(UsuarioControlador usuarios, SesionControlador sesion, Navegador nav) {
         super(new BorderLayout());
-        this.tienda = tienda;
+        this.usuarios = usuarios;
+        this.sesion = sesion;
 
         add(EstiloUI.crearHeaderSuperior("Gestión de Usuarios y Roles"), BorderLayout.NORTH);
 
@@ -97,25 +101,21 @@ public class PantallaGestionUsuarios extends JPanel implements Refrescable {
     }
 
     private void guardar() {
-        if (!esAdmin()) return;
         String pass = new String(txtPass.getPassword());
         Rol rol = ADMINISTRADOR.equals(comboRol.getSelectedItem()) ? Rol.ADMIN : Rol.CLIENTE;
         try {
             if (correoEditando == null) {
-                tienda.getGestionUsuarios().agregarUsuario(new Usuario(txtNombre.getText(), txtApellido.getText(),
-                        txtCorreo.getText(), txtDireccion.getText(), txtTelefono.getText(), rol, pass));
+                usuarios.crearUsuario(txtNombre.getText(), txtApellido.getText(), txtCorreo.getText(),
+                        txtDireccion.getText(), txtTelefono.getText(), rol, pass);
                 mensaje("Usuario creado con éxito.");
             } else {
-                Usuario sesion = tienda.getUsuarioSesion();
-                boolean editaSuCuenta = sesion != null && sesion.getCorreo().equals(correoEditando);
-                Usuario actualizado = tienda.getGestionUsuarios().actualizarUsuario(correoEditando,
-                        txtNombre.getText(), txtApellido.getText(),
+                usuarios.actualizarUsuario(correoEditando, txtNombre.getText(), txtApellido.getText(),
                         txtCorreo.getText(), txtDireccion.getText(), txtTelefono.getText(), rol, pass);
-                if (editaSuCuenta) {
-                    tienda.actualizarUsuarioSesion(actualizado);
-                }
                 mensaje("Usuario actualizado con éxito.");
             }
+        } catch (AccesoDenegadoException ex) {
+            accesoDenegado(ex);
+            return;
         } catch (IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Datos inválidos", JOptionPane.ERROR_MESSAGE);
             return;
@@ -127,7 +127,6 @@ public class PantallaGestionUsuarios extends JPanel implements Refrescable {
     }
 
     private void eliminar() {
-        if (!esAdmin()) return;
         if (correoEditando == null) {
             JOptionPane.showMessageDialog(this, "Selecciona un usuario de la tabla.", "Atención", JOptionPane.WARNING_MESSAGE);
             return;
@@ -137,8 +136,10 @@ public class PantallaGestionUsuarios extends JPanel implements Refrescable {
                 "Confirmar eliminación", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
         if (resp != JOptionPane.YES_OPTION) return;
         try {
-            Usuario sesion = tienda.getUsuarioSesion();
-            tienda.getGestionUsuarios().eliminarUsuario(correoEditando, sesion == null ? null : sesion.getCorreo());
+            usuarios.eliminarUsuario(correoEditando);
+        } catch (AccesoDenegadoException ex) {
+            accesoDenegado(ex);
+            return;
         } catch (IllegalArgumentException | IllegalStateException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "No se pudo eliminar", JOptionPane.ERROR_MESSAGE);
             return;
@@ -150,7 +151,7 @@ public class PantallaGestionUsuarios extends JPanel implements Refrescable {
     private void cargarSeleccion() {
         int fila = tabla.getSelectedRow();
         if (fila < 0) return;
-        Usuario u = tienda.getGestionUsuarios().buscarPorCorreo((String) tablaModel.getValueAt(fila, 2));
+        Usuario u = usuarios.buscarUsuario((String) tablaModel.getValueAt(fila, 2));
         if (u == null) return;
         correoEditando = u.getCorreo();
         txtNombre.setText(u.getNombre());
@@ -161,8 +162,7 @@ public class PantallaGestionUsuarios extends JPanel implements Refrescable {
         comboRol.setSelectedItem(u.getTipoUsuario() == Rol.ADMIN ? ADMINISTRADOR : CLIENTE);
         txtPass.setText("");
         // Un administrador no puede cambiarse el rol a sí mismo desde aquí
-        Usuario sesion = tienda.getUsuarioSesion();
-        comboRol.setEnabled(sesion == null || !sesion.getCorreo().equals(u.getCorreo()));
+        comboRol.setEnabled(usuarios.puedeCambiarRol(u.getCorreo()));
         bordeFormulario.setTitle("Editando: " + u.getCorreo());
         repaint();
     }
@@ -187,7 +187,11 @@ public class PantallaGestionUsuarios extends JPanel implements Refrescable {
     private void recargarTabla() {
         cargando = true;
         tablaModel.setRowCount(0);
-        for (Usuario u : tienda.getGestionUsuarios().listarUsuarios()) {
+        if (!sesion.esAdministrador()) {
+            cargando = false;
+            return;
+        }
+        for (Usuario u : usuarios.listarUsuarios()) {
             tablaModel.addRow(new Object[]{
                     u.getNombre(), u.getApellido(), u.getCorreo(), u.getTelefono(), u.getDireccion(),
                     u.getTipoUsuario() == Rol.ADMIN ? ADMINISTRADOR : CLIENTE
@@ -196,13 +200,8 @@ public class PantallaGestionUsuarios extends JPanel implements Refrescable {
         cargando = false;
     }
 
-    private boolean esAdmin() {
-        if (tienda.getRolActual() != Rol.ADMIN) {
-            JOptionPane.showMessageDialog(this, "Solo un administrador puede gestionar usuarios.",
-                    "Acceso denegado", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        return true;
+    private void accesoDenegado(AccesoDenegadoException ex) {
+        JOptionPane.showMessageDialog(this, ex.getMessage(), "Acceso denegado", JOptionPane.ERROR_MESSAGE);
     }
 
     private void mensaje(String texto) {
