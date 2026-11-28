@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.edu.uptc.tienda.excepcion.CarritoExcepcion;
+import co.edu.uptc.tienda.excepcion.CompraExcepcion;
 import co.edu.uptc.tienda.excepcion.LibroExcepcion;
 import co.edu.uptc.tienda.interfaz.IGestionCarrito;
+import co.edu.uptc.tienda.interfaz.IGestionCompra;
 import co.edu.uptc.tienda.interfaz.IPersistenciaCarrito;
 import co.edu.uptc.tienda.interfaz.IRegistroOperaciones;
 import co.edu.uptc.tienda.modelo.Carrito;
 import co.edu.uptc.tienda.modelo.Cliente;
+import co.edu.uptc.tienda.modelo.Compra;
 import co.edu.uptc.tienda.modelo.ItemCarrito;
 import co.edu.uptc.tienda.modelo.Libro;
 import co.edu.uptc.tienda.modelo.RegistroCarrito;
@@ -20,16 +23,20 @@ public class GestionCarrito implements IGestionCarrito {
     private final List<IPersistenciaCarrito> persistencias;
     private final ControlLibro controlLibro;
     private final IRegistroOperaciones registro;
+    private final IGestionCompra gestionCompra;
     private final List<RegistroCarrito> otrosClientes = new ArrayList<>();
     private List<Libro> catalogo = new ArrayList<>();
     private List<Cliente> clientes = new ArrayList<>();
     private boolean recuperado;
 
+    private String avisoCompra;
+
     public GestionCarrito(Carrito carrito, List<IPersistenciaCarrito> persistencias, ControlLibro controlLibro,
-            IRegistroOperaciones registro) {
+            IGestionCompra gestionCompra, IRegistroOperaciones registro) {
         this.carrito = carrito;
         this.persistencias = persistencias;
         this.controlLibro = controlLibro;
+        this.gestionCompra = gestionCompra;
         this.registro = registro;
         this.recuperado = false;
     }
@@ -112,12 +119,16 @@ public class GestionCarrito implements IGestionCarrito {
     }
 
     @Override
-    public void finalizarCompra() throws CarritoExcepcion {
+    public Compra finalizarCompra(Cliente clienteConSesion, String metodoPago) throws CarritoExcepcion {
+        avisoCompra = null;
         if (carrito.estaVacio()) {
             throw new CarritoExcepcion("El carrito está vacío.");
         }
         if (carrito.getIdCliente() == null) {
             throw new CarritoExcepcion("Debe seleccionar un cliente para finalizar la compra.");
+        }
+        if (clienteConSesion == null || !clienteConSesion.getId().equals(carrito.getIdCliente())) {
+            throw new CarritoExcepcion("El cliente debe iniciar sesión para finalizar la compra.");
         }
         for (ItemCarrito item : carrito.getItems()) {
             Libro libro = item.getLibro();
@@ -126,13 +137,20 @@ public class GestionCarrito implements IGestionCarrito {
                         + item.getCantidad() + ", disponible: " + libro.getStock() + ".");
             }
         }
+        Compra compra;
+        try {
+            compra = gestionCompra.registrarCompra(clienteConSesion, metodoPago,
+                    calcularPorcentajeDescuento(clienteConSesion), carrito.getItems());
+        } catch (CompraExcepcion e) {
+            throw new CarritoExcepcion(e.getMessage());
+        }
         List<String> avisos = new ArrayList<>();
+        if (gestionCompra.getAvisoGuardado() != null) {
+            avisos.add(gestionCompra.getAvisoGuardado());
+        }
         for (ItemCarrito item : carrito.getItems()) {
-            Libro libro = item.getLibro();
             try {
-                controlLibro.actualizarLibro(libro.getIsbn(), libro.getTitulo(), libro.getAutor(),
-                        libro.getAnioPublicacion(), libro.getEditorial(), libro.getNumPaginas(), libro.getPrecio(),
-                        libro.getIvaPorcentaje(), libro.getStock() - item.getCantidad(), libro.getFormato());
+                controlLibro.descontarStock(item.getLibro().getIsbn(), item.getCantidad());
             } catch (LibroExcepcion e) {
                 if (!avisos.contains(e.getMessage())) {
                     avisos.add(e.getMessage());
@@ -146,9 +164,14 @@ public class GestionCarrito implements IGestionCarrito {
             avisos.add(e.getMessage());
         }
         if (!avisos.isEmpty()) {
-            throw new CarritoExcepcion("La compra se finalizó, pero hubo problemas al guardar:\n"
-                    + String.join("\n", avisos));
+            avisoCompra = "La compra se finalizó, pero hubo problemas al guardar:\n" + String.join("\n", avisos);
         }
+        return compra;
+    }
+
+    @Override
+    public String obtenerAvisoCompra() {
+        return avisoCompra;
     }
 
     @Override
@@ -442,5 +465,13 @@ public class GestionCarrito implements IGestionCarrito {
             throw new IllegalArgumentException("El descuento debe estar entre 0 y 100.");
         }
         return calcularTotal() * (1 - porcentajeDescuento / 100.0);
+    }
+
+    @Override
+    public double calcularPorcentajeDescuento(Cliente cliente) {
+        if (cliente == null) {
+            return 0;
+        }
+        return cliente.obtenerPorcentajeDescuento() + gestionCompra.obtenerDescuentoFrecuente(cliente.getId());
     }
 }

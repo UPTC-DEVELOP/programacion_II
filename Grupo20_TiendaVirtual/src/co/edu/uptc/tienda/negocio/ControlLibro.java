@@ -122,6 +122,33 @@ public class ControlLibro {
         return true;
     }
 
+    public void descontarStock(String isbn, int cantidad) throws LibroExcepcion {
+
+        Libro libro = buscarLibro(isbn);
+
+        if (libro == null) {
+            throw new LibroExcepcion("No existe un libro con el ISBN " + isbn + ".");
+        }
+
+        if (cantidad <= 0 || cantidad > libro.getStock()) {
+            throw new LibroExcepcion("No hay inventario suficiente de \"" + libro.getTitulo() + "\".");
+        }
+
+        libro.setStock(libro.getStock() - cantidad);
+
+        List<String> errores = new ArrayList<>();
+        for (LibroDAO persistencia : persistencias) {
+            try {
+                if (!persistencia.actualizar(libro)) {
+                    persistencia.registrar(libro);
+                }
+            } catch (LibroExcepcion e) {
+                errores.add(e.getMessage());
+            }
+        }
+        avisarErrores(errores);
+    }
+
     public boolean eliminarLibro(String isbn) throws LibroExcepcion {
 
         Libro libro = buscarLibro(isbn);

@@ -2,9 +2,10 @@ package co.edu.uptc.tienda.negocio;
 
 import java.util.ArrayList;
 
+import co.edu.uptc.tienda.interfaz.ISesionCliente;
 import co.edu.uptc.tienda.modelo.Cliente;
 
-public class ClienteConfig {
+public class ClienteConfig implements ISesionCliente {
 
     private GestionCliente gestionCliente;
 
@@ -34,5 +35,20 @@ public class ClienteConfig {
 
     public void eliminar(String id) {
         gestionCliente.eliminar(id);
+    }
+
+    @Override
+    public boolean iniciarSesion(String correo) {
+        return gestionCliente.iniciarSesion(correo);
+    }
+
+    @Override
+    public void cerrarSesion() {
+        gestionCliente.cerrarSesion();
+    }
+
+    @Override
+    public Cliente getClienteLogueado() {
+        return gestionCliente.getClienteLogueado();
     }
 }

@@ -10,12 +10,14 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import co.edu.uptc.tienda.interfaz.IGestionCarrito;
+import co.edu.uptc.tienda.interfaz.IGestionCompra;
 import co.edu.uptc.tienda.interfaz.IPersistenciaCarrito;
 import co.edu.uptc.tienda.interfaz.IRegistroOperaciones;
 import co.edu.uptc.tienda.modelo.Carrito;
 import co.edu.uptc.tienda.negocio.ClienteConfig;
 import co.edu.uptc.tienda.negocio.ControlLibro;
 import co.edu.uptc.tienda.negocio.GestionCarrito;
+import co.edu.uptc.tienda.negocio.GestionCompra;
 import co.edu.uptc.tienda.persistencia.CarritoBD;
 import co.edu.uptc.tienda.persistencia.CarritoJson;
 import co.edu.uptc.tienda.persistencia.RegistroOperacionesTxt;
@@ -48,9 +50,11 @@ public class VentanaPrincipal extends JFrame implements ChangeListener {
         persistencias.add(new CarritoBD());
         persistencias.add(new CarritoJson("datos/carrito.json"));
         IRegistroOperaciones registro = new RegistroOperacionesTxt("datos/operaciones.txt");
-        IGestionCarrito gestion = new GestionCarrito(new Carrito(), persistencias, controlLibro, registro);
+        IGestionCompra gestionCompra = new GestionCompra();
+        IGestionCarrito gestion = new GestionCarrito(new Carrito(), persistencias, controlLibro, gestionCompra,
+                registro);
         panelCarrito = new PanelCarrito();
-        eventosCarrito = new EventosCarrito(panelCarrito, gestion);
+        eventosCarrito = new EventosCarrito(panelCarrito, gestion, gestionCompra, clienteConfig);
         panelCarrito.setEventos(eventosCarrito);
 
         pestanas = new JTabbedPane();
