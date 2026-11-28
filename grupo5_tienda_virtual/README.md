@@ -130,7 +130,16 @@ tres libros de demostración.
 
 ## Pruebas
 
-Las pruebas manuales están documentadas en `docs/`:
+Pruebas automáticas:
+
+```bash
+mvn test
+```
+
+- `src/test/java/persistencia/FlujosPersistenciaTest.java`
+- 3 pruebas: límite de Clientes, compra persistente en los 3 almacenamientos y fallo de guardado.
+
+Pruebas manuales documentadas en `docs/`:
 
 - `PRUEBAS_CLIENTES.md`
 - `PRUEBAS_COMPRAS.md`

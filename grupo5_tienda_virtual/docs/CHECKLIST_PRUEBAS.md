@@ -71,10 +71,26 @@ No se modificó ninguna ventana ni controlador.
 - [x] `controller` no importa Swing.
 - [x] `ControladorCompras.finalizarCompra` se probó sin abrir la ventana.
 
-## 5. Compilación
+## 5. Pruebas JUnit
+
+- [x] Clientes: últimos 10 y orden.
+- [x] Compra persistente: guardar, reiniciar, historial y stock.
+- [x] Fallo de guardado: no actualiza stock ni lista.
+
+```bash
+mvn test
+```
+
+Resultado: **3 tests, 0 fallos**.
+
+## 6. Compilación
 
 ```bash
 mvn clean compile
 ```
 
-Resultado: **BUILD SUCCESS** con 45 fuentes.
+Resultado: **BUILD SUCCESS** con 51 fuentes.
+
+## 7. Limitación conocida
+
+El combo de Compras solo muestra los últimos 10 libros. Si hay más, hay que buscar o aumentar el límite de selección antes de la sustentación.

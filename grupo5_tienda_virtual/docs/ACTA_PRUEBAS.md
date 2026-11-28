@@ -1,7 +1,7 @@
 # Acta de pruebas
 
 **Proyecto:** Tienda Virtual de Libros — Grupo 5  
-**Fecha:** 20/11/2026  
+**Fecha:** 28/11/2026  
 **Responsable:** Juan Pablo Barrero
 
 ## 1. Compilación
@@ -9,7 +9,7 @@
 | Prueba | Resultado |
 |---|---|
 | `mvn clean compile` | BUILD SUCCESS |
-| Número de fuentes | 45 |
+| Número de fuentes | 51 |
 | Java | 21 |
 
 ## 2. Matriz 3x3
@@ -34,7 +34,30 @@ Para cada celda se probó:
 
 Resultado: **9/9 correcto**.
 
-## 3. Prueba de cambio de una línea
+## 3. Pruebas JUnit
+
+Se agregó `src/test/java/persistencia/FlujosPersistenciaTest.java` con JUnit 5.
+
+| Prueba | Resultado |
+|---|---|
+| Clientes: 12 registros, últimos 10 y orden | OK |
+| Compra: guardar, reiniciar repositorios, historial y stock en plano/JSON/BD | OK |
+| Fallo de guardado: no actualiza stock ni lista | OK |
+
+Comando:
+
+```bash
+mvn test
+```
+
+Resultado:
+
+```text
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
+```
+
+## 4. Prueba de cambio de una línea
 
 Se cambió únicamente `ProjectConfig.compras()`:
 
@@ -46,7 +69,7 @@ Cada cambio se compiló con `mvn clean compile` y dio BUILD SUCCESS.
 
 No se tocó ninguna ventana ni ningún controlador.
 
-## 4. Finalizar compra sin GUI
+## 5. Finalizar compra sin GUI
 
 - Se creó un libro con IVA 19%.
 - Se agregó al carrito.
@@ -62,7 +85,7 @@ stock=3
 total=$238,00
 ```
 
-## 5. IVA distinto de 19% y 5%
+## 6. IVA distinto de 19% y 5%
 
 - Libro de 100 con IVA 10%.
 - IVA 19: 0.
@@ -73,21 +96,22 @@ total=$238,00
 
 Resultado: correcto.
 
-## 6. Registro de operaciones
+## 7. Registro de operaciones
 
 - Se registró un cliente con `ControladorOperaciones`.
 - Se verificó la línea en `operaciones.txt`.
 
 Resultado: correcto.
 
-## 7. Pruebas que faltan
+## 8. Pruebas que faltan
 
 - Flujo visual completo de Login, Registro, Clientes, Libros y Mi Cuenta.
 - Probar el recibo desde la interfaz.
-- Eventos de las ventanas que aún tienen listeners internos.
 - Catálogo y búsqueda separados para cliente.
+- Corregir el combo de Compras: actualmente solo muestra los últimos 10 libros.
 
-## 8. Observaciones
+## 9. Observaciones
 
 - La compra y el descuento de stock no son atómicos cuando están en almacenamientos distintos.
 - El registro de operaciones es de apoyo y no reemplaza la persistencia principal.
+- Las pruebas de persistencia ya están en el repositorio y se ejecutan con `mvn test`.
