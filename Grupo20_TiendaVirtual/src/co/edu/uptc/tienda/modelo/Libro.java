@@ -8,6 +8,7 @@ public class Libro {
     private String titulo;
     private String autor;
     private int anioPublicacion;
+    private String categoria;
     private String editorial;
     private int numPaginas;
     private double precio;
@@ -16,13 +17,14 @@ public class Libro {
     private String formato;
 
     public Libro(String isbn, String titulo, String autor, int anioPublicacion,
-                 String editorial, int numPaginas, double precio,
+                 String categoria, String editorial, int numPaginas, double precio,
                  double ivaPorcentaje, int stock, String formato) {
 
         this.isbn = isbn;
         this.titulo = titulo;
         this.autor = autor;
         this.anioPublicacion = anioPublicacion;
+        this.categoria = categoria;
         this.editorial = editorial;
         this.numPaginas = numPaginas;
         this.precio = precio;
@@ -45,6 +47,10 @@ public class Libro {
 
     public int getAnioPublicacion() {
         return anioPublicacion;
+    }
+
+    public String getCategoria() {
+        return categoria;
     }
 
     public String getEditorial() {
@@ -81,6 +87,10 @@ public class Libro {
 
     public void setAnioPublicacion(int anioPublicacion) {
         this.anioPublicacion = anioPublicacion;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
     }
 
     public void setEditorial(String editorial) {
