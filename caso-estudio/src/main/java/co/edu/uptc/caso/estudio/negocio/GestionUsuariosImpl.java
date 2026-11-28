@@ -29,7 +29,7 @@ public class GestionUsuariosImpl implements IGestionUsuarios {
         this.seguridadUsuario = new SeguridadUsuario();
     }
 
-    // Valida datos del cliente, cifra la contraseña con SHA-256 y persiste en MySQL y JSON
+    // Valida datos del cliente, cifra la contraseña con SHA-256 y exige persistencia en MySQL
     @Override
     public String registrarCliente(Cliente cliente) {
         String errorValidacion = seguridadUsuario.validarRegistro(cliente);
@@ -37,35 +37,58 @@ public class GestionUsuariosImpl implements IGestionUsuarios {
             return errorValidacion;
         }
 
-        if (buscarPorIdConRespaldo(cliente.getId()) != null) {
+        String idLimpio = cliente.getId() != null ? cliente.getId().trim() : "";
+        String correoLimpio = cliente.getCorreo() != null ? cliente.getCorreo().trim() : "";
+
+        if (buscarPorIdConRespaldo(idLimpio) != null) {
             return "Ya existe un usuario registrado con ese ID.";
         }
-        if (buscarPorCorreoConRespaldo(cliente.getCorreo().trim()) != null) {
+        if (buscarPorCorreoConRespaldo(correoLimpio) != null) {
             return "Ya existe un usuario registrado con ese Correo.";
         }
 
         String clavePlana = cliente.getContrasenaHash();
         cliente.setContrasenaHash(seguridadUsuario.sha256(clavePlana));
-        boolean okMySQL = repoMySQL != null && repoMySQL.guardarUsuario(cliente);
-        boolean okJson = repoJson != null && repoJson.guardarUsuario(cliente);
 
-        if (okMySQL || okJson) {
-            registrarEvento("USUARIO REGISTRADO - ID: " + cliente.getId()
-                    + " | Correo: " + cliente.getCorreo());
-            return null;
+        boolean okMySQL = repoMySQL != null && repoMySQL.guardarUsuario(cliente);
+        if (!okMySQL) {
+            return "No se pudo guardar el usuario en MySQL. Verifica la conexión y la base de datos.";
         }
-        return "No se pudo guardar el usuario en la persistencia.";
+
+        if (repoJson != null) {
+            repoJson.guardarUsuario(cliente);
+        }
+
+        registrarEvento("USUARIO REGISTRADO - ID: " + cliente.getId()
+                + " | Correo: " + cliente.getCorreo());
+        return null;
     }
 
-    // Autentica al usuario comparando el hash SHA-256 de la contraseña ingresada
+    // Autentica al usuario en MySQL (sincronizando desde JSON si hace falta) y fija la sesión
     @Override
     public boolean iniciarSesion(CredencialDto credenciales) {
         if (credenciales == null || credenciales.getCorreo() == null || credenciales.getContrasena() == null) {
             return false;
         }
-        Cliente c = buscarPorCorreoConRespaldo(credenciales.getCorreo().trim());
-        if (c != null && c.getContrasenaHash() != null
-                && c.getContrasenaHash().equals(seguridadUsuario.sha256(credenciales.getContrasena()))) {
+
+        String correoLimpio = credenciales.getCorreo().trim();
+        String hashIngresado = seguridadUsuario.sha256(credenciales.getContrasena());
+
+        Cliente c = repoMySQL != null ? repoMySQL.buscarPorCorreo(correoLimpio) : null;
+
+        if (c == null && repoJson != null) {
+            Cliente desdeJson = repoJson.buscarPorCorreo(correoLimpio);
+            if (desdeJson != null && desdeJson.getContrasenaHash() != null
+                    && desdeJson.getContrasenaHash().equals(hashIngresado)
+                    && repoMySQL != null && repoMySQL.guardarUsuario(desdeJson)) {
+                c = repoMySQL.buscarPorCorreo(correoLimpio);
+                if (c == null) {
+                    c = desdeJson;
+                }
+            }
+        }
+
+        if (c != null && c.getContrasenaHash() != null && c.getContrasenaHash().equals(hashIngresado)) {
             this.usuarioLogueado = c;
             registrarEvento("INICIO DE SESIÓN - Usuario: " + c.getCorreo());
             return true;

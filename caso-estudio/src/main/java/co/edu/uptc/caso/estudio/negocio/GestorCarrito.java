@@ -44,7 +44,8 @@ public class GestorCarrito {
     }
 
     public void agregarLibro(Libro libro, int cantidad) {
-        if (obtenerUsuarioLogueado() == null || libro == null || cantidad <= 0) {
+        Cliente logueado = obtenerUsuarioLogueado();
+        if (logueado == null || libro == null || cantidad <= 0) {
             return;
         }
 
@@ -64,11 +65,12 @@ public class GestorCarrito {
         }
 
         c.agregarItem(libroActualizado != null ? libroActualizado : libro, cantidad);
-        sincronizarCarrito(c);
+        sincronizarCarrito(logueado, c);
     }
 
     public String actualizarCantidad(String isbn, int nuevaCantidad) {
-        if (obtenerUsuarioLogueado() == null) {
+        Cliente logueado = obtenerUsuarioLogueado();
+        if (logueado == null) {
             return "Debe iniciar sesión primero.";
         }
         if (isbn == null || isbn.trim().isEmpty()) {
@@ -90,19 +92,20 @@ public class GestorCarrito {
         }
 
         c.actualizarCantidad(isbn, nuevaCantidad);
-        sincronizarCarrito(c);
+        sincronizarCarrito(logueado, c);
         return null;
     }
 
     public boolean eliminarLibros(List<String> isbns) {
-        if (obtenerUsuarioLogueado() == null || isbns == null || isbns.isEmpty()) {
+        Cliente logueado = obtenerUsuarioLogueado();
+        if (logueado == null || isbns == null || isbns.isEmpty()) {
             return false;
         }
 
         Carrito c = obtenerCarritoActual();
         boolean eliminado = c.eliminarItems(isbns);
         if (eliminado) {
-            sincronizarCarrito(c);
+            sincronizarCarrito(logueado, c);
         }
         return eliminado;
     }
@@ -112,11 +115,14 @@ public class GestorCarrito {
         if (logueado == null) {
             return;
         }
+        String idCliente = logueado.getId();
         if (repoCarritoMySQL != null) {
-            repoCarritoMySQL.vaciarCarrito(logueado.getId());
+            repoCarritoMySQL.vaciarCarrito(idCliente);
+            repoCarritoMySQL.guardarCarrito(new Carrito(idCliente));
         }
         if (repoCarritoJson != null) {
-            repoCarritoJson.vaciarCarrito(logueado.getId());
+            repoCarritoJson.vaciarCarrito(idCliente);
+            repoCarritoJson.guardarCarrito(new Carrito(idCliente));
         }
     }
 
@@ -153,8 +159,8 @@ public class GestorCarrito {
         }
     }
 
-    private void sincronizarCarrito(Carrito carrito) {
-        if (obtenerUsuarioLogueado() == null || carrito == null) {
+    private void sincronizarCarrito(Cliente logueado, Carrito carrito) {
+        if (logueado == null || carrito == null) {
             return;
         }
         if (repoCarritoMySQL != null) {

@@ -13,7 +13,7 @@ import co.edu.uptc.caso.estudio.persistence.IRegistradorOperaciones;
 import java.util.ArrayList;
 import java.util.List;
 
-// Coordina el checkout, validación de pago, descuento de stock e historial de compras
+// Coordina el checkout, validación de pago, sincronización de stock e historial de compras
 public class GestionComprasImpl implements IGestionCompras {
 
     private final IRepositorioCompra repoCompraMySQL;
@@ -24,6 +24,7 @@ public class GestionComprasImpl implements IGestionCompras {
     private final GestorCarrito gestorCarrito;
     private final ValidadorPago validadorPago;
     private DatosTransferencia datosTransferencia;
+    private String descripcionMetodoPago;
 
     public GestionComprasImpl(
             IRepositorioCarrito repoCarritoMySQL,
@@ -78,12 +79,15 @@ public class GestionComprasImpl implements IGestionCompras {
         }
 
         this.datosTransferencia = null;
+        this.descripcionMetodoPago = null;
+
         String error = validadorPago.validar(pago);
         if (error != null) {
             return error;
         }
 
         this.datosTransferencia = validadorPago.construirDatosTransferencia(pago);
+        this.descripcionMetodoPago = construirDescripcionMetodoPago(pago, this.datosTransferencia);
         return null;
     }
 
@@ -99,19 +103,24 @@ public class GestionComprasImpl implements IGestionCompras {
             return false;
         }
 
-        String infoPago = datosTransferencia.getBanco();
+        String infoPago = resolverInfoPago();
+        double totalPagado = c.calcularTotalFinal(logueado);
+
         boolean compraMySQL = repoCompraMySQL != null
                 && repoCompraMySQL.registrarCompra(logueado, c, infoPago);
         boolean compraJson = repoCompraJson != null
                 && repoCompraJson.registrarCompra(logueado, c, infoPago);
 
         this.datosTransferencia = null;
+        this.descripcionMetodoPago = null;
+
         if (!compraMySQL && !compraJson) {
             return false;
         }
 
-        descontarStockCarrito(c);
-        registrarOperacionCompra(logueado, c, infoPago);
+        sincronizarStockTrasCompra(c, compraMySQL);
+        vaciarCarrito();
+        registrarOperacionCompra(logueado, infoPago, totalPagado);
         return true;
     }
 
@@ -146,6 +155,37 @@ public class GestionComprasImpl implements IGestionCompras {
         return compras != null ? compras : new ArrayList<>();
     }
 
+    private String construirDescripcionMetodoPago(PagoDto pago, DatosTransferencia transferencia) {
+        String metodo = (pago != null && pago.getMetodo() != null) ? pago.getMetodo().trim() : "";
+        String bancoDto = (pago != null && pago.getBanco() != null) ? pago.getBanco().trim() : "";
+        String bancoTransf = (transferencia != null && transferencia.getBanco() != null)
+                ? transferencia.getBanco().trim()
+                : "";
+        String detalle = !bancoDto.isEmpty() ? bancoDto : bancoTransf;
+
+        if (!metodo.isEmpty() && !detalle.isEmpty()) {
+            return metodo + " (" + detalle + ")";
+        }
+        if (!metodo.isEmpty()) {
+            return metodo;
+        }
+        if (!detalle.isEmpty()) {
+            return detalle;
+        }
+        return "No especificado";
+    }
+
+    private String resolverInfoPago() {
+        if (this.descripcionMetodoPago != null && !this.descripcionMetodoPago.trim().isEmpty()) {
+            return this.descripcionMetodoPago.trim();
+        }
+        if (this.datosTransferencia != null && this.datosTransferencia.getBanco() != null
+                && !this.datosTransferencia.getBanco().trim().isEmpty()) {
+            return this.datosTransferencia.getBanco().trim();
+        }
+        return "No especificado";
+    }
+
     private boolean tieneStockSuficiente(Carrito carrito) {
         if (carrito == null || carrito.getItems() == null || carrito.getItems().isEmpty()) {
             return false;
@@ -164,23 +204,28 @@ public class GestionComprasImpl implements IGestionCompras {
         return true;
     }
 
-    private void descontarStockCarrito(Carrito carrito) {
+    private void sincronizarStockTrasCompra(Carrito carrito, boolean descontadoEnMySQL) {
         if (gestionLibros == null || carrito == null || carrito.getItems() == null) {
             return;
         }
         for (ItemCarrito item : carrito.getItems()) {
             if (item != null && item.getLibro() != null && item.getCantidad() > 0) {
-                gestionLibros.ajustarStock(item.getLibro().getIsbn(), -item.getCantidad());
+                String isbn = item.getLibro().getIsbn();
+                if (descontadoEnMySQL) {
+                    gestionLibros.sincronizarStockRespaldo(isbn);
+                } else {
+                    gestionLibros.ajustarStock(isbn, -item.getCantidad());
+                }
             }
         }
     }
 
-    private void registrarOperacionCompra(Cliente cliente, Carrito carrito, String metodoPago) {
+    private void registrarOperacionCompra(Cliente cliente, String metodoPago, double totalPagado) {
         if (registradorOperaciones != null) {
             registradorOperaciones.registrar(
                     "COMPRA | Cliente: " + cliente.getId()
                     + " | Metodo: " + metodoPago
-                    + " | Total: " + String.format("%.2f", carrito.calcularTotalFinal(cliente)));
+                    + " | Total: " + String.format("%.2f", totalPagado));
         }
     }
 

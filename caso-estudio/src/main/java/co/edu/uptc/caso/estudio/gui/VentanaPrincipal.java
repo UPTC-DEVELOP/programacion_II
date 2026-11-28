@@ -58,6 +58,7 @@ public class VentanaPrincipal extends JFrame {
         tabbedPane.addTab("Historial de Compras", panelHistorial);
 
         add(tabbedPane);
+        panelCarrito.limpiarCarrito();
         refrescarLibros();
         refrescarHistorial();
     }
@@ -95,7 +96,7 @@ public class VentanaPrincipal extends JFrame {
     public void cerrarSesion() {
         gestionUsuarios.cerrarSesion();
         panelUsuario.limpiarFormulario();
-        refrescarCarrito();
+        panelCarrito.limpiarCarrito();
         panelHistorial.actualizarHistorial(new ArrayList<Compra>());
         mostrarMensaje("Sesión cerrada.", "Información", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -137,7 +138,7 @@ public class VentanaPrincipal extends JFrame {
 
         if (gestionUsuarios.eliminarUsuarioLogueado(new String(campoPass.getPassword()))) {
             panelUsuario.limpiarFormulario();
-            refrescarCarrito();
+            panelCarrito.limpiarCarrito();
             refrescarLibros();
             panelHistorial.actualizarHistorial(new ArrayList<Compra>());
             mostrarMensaje("Su cuenta fue eliminada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -325,7 +326,13 @@ public class VentanaPrincipal extends JFrame {
 
     public void refrescarCarrito() {
         Carrito carritoActual = gestionCompras.obtenerCarritoActual();
-        List<ItemCarrito> items = (carritoActual != null) ? carritoActual.getItems() : new ArrayList<ItemCarrito>();
+        List<ItemCarrito> items = (carritoActual != null && carritoActual.getItems() != null)
+                ? carritoActual.getItems()
+                : new ArrayList<ItemCarrito>();
+        if (items.isEmpty()) {
+            panelCarrito.limpiarCarrito();
+            return;
+        }
         double totalImpuestos = (carritoActual != null) ? carritoActual.calcularTotalImpuestos() : 0.0;
         panelCarrito.actualizarTotales(items, totalImpuestos, gestionCompras.calcularTotalFinal());
     }
@@ -397,7 +404,7 @@ public class VentanaPrincipal extends JFrame {
 
         Compra recibo = construirReciboPrevio(datosPago);
         if (gestionCompras.finalizarCompra()) {
-            panelCarrito.limpiarFormularioPago();
+            panelCarrito.limpiarCarrito();
             refrescarCarrito();
             refrescarLibros();
             refrescarHistorial();
@@ -409,8 +416,16 @@ public class VentanaPrincipal extends JFrame {
 
     private Compra construirReciboPrevio(PagoDto datosPago) {
         Cliente cliente = gestionUsuarios.getUsuarioLogueado();
-        Carrito carrito = gestionCompras.obtenerCarritoActual();
-        return new Compra("ORDEN-CONFIRMADA", cliente, carrito, describirMetodoPago(datosPago));
+        Carrito carritoActual = gestionCompras.obtenerCarritoActual();
+        Carrito copiaCarrito = new Carrito();
+        if (carritoActual != null && carritoActual.getItems() != null) {
+            for (ItemCarrito item : carritoActual.getItems()) {
+                if (item != null && item.getLibro() != null) {
+                    copiaCarrito.agregarItem(item.getLibro(), item.getCantidad());
+                }
+            }
+        }
+        return new Compra("ORDEN-CONFIRMADA", cliente, copiaCarrito, describirMetodoPago(datosPago));
     }
 
     private String describirMetodoPago(PagoDto pago) {

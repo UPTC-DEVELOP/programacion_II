@@ -9,6 +9,7 @@ import java.util.Properties;
 public class ConfiguracionTienda {
 
     private static final Properties PROPIEDADES = new Properties();
+    private static final String RUTA_ARCHIVO = "config/tienda.properties";
 
     static {
         cargar();
@@ -29,18 +30,22 @@ public class ConfiguracionTienda {
             // Si no existe en resources, se intenta cargar desde el sistema de archivos
         }
 
-        try (FileInputStream fis = new FileInputStream("config/tienda.properties")) {
+        try (FileInputStream fis = new FileInputStream(RUTA_ARCHIVO)) {
             PROPIEDADES.load(fis);
         } catch (IOException e) {
             System.err.println("Aviso: Usando valores por defecto (no se encontró tienda.properties).");
         }
     }
 
-    // Retorna el valor asociado a la clave o el valor por defecto si no está definido
+    // Retorna el valor limpio asociado a la clave o el valor por defecto si no está definido
     public static String obtener(String clave, String valorPorDefecto) {
         if (clave == null) {
             return valorPorDefecto;
         }
-        return PROPIEDADES.getProperty(clave, valorPorDefecto);
+        String valor = PROPIEDADES.getProperty(clave);
+        if (valor == null || valor.trim().isEmpty()) {
+            return valorPorDefecto;
+        }
+        return valor.trim();
     }
 }

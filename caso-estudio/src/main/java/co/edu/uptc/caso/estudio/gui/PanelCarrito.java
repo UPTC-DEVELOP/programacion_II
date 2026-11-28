@@ -37,6 +37,7 @@ public class PanelCarrito extends JPanel {
     private JTextField txtExp;
     private JTextField txtNequi;
     private JPasswordField txtCvv;
+    private JButton btnFinalizar;
     private JPanel panelDatosTarjeta;
     private JPanel panelDatosNequi;
     private JPanel panelPago;
@@ -45,6 +46,7 @@ public class PanelCarrito extends JPanel {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         initComponentes(evento);
+        alternarCamposPago();
     }
 
     private void initComponentes(Evento evento) {
@@ -128,7 +130,7 @@ public class PanelCarrito extends JPanel {
         panelCamposPago.add(panelDatosTarjeta);
         panelCamposPago.add(panelDatosNequi);
 
-        JButton btnFinalizar = crearBoton("Finalizar Compra", Evento.FINALIZAR_COMPRA, evento);
+        btnFinalizar = crearBoton("Finalizar Compra", Evento.FINALIZAR_COMPRA, evento);
         btnFinalizar.setFont(new Font("SansSerif", Font.BOLD, 14));
         btnFinalizar.setPreferredSize(new Dimension(180, 38));
 
@@ -141,6 +143,13 @@ public class PanelCarrito extends JPanel {
         boolean esTarjeta = MetodoPago.TARJETA.getEtiqueta().equals(cbMetodoPago.getSelectedItem());
         panelDatosTarjeta.setVisible(esTarjeta);
         panelDatosNequi.setVisible(!esTarjeta);
+        if (esTarjeta) {
+            txtNequi.setText("");
+        } else {
+            txtTarjeta.setText("");
+            txtExp.setText("");
+            txtCvv.setText("");
+        }
         panelPago.revalidate();
         panelPago.repaint();
     }
@@ -148,7 +157,9 @@ public class PanelCarrito extends JPanel {
     private JButton crearBoton(String texto, String comando, Evento evento) {
         JButton btn = new JButton(texto);
         btn.setActionCommand(comando);
-        btn.addActionListener(evento);
+        if (evento != null) {
+            btn.addActionListener(evento);
+        }
         return btn;
     }
 
@@ -157,6 +168,7 @@ public class PanelCarrito extends JPanel {
     }
 
     public void actualizarTotales(List<ItemCarrito> items, double totalImpuestos, double totalFinal) {
+        tablaCarrito.clearSelection();
         modeloTablaCarrito.setRowCount(0);
         if (items != null) {
             for (ItemCarrito it : items) {
@@ -178,6 +190,16 @@ public class PanelCarrito extends JPanel {
         }
         lblTotalImpuestos.setText("Total Impuestos: $" + String.format("%.2f", totalImpuestos));
         lblTotalCarrito.setText("Total Compra: $" + String.format("%.2f", totalFinal));
+        btnFinalizar.setEnabled(modeloTablaCarrito.getRowCount() > 0);
+    }
+
+    public void limpiarCarrito() {
+        tablaCarrito.clearSelection();
+        modeloTablaCarrito.setRowCount(0);
+        lblTotalImpuestos.setText("Total Impuestos: $0.00");
+        lblTotalCarrito.setText("Total Compra: $0.00");
+        btnFinalizar.setEnabled(false);
+        limpiarFormularioPago();
     }
 
     // Convierte la fila de la vista a la del modelo, porque la tabla puede estar ordenada por el usuario
@@ -226,6 +248,13 @@ public class PanelCarrito extends JPanel {
         txtExp.setText("");
         txtCvv.setText("");
         txtNequi.setText("");
+        if (cbBanco.getItemCount() > 0) {
+            cbBanco.setSelectedIndex(0);
+        }
+        if (cbMetodoPago.getItemCount() > 0) {
+            cbMetodoPago.setSelectedIndex(0);
+        }
+        alternarCamposPago();
         lblTotalImpuestos.setText("Total Impuestos: $0.00");
     }
 }

@@ -18,21 +18,20 @@ public class RepositorioUsuarioMySQL implements IRepositorioUsuario {
         if (c == null || esVacio(c.getId()) || esVacio(c.getCorreo())) {
             return false;
         }
-        String sql = "INSERT INTO usuarios (id, nombre_completo, correo, direccion_envio, "
-                + "departamento, ciudad, telefono, tipo_cliente, porcentaje_descuento, contrasena_hash) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO usuarios (id, nombre_completo, correo, contrasena, "
+                + "telefono, departamento, ciudad, direccion, tipo_cliente) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConexionMySQL.obtenerConexion();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, c.getId().trim());
             ps.setString(2, c.getNombreCompleto());
             ps.setString(3, c.getCorreo().trim());
-            ps.setString(4, c.getDireccionEnvio());
-            ps.setString(5, c.getDepartamento());
-            ps.setString(6, c.getCiudad());
-            ps.setString(7, c.getTelefono());
-            ps.setString(8, c.getTipoCliente());
-            ps.setDouble(9, c.getPorcentajeDescuento());
-            ps.setString(10, c.getContrasenaHash());
+            ps.setString(4, c.getContrasenaHash());
+            ps.setString(5, c.getTelefono());
+            ps.setString(6, c.getDepartamento());
+            ps.setString(7, c.getCiudad());
+            ps.setString(8, c.getDireccionEnvio());
+            ps.setString(9, c.getTipoCliente());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error guardando usuario en MySQL: " + e.getMessage());
@@ -105,19 +104,18 @@ public class RepositorioUsuarioMySQL implements IRepositorioUsuario {
         if (c == null || esVacio(c.getId())) {
             return false;
         }
-        String sql = "UPDATE usuarios SET nombre_completo=?, direccion_envio=?, departamento=?, "
-                + "ciudad=?, telefono=?, tipo_cliente=?, porcentaje_descuento=?, contrasena_hash=? WHERE id=?";
+        String sql = "UPDATE usuarios SET nombre_completo=?, contrasena=?, telefono=?, "
+                + "departamento=?, ciudad=?, direccion=?, tipo_cliente=? WHERE id=?";
         try (Connection conn = ConexionMySQL.obtenerConexion();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, c.getNombreCompleto());
-            ps.setString(2, c.getDireccionEnvio());
-            ps.setString(3, c.getDepartamento());
-            ps.setString(4, c.getCiudad());
-            ps.setString(5, c.getTelefono());
-            ps.setString(6, c.getTipoCliente());
-            ps.setDouble(7, c.getPorcentajeDescuento());
-            ps.setString(8, c.getContrasenaHash());
-            ps.setString(9, c.getId().trim());
+            ps.setString(2, c.getContrasenaHash());
+            ps.setString(3, c.getTelefono());
+            ps.setString(4, c.getDepartamento());
+            ps.setString(5, c.getCiudad());
+            ps.setString(6, c.getDireccionEnvio());
+            ps.setString(7, c.getTipoCliente());
+            ps.setString(8, c.getId().trim());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error actualizando usuario en MySQL: " + e.getMessage());
@@ -142,18 +140,18 @@ public class RepositorioUsuarioMySQL implements IRepositorioUsuario {
         }
     }
 
-    // Construye la instancia concreta de Cliente según su tipo y descuento
+    // Construye la instancia concreta de Cliente según su tipo
     private Cliente mapearCliente(ResultSet rs) throws SQLException {
         return FabricaClientes.crear(
                 rs.getString("id"),
                 rs.getString("nombre_completo"),
                 rs.getString("correo"),
-                rs.getString("direccion_envio"),
+                rs.getString("direccion"),
                 rs.getString("departamento"),
                 rs.getString("ciudad"),
                 rs.getString("telefono"),
                 rs.getString("tipo_cliente"),
-                rs.getString("contrasena_hash"));
+                rs.getString("contrasena"));
     }
 
     private boolean esVacio(String texto) {

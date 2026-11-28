@@ -36,14 +36,15 @@ public class Carrito {
 
     // Agrega un libro o suma cantidad si ya existe en el carrito
     public void agregarItem(Libro libro, int cantidad) {
-        if (libro == null || cantidad <= 0) {
+        if (libro == null || libro.getIsbn() == null || libro.getIsbn().trim().isEmpty() || cantidad <= 0) {
             return;
         }
         if (items == null) {
             items = new ArrayList<>();
         }
 
-        ItemCarrito existente = buscarItem(libro.getIsbn());
+        String isbnLimpio = libro.getIsbn().trim();
+        ItemCarrito existente = buscarItem(isbnLimpio);
         if (existente != null) {
             existente.setCantidad(existente.getCantidad() + cantidad);
             return;
@@ -55,8 +56,10 @@ public class Carrito {
         if (isbn == null || items == null) {
             return null;
         }
+        String isbnLimpio = isbn.trim();
         for (ItemCarrito item : items) {
-            if (item != null && item.getLibro() != null && isbn.equals(item.getLibro().getIsbn())) {
+            if (item != null && item.getLibro() != null && item.getLibro().getIsbn() != null
+                    && isbnLimpio.equals(item.getLibro().getIsbn().trim())) {
                 return item;
             }
         }
@@ -78,14 +81,25 @@ public class Carrito {
 
     // Elimina todos los items cuyo ISBN esté en la lista. Retorna true si quitó al menos uno
     public boolean eliminarItems(List<String> isbns) {
-        if (isbns == null || items == null) {
+        if (isbns == null || isbns.isEmpty() || items == null) {
             return false;
         }
+        List<String> isbnsLimpios = new ArrayList<>();
+        for (String id : isbns) {
+            if (id != null && !id.trim().isEmpty()) {
+                isbnsLimpios.add(id.trim());
+            }
+        }
+        if (isbnsLimpios.isEmpty()) {
+            return false;
+        }
+
         boolean eliminado = false;
         Iterator<ItemCarrito> it = items.iterator();
         while (it.hasNext()) {
             ItemCarrito item = it.next();
-            if (item != null && item.getLibro() != null && isbns.contains(item.getLibro().getIsbn())) {
+            if (item != null && item.getLibro() != null && item.getLibro().getIsbn() != null
+                    && isbnsLimpios.contains(item.getLibro().getIsbn().trim())) {
                 it.remove();
                 eliminado = true;
             }

@@ -23,6 +23,7 @@ public class DialogoLibro extends JDialog {
         "Programación", "Arquitectura", "Literatura", "Ciencia", "Ingeniería", "Historia"
     };
     private static final String[] FORMATOS = {"Físico", "Digital"};
+    private static final Double[] TASAS_IVA = {5.0, 19.0};
 
     private JTextField txtIsbn;
     private JTextField txtTitulo;
@@ -32,7 +33,7 @@ public class DialogoLibro extends JDialog {
     private JTextField txtPaginas;
     private JTextField txtPrecio;
     private JTextField txtStock;
-    private JTextField txtIva;
+    private JComboBox<Double> cbIva;
     private JComboBox<String> cbCategoria;
     private JComboBox<String> cbFormato;
     private Libro libroResultado;
@@ -68,7 +69,8 @@ public class DialogoLibro extends JDialog {
         txtPrecio = new JTextField();
         txtStock = new JTextField();
         cbFormato = new JComboBox<>(FORMATOS);
-        txtIva = new JTextField("19.0");
+        cbIva = new JComboBox<>(TASAS_IVA);
+        cbIva.setSelectedItem(5.0);
 
         panelForm.add(new JLabel("ISBN:"));
         panelForm.add(txtIsbn);
@@ -91,7 +93,7 @@ public class DialogoLibro extends JDialog {
         panelForm.add(new JLabel("Formato:"));
         panelForm.add(cbFormato);
         panelForm.add(new JLabel("Porcentaje IVA (%):"));
-        panelForm.add(txtIva);
+        panelForm.add(cbIva);
 
         return panelForm;
     }
@@ -115,7 +117,12 @@ public class DialogoLibro extends JDialog {
         if (libroExistente.getFormato() != null) {
             cbFormato.setSelectedItem(libroExistente.getFormato());
         }
-        txtIva.setText(String.valueOf(libroExistente.getPorcentajeIva()));
+        double ivaExistente = libroExistente.getPorcentajeIva();
+        if (ivaExistente == 19.0) {
+            cbIva.setSelectedItem(19.0);
+        } else {
+            cbIva.setSelectedItem(5.0);
+        }
     }
 
     private JPanel crearPanelBotones() {
@@ -159,7 +166,8 @@ public class DialogoLibro extends JDialog {
             int paginas = Integer.parseInt(txtPaginas.getText().trim());
             double precio = Double.parseDouble(txtPrecio.getText().trim());
             int stock = Integer.parseInt(txtStock.getText().trim());
-            double iva = Double.parseDouble(txtIva.getText().trim());
+            Double ivaSeleccionado = (Double) cbIva.getSelectedItem();
+            double iva = ivaSeleccionado != null ? ivaSeleccionado : 5.0;
 
             if (anio <= 0 || paginas < 0 || precio < 0 || stock < 0 || iva < 0) {
                 mostrarError("Año debe ser mayor a 0; Páginas, Precio, Stock e IVA no pueden ser negativos.");
@@ -182,7 +190,7 @@ public class DialogoLibro extends JDialog {
             this.libroResultado = libro;
             dispose();
         } catch (NumberFormatException ex) {
-            mostrarError("Ingrese valores numéricos válidos en Año, Páginas, Precio, Stock e IVA.");
+            mostrarError("Ingrese valores numéricos válidos en Año, Páginas, Precio y Stock.");
         }
     }
 

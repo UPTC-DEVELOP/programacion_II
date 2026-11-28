@@ -8,8 +8,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 
-// Persistencia MySQL para los ítems del carrito de cada cliente
+// Persistencia MySQL para los ítems del carrito de cada usuario
 public class RepositorioCarritoMySQL implements IRepositorioCarrito {
 
     public RepositorioCarritoMySQL() {
@@ -22,18 +24,20 @@ public class RepositorioCarritoMySQL implements IRepositorioCarrito {
     // Consulta los ítems actuales del carrito junto con los datos del libro en MySQL
     @Override
     public Carrito obtenerCarritoPorCliente(String clienteId) {
-        Carrito carrito = new Carrito(clienteId);
         if (esVacio(clienteId)) {
-            return carrito;
+            return new Carrito();
         }
 
+        String usuarioId = clienteId.trim();
+        Carrito carrito = new Carrito(usuarioId);
+
         String sql = "SELECT ci.cantidad, l.* FROM carrito_items ci "
-                + "INNER JOIN libros l ON ci.libro_isbn = l.isbn "
-                + "WHERE ci.cliente_id = ?";
+                + "INNER JOIN libros l ON ci.isbn = l.isbn "
+                + "WHERE ci.usuario_id = ?";
 
         try (Connection conn = ConexionMySQL.obtenerConexion();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, clienteId.trim());
+            ps.setString(1, usuarioId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Libro libro = FabricaLibros.crear(
@@ -48,7 +52,10 @@ public class RepositorioCarritoMySQL implements IRepositorioCarrito {
                             rs.getInt("stock"),
                             rs.getString("formato"),
                             rs.getDouble("porcentaje_iva"));
-                    carrito.agregarItem(libro, rs.getInt("cantidad"));
+                    int cantidad = rs.getInt("cantidad");
+                    if (libro != null && cantidad > 0) {
+                        carrito.agregarItem(libro, cantidad);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -64,30 +71,38 @@ public class RepositorioCarritoMySQL implements IRepositorioCarrito {
             return false;
         }
 
-        String clienteId = carrito.getClienteId().trim();
-        String sqlDelete = "DELETE FROM carrito_items WHERE cliente_id = ?";
-        String sqlInsert = "INSERT INTO carrito_items (cliente_id, libro_isbn, cantidad) VALUES (?, ?, ?)";
+        String usuarioId = carrito.getClienteId().trim();
+        String sqlDelete = "DELETE FROM carrito_items WHERE usuario_id = ?";
+        String sqlInsert = "INSERT INTO carrito_items (usuario_id, isbn, cantidad) VALUES (?, ?, ?)";
 
         try (Connection conn = ConexionMySQL.obtenerConexion()) {
             conn.setAutoCommit(false);
             try {
                 try (PreparedStatement psDel = conn.prepareStatement(sqlDelete)) {
-                    psDel.setString(1, clienteId);
+                    psDel.setString(1, usuarioId);
                     psDel.executeUpdate();
                 }
 
                 if (!carrito.estaVacio() && carrito.getItems() != null) {
+                    Set<String> isbnsInsertados = new HashSet<>();
                     try (PreparedStatement psIns = conn.prepareStatement(sqlInsert)) {
                         for (ItemCarrito item : carrito.getItems()) {
-                            if (item != null && item.getLibro() != null
-                                    && !esVacio(item.getLibro().getIsbn()) && item.getCantidad() > 0) {
-                                psIns.setString(1, clienteId);
-                                psIns.setString(2, item.getLibro().getIsbn().trim());
-                                psIns.setInt(3, item.getCantidad());
-                                psIns.addBatch();
+                            if (item == null || item.getLibro() == null
+                                    || esVacio(item.getLibro().getIsbn()) || item.getCantidad() <= 0) {
+                                continue;
                             }
+                            String isbnLimpio = item.getLibro().getIsbn().trim();
+                            if (!isbnsInsertados.add(isbnLimpio)) {
+                                continue;
+                            }
+                            psIns.setString(1, usuarioId);
+                            psIns.setString(2, isbnLimpio);
+                            psIns.setInt(3, item.getCantidad());
+                            psIns.addBatch();
                         }
-                        psIns.executeBatch();
+                        if (!isbnsInsertados.isEmpty()) {
+                            psIns.executeBatch();
+                        }
                     }
                 }
 
@@ -106,17 +121,20 @@ public class RepositorioCarritoMySQL implements IRepositorioCarrito {
         }
     }
 
-    // Elimina todos los ítems del carrito del cliente en MySQL
+    // Elimina todos los ítems del carrito del usuario en MySQL
     @Override
     public boolean vaciarCarrito(String clienteId) {
         if (esVacio(clienteId)) {
             return false;
         }
-        String sql = "DELETE FROM carrito_items WHERE cliente_id = ?";
-        try (Connection conn = ConexionMySQL.obtenerConexion();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, clienteId.trim());
-            return ps.executeUpdate() > 0;
+        String sql = "DELETE FROM carrito_items WHERE usuario_id = ?";
+        try (Connection conn = ConexionMySQL.obtenerConexion()) {
+            restaurarAutoCommit(conn);
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, clienteId.trim());
+                ps.executeUpdate();
+                return true;
+            }
         } catch (SQLException e) {
             System.err.println("Error vaciando carrito en MySQL: " + e.getMessage());
             return false;
