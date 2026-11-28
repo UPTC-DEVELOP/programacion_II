@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import model.Cliente;
@@ -60,9 +61,42 @@ public class RepositorioClientesArchivoPlano implements IRepositorio<Cliente> {
     @Override
     public void cargar() {
         clientes.clear();
+        clientes.addAll(leerTodos());
+    }
+
+    @Override
+    public List<Cliente> listarUltimos(int limite) {
+        List<Cliente> todos = leerTodos();
+        if (limite <= 0 || todos.isEmpty()) {
+            return new ArrayList<Cliente>();
+        }
+        int desde = Math.max(0, todos.size() - limite);
+        List<Cliente> ultimos = new ArrayList<Cliente>(todos.subList(desde, todos.size()));
+        Collections.reverse(ultimos);
+        return ultimos;
+    }
+
+    @Override
+    public List<Cliente> listarPagina(int inicio, int cantidad) {
+        List<Cliente> todos = leerTodos();
+        int desde = Math.max(0, inicio);
+        int hasta = Math.min(todos.size(), desde + Math.max(0, cantidad));
+        if (desde >= hasta) {
+            return new ArrayList<Cliente>();
+        }
+        return new ArrayList<Cliente>(todos.subList(desde, hasta));
+    }
+
+    @Override
+    public int contar() {
+        return leerTodos().size();
+    }
+
+    private List<Cliente> leerTodos() {
+        List<Cliente> leidos = new ArrayList<Cliente>();
         File archivo = new File(rutaArchivo);
         if (!archivo.exists()) {
-            return;
+            return leidos;
         }
 
         try (BufferedReader reader = new BufferedReader(
@@ -75,7 +109,7 @@ public class RepositorioClientesArchivoPlano implements IRepositorio<Cliente> {
                     continue;
                 }
                 try {
-                    clientes.add(parsearLinea(linea));
+                    leidos.add(parsearLinea(linea));
                 } catch (IllegalArgumentException e) {
                     throw new PersistenciaException(
                             "Linea " + numeroLinea + " invalida en " + rutaArchivo, e);
@@ -84,6 +118,7 @@ public class RepositorioClientesArchivoPlano implements IRepositorio<Cliente> {
         } catch (IOException e) {
             throw new PersistenciaException("Error al leer el archivo de clientes: " + rutaArchivo, e);
         }
+        return leidos;
     }
 
     /**

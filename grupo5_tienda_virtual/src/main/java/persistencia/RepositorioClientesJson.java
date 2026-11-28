@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -70,16 +71,46 @@ public class RepositorioClientesJson implements IRepositorio<Cliente> {
     @Override
     public void cargar() {
         clientes.clear();
+        clientes.addAll(leerArchivo());
+    }
+
+    @Override
+    public List<Cliente> listarUltimos(int limite) {
+        List<Cliente> todos = leerArchivo();
+        if (limite <= 0 || todos.isEmpty()) {
+            return new ArrayList<Cliente>();
+        }
+        int desde = Math.max(0, todos.size() - limite);
+        List<Cliente> ultimos = new ArrayList<Cliente>(todos.subList(desde, todos.size()));
+        Collections.reverse(ultimos);
+        return ultimos;
+    }
+
+    @Override
+    public List<Cliente> listarPagina(int inicio, int cantidad) {
+        List<Cliente> todos = leerArchivo();
+        int desde = Math.max(0, inicio);
+        int hasta = Math.min(todos.size(), desde + Math.max(0, cantidad));
+        if (desde >= hasta) {
+            return new ArrayList<Cliente>();
+        }
+        return new ArrayList<Cliente>(todos.subList(desde, hasta));
+    }
+
+    @Override
+    public int contar() {
+        return leerArchivo().size();
+    }
+
+    private List<Cliente> leerArchivo() {
         if (!Files.exists(archivo)) {
-            return;
+            return new ArrayList<Cliente>();
         }
         try {
             String json = Files.readString(archivo, StandardCharsets.UTF_8);
             Type tipoLista = new TypeToken<List<Cliente>>() { }.getType();
             List<Cliente> leidos = gson.fromJson(json, tipoLista);
-            if (leidos != null) {
-                clientes.addAll(leidos);
-            }
+            return leidos != null ? leidos : new ArrayList<Cliente>();
         } catch (IOException | JsonParseException e) {
             throw new PersistenciaException(
                     "No se pudo leer " + archivo.toAbsolutePath(), e);

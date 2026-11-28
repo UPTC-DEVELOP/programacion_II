@@ -76,27 +76,92 @@ public class RepositorioClientesBD implements IRepositorio<Cliente> {
     @Override
     public void cargar() {
         clientes.clear();
-        String sql = "SELECT correo, nombre, direccion, telefono, contrasena, tipo FROM clientes";
+        String sql = "SELECT correo, nombre, direccion, telefono, contrasena, tipo "
+                + "FROM clientes ORDER BY rowid ASC";
         try (Connection conexion = conectar();
                 Statement st = conexion.createStatement();
                 ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
-                String tipo = rs.getString("tipo");
-                Cliente cliente = "premium".equalsIgnoreCase(tipo)
-                        ? new ClientePremium()
-                        : new ClienteRegular();
-                cliente.setCorreo(rs.getString("correo"));
-                cliente.setNombreCompleto(rs.getString("nombre"));
-                cliente.setDireccion(rs.getString("direccion"));
-                cliente.setTelefono(rs.getString("telefono"));
-                cliente.setContrasena(rs.getString("contrasena"));
-                clientes.add(cliente);
+                clientes.add(mapearCliente(rs));
             }
         } catch (SQLException e) {
             throw new PersistenciaException(
                     "No se pudieron leer los clientes de la BD", e);
         }
+    }
+
+    @Override
+    public List<Cliente> listarUltimos(int limite) {
+        if (limite <= 0) {
+            return new ArrayList<Cliente>();
+        }
+        String sql = "SELECT correo, nombre, direccion, telefono, contrasena, tipo "
+                + "FROM clientes ORDER BY rowid DESC LIMIT ?";
+        try (Connection conexion = conectar();
+                PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setInt(1, limite);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<Cliente> ultimos = new ArrayList<Cliente>();
+                while (rs.next()) {
+                    ultimos.add(mapearCliente(rs));
+                }
+                return ultimos;
+            }
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudieron leer los ultimos clientes de la BD", e);
+        }
+    }
+
+    @Override
+    public List<Cliente> listarPagina(int inicio, int cantidad) {
+        if (inicio < 0 || cantidad <= 0) {
+            return new ArrayList<Cliente>();
+        }
+        String sql = "SELECT correo, nombre, direccion, telefono, contrasena, tipo "
+                + "FROM clientes ORDER BY rowid ASC LIMIT ? OFFSET ?";
+        try (Connection conexion = conectar();
+                PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setInt(1, cantidad);
+            ps.setInt(2, inicio);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<Cliente> pagina = new ArrayList<Cliente>();
+                while (rs.next()) {
+                    pagina.add(mapearCliente(rs));
+                }
+                return pagina;
+            }
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudo leer la pagina de clientes de la BD", e);
+        }
+    }
+
+    @Override
+    public int contar() {
+        String sql = "SELECT COUNT(*) FROM clientes";
+        try (Connection conexion = conectar();
+                Statement st = conexion.createStatement();
+                ResultSet rs = st.executeQuery(sql)) {
+            return rs.next() ? rs.getInt(1) : 0;
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudo contar los clientes de la BD", e);
+        }
+    }
+
+    private Cliente mapearCliente(ResultSet rs) throws SQLException {
+        String tipo = rs.getString("tipo");
+        Cliente cliente = "premium".equalsIgnoreCase(tipo)
+                ? new ClientePremium()
+                : new ClienteRegular();
+        cliente.setCorreo(rs.getString("correo"));
+        cliente.setNombreCompleto(rs.getString("nombre"));
+        cliente.setDireccion(rs.getString("direccion"));
+        cliente.setTelefono(rs.getString("telefono"));
+        cliente.setContrasena(rs.getString("contrasena"));
+        return cliente;
     }
 
     @Override
