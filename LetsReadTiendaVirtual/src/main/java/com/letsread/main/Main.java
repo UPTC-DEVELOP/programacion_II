@@ -1,7 +1,7 @@
 package com.letsread.main;
 
 import com.letsread.gui.VentanaPrincipal;
-import com.letsread.persistence.LibroJsonRepositorio;
+import com.letsread.persistence.LibroBdRepositorio;
 import com.letsread.persistence.LibroRepositorio;
 import com.letsread.repository.ClienteJsonRepositorio;
 import com.letsread.repository.ClienteRepositorio;
@@ -19,7 +19,7 @@ public class Main {
         ClienteRepositorio repositorio = new ClienteJsonRepositorio(Path.of("clientes_letsread.json"));
         ClienteService clienteService = new ClienteService(repositorio);
 
-        LibroRepositorio libroRepositorio = new LibroJsonRepositorio();
+        LibroRepositorio libroRepositorio = new LibroBdRepositorio();
         LibroService libroService = new LibroService(libroRepositorio);
         libroService.sembrarSiVacio(CatalogoInicial.obtener());
 
