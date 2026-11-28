@@ -7,6 +7,7 @@ import co.edu.uptc.tienda.excepcion.CarritoExcepcion;
 import co.edu.uptc.tienda.excepcion.LibroExcepcion;
 import co.edu.uptc.tienda.interfaz.IGestionCarrito;
 import co.edu.uptc.tienda.interfaz.IPersistenciaCarrito;
+import co.edu.uptc.tienda.interfaz.IRegistroOperaciones;
 import co.edu.uptc.tienda.modelo.Carrito;
 import co.edu.uptc.tienda.modelo.Cliente;
 import co.edu.uptc.tienda.modelo.ItemCarrito;
@@ -18,15 +19,18 @@ public class GestionCarrito implements IGestionCarrito {
     private final Carrito carrito;
     private final List<IPersistenciaCarrito> persistencias;
     private final ControlLibro controlLibro;
+    private final IRegistroOperaciones registro;
     private final List<RegistroCarrito> otrosClientes = new ArrayList<>();
     private List<Libro> catalogo = new ArrayList<>();
     private List<Cliente> clientes = new ArrayList<>();
     private boolean recuperado;
 
-    public GestionCarrito(Carrito carrito, List<IPersistenciaCarrito> persistencias, ControlLibro controlLibro) {
+    public GestionCarrito(Carrito carrito, List<IPersistenciaCarrito> persistencias, ControlLibro controlLibro,
+            IRegistroOperaciones registro) {
         this.carrito = carrito;
         this.persistencias = persistencias;
         this.controlLibro = controlLibro;
+        this.registro = registro;
         this.recuperado = false;
     }
 
@@ -60,7 +64,8 @@ public class GestionCarrito implements IGestionCarrito {
         } else {
             existente.setCantidad(totalSolicitado);
         }
-        guardarODeshacer(itemsAntes, clienteAntes);
+        guardarODeshacer(itemsAntes, clienteAntes, "Agregar libro",
+                "Cliente " + clienteAntes + ", ISBN " + libro.getIsbn() + ", cantidad " + cantidad);
     }
 
     @Override
@@ -82,7 +87,8 @@ public class GestionCarrito implements IGestionCarrito {
         List<ItemCarrito> itemsAntes = copiarItems();
         String clienteAntes = carrito.getIdCliente();
         item.setCantidad(nuevaCantidad);
-        guardarODeshacer(itemsAntes, clienteAntes);
+        guardarODeshacer(itemsAntes, clienteAntes, "Cambiar cantidad",
+                "Cliente " + clienteAntes + ", ISBN " + isbn + ", nueva cantidad " + nuevaCantidad);
     }
 
     @Override
@@ -94,7 +100,7 @@ public class GestionCarrito implements IGestionCarrito {
         List<ItemCarrito> itemsAntes = copiarItems();
         String clienteAntes = carrito.getIdCliente();
         carrito.quitarItem(item);
-        guardarODeshacer(itemsAntes, clienteAntes);
+        guardarODeshacer(itemsAntes, clienteAntes, "Eliminar libro", "Cliente " + clienteAntes + ", ISBN " + isbn);
     }
 
     @Override
@@ -102,7 +108,7 @@ public class GestionCarrito implements IGestionCarrito {
         List<ItemCarrito> itemsAntes = copiarItems();
         String clienteAntes = carrito.getIdCliente();
         carrito.vaciar();
-        guardarODeshacer(itemsAntes, clienteAntes);
+        guardarODeshacer(itemsAntes, clienteAntes, "Vaciar carrito", "Cliente " + clienteAntes);
     }
 
     @Override
@@ -350,17 +356,18 @@ public class GestionCarrito implements IGestionCarrito {
         return new CarritoExcepcion(mensaje.toString());
     }
 
-    private void guardarODeshacer(List<ItemCarrito> itemsAntes, String clienteAntes) throws CarritoExcepcion {
+    private void guardarODeshacer(List<ItemCarrito> itemsAntes, String clienteAntes, String operacion,
+            String detalle) throws CarritoExcepcion {
         List<CarritoExcepcion> errores = guardarEnPersistencias();
-        if (errores.isEmpty()) {
-            return;
-        }
-        if (errores.size() == persistencias.size()) {
+        if (!errores.isEmpty() && errores.size() == persistencias.size()) {
             restaurar(itemsAntes, clienteAntes);
             throw new CarritoExcepcion("El carrito no se pudo guardar en ninguna parte y el cambio se deshizo.\n"
                     + errores.get(0).getMessage());
         }
-        throw avisoGuardadoParcial(errores);
+        registro.registrar("Carrito", operacion, detalle);
+        if (!errores.isEmpty()) {
+            throw avisoGuardadoParcial(errores);
+        }
     }
 
     private List<CarritoExcepcion> guardarEnPersistencias() {

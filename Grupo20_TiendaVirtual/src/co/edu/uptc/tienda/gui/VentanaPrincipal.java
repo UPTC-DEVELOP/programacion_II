@@ -11,12 +11,14 @@ import javax.swing.event.ChangeListener;
 
 import co.edu.uptc.tienda.interfaz.IGestionCarrito;
 import co.edu.uptc.tienda.interfaz.IPersistenciaCarrito;
+import co.edu.uptc.tienda.interfaz.IRegistroOperaciones;
 import co.edu.uptc.tienda.modelo.Carrito;
 import co.edu.uptc.tienda.negocio.ClienteConfig;
 import co.edu.uptc.tienda.negocio.ControlLibro;
 import co.edu.uptc.tienda.negocio.GestionCarrito;
 import co.edu.uptc.tienda.persistencia.CarritoBD;
 import co.edu.uptc.tienda.persistencia.CarritoJson;
+import co.edu.uptc.tienda.persistencia.RegistroOperacionesTxt;
 
 public class VentanaPrincipal extends JFrame implements ChangeListener {
 
@@ -45,7 +47,8 @@ public class VentanaPrincipal extends JFrame implements ChangeListener {
         List<IPersistenciaCarrito> persistencias = new ArrayList<>();
         persistencias.add(new CarritoBD());
         persistencias.add(new CarritoJson("datos/carrito.json"));
-        IGestionCarrito gestion = new GestionCarrito(new Carrito(), persistencias, controlLibro);
+        IRegistroOperaciones registro = new RegistroOperacionesTxt("datos/operaciones.txt");
+        IGestionCarrito gestion = new GestionCarrito(new Carrito(), persistencias, controlLibro, registro);
         panelCarrito = new PanelCarrito();
         eventosCarrito = new EventosCarrito(panelCarrito, gestion);
         panelCarrito.setEventos(eventosCarrito);
