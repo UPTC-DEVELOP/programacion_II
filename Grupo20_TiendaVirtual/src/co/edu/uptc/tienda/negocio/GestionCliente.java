@@ -1,141 +1,252 @@
-package co.edu.uptc.tienda.negocio;
+package co.edu.uptc.tienda.gui;
 
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
-import co.edu.uptc.tienda.interfaz.IGestionCliente;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+
 import co.edu.uptc.tienda.modelo.Cliente;
-import co.edu.uptc.tienda.persistencia.LocalCliente;
+import co.edu.uptc.tienda.negocio.ClienteConfig;
 
-public class GestionCliente implements IGestionCliente {
+public class EventosCliente implements ActionListener {
 
-    private LocalCliente localCliente;
-    private Cliente clienteLogueado;
+	//texto de los botones
+	
+    public final static String GUARDAR = "Añadir";
+    public final static String BUSCAR = "Buscar";
+    public final static String ACTUALIZAR = "Cambiar";
+    public final static String ELIMINAR = "Borrar";
+    public final static String LISTAR = "Leer";
+    public final static String LIMPIAR = "Limpiar";
+    public final static String INICIAR_SESION = "Iniciar sesión";
+    public final static String CERRAR_SESION = "Cerrar sesión";
 
-    public GestionCliente() {
-        localCliente = new LocalCliente();
-        clienteLogueado = null;
+    private PanelCliente panelCliente;
+    private ClienteConfig clienteConfig;
+
+    public EventosCliente(PanelCliente panelCliente) {
+        this(panelCliente, new ClienteConfig());
     }
 
-    public String getAvisoCarga() {
-        return localCliente.getAvisoCarga();
-    }
-
-    @Override
-    public void guardar(Cliente cliente) {
-        // Revisa que todos los campos estén llenos y con datos validos
-        validar(cliente);
-        
-        // Revisa que el cliente recien registrado no tenga un ID igual a otro
-        if (localCliente.buscarPorId(cliente.getId()) != null) {
-            throw new IllegalArgumentException("Ya existe un cliente con el ID " + cliente.getId() + ".");
+    public EventosCliente(PanelCliente panelCliente, ClienteConfig clienteConfig) {
+        this.panelCliente = panelCliente;
+        this.clienteConfig = clienteConfig;
+        if (clienteConfig.getAvisoCarga() != null) {
+            panelCliente.mostrarAlerta("Clientes", clienteConfig.getAvisoCarga());
         }
-        validarCorreoLibre(cliente);
-        
-        // Persistencia, guarda los datos con JSON
-        localCliente.guardar(cliente);
     }
 
     @Override
-    public ArrayList<Cliente> listar() {
-        // Pide y devuelve los datos recién guardados en JSON
-        return localCliente.listar();
-    }
-
-    @Override
-    public Cliente buscarPorId(String id) {
-        // busca el cliente por ID, pero esto lo hace la persistencia JSON
-        return localCliente.buscarPorId(id);
-    }
-
-
-    @Override
-    public void actualizar(Cliente cliente) {
-        validar(cliente);
-        if (localCliente.buscarPorId(cliente.getId()) == null) {
-            throw new IllegalArgumentException("No existe un cliente con el ID " + cliente.getId() + ".");
+    public void actionPerformed(ActionEvent e) {
+        try {
+            ejecutar(e);
+        } catch (IllegalArgumentException ex) {
+            panelCliente.mostrarAlerta("Clientes", ex.getMessage());
         }
-        validarCorreoLibre(cliente);
-        localCliente.actualizar(cliente);
+        actualizarSesion();
     }
 
-    @Override
-    public void eliminar(String id) {
-        if (localCliente.buscarPorId(id) == null) {
-            throw new IllegalArgumentException("No existe un cliente con el ID " + id + ".");
+    public void actualizarSesion() {
+        panelCliente.mostrarSesion(clienteConfig.getClienteLogueado());
+    }
+
+    private void ejecutar(ActionEvent e) {
+
+        String evento = e.getActionCommand();
+
+        if (evento.equals(GUARDAR)) {
+
+            Cliente cliente = new Cliente(
+                    panelCliente.getId().trim(),
+                    panelCliente.getNombre().trim(),
+                    panelCliente.getCorreo().trim(),
+                    panelCliente.getDireccion().trim(),
+                    panelCliente.getCelular().trim(),
+                    panelCliente.getTipoCliente()
+            );
+
+            clienteConfig.guardar(cliente);
+
+            //textos a eventos completados
+            
+            panelCliente.mostrarMensajeExito("Registro exitoso", "Cliente registrado correctamente.");
+            panelCliente.limpiarCampos();
         }
-        localCliente.eliminar(id);
-    }
 
-    public boolean iniciarSesion(String correo) {
-        for (Cliente cliente : listar()) {
-            if (cliente.getCorreoElectronico().equalsIgnoreCase(correo)) {
-                clienteLogueado = cliente;
-                return true;
+        else if (evento.equals(BUSCAR)) {
+
+            String id = panelCliente.getId().trim();
+            if (id.isEmpty()) {
+                panelCliente.mostrarAlerta("Validación", "Debe ingresar el ID del cliente para buscar.");
+                return;
+            }
+
+            Cliente cliente = clienteConfig.buscarPorId(id);
+
+            if (cliente != null) {
+                panelCliente.mostrarCliente(cliente);
+                panelCliente.mostrarMensajeExito("Búsqueda exitosa", "Cliente encontrado.");
+            } else {
+                panelCliente.mostrarAlerta("Clientes", "No existe un cliente registrado con ese ID.");
             }
         }
-        return false;
-    }
 
-    public void cerrarSesion() {
-        clienteLogueado = null;
-    }
+        else if (evento.equals(ACTUALIZAR)) {
 
-    public Cliente getClienteLogueado() {
-        return clienteLogueado;
-    }
+            Cliente cliente = new Cliente(
+                    panelCliente.getId().trim(),
+                    panelCliente.getNombre().trim(),
+                    panelCliente.getCorreo().trim(),
+                    panelCliente.getDireccion().trim(),
+                    panelCliente.getCelular().trim(),
+                    panelCliente.getTipoCliente()
+            );
 
-    public boolean esClientePremium() {
-        if (clienteLogueado != null) {
-            return "Premium".equalsIgnoreCase(clienteLogueado.getTipoCliente());
-        }
-        return false;
-    }
+            clienteConfig.actualizar(cliente);
 
-    private void validar(Cliente cliente) {
-        // Verifica que el identificador único no esté vacío
-        if (esVacio(cliente.getId())) {
-            throw new IllegalArgumentException("El ID es obligatorio.");
+            panelCliente.mostrarMensajeExito("Actualización exitosa", "Cliente actualizado correctamente.");
+            panelCliente.limpiarCampos();
         }
-        
-        // Revisa que se haya escrito el nombre completo
-        if (esVacio(cliente.getNombreCompleto())) {
-            throw new IllegalArgumentException("El nombre completo es obligatorio.");
-        }
-        
-        // Revisa que se haya escrito un correo valido,y que no esté vacio
-        if (esVacio(cliente.getCorreoElectronico())) {
-            throw new IllegalArgumentException("El correo es obligatorio.");
-        }
-        if (!cliente.getCorreoElectronico().trim().matches("[^@\\s]+@[^@\\s]+\\.[^@\\s]+")) {
-            throw new IllegalArgumentException("El correo no tiene un formato válido, por ejemplo nombre@dominio.com.");
-        }
-        
-        // Revisa que se haya escrito una direccion, no correcta sino que se haya llenado el espacio
-        if (esVacio(cliente.getDireccionEnvio())) {
-            throw new IllegalArgumentException("La dirección es obligatoria.");
-        }
-        
-        // Revisa que se haya llenado el espacio de telefono
-        if (esVacio(cliente.getCelular())) {
-            throw new IllegalArgumentException("El celular es obligatorio.");
-        }
-        if (!cliente.getCelular().trim().matches("\\d{7,10}")) {
-            throw new IllegalArgumentException("El celular solo puede tener números, entre 7 y 10 dígitos.");
-        }
-    }
 
+        else if (evento.equals(ELIMINAR)) {
 
-    private void validarCorreoLibre(Cliente cliente) {
-        for (Cliente otro : localCliente.listar()) {
-            if (!otro.getId().equals(cliente.getId())
-                    && otro.getCorreoElectronico().equalsIgnoreCase(cliente.getCorreoElectronico().trim())) {
-                throw new IllegalArgumentException("El correo " + cliente.getCorreoElectronico().trim()
-                        + " ya está registrado con otro cliente.");
+            String id = panelCliente.getId().trim();
+            if (id.isEmpty()) {
+                panelCliente.mostrarAlerta("Validación", "Debe ingresar el ID del cliente para eliminar.");
+                return;
+            }
+
+            Cliente cliente = clienteConfig.buscarPorId(id);
+            if (cliente == null) {
+                panelCliente.mostrarAlerta("Clientes", "No existe un cliente con el ID ingresado.");
+                return;
+            }
+
+            int respuesta = JOptionPane.showConfirmDialog(
+                    panelCliente,
+                    "¿Está seguro de eliminar el cliente?\n\n"
+                            + "ID: " + cliente.getId() + "\n"
+                            + "Nombre: " + cliente.getNombreCompleto(),
+                    "Confirmar eliminación",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+            if (respuesta == JOptionPane.YES_OPTION) {
+                clienteConfig.eliminar(id);
+                panelCliente.mostrarMensajeExito("Eliminación exitosa", "Cliente eliminado correctamente.");
+                panelCliente.limpiarCampos();
             }
         }
+
+        else if (evento.equals(LISTAR)) {
+            listar();
+        }
+
+        else if (evento.equals(LIMPIAR)) {
+            panelCliente.limpiarCampos();
+        }
+
+        else if (evento.equals(INICIAR_SESION)) {
+            iniciarSesion();
+        }
+
+        else if (evento.equals(CERRAR_SESION)) {
+            cerrarSesion();
+        }
     }
 
-    private boolean esVacio(String texto) {
-        return texto == null || texto.trim().isEmpty();
+    private void iniciarSesion() {
+
+        String correo = panelCliente.pedirCorreo();
+
+        if (correo == null) {
+            return;
+        }
+
+        if (correo.trim().isEmpty()) {
+            panelCliente.mostrarAlerta("Validación", "Debe escribir el correo para iniciar sesión.");
+            return;
+        }
+
+        if (clienteConfig.iniciarSesion(correo.trim())) {
+            Cliente cliente = clienteConfig.getClienteLogueado();
+            panelCliente.mostrarMensajeExito("Iniciar sesión", "Bienvenido(a), " + cliente.getNombreCompleto() + ".");
+        } else {
+            panelCliente.mostrarAlerta("Iniciar sesión", "No hay un cliente registrado con el correo " + correo.trim() + ".");
+        }
+    }
+
+    private void cerrarSesion() {
+
+        Cliente cliente = clienteConfig.getClienteLogueado();
+
+        if (cliente == null) {
+            panelCliente.mostrarAlerta("Cerrar sesión", "No hay ninguna sesión iniciada.");
+            return;
+        }
+
+        clienteConfig.cerrarSesion();
+        panelCliente.mostrarMensajeExito("Cerrar sesión", "Se cerró la sesión de " + cliente.getNombreCompleto() + ".");
+    }
+
+    private void listar() {
+
+        List<Cliente> clientes = new ArrayList<>(clienteConfig.listar());
+
+        if (clientes.isEmpty()) {
+            panelCliente.mostrarMensajeExito("Listado de clientes", "No hay clientes registrados.");
+            return;
+        }
+
+        clientes.sort(Comparator.comparing(Cliente::getId));
+
+        String[] columnas = {
+            "ID",
+            "Nombre Completo",
+            "Correo",
+            "Dirección",
+            "Celular",
+            "Tipo"
+        };
+
+        DefaultTableModel modelo = new DefaultTableModel(columnas, 0) {
+            @Override
+            public boolean isCellEditable(int fila, int columna) {
+                return false;
+            }
+        };
+
+        for (Cliente cliente : clientes) {
+            Object[] fila = {
+                cliente.getId(),
+                cliente.getNombreCompleto(),
+                cliente.getCorreoElectronico(),
+                cliente.getDireccionEnvio(),
+                cliente.getCelular(),
+                cliente.getTipoCliente()
+            };
+            modelo.addRow(fila);
+        }
+
+        JTable tabla = new JTable(modelo);
+        tabla.setAutoCreateRowSorter(true);
+
+        JScrollPane scroll = new JScrollPane(tabla);
+        scroll.setPreferredSize(new Dimension(750, 300));
+
+        JOptionPane.showMessageDialog(
+                panelCliente,
+                scroll,
+                "Listado de clientes",
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }
 }

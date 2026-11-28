@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -31,6 +33,9 @@ public class PanelCliente extends JPanel {
     private JButton botonEliminar;
     private JButton botonListar;
     private JButton botonLimpiar;
+    private JButton botonIniciarSesion;
+    private JButton botonCerrarSesion;
+    private JLabel etiquetaSesion;
 
     private EventosCliente eventos;
 
@@ -51,6 +56,10 @@ public class PanelCliente extends JPanel {
         botonEliminar = new JButton(EventosCliente.ELIMINAR);
         botonListar = new JButton(EventosCliente.LISTAR);
         botonLimpiar = new JButton(EventosCliente.LIMPIAR);
+        botonIniciarSesion = new JButton(EventosCliente.INICIAR_SESION);
+        botonCerrarSesion = new JButton(EventosCliente.CERRAR_SESION);
+        etiquetaSesion = new JLabel();
+        mostrarSesion(null);
 
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -89,7 +98,16 @@ public class PanelCliente extends JPanel {
         panelBotones.add(botonListar);
         panelBotones.add(botonLimpiar);
 
-        add(panelBotones, BorderLayout.SOUTH);
+        JPanel panelSesion = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        panelSesion.add(etiquetaSesion);
+        panelSesion.add(botonIniciarSesion);
+        panelSesion.add(botonCerrarSesion);
+
+        JPanel panelInferior = new JPanel(new GridLayout(2, 1));
+        panelInferior.add(panelBotones);
+        panelInferior.add(panelSesion);
+
+        add(panelInferior, BorderLayout.SOUTH);
     }
 
     public String getId() {
@@ -135,6 +153,19 @@ public class PanelCliente extends JPanel {
         campoId.requestFocus();
     }
 
+    public void mostrarSesion(Cliente cliente) {
+        if (cliente == null) {
+            etiquetaSesion.setText("Sesión: ninguna");
+        } else {
+            etiquetaSesion.setText("Sesión: " + cliente.getNombreCompleto() + " (" + cliente.getCorreoElectronico() + ")");
+        }
+    }
+
+    public String pedirCorreo() {
+        return JOptionPane.showInputDialog(this, "Escriba el correo del cliente:", "Iniciar sesión",
+                JOptionPane.QUESTION_MESSAGE);
+    }
+
     public void mostrarAlerta(String titulo, String mensaje) {
         JOptionPane.showMessageDialog(this, mensaje, titulo, JOptionPane.WARNING_MESSAGE);
     }
@@ -151,11 +182,21 @@ public class PanelCliente extends JPanel {
         botonEliminar.setActionCommand(EventosCliente.ELIMINAR);
         botonListar.setActionCommand(EventosCliente.LISTAR);
         botonLimpiar.setActionCommand(EventosCliente.LIMPIAR);
+        botonIniciarSesion.setActionCommand(EventosCliente.INICIAR_SESION);
+        botonCerrarSesion.setActionCommand(EventosCliente.CERRAR_SESION);
         botonGuardar.addActionListener(eventos);
         botonBuscar.addActionListener(eventos);
         botonActualizar.addActionListener(eventos);
         botonEliminar.addActionListener(eventos);
         botonListar.addActionListener(eventos);
         botonLimpiar.addActionListener(eventos);
+        botonIniciarSesion.addActionListener(eventos);
+        botonCerrarSesion.addActionListener(eventos);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                eventos.actualizarSesion();
+            }
+        });
     }
 }
