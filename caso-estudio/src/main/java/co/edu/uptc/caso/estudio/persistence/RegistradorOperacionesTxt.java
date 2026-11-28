@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 // Registra eventos operativos relevantes en un archivo de texto plano con marca de tiempo
-public class RegistradorOperacionesTxt {
+public class RegistradorOperacionesTxt implements IRegistradorOperaciones {
 
     private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final String rutaArchivo;
@@ -24,6 +24,7 @@ public class RegistradorOperacionesTxt {
     }
 
     // Añade una línea con fecha y hora al archivo de log si el mensaje no está vacío
+    @Override
     public void registrar(String mensaje) {
         if (mensaje == null || mensaje.trim().isEmpty()) {
             return;

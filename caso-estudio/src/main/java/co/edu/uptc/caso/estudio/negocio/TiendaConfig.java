@@ -6,6 +6,7 @@ import co.edu.uptc.caso.estudio.persistence.IRepositorioCarrito;
 import co.edu.uptc.caso.estudio.persistence.IRepositorioCompra;
 import co.edu.uptc.caso.estudio.persistence.IRepositorioLibros;
 import co.edu.uptc.caso.estudio.persistence.IRepositorioUsuario;
+import co.edu.uptc.caso.estudio.persistence.IRegistradorOperaciones;
 import co.edu.uptc.caso.estudio.persistence.InicializadorBaseDatos;
 import co.edu.uptc.caso.estudio.persistence.RegistradorOperacionesTxt;
 import co.edu.uptc.caso.estudio.persistence.RepositorioCarritoJson;
@@ -27,7 +28,7 @@ public class TiendaConfig {
     public TiendaConfig() {
         inicializarInfraestructura();
 
-        RegistradorOperacionesTxt registradorTxt = new RegistradorOperacionesTxt();
+        IRegistradorOperaciones registradorOperaciones = new RegistradorOperacionesTxt();
 
         IRepositorioLibros repoLibrosMySQL = new RepositorioLibrosMySQL();
         IRepositorioLibros repoLibrosJson = new RepositorioLibrosJson();
@@ -46,12 +47,12 @@ public class TiendaConfig {
                 repoLibrosJson,
                 repoCompraMySQL,
                 repoCompraJson,
-                registradorTxt);
+                registradorOperaciones);
         this.gestionUsuarios = crearGestionUsuarios(
                 repoUsuarioMySQL,
                 repoUsuarioJson,
                 repoCarritoJson,
-                registradorTxt);
+                registradorOperaciones);
         this.gestionCompras = crearGestionCompras(
                 repoCarritoMySQL,
                 repoCarritoJson,
@@ -59,7 +60,7 @@ public class TiendaConfig {
                 repoCompraJson,
                 this.gestionUsuarios,
                 this.gestionLibros,
-                registradorTxt);
+                registradorOperaciones);
     }
 
     // Intenta inicializar tablas en MySQL al arrancar; si falla, el sistema opera con JSON
@@ -72,16 +73,16 @@ public class TiendaConfig {
         }
     }
 
-    // Construye el servicio de negocio de libros con sus repositorios de libros, compras y log TXT
+    // Construye el servicio de negocio de libros con sus repositorios de libros, compras y registro de operaciones
     private IGestionLibros crearGestionLibros(IRepositorioLibros repoLibrosMySQL,
                                               IRepositorioLibros repoLibrosJson,
                                               IRepositorioCompra repoCompraMySQL,
                                               IRepositorioCompra repoCompraJson,
-                                              RegistradorOperacionesTxt registradorTxt) {
+                                              IRegistradorOperaciones registradorOperaciones) {
         return new GestionLibrosImpl(
                 repoLibrosMySQL,
                 repoLibrosJson,
-                registradorTxt,
+                registradorOperaciones,
                 repoCompraMySQL,
                 repoCompraJson);
     }
@@ -90,8 +91,8 @@ public class TiendaConfig {
     private IGestionUsuarios crearGestionUsuarios(IRepositorioUsuario repoUsuarioMySQL,
                                                 IRepositorioUsuario repoUsuarioJson,
                                                 IRepositorioCarrito repoCarritoJson,
-                                                RegistradorOperacionesTxt registradorTxt) {
-        return new GestionUsuariosImpl(repoUsuarioMySQL, repoUsuarioJson, repoCarritoJson, registradorTxt);
+                                                IRegistradorOperaciones registradorOperaciones) {
+        return new GestionUsuariosImpl(repoUsuarioMySQL, repoUsuarioJson, repoCarritoJson, registradorOperaciones);
     }
 
     // Construye el servicio de negocio de compras integrando carrito, compra, usuarios y libros
@@ -101,7 +102,7 @@ public class TiendaConfig {
                                               IRepositorioCompra repoCompraJson,
                                               IGestionUsuarios usuarios,
                                               IGestionLibros libros,
-                                              RegistradorOperacionesTxt registradorTxt) {
+                                              IRegistradorOperaciones registradorOperaciones) {
         return new GestionComprasImpl(
                 repoCarritoMySQL,
                 repoCarritoJson,
@@ -109,7 +110,7 @@ public class TiendaConfig {
                 repoCompraJson,
                 usuarios,
                 libros,
-                registradorTxt);
+                registradorOperaciones);
     }
 
     public IGestionLibros getGestionLibros() {

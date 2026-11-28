@@ -1,58 +1,40 @@
-// Servicio de usuarios: valida los datos, cifra las contraseñas con SHA-256 y guarda en MySQL y JSON.
+// Servicio de usuarios: coordina autenticación, perfil y persistencia en MySQL y JSON.
 package co.edu.uptc.caso.estudio.negocio;
 
 import co.edu.uptc.caso.estudio.model.Cliente;
 import co.edu.uptc.caso.estudio.model.FabricaClientes;
 import co.edu.uptc.caso.estudio.negocio.dto.CredencialDto;
+import co.edu.uptc.caso.estudio.persistence.IRegistradorOperaciones;
 import co.edu.uptc.caso.estudio.persistence.IRepositorioCarrito;
 import co.edu.uptc.caso.estudio.persistence.IRepositorioUsuario;
-import co.edu.uptc.caso.estudio.persistence.RegistradorOperacionesTxt;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class GestionUsuariosImpl implements IGestionUsuarios {
 
-    public static final int LONGITUD_MINIMA_CONTRASENA = 6;
+    public static final int LONGITUD_MINIMA_CONTRASENA = SeguridadUsuario.LONGITUD_MINIMA_CONTRASENA;
 
     private final IRepositorioUsuario repoMySQL;
     private final IRepositorioUsuario repoJson;
     private final IRepositorioCarrito repoCarritoJson;
-    private final RegistradorOperacionesTxt registradorTxt;
+    private final IRegistradorOperaciones registradorOperaciones;
+    private final SeguridadUsuario seguridadUsuario;
     private Cliente usuarioLogueado;
 
     public GestionUsuariosImpl(IRepositorioUsuario repoMySQL, IRepositorioUsuario repoJson,
-                               IRepositorioCarrito repoCarritoJson, RegistradorOperacionesTxt registradorTxt) {
+                               IRepositorioCarrito repoCarritoJson,
+                               IRegistradorOperaciones registradorOperaciones) {
         this.repoMySQL = repoMySQL;
         this.repoJson = repoJson;
         this.repoCarritoJson = repoCarritoJson;
-        this.registradorTxt = registradorTxt;
+        this.registradorOperaciones = registradorOperaciones;
+        this.seguridadUsuario = new SeguridadUsuario();
     }
 
     // Valida datos del cliente, cifra la contraseña con SHA-256 y persiste en MySQL y JSON
     @Override
     public String registrarCliente(Cliente cliente) {
-        if (cliente == null) {
-            return "Los datos del cliente son obligatorios.";
-        }
-        if (esVacio(cliente.getId())) {
-            return "El ID / Cédula es obligatorio.";
-        }
-        if (esVacio(cliente.getNombreCompleto())) {
-            return "El nombre completo es obligatorio.";
-        }
-        if (cliente.getCorreo() == null
-                || !cliente.getCorreo().trim().matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
-            return "Ingrese un correo electrónico con formato válido (ej. usuario@dominio.com).";
-        }
-        if (cliente.getTelefono() != null && !esVacio(cliente.getTelefono())
-                && !cliente.getTelefono().trim().matches("\\d{7,15}")) {
-            return "El teléfono debe contener solo números (entre 7 y 15 dígitos).";
-        }
-
-        String clavePlana = cliente.getContrasenaHash();
-        if (clavePlana == null || clavePlana.length() < LONGITUD_MINIMA_CONTRASENA) {
-            return "La contraseña debe tener mínimo " + LONGITUD_MINIMA_CONTRASENA + " caracteres.";
+        String errorValidacion = seguridadUsuario.validarRegistro(cliente);
+        if (errorValidacion != null) {
+            return errorValidacion;
         }
 
         if (buscarPorIdConRespaldo(cliente.getId()) != null) {
@@ -62,7 +44,8 @@ public class GestionUsuariosImpl implements IGestionUsuarios {
             return "Ya existe un usuario registrado con ese Correo.";
         }
 
-        cliente.setContrasenaHash(sha256(clavePlana));
+        String clavePlana = cliente.getContrasenaHash();
+        cliente.setContrasenaHash(seguridadUsuario.sha256(clavePlana));
         boolean okMySQL = repoMySQL != null && repoMySQL.guardarUsuario(cliente);
         boolean okJson = repoJson != null && repoJson.guardarUsuario(cliente);
 
@@ -82,7 +65,7 @@ public class GestionUsuariosImpl implements IGestionUsuarios {
         }
         Cliente c = buscarPorCorreoConRespaldo(credenciales.getCorreo().trim());
         if (c != null && c.getContrasenaHash() != null
-                && c.getContrasenaHash().equals(sha256(credenciales.getContrasena()))) {
+                && c.getContrasenaHash().equals(seguridadUsuario.sha256(credenciales.getContrasena()))) {
             this.usuarioLogueado = c;
             registrarEvento("INICIO DE SESIÓN - Usuario: " + c.getCorreo());
             return true;
@@ -90,7 +73,7 @@ public class GestionUsuariosImpl implements IGestionUsuarios {
         return false;
     }
 
-    // Cierra la sesión activa y registra el evento en el log TXT
+    // Cierra la sesión activa y registra el evento
     @Override
     public void cerrarSesion() {
         if (this.usuarioLogueado != null) {
@@ -118,15 +101,18 @@ public class GestionUsuariosImpl implements IGestionUsuarios {
         }
 
         boolean cambiaContrasena = nuevaContrasena != null && !nuevaContrasena.isEmpty();
-        if (cambiaContrasena && nuevaContrasena.length() < LONGITUD_MINIMA_CONTRASENA) {
-            return "La contraseña debe tener mínimo " + LONGITUD_MINIMA_CONTRASENA + " caracteres.";
+        if (cambiaContrasena) {
+            String errorClave = seguridadUsuario.validarContrasena(nuevaContrasena, "La contraseña");
+            if (errorClave != null) {
+                return errorClave;
+            }
         }
 
         String tipo = nuevosDatos.getTipoCliente() != null
                 ? nuevosDatos.getTipoCliente()
                 : usuarioLogueado.getTipoCliente();
         String hashFinal = cambiaContrasena
-                ? sha256(nuevaContrasena)
+                ? seguridadUsuario.sha256(nuevaContrasena)
                 : usuarioLogueado.getContrasenaHash();
 
         Cliente actualizado = FabricaClientes.crear(
@@ -162,8 +148,9 @@ public class GestionUsuariosImpl implements IGestionUsuarios {
         if (esVacio(correo)) {
             return "Ingrese su correo electrónico registrado.";
         }
-        if (nuevaContrasena == null || nuevaContrasena.length() < LONGITUD_MINIMA_CONTRASENA) {
-            return "La nueva contraseña debe tener mínimo " + LONGITUD_MINIMA_CONTRASENA + " caracteres.";
+        String errorClave = seguridadUsuario.validarContrasena(nuevaContrasena, "La nueva contraseña");
+        if (errorClave != null) {
+            return errorClave;
         }
 
         Cliente encontrado = buscarPorIdConRespaldo(id.trim());
@@ -181,7 +168,7 @@ public class GestionUsuariosImpl implements IGestionUsuarios {
                 encontrado.getCiudad(),
                 encontrado.getTelefono(),
                 encontrado.getTipoCliente(),
-                sha256(nuevaContrasena));
+                seguridadUsuario.sha256(nuevaContrasena));
 
         boolean okMySQL = repoMySQL != null && repoMySQL.actualizarUsuario(actualizado);
         boolean okJson = repoJson != null && repoJson.actualizarUsuario(actualizado);
@@ -205,7 +192,7 @@ public class GestionUsuariosImpl implements IGestionUsuarios {
         if (usuarioLogueado == null || contrasena == null) {
             return false;
         }
-        if (!sha256(contrasena).equals(usuarioLogueado.getContrasenaHash())) {
+        if (!seguridadUsuario.sha256(contrasena).equals(usuarioLogueado.getContrasenaHash())) {
             return false;
         }
 
@@ -246,29 +233,10 @@ public class GestionUsuariosImpl implements IGestionUsuarios {
         return repoJson != null ? repoJson.buscarPorCorreo(correo) : null;
     }
 
-    // Escribe el evento en el archivo de registro si está configurado
+    // Escribe el evento a través del registrador inyectado si está configurado
     private void registrarEvento(String mensaje) {
-        if (registradorTxt != null) {
-            registradorTxt.registrar(mensaje);
-        }
-    }
-
-    // Calcula el digest SHA-256 en minúsculas hexadecimal
-    private String sha256(String base) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(base.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("Algoritmo SHA-256 no disponible", e);
+        if (registradorOperaciones != null) {
+            registradorOperaciones.registrar(mensaje);
         }
     }
 

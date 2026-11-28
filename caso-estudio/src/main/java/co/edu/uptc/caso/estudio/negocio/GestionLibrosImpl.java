@@ -1,29 +1,29 @@
 package co.edu.uptc.caso.estudio.negocio;
 
 import co.edu.uptc.caso.estudio.model.Libro;
+import co.edu.uptc.caso.estudio.persistence.IRegistradorOperaciones;
 import co.edu.uptc.caso.estudio.persistence.IRepositorioCompra;
 import co.edu.uptc.caso.estudio.persistence.IRepositorioLibros;
-import co.edu.uptc.caso.estudio.persistence.RegistradorOperacionesTxt;
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 
-// Implementación de reglas de negocio para libros con respaldo MySQL -> JSON y log TXT
+// Implementación de reglas de negocio para libros con respaldo MySQL -> JSON y registro de operaciones
 public class GestionLibrosImpl implements IGestionLibros {
 
     private final IRepositorioLibros repoMySQL;
     private final IRepositorioLibros repoJson;
-    private final RegistradorOperacionesTxt registradorTxt;
+    private final IRegistradorOperaciones registradorOperaciones;
     private final IRepositorioCompra repoCompraMySQL;
     private final IRepositorioCompra repoCompraJson;
+    private final ValidadorLibro validadorLibro;
 
     public GestionLibrosImpl(IRepositorioLibros repoMySQL, IRepositorioLibros repoJson) {
         this(repoMySQL, repoJson, null, null, null);
     }
 
     public GestionLibrosImpl(IRepositorioLibros repoMySQL, IRepositorioLibros repoJson,
-                             RegistradorOperacionesTxt registradorTxt) {
-        this(repoMySQL, repoJson, registradorTxt, null, null);
+                             IRegistradorOperaciones registradorOperaciones) {
+        this(repoMySQL, repoJson, registradorOperaciones, null, null);
     }
 
     public GestionLibrosImpl(IRepositorioLibros repoMySQL, IRepositorioLibros repoJson,
@@ -32,13 +32,14 @@ public class GestionLibrosImpl implements IGestionLibros {
     }
 
     public GestionLibrosImpl(IRepositorioLibros repoMySQL, IRepositorioLibros repoJson,
-                             RegistradorOperacionesTxt registradorTxt,
+                             IRegistradorOperaciones registradorOperaciones,
                              IRepositorioCompra repoCompraMySQL, IRepositorioCompra repoCompraJson) {
         this.repoMySQL = repoMySQL;
         this.repoJson = repoJson;
-        this.registradorTxt = registradorTxt;
+        this.registradorOperaciones = registradorOperaciones;
         this.repoCompraMySQL = repoCompraMySQL;
         this.repoCompraJson = repoCompraJson;
+        this.validadorLibro = new ValidadorLibro(this);
     }
 
     // Consulta MySQL primero y recurre al respaldo JSON si no hay registros
@@ -71,7 +72,7 @@ public class GestionLibrosImpl implements IGestionLibros {
     // Valida y guarda un libro nuevo en los repositorios disponibles
     @Override
     public String registrarLibro(Libro l) {
-        String error = validarLibro(l, false);
+        String error = validadorLibro.validar(l, false);
         if (error != null) {
             return error;
         }
@@ -90,7 +91,7 @@ public class GestionLibrosImpl implements IGestionLibros {
     // Valida y actualiza un libro existente en los repositorios disponibles
     @Override
     public String actualizarLibro(Libro l) {
-        String error = validarLibro(l, true);
+        String error = validadorLibro.validar(l, true);
         if (error != null) {
             return error;
         }
@@ -162,54 +163,10 @@ public class GestionLibrosImpl implements IGestionLibros {
         }
     }
 
-    // Centraliza las reglas de validación de campos y unicidad del ISBN
-    private String validarLibro(Libro l, boolean esEdicion) {
-        if (l == null) {
-            return "El libro no puede ser nulo.";
-        }
-        if (esVacio(l.getIsbn())) {
-            return "El ISBN es obligatorio.";
-        }
-        if (esVacio(l.getTitulo())) {
-            return "El título no puede estar vacío.";
-        }
-        if (esVacio(l.getAutor())) {
-            return "El autor no puede estar vacío.";
-        }
-        if (esVacio(l.getCategoria())) {
-            return "Debe seleccionar una categoría.";
-        }
-        if (l.getFormato() == null) {
-            return "Debe seleccionar un formato.";
-        }
-
-        int anioActual = Year.now().getValue();
-        if (l.getAnio() < 1450 || l.getAnio() > anioActual) {
-            return "Año inválido (entre 1450 y " + anioActual + ").";
-        }
-        if (l.getPaginas() <= 0) {
-            return "El número de páginas debe ser mayor a 0.";
-        }
-        if (l.getPrecioVenta() <= 0) {
-            return "El precio de venta debe ser mayor a $0.";
-        }
-        if (l.getStock() < 0) {
-            return "El stock no puede ser negativo.";
-        }
-        if (l.getPorcentajeIva() < 0 || l.getPorcentajeIva() > 100) {
-            return "El IVA debe estar entre 0% y 100%.";
-        }
-
-        if (!esEdicion && buscarLibroPorIsbn(l.getIsbn()) != null) {
-            return "Ya existe un libro con el ISBN: " + l.getIsbn();
-        }
-        return null;
-    }
-
-    // Escribe el evento en el log TXT si el registrador fue inyectado
+    // Escribe el evento a través del registrador inyectado si está disponible
     private void registrarEvento(String mensaje) {
-        if (registradorTxt != null) {
-            registradorTxt.registrar(mensaje);
+        if (registradorOperaciones != null) {
+            registradorOperaciones.registrar(mensaje);
         }
     }
 
