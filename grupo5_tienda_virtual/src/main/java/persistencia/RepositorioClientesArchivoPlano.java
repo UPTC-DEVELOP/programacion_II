@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -56,6 +58,60 @@ public class RepositorioClientesArchivoPlano implements IRepositorio<Cliente> {
             return false;
         }
         return clientes.remove(elemento);
+    }
+
+    @Override
+    public void insertar(Cliente elemento) {
+        if (elemento == null) {
+            return;
+        }
+        File archivo = new File(rutaArchivo);
+        File carpetaPadre = archivo.getParentFile();
+        if (carpetaPadre != null && !carpetaPadre.exists()) {
+            carpetaPadre.mkdirs();
+        }
+        try {
+            Files.writeString(archivo.toPath(),
+                    formatearLinea(elemento) + System.lineSeparator(),
+                    StandardCharsets.UTF_8,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new PersistenciaException(
+                    "Error al insertar cliente en " + rutaArchivo, e);
+        }
+    }
+
+    @Override
+    public void actualizar(Cliente elemento) {
+        if (elemento == null) {
+            return;
+        }
+        List<Cliente> todos = leerTodos();
+        boolean encontrado = false;
+        for (int i = 0; i < todos.size(); i++) {
+            if (todos.get(i).equals(elemento)) {
+                todos.set(i, elemento);
+                encontrado = true;
+                break;
+            }
+        }
+        if (encontrado) {
+            escribirTodos(todos);
+        }
+    }
+
+    @Override
+    public boolean eliminarPersistente(Cliente elemento) {
+        if (elemento == null) {
+            return false;
+        }
+        List<Cliente> todos = leerTodos();
+        if (!todos.remove(elemento)) {
+            return false;
+        }
+        escribirTodos(todos);
+        return true;
     }
 
     @Override
@@ -154,6 +210,10 @@ public class RepositorioClientesArchivoPlano implements IRepositorio<Cliente> {
 
     @Override
     public void guardar() {
+        escribirTodos(clientes);
+    }
+
+    private void escribirTodos(List<Cliente> lista) {
         File archivo = new File(rutaArchivo);
         File carpetaPadre = archivo.getParentFile();
         if (carpetaPadre != null && !carpetaPadre.exists()) {
@@ -162,7 +222,7 @@ public class RepositorioClientesArchivoPlano implements IRepositorio<Cliente> {
 
         try (BufferedWriter writer = new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(archivo), StandardCharsets.UTF_8))) {
-            for (Cliente cliente : clientes) {
+            for (Cliente cliente : lista) {
                 writer.write(formatearLinea(cliente));
                 writer.newLine();
             }

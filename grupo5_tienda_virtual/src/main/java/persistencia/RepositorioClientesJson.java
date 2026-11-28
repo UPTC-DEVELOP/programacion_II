@@ -69,6 +69,48 @@ public class RepositorioClientesJson implements IRepositorio<Cliente> {
     }
 
     @Override
+    public void insertar(Cliente elemento) {
+        if (elemento == null) {
+            return;
+        }
+        List<Cliente> todos = leerArchivo();
+        todos.add(elemento);
+        escribirTodos(todos);
+    }
+
+    @Override
+    public void actualizar(Cliente elemento) {
+        if (elemento == null) {
+            return;
+        }
+        List<Cliente> todos = leerArchivo();
+        boolean encontrado = false;
+        for (int i = 0; i < todos.size(); i++) {
+            if (todos.get(i).equals(elemento)) {
+                todos.set(i, elemento);
+                encontrado = true;
+                break;
+            }
+        }
+        if (encontrado) {
+            escribirTodos(todos);
+        }
+    }
+
+    @Override
+    public boolean eliminarPersistente(Cliente elemento) {
+        if (elemento == null) {
+            return false;
+        }
+        List<Cliente> todos = leerArchivo();
+        if (!todos.remove(elemento)) {
+            return false;
+        }
+        escribirTodos(todos);
+        return true;
+    }
+
+    @Override
     public void cargar() {
         clientes.clear();
         clientes.addAll(leerArchivo());
@@ -119,12 +161,16 @@ public class RepositorioClientesJson implements IRepositorio<Cliente> {
 
     @Override
     public void guardar() {
+        escribirTodos(clientes);
+    }
+
+    private void escribirTodos(List<Cliente> lista) {
         try {
             if (archivo.getParent() != null) {
                 Files.createDirectories(archivo.getParent());
             }
             Type tipoLista = new TypeToken<List<Cliente>>() { }.getType();
-            Files.writeString(archivo, gson.toJson(clientes, tipoLista), StandardCharsets.UTF_8);
+            Files.writeString(archivo, gson.toJson(lista, tipoLista), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new PersistenciaException(
                     "No se pudo escribir " + archivo.toAbsolutePath(), e);

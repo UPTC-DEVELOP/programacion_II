@@ -74,6 +74,67 @@ public class RepositorioClientesBD implements IRepositorio<Cliente> {
     }
 
     @Override
+    public void insertar(Cliente cliente) {
+        if (cliente == null) {
+            return;
+        }
+        String sql = "INSERT OR REPLACE INTO clientes "
+                + "(correo, nombre, direccion, telefono, contrasena, tipo) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection conexion = conectar();
+                PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setString(1, cliente.getCorreo());
+            ps.setString(2, cliente.getNombreCompleto());
+            ps.setString(3, cliente.getDireccion());
+            ps.setString(4, cliente.getTelefono());
+            ps.setString(5, cliente.getContrasena());
+            ps.setString(6, cliente instanceof ClientePremium ? "premium" : "regular");
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudo insertar el cliente en la BD", e);
+        }
+    }
+
+    @Override
+    public void actualizar(Cliente cliente) {
+        if (cliente == null) {
+            return;
+        }
+        String sql = "UPDATE clientes SET nombre = ?, direccion = ?, telefono = ?, "
+                + "contrasena = ?, tipo = ? WHERE correo = ?";
+        try (Connection conexion = conectar();
+                PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setString(1, cliente.getNombreCompleto());
+            ps.setString(2, cliente.getDireccion());
+            ps.setString(3, cliente.getTelefono());
+            ps.setString(4, cliente.getContrasena());
+            ps.setString(5, cliente instanceof ClientePremium ? "premium" : "regular");
+            ps.setString(6, cliente.getCorreo());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudo actualizar el cliente en la BD", e);
+        }
+    }
+
+    @Override
+    public boolean eliminarPersistente(Cliente cliente) {
+        if (cliente == null || cliente.getCorreo() == null) {
+            return false;
+        }
+        String sql = "DELETE FROM clientes WHERE correo = ?";
+        try (Connection conexion = conectar();
+                PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setString(1, cliente.getCorreo());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudo eliminar el cliente de la BD", e);
+        }
+    }
+
+    @Override
     public void cargar() {
         clientes.clear();
         String sql = "SELECT correo, nombre, direccion, telefono, contrasena, tipo "
