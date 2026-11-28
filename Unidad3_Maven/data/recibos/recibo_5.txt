@@ -1,0 +1,12 @@
+TIENDA VIRTUAL DE LIBROS
+Pedido #5
+Fecha: 2026-11-28 08:41:06
+Cliente: isavilla17@gmail.com
+Pago: Efectivo
+
+Breve historia del tiempo | 1 x $ 54.000 | Subtotal: $ 54.000 | IVA: $ 10.260
+
+Subtotal: $ 54.000
+Impuestos: $ 10.260
+Descuento: $ 6.426
+TOTAL: $ 57.834

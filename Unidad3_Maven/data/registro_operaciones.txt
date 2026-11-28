@@ -39,3 +39,6 @@
 [2026-11-28 08:24:53] [INFO] isavilla17@gmail.com - Cambio en carrito
 [2026-11-28 08:25:03] [INFO] isavilla17@gmail.com - Cambio en carrito
 [2026-11-28 08:28:33] [INFO] isavilla17@gmail.com - Pedido #4 registrado por 91035.0
+[2026-11-28 08:40:50] [INFO] isavilla17@gmail.com - Inicio de sesión
+[2026-11-28 08:40:54] [INFO] isavilla17@gmail.com - Cambio en carrito
+[2026-11-28 08:41:06] [INFO] isavilla17@gmail.com - Pedido #5 registrado por 57834.0
