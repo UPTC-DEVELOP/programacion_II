@@ -22,5 +22,53 @@
     "direccion": "Doc: 7417122",
     "telefono": "3203333333",
     "tipoCliente": "Corporativo"
+  },
+  {
+    "idCliente": 4,
+    "nombreCompleto": "wqewq eweq",
+    "correoElectronico": "dwdw",
+    "direccion": "Doc: we",
+    "telefono": "ewew",
+    "tipoCliente": "Regular"
+  },
+  {
+    "idCliente": 5,
+    "nombreCompleto": "eeee www",
+    "correoElectronico": "eee",
+    "direccion": "Doc: 3333",
+    "telefono": "11111",
+    "tipoCliente": "Regular"
+  },
+  {
+    "idCliente": 6,
+    "nombreCompleto": "ewe ewe",
+    "correoElectronico": "we",
+    "direccion": "Doc: ew",
+    "telefono": "we",
+    "tipoCliente": "Regular"
+  },
+  {
+    "idCliente": 7,
+    "nombreCompleto": "ema eee",
+    "correoElectronico": "eeew",
+    "direccion": "",
+    "telefono": "22222",
+    "tipoCliente": "Regular"
+  },
+  {
+    "idCliente": 8,
+    "nombreCompleto": "ema rr",
+    "correoElectronico": "rewrwr",
+    "direccion": "",
+    "telefono": "56565",
+    "tipoCliente": "Premium"
+  },
+  {
+    "idCliente": 9,
+    "nombreCompleto": "ema gar",
+    "correoElectronico": "eee",
+    "direccion": "Doc: 2222",
+    "telefono": "2324",
+    "tipoCliente": "Premium"
   }
 ]

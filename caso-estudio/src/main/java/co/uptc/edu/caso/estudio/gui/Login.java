@@ -1,15 +1,15 @@
 package co.uptc.edu.caso.estudio.gui;
 
+import co.uptc.edu.caso.estudio.controller.CompraController;
+import co.uptc.edu.caso.estudio.controller.LibroController;
 import co.uptc.edu.caso.estudio.negocio.Cliente;
 import co.uptc.edu.caso.estudio.persistencia.ClienteDAO;
 import co.uptc.edu.caso.estudio.persistencia.GestorJson;
-import co.uptc.edu.caso.estudio.controller.LibroController;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 
 public class Login extends JFrame {
 
@@ -23,11 +23,11 @@ public class Login extends JFrame {
     private JButton btnRegistrar;
     private JButton btnLimpiar;
     private JButton btnSalir;
-    
+
     private LibroController libroController;
+    private CompraController compraController;
 
     public Login() {
-
         setTitle("Registro de Usuarios");
         setSize(550, 450);
         setLocationRelativeTo(null);
@@ -35,15 +35,14 @@ public class Login extends JFrame {
 
         crearInterfaz();
     }
-    
-    public Login(LibroController libroController) {
+
+    public Login(LibroController libroController, CompraController compraController) {
         this();
         this.libroController = libroController;
+        this.compraController = compraController;
     }
 
     private void crearInterfaz() {
-
-        // Layout principal
         setLayout(new BorderLayout());
 
         // TÍTULO
@@ -51,70 +50,49 @@ public class Login extends JFrame {
                 "REGISTRO DE USUARIOS",
                 SwingConstants.CENTER
         );
-
         titulo.setFont(new Font("Arial", Font.BOLD, 24));
-
         add(titulo, BorderLayout.NORTH);
 
         // PANEL DEL FORMULARIO
-      
         JPanel panelFormulario = new JPanel();
-
         panelFormulario.setLayout(new GridLayout(6, 2, 10, 10));
-
         panelFormulario.setBorder(
                 BorderFactory.createEmptyBorder(20, 30, 20, 30)
         );
 
-        // Nombre
         panelFormulario.add(new JLabel("Nombre:"));
-
         txtNombre = new JTextField();
         panelFormulario.add(txtNombre);
 
-        // Apellido
         panelFormulario.add(new JLabel("Apellido:"));
-
         txtApellido = new JTextField();
         panelFormulario.add(txtApellido);
 
-        // Documento
         panelFormulario.add(new JLabel("Documento:"));
-
         txtDocumento = new JTextField();
         panelFormulario.add(txtDocumento);
 
-        // Correo
         panelFormulario.add(new JLabel("Correo:"));
-
         txtCorreo = new JTextField();
         panelFormulario.add(txtCorreo);
 
-        // Teléfono
         panelFormulario.add(new JLabel("Teléfono:"));
-
         txtTelefono = new JTextField();
         panelFormulario.add(txtTelefono);
 
-        // Tipo de usuario
         panelFormulario.add(new JLabel("Tipo de usuario:"));
-
         String[] tipos = {
             "Regular",
             "Premium",
             "Corporativo"
         };
-
         cmbTipoUsuario = new JComboBox<>(tipos);
-
         panelFormulario.add(cmbTipoUsuario);
 
         add(panelFormulario, BorderLayout.CENTER);
-        
-        // BOTONES
-       
-        JPanel panelBotones = new JPanel();
 
+        // BOTONES
+        JPanel panelBotones = new JPanel();
         panelBotones.setLayout(new FlowLayout());
 
         btnRegistrar = new JButton("REGISTRAR");
@@ -128,7 +106,6 @@ public class Login extends JFrame {
         add(panelBotones, BorderLayout.SOUTH);
 
         // EVENTOS
-        
         btnRegistrar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -153,7 +130,7 @@ public class Login extends JFrame {
                             "Usuario guardado en MariaDB (ID: " + cliente.getIdCliente() + ") y en clientes.json",
                             "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
                     dispose();
-                    new VentanaCompra(libroController).setVisible(true);
+                    new VentanaCompra(libroController, compraController, cliente).setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(Login.this,
                             "Error al guardar en la base de datos. Verifica que MariaDB esté activo.",
@@ -163,14 +140,11 @@ public class Login extends JFrame {
         });
 
         btnLimpiar.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 limpiarFormulario();
-
                 JOptionPane.showMessageDialog(
-                       Login.this,
+                        Login.this,
                         "Invocación: limpiarFormulario()\n"
                         + "Los campos han sido limpiados.",
                         "Limpiar",
@@ -180,10 +154,8 @@ public class Login extends JFrame {
         });
 
         btnSalir.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 JOptionPane.showMessageDialog(
                         Login.this,
                         "Invocación: salir()\n"
@@ -191,29 +163,23 @@ public class Login extends JFrame {
                         "Salir",
                         JOptionPane.INFORMATION_MESSAGE
                 );
-
                 dispose();
             }
         });
     }
 
     private void limpiarFormulario() {
-
         txtNombre.setText("");
         txtApellido.setText("");
         txtDocumento.setText("");
         txtCorreo.setText("");
         txtTelefono.setText("");
-
         cmbTipoUsuario.setSelectedIndex(0);
     }
 
     public static void main(String[] args) {
-
         SwingUtilities.invokeLater(() -> {
-
             Login ventana = new Login();
-
             ventana.setVisible(true);
         });
     }
