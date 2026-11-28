@@ -16,6 +16,10 @@ public class GestionCliente implements IGestionCliente {
         clienteLogueado = null;
     }
 
+    public String getAvisoCarga() {
+        return localCliente.getAvisoCarga();
+    }
+
     @Override
     public void guardar(Cliente cliente) {
         // Revisa que todos los campos estén llenos y con datos validos
@@ -25,6 +29,7 @@ public class GestionCliente implements IGestionCliente {
         if (localCliente.buscarPorId(cliente.getId()) != null) {
             throw new IllegalArgumentException("Ya existe un cliente con el ID " + cliente.getId() + ".");
         }
+        validarCorreoLibre(cliente);
         
         // Persistencia, guarda los datos con JSON
         localCliente.guardar(cliente);
@@ -49,6 +54,7 @@ public class GestionCliente implements IGestionCliente {
         if (localCliente.buscarPorId(cliente.getId()) == null) {
             throw new IllegalArgumentException("No existe un cliente con el ID " + cliente.getId() + ".");
         }
+        validarCorreoLibre(cliente);
         localCliente.actualizar(cliente);
     }
 
@@ -100,6 +106,9 @@ public class GestionCliente implements IGestionCliente {
         if (esVacio(cliente.getCorreoElectronico())) {
             throw new IllegalArgumentException("El correo es obligatorio.");
         }
+        if (!cliente.getCorreoElectronico().trim().matches("[^@\\s]+@[^@\\s]+\\.[^@\\s]+")) {
+            throw new IllegalArgumentException("El correo no tiene un formato válido, por ejemplo nombre@dominio.com.");
+        }
         
         // Revisa que se haya escrito una direccion, no correcta sino que se haya llenado el espacio
         if (esVacio(cliente.getDireccionEnvio())) {
@@ -110,8 +119,21 @@ public class GestionCliente implements IGestionCliente {
         if (esVacio(cliente.getCelular())) {
             throw new IllegalArgumentException("El celular es obligatorio.");
         }
+        if (!cliente.getCelular().trim().matches("\\d{7,10}")) {
+            throw new IllegalArgumentException("El celular solo puede tener números, entre 7 y 10 dígitos.");
+        }
     }
 
+
+    private void validarCorreoLibre(Cliente cliente) {
+        for (Cliente otro : localCliente.listar()) {
+            if (!otro.getId().equals(cliente.getId())
+                    && otro.getCorreoElectronico().equalsIgnoreCase(cliente.getCorreoElectronico().trim())) {
+                throw new IllegalArgumentException("El correo " + cliente.getCorreoElectronico().trim()
+                        + " ya está registrado con otro cliente.");
+            }
+        }
+    }
 
     private boolean esVacio(String texto) {
         return texto == null || texto.trim().isEmpty();
