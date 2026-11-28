@@ -36,7 +36,7 @@ class ReglasNegocioTest {
         ControladorCompras compras = new ControladorCompras(
                 new RepositorioComprasArchivoPlano(ruta("compras_stock.txt")), libros);
         CarritoCompras carrito = new CarritoCompras();
-        carrito.agregarLibro(libro, 2);
+        carrito.getItems().put(libro, 2);
 
         ResultadoCompra resultado = compras.finalizarCompra(
                 new ClienteRegular("Cliente stock", "stock@correo.com", "1234"),
