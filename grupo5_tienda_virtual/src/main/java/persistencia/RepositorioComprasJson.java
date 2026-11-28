@@ -58,6 +58,57 @@ public class RepositorioComprasJson implements IRepositorio<Compra> {
     }
 
     @Override
+    public void insertar(Compra compra) {
+        if (compra == null) {
+            return;
+        }
+        List<Compra> todas = leerArchivo();
+        if (compra.getId() == 0) {
+            compra.setId(siguienteId(todas));
+        }
+        for (Compra existente : todas) {
+            if (existente.getId() == compra.getId()) {
+                throw new PersistenciaException(
+                        "Id de compra duplicado: " + compra.getId());
+            }
+        }
+        todas.add(compra);
+        escribirTodas(todas);
+    }
+
+    @Override
+    public void actualizar(Compra compra) {
+        if (compra == null) {
+            return;
+        }
+        List<Compra> todas = leerArchivo();
+        boolean encontrada = false;
+        for (int i = 0; i < todas.size(); i++) {
+            if (todas.get(i).getId() == compra.getId()) {
+                todas.set(i, compra);
+                encontrada = true;
+                break;
+            }
+        }
+        if (encontrada) {
+            escribirTodas(todas);
+        }
+    }
+
+    @Override
+    public boolean eliminarPersistente(Compra compra) {
+        if (compra == null) {
+            return false;
+        }
+        List<Compra> todas = leerArchivo();
+        boolean eliminada = todas.removeIf(c -> c.getId() == compra.getId());
+        if (eliminada) {
+            escribirTodas(todas);
+        }
+        return eliminada;
+    }
+
+    @Override
     public void cargar() {
         compras.clear();
         compras.addAll(leerArchivo());
@@ -107,11 +158,15 @@ public class RepositorioComprasJson implements IRepositorio<Compra> {
 
     @Override
     public void guardar() {
+        escribirTodas(compras);
+    }
+
+    private void escribirTodas(List<Compra> lista) {
         try {
             if (archivo.getParent() != null) {
                 Files.createDirectories(archivo.getParent());
             }
-            Files.writeString(archivo, gson.toJson(compras, tipoLista), StandardCharsets.UTF_8);
+            Files.writeString(archivo, gson.toJson(lista, tipoLista), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new PersistenciaException(
                     "No se pudo escribir " + archivo.toAbsolutePath(), e);
@@ -119,8 +174,12 @@ public class RepositorioComprasJson implements IRepositorio<Compra> {
     }
 
     private long siguienteId() {
+        return siguienteId(compras);
+    }
+
+    private long siguienteId(List<Compra> lista) {
         long maximo = 0;
-        for (Compra compra : compras) {
+        for (Compra compra : lista) {
             maximo = Math.max(maximo, compra.getId());
         }
         return maximo + 1;

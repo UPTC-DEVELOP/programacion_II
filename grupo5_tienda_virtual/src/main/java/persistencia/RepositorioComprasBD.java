@@ -169,6 +169,143 @@ public class RepositorioComprasBD implements IRepositorio<Compra> {
     }
 
     @Override
+    public void insertar(Compra compra) {
+        if (compra == null) {
+            return;
+        }
+        String sqlCompra = "INSERT INTO compras "
+                + "(id, fecha, metodo_pago, correo_cliente, total) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conexion = conectar()) {
+            conexion.setAutoCommit(false);
+            try {
+                if (compra.getId() == 0) {
+                    compra.setId(siguienteId(conexion));
+                }
+                try (PreparedStatement ps = conexion.prepareStatement(sqlCompra)) {
+                    ps.setLong(1, compra.getId());
+                    ps.setString(2, compra.getFecha() != null ? compra.getFecha().toString() : null);
+                    ps.setString(3, compra.getMetodoPago());
+                    ps.setString(4, compra.getCorreoCliente());
+                    ps.setDouble(5, compra.getTotal());
+                    ps.executeUpdate();
+                }
+                insertarDetalles(conexion, compra);
+                conexion.commit();
+            } catch (SQLException e) {
+                conexion.rollback();
+                throw e;
+            }
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudo insertar la compra en la BD", e);
+        }
+    }
+
+    @Override
+    public void actualizar(Compra compra) {
+        if (compra == null) {
+            return;
+        }
+        String sqlCompra = "UPDATE compras SET fecha = ?, metodo_pago = ?, "
+                + "correo_cliente = ?, total = ? WHERE id = ?";
+        try (Connection conexion = conectar()) {
+            conexion.setAutoCommit(false);
+            try {
+                int filas;
+                try (PreparedStatement ps = conexion.prepareStatement(sqlCompra)) {
+                    ps.setString(1, compra.getFecha() != null ? compra.getFecha().toString() : null);
+                    ps.setString(2, compra.getMetodoPago());
+                    ps.setString(3, compra.getCorreoCliente());
+                    ps.setDouble(4, compra.getTotal());
+                    ps.setLong(5, compra.getId());
+                    filas = ps.executeUpdate();
+                }
+                if (filas == 0) {
+                    conexion.rollback();
+                    return;
+                }
+                borrarDetalles(conexion, compra.getId());
+                insertarDetalles(conexion, compra);
+                conexion.commit();
+            } catch (SQLException e) {
+                conexion.rollback();
+                throw e;
+            }
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudo actualizar la compra en la BD", e);
+        }
+    }
+
+    @Override
+    public boolean eliminarPersistente(Compra compra) {
+        if (compra == null) {
+            return false;
+        }
+        String sqlCompra = "DELETE FROM compras WHERE id = ?";
+        try (Connection conexion = conectar()) {
+            conexion.setAutoCommit(false);
+            try {
+                borrarDetalles(conexion, compra.getId());
+                int filas;
+                try (PreparedStatement ps = conexion.prepareStatement(sqlCompra)) {
+                    ps.setLong(1, compra.getId());
+                    filas = ps.executeUpdate();
+                }
+                conexion.commit();
+                return filas > 0;
+            } catch (SQLException e) {
+                conexion.rollback();
+                throw e;
+            }
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudo eliminar la compra de la BD", e);
+        }
+    }
+
+    private long siguienteId(Connection conexion) throws SQLException {
+        String sql = "SELECT COALESCE(MAX(id), 0) + 1 FROM compras";
+        try (Statement st = conexion.createStatement();
+                ResultSet rs = st.executeQuery(sql)) {
+            return rs.next() ? rs.getLong(1) : 1;
+        }
+    }
+
+    private void borrarDetalles(Connection conexion, long idCompra) throws SQLException {
+        String sql = "DELETE FROM detalle_compra WHERE compra_id = ?";
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setLong(1, idCompra);
+            ps.executeUpdate();
+        }
+    }
+
+    private void insertarDetalles(Connection conexion, Compra compra) throws SQLException {
+        String sql = "INSERT INTO detalle_compra "
+                + "(compra_id, isbn, titulo, cantidad, precio_unitario, porcentaje_iva) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
+        if (compra.getItems() == null) {
+            return;
+        }
+        try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+            for (ItemCompra item : compra.getItems()) {
+                if (item == null || item.getLibro() == null) {
+                    continue;
+                }
+                Libro libro = item.getLibro();
+                ps.setLong(1, compra.getId());
+                ps.setString(2, libro.getIsbn());
+                ps.setString(3, libro.getTitulo());
+                ps.setInt(4, item.getCantidad());
+                ps.setDouble(5, libro.getPrecio());
+                ps.setDouble(6, libro.getPorcentajeIva());
+                ps.addBatch();
+            }
+            ps.executeBatch();
+        }
+    }
+
+    @Override
     public void guardar() {
         String borrarDetalle = "DELETE FROM detalle_compra";
         String borrarCompras = "DELETE FROM compras";

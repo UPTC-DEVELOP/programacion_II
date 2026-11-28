@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -53,6 +54,70 @@ public class RepositorioComprasArchivoPlano implements IRepositorio<Compra> {
     @Override
     public boolean eliminar(Compra compra) {
         return compras.remove(compra);
+    }
+
+    @Override
+    public void insertar(Compra compra) {
+        if (compra == null) {
+            return;
+        }
+        List<Compra> todas = leerTodas();
+        if (compra.getId() == 0) {
+            compra.setId(siguienteId(todas));
+        }
+        for (Compra existente : todas) {
+            if (existente.getId() == compra.getId()) {
+                throw new PersistenciaException(
+                        "Id de compra duplicado: " + compra.getId());
+            }
+        }
+        try {
+            Path carpeta = archivo.getParent();
+            if (carpeta != null) {
+                Files.createDirectories(carpeta);
+            }
+            try (BufferedWriter escritor = Files.newBufferedWriter(archivo,
+                    StandardCharsets.UTF_8,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.APPEND)) {
+                escribirCompra(escritor, compra);
+            }
+        } catch (IOException e) {
+            throw new PersistenciaException(
+                    "No se pudo insertar la compra en " + archivo.toAbsolutePath(), e);
+        }
+    }
+
+    @Override
+    public void actualizar(Compra compra) {
+        if (compra == null) {
+            return;
+        }
+        List<Compra> todas = leerTodas();
+        boolean encontrada = false;
+        for (int i = 0; i < todas.size(); i++) {
+            if (todas.get(i).getId() == compra.getId()) {
+                todas.set(i, compra);
+                encontrada = true;
+                break;
+            }
+        }
+        if (encontrada) {
+            escribirTodas(todas);
+        }
+    }
+
+    @Override
+    public boolean eliminarPersistente(Compra compra) {
+        if (compra == null) {
+            return false;
+        }
+        List<Compra> todas = leerTodas();
+        boolean eliminada = todas.removeIf(c -> c.getId() == compra.getId());
+        if (eliminada) {
+            escribirTodas(todas);
+        }
+        return eliminada;
     }
 
     @Override
@@ -162,8 +227,12 @@ public class RepositorioComprasArchivoPlano implements IRepositorio<Compra> {
     }
 
     private long siguienteId() {
+        return siguienteId(compras);
+    }
+
+    private long siguienteId(List<Compra> lista) {
         long maximo = 0;
-        for (Compra compra : compras) {
+        for (Compra compra : lista) {
             maximo = Math.max(maximo, compra.getId());
         }
         return maximo + 1;
@@ -171,6 +240,10 @@ public class RepositorioComprasArchivoPlano implements IRepositorio<Compra> {
 
     @Override
     public void guardar() {
+        escribirTodas(compras);
+    }
+
+    private void escribirTodas(List<Compra> lista) {
         try {
             Path carpeta = archivo.getParent();
             if (carpeta != null) {
@@ -178,7 +251,7 @@ public class RepositorioComprasArchivoPlano implements IRepositorio<Compra> {
             }
 
             Set<Long> ids = new HashSet<Long>();
-            for (Compra compra : compras) {
+            for (Compra compra : lista) {
                 if (compra == null) {
                     continue;
                 }
@@ -192,42 +265,44 @@ public class RepositorioComprasArchivoPlano implements IRepositorio<Compra> {
             }
 
             try (BufferedWriter escritor = Files.newBufferedWriter(archivo, StandardCharsets.UTF_8)) {
-                for (Compra compra : compras) {
-                    if (compra == null) {
-                        continue;
-                    }
-
-                    escribirLinea(escritor,
-                            "C",
-                            Long.toString(compra.getId()),
-                            compra.getFecha() != null ? compra.getFecha().toString() : "",
-                            limpiarCampo(compra.getMetodoPago()),
-                            limpiarCampo(compra.getCorreoCliente()),
-                            Double.toString(compra.getTotal()));
-
-                    if (compra.getItems() == null) {
-                        continue;
-                    }
-
-                    for (ItemCompra item : compra.getItems()) {
-                        if (item == null || item.getLibro() == null) {
-                            continue;
-                        }
-                        Libro libro = item.getLibro();
-                        escribirLinea(escritor,
-                                "I",
-                                Long.toString(compra.getId()),
-                                limpiarCampo(libro.getIsbn()),
-                                limpiarCampo(libro.getTitulo()),
-                                Integer.toString(item.getCantidad()),
-                                Double.toString(libro.getPrecio()),
-                                Double.toString(libro.getPorcentajeIva()));
+                for (Compra compra : lista) {
+                    if (compra != null) {
+                        escribirCompra(escritor, compra);
                     }
                 }
             }
         } catch (IOException e) {
             throw new PersistenciaException(
                     "No se pudo escribir " + archivo.toAbsolutePath(), e);
+        }
+    }
+
+    private void escribirCompra(BufferedWriter escritor, Compra compra) throws IOException {
+        escribirLinea(escritor,
+                "C",
+                Long.toString(compra.getId()),
+                compra.getFecha() != null ? compra.getFecha().toString() : "",
+                limpiarCampo(compra.getMetodoPago()),
+                limpiarCampo(compra.getCorreoCliente()),
+                Double.toString(compra.getTotal()));
+
+        if (compra.getItems() == null) {
+            return;
+        }
+
+        for (ItemCompra item : compra.getItems()) {
+            if (item == null || item.getLibro() == null) {
+                continue;
+            }
+            Libro libro = item.getLibro();
+            escribirLinea(escritor,
+                    "I",
+                    Long.toString(compra.getId()),
+                    limpiarCampo(libro.getIsbn()),
+                    limpiarCampo(libro.getTitulo()),
+                    Integer.toString(item.getCantidad()),
+                    Double.toString(libro.getPrecio()),
+                    Double.toString(libro.getPorcentajeIva()));
         }
     }
 
