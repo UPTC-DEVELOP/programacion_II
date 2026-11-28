@@ -16,9 +16,9 @@ public class LibroDAOMariaDB implements LibroDAO {
     public boolean registrar(Libro libro) throws LibroExcepcion {
 
         String sql = "INSERT INTO libros "
-                + "(isbn, titulo, autor, anio_publicacion, editorial, "
+                + "(isbn, titulo, autor, anio_publicacion, categoria, editorial, "
                 + "num_paginas, precio, iva_porcentaje, stock, formato) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conexion = ConexionBD.obtenerConexion();
              PreparedStatement ps = conexion.prepareStatement(sql)) {
@@ -27,12 +27,13 @@ public class LibroDAOMariaDB implements LibroDAO {
             ps.setString(2, libro.getTitulo());
             ps.setString(3, libro.getAutor());
             ps.setInt(4, libro.getAnioPublicacion());
-            ps.setString(5, libro.getEditorial());
-            ps.setInt(6, libro.getNumPaginas());
-            ps.setDouble(7, libro.getPrecio());
-            ps.setDouble(8, libro.getIvaPorcentaje());
-            ps.setInt(9, libro.getStock());
-            ps.setString(10, libro.getFormato());
+            ps.setString(5, libro.getCategoria());
+            ps.setString(6, libro.getEditorial());
+            ps.setInt(7, libro.getNumPaginas());
+            ps.setDouble(8, libro.getPrecio());
+            ps.setDouble(9, libro.getIvaPorcentaje());
+            ps.setInt(10, libro.getStock());
+            ps.setString(11, libro.getFormato());
 
             return ps.executeUpdate() > 0;
 
@@ -93,7 +94,7 @@ public class LibroDAOMariaDB implements LibroDAO {
     public boolean actualizar(Libro libro) throws LibroExcepcion {
 
         String sql = "UPDATE libros SET titulo = ?, autor = ?, "
-                + "anio_publicacion = ?, editorial = ?, num_paginas = ?, "
+                + "anio_publicacion = ?, categoria = ?, editorial = ?, num_paginas = ?, "
                 + "precio = ?, iva_porcentaje = ?, stock = ?, formato = ? "
                 + "WHERE isbn = ?";
 
@@ -103,13 +104,14 @@ public class LibroDAOMariaDB implements LibroDAO {
             ps.setString(1, libro.getTitulo());
             ps.setString(2, libro.getAutor());
             ps.setInt(3, libro.getAnioPublicacion());
-            ps.setString(4, libro.getEditorial());
-            ps.setInt(5, libro.getNumPaginas());
-            ps.setDouble(6, libro.getPrecio());
-            ps.setDouble(7, libro.getIvaPorcentaje());
-            ps.setInt(8, libro.getStock());
-            ps.setString(9, libro.getFormato());
-            ps.setString(10, libro.getIsbn());
+            ps.setString(4, libro.getCategoria());
+            ps.setString(5, libro.getEditorial());
+            ps.setInt(6, libro.getNumPaginas());
+            ps.setDouble(7, libro.getPrecio());
+            ps.setDouble(8, libro.getIvaPorcentaje());
+            ps.setInt(9, libro.getStock());
+            ps.setString(10, libro.getFormato());
+            ps.setString(11, libro.getIsbn());
 
             return ps.executeUpdate() > 0;
 
@@ -144,6 +146,7 @@ public class LibroDAOMariaDB implements LibroDAO {
                 rs.getString("titulo"),
                 rs.getString("autor"),
                 rs.getInt("anio_publicacion"),
+                rs.getString("categoria"),
                 rs.getString("editorial"),
                 rs.getInt("num_paginas"),
                 rs.getDouble("precio"),
