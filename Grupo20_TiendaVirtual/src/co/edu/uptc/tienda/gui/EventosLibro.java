@@ -1,11 +1,15 @@
 package co.edu.uptc.tienda.gui;
 
 import co.edu.uptc.tienda.excepcion.LibroExcepcion;
+import co.edu.uptc.tienda.negocio.ControlCalificacion;
 import co.edu.uptc.tienda.negocio.ControlLibro;
+import co.edu.uptc.tienda.modelo.Calificacion;
 import co.edu.uptc.tienda.modelo.Libro;
 
 
 import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.table.DefaultTableModel;
@@ -20,9 +24,12 @@ public class EventosLibro implements ActionListener {
     public final static String ELIMINAR = "Eliminar";
     public final static String LISTAR = "Listar";
     public final static String LIMPIAR = "Limpiar";
+    public final static String CALIFICAR = "Calificar";
+    public final static String CALIFICACIONES = "Ver calificaciones";
 
     private VentanaLibro ventana;
     private ControlLibro controlLibro;
+    private ControlCalificacion controlCalificacion;
 
     public EventosLibro(VentanaLibro ventana, ControlLibro controlLibro) {
         this.ventana = ventana;
@@ -33,12 +40,25 @@ public class EventosLibro implements ActionListener {
         ventana.getBtnEliminar().addActionListener(this);
         ventana.getBtnListar().addActionListener(this);
         ventana.getBtnLimpiar().addActionListener(this);
+        ventana.getBtnCalificar().addActionListener(this);
+        ventana.getBtnCalificaciones().addActionListener(this);
 
         if (controlLibro.getAvisoCarga() != null) {
             JOptionPane.showMessageDialog(
                     ventana,
                     controlLibro.getAvisoCarga(),
                     "Libros",
+                    JOptionPane.WARNING_MESSAGE
+            );
+        }
+
+        controlCalificacion = new ControlCalificacion(controlLibro);
+
+        if (controlCalificacion.getAvisoCarga() != null) {
+            JOptionPane.showMessageDialog(
+                    ventana,
+                    controlCalificacion.getAvisoCarga(),
+                    "Calificaciones",
                     JOptionPane.WARNING_MESSAGE
             );
         }
@@ -79,6 +99,14 @@ public class EventosLibro implements ActionListener {
 
         else if (evento.equals(LIMPIAR)) {
             ventana.limpiarCampos();
+        }
+
+        else if (evento.equals(CALIFICAR)) {
+            calificar();
+        }
+
+        else if (evento.equals(CALIFICACIONES)) {
+            verCalificaciones();
         }
     }
 
@@ -558,7 +586,8 @@ public class EventosLibro implements ActionListener {
             "Autor",
             "Categoría",
             "Precio",
-            "Cantidad"
+            "Cantidad",
+            "Calificación"
         };
 
         DefaultTableModel modelo = new DefaultTableModel(columnas, 0) {
@@ -577,7 +606,8 @@ public class EventosLibro implements ActionListener {
                 libro.getAutor(),
                 libro.getCategoria() == null ? "Sin categoría" : libro.getCategoria(),
                 String.format("$%,.2f", libro.getPrecio()),
-                libro.getStock()
+                libro.getStock(),
+                textoCalificacion(libro.getIsbn())
             };
 
             modelo.addRow(fila);
@@ -594,6 +624,178 @@ public class EventosLibro implements ActionListener {
                 ventana,
                 scroll,
                 "Listado de libros",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    private String textoCalificacion(String isbn) {
+
+        int cantidad = controlCalificacion.listarPorLibro(isbn).size();
+
+        if (cantidad == 0) {
+            return "Sin calificar";
+        }
+
+        return String.format("%.1f de 5 (%d)", controlCalificacion.calcularPromedio(isbn), cantidad);
+    }
+
+    private Libro libroDelFormulario() {
+
+        String isbn = ventana.getTxtIsbn().getText().trim();
+
+        if (isbn.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    ventana,
+                    "Debe ingresar el ISBN del libro.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return null;
+        }
+
+        Libro libro = controlLibro.buscarLibro(isbn);
+
+        if (libro == null) {
+            JOptionPane.showMessageDialog(
+                    ventana,
+                    "No existe un libro registrado con ese ISBN.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+
+        return libro;
+    }
+
+    private void calificar() {
+
+        Libro libro = libroDelFormulario();
+
+        if (libro == null) {
+            return;
+        }
+
+        JTextField txtCliente = new JTextField(12);
+        JComboBox<Integer> cmbPuntaje = new JComboBox<>(new Integer[]{5, 4, 3, 2, 1});
+        JTextArea txtComentario = new JTextArea(4, 28);
+        txtComentario.setLineWrap(true);
+        txtComentario.setWrapStyleWord(true);
+
+        JPanel datos = new JPanel(new GridLayout(2, 2, 8, 8));
+        datos.add(new JLabel("ID del cliente que compró el libro:"));
+        datos.add(txtCliente);
+        datos.add(new JLabel("Calificación (1 a 5):"));
+        datos.add(cmbPuntaje);
+
+        JPanel formulario = new JPanel(new BorderLayout(8, 8));
+        formulario.add(new JLabel("Libro: " + libro.getTitulo()), BorderLayout.NORTH);
+        formulario.add(datos, BorderLayout.CENTER);
+        JPanel panelComentario = new JPanel(new BorderLayout(4, 4));
+        panelComentario.add(new JLabel("Comentario (opcional, máximo "
+                + ControlCalificacion.LARGO_COMENTARIO + " caracteres):"), BorderLayout.NORTH);
+        panelComentario.add(new JScrollPane(txtComentario), BorderLayout.CENTER);
+        formulario.add(panelComentario, BorderLayout.SOUTH);
+
+        int respuesta = JOptionPane.showConfirmDialog(
+                ventana,
+                formulario,
+                "Calificar libro",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (respuesta != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        try {
+
+            controlCalificacion.calificar(
+                    libro.getIsbn(),
+                    txtCliente.getText().trim(),
+                    (Integer) cmbPuntaje.getSelectedItem(),
+                    txtComentario.getText()
+            );
+
+            JOptionPane.showMessageDialog(
+                    ventana,
+                    "Calificación guardada correctamente.",
+                    "Calificaciones",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+
+        } catch (LibroExcepcion e) {
+
+            JOptionPane.showMessageDialog(
+                    ventana,
+                    e.getMessage(),
+                    "Calificaciones",
+                    JOptionPane.WARNING_MESSAGE
+            );
+        }
+    }
+
+    private void verCalificaciones() {
+
+        Libro libro = libroDelFormulario();
+
+        if (libro == null) {
+            return;
+        }
+
+        List<Calificacion> calificaciones = controlCalificacion.listarPorLibro(libro.getIsbn());
+
+        if (calificaciones.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    ventana,
+                    "El libro \"" + libro.getTitulo() + "\" todavía no tiene calificaciones.",
+                    "Calificaciones",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            return;
+        }
+
+        String[] columnas = {
+            "Cliente",
+            "Calificación",
+            "Comentario",
+            "Fecha"
+        };
+
+        DefaultTableModel modelo = new DefaultTableModel(columnas, 0) {
+
+            @Override
+            public boolean isCellEditable(int fila, int columna) {
+                return false;
+            }
+        };
+
+        for (Calificacion calificacion : calificaciones) {
+
+            modelo.addRow(new Object[]{
+                calificacion.getIdCliente(),
+                calificacion.getPuntaje() + " de 5",
+                calificacion.getComentario(),
+                calificacion.getFecha()
+            });
+        }
+
+        JTable tabla = new JTable(modelo);
+        tabla.getColumnModel().getColumn(2).setPreferredWidth(380);
+        tabla.getColumnModel().getColumn(3).setPreferredWidth(150);
+
+        JScrollPane scroll = new JScrollPane(tabla);
+        scroll.setPreferredSize(new java.awt.Dimension(750, 250));
+
+        JPanel contenido = new JPanel(new BorderLayout(8, 8));
+        contenido.add(new JLabel(libro.getTitulo() + ": "
+                + textoCalificacion(libro.getIsbn())), BorderLayout.NORTH);
+        contenido.add(scroll, BorderLayout.CENTER);
+
+        JOptionPane.showMessageDialog(
+                ventana,
+                contenido,
+                "Calificaciones",
                 JOptionPane.INFORMATION_MESSAGE
         );
     }
