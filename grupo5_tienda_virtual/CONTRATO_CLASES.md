@@ -27,7 +27,19 @@ Reglas:
 
 ## 2. Persistencia
 
-### `IRepositorio<T>`
+### `IRepositorioConsulta<T>`
+
+```java
+List<T> listar();
+List<T> listarUltimos(int limite);
+List<T> listarPagina(int inicio, int cantidad);
+int contar();
+```
+
+`listarUltimos` devuelve los últimos N registros, del más reciente al más antiguo.
+El orden de referencia es el de inserción para Clientes y Libros, y fecha/id descendente para Compras.
+
+### `IRepositorio<T> extends IRepositorioConsulta<T>`
 
 ```java
 List<T> listar();
@@ -35,7 +47,14 @@ void agregar(T elemento);
 boolean eliminar(T elemento);
 void cargar();
 void guardar();
+
+void insertar(T elemento);
+void actualizar(T elemento);
+boolean eliminarPersistente(T elemento);
 ```
+
+Los métodos `insertar`, `actualizar` y `eliminarPersistente` tienen implementación por defecto de compatibilidad.
+La escritura incremental real se implementa por repositorio en F09-F11.
 
 No agregar métodos abstractos sin actualizar **todas** las implementaciones el mismo día.
 
