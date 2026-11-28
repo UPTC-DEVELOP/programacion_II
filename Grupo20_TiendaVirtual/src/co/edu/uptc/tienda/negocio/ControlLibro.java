@@ -88,7 +88,7 @@ public class ControlLibro {
     }
 
     public boolean actualizarLibro(String isbn, String titulo,
-            String autor, int anioPublicacion, String editorial,
+            String autor, int anioPublicacion, String categoria, String editorial,
             int numPaginas, double precio, double ivaPorcentaje,
             int stock, String formato) throws LibroExcepcion {
 
@@ -101,6 +101,7 @@ public class ControlLibro {
         libro.setTitulo(titulo);
         libro.setAutor(autor);
         libro.setAnioPublicacion(anioPublicacion);
+        libro.setCategoria(categoria);
         libro.setEditorial(editorial);
         libro.setNumPaginas(numPaginas);
         libro.setPrecio(precio);
