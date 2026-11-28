@@ -13,6 +13,7 @@ import co.edu.uptc.caso.estudio.persistence.IRepositorioCompra;
 import co.edu.uptc.caso.estudio.persistence.RegistradorOperacionesTxt;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +26,7 @@ public class GestionComprasImpl implements IGestionCompras {
     private static final String REGEX_CVV = "\\d{3,4}";
     private static final String REGEX_EXPIRACION = "(0[1-9]|1[0-2])/\\d{2}";
     private static final String REGEX_NEQUI = "3\\d{9}";
+    private static final DateTimeFormatter FORMATO_EXPIRACION = DateTimeFormatter.ofPattern("MM/yy");
 
     private final IRepositorioCarrito repoCarritoMySQL;
     private final IRepositorioCarrito repoCarritoJson;
@@ -60,21 +62,27 @@ public class GestionComprasImpl implements IGestionCompras {
             return new Carrito(ID_CLIENTE_ANONIMO);
         }
 
-        Carrito carrito = repoCarritoMySQL != null
-                ? repoCarritoMySQL.obtenerCarritoPorCliente(logueado.getId())
-                : null;
-        if (carrito == null || carrito.estaVacio()) {
-            Carrito respaldoJson = repoCarritoJson != null
-                    ? repoCarritoJson.obtenerCarritoPorCliente(logueado.getId())
-                    : null;
-            if (respaldoJson != null && !respaldoJson.estaVacio()) {
-                carrito = respaldoJson;
-            }
-        }
+        Carrito carrito = buscarCarritoPersistido(logueado.getId());
         if (carrito == null) {
             carrito = new Carrito(logueado.getId());
         }
         refrescarLibrosDelCarrito(carrito);
+        return carrito;
+    }
+
+    // Consulta el carrito en MySQL y recurre al respaldo JSON si no existe o está vacío
+    private Carrito buscarCarritoPersistido(String idCliente) {
+        Carrito carrito = repoCarritoMySQL != null
+                ? repoCarritoMySQL.obtenerCarritoPorCliente(idCliente)
+                : null;
+        if (carrito == null || carrito.estaVacio()) {
+            Carrito respaldoJson = repoCarritoJson != null
+                    ? repoCarritoJson.obtenerCarritoPorCliente(idCliente)
+                    : null;
+            if (respaldoJson != null && !respaldoJson.estaVacio()) {
+                return respaldoJson;
+            }
+        }
         return carrito;
     }
 
@@ -86,10 +94,7 @@ public class GestionComprasImpl implements IGestionCompras {
         Iterator<ItemCarrito> it = carrito.getItems().iterator();
         while (it.hasNext()) {
             ItemCarrito item = it.next();
-            Libro actual = null;
-            if (item != null && item.getLibro() != null && gestionLibros != null) {
-                actual = gestionLibros.buscarLibroPorIsbn(item.getLibro().getIsbn());
-            }
+            Libro actual = buscarLibroActualizado(item);
             if (actual == null) {
                 it.remove();
             } else {
@@ -217,9 +222,10 @@ public class GestionComprasImpl implements IGestionCompras {
             return "Fecha de expiración inválida (MM/AA).";
         }
 
-        YearMonth vencimiento = YearMonth.parse(
-                pago.getExpiracion(),
-                DateTimeFormatter.ofPattern("MM/yy"));
+        YearMonth vencimiento = parsearExpiracion(pago.getExpiracion());
+        if (vencimiento == null) {
+            return "Fecha de expiración inválida (MM/AA).";
+        }
         if (vencimiento.isBefore(YearMonth.now())) {
             return "La tarjeta se encuentra vencida.";
         }
@@ -231,6 +237,15 @@ public class GestionComprasImpl implements IGestionCompras {
                 pago.getExpiracion(),
                 null);
         return null;
+    }
+
+    // Convierte MM/yy de forma segura ante entradas malformadas
+    private YearMonth parsearExpiracion(String expiracion) {
+        try {
+            return YearMonth.parse(expiracion, FORMATO_EXPIRACION);
+        } catch (DateTimeParseException e) {
+            return null;
+        }
     }
 
     // Valida número celular colombiano para pagos vía Nequi
@@ -281,7 +296,7 @@ public class GestionComprasImpl implements IGestionCompras {
 
     // Comprueba que cada ítem del carrito tenga stock disponible antes de confirmar la compra
     private boolean tieneStockSuficiente(Carrito carrito) {
-        if (carrito == null || carrito.getItems() == null) {
+        if (carrito == null || carrito.getItems() == null || carrito.getItems().isEmpty()) {
             return false;
         }
         for (ItemCarrito item : carrito.getItems()) {
@@ -365,6 +380,14 @@ public class GestionComprasImpl implements IGestionCompras {
                     + " | Metodo: " + metodoPago
                     + " | Total: " + String.format("%.2f", carrito.calcularTotalFinal(cliente)));
         }
+    }
+
+    // Obtiene la versión más reciente del libro asociado a un ítem
+    private Libro buscarLibroActualizado(ItemCarrito item) {
+        if (item == null || item.getLibro() == null || gestionLibros == null) {
+            return null;
+        }
+        return gestionLibros.buscarLibroPorIsbn(item.getLibro().getIsbn());
     }
 
     private Cliente obtenerUsuarioLogueado() {

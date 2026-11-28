@@ -1,6 +1,8 @@
 package co.edu.uptc.caso.estudio.gui;
 
+import co.edu.uptc.caso.estudio.model.Carrito;
 import co.edu.uptc.caso.estudio.model.Cliente;
+import co.edu.uptc.caso.estudio.model.Compra;
 import co.edu.uptc.caso.estudio.model.ItemCarrito;
 import co.edu.uptc.caso.estudio.model.Libro;
 import co.edu.uptc.caso.estudio.negocio.IGestionCompras;
@@ -27,6 +29,7 @@ public class VentanaPrincipal extends JFrame {
     private PanelUsuario panelUsuario;
     private PanelLibros panelLibros;
     private PanelCarrito panelCarrito;
+    private PanelHistorial panelHistorial;
 
     public VentanaPrincipal(IGestionLibros gestionLibros, IGestionUsuarios gestionUsuarios, IGestionCompras gestionCompras) {
         this.gestionLibros = gestionLibros;
@@ -45,14 +48,17 @@ public class VentanaPrincipal extends JFrame {
         panelUsuario = new PanelUsuario(evento);
         panelLibros = new PanelLibros(evento);
         panelCarrito = new PanelCarrito(evento);
+        panelHistorial = new PanelHistorial(evento);
 
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Usuario", panelUsuario);
         tabbedPane.addTab("Catálogo & Inventario", panelLibros);
         tabbedPane.addTab("Carrito & Compra", panelCarrito);
+        tabbedPane.addTab("Historial de Compras", panelHistorial);
 
         add(tabbedPane);
         refrescarLibros();
+        refrescarHistorial();
     }
 
     // ---------------- Acciones de Usuario ----------------
@@ -79,6 +85,7 @@ public class VentanaPrincipal extends JFrame {
             panelUsuario.cargarDatosUsuario(log);
             mostrarMensaje("Bienvenido " + log.getNombreCompleto(), "Sesión iniciada", JOptionPane.INFORMATION_MESSAGE);
             refrescarCarrito();
+            refrescarHistorial();
         } else {
             mostrarMensaje("Credenciales incorrectas.", "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -88,6 +95,7 @@ public class VentanaPrincipal extends JFrame {
         gestionUsuarios.cerrarSesion();
         panelUsuario.limpiarFormulario();
         refrescarCarrito();
+        panelHistorial.actualizarHistorial(new ArrayList<Compra>());
         mostrarMensaje("Sesión cerrada.", "Información", JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -105,6 +113,7 @@ public class VentanaPrincipal extends JFrame {
         }
         panelUsuario.cargarDatosUsuario(gestionUsuarios.getUsuarioLogueado());
         refrescarCarrito();
+        refrescarHistorial();
         mostrarMensaje("Datos actualizados correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -129,6 +138,7 @@ public class VentanaPrincipal extends JFrame {
             panelUsuario.limpiarFormulario();
             refrescarCarrito();
             refrescarLibros();
+            panelHistorial.actualizarHistorial(new ArrayList<Compra>());
             mostrarMensaje("Su cuenta fue eliminada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } else {
             mostrarMensaje("Contraseña incorrecta. No se eliminó la cuenta.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -257,7 +267,11 @@ public class VentanaPrincipal extends JFrame {
                 refrescarLibros();
                 refrescarCarrito();
             } else {
-                mostrarMensaje("No se pudo eliminar el libro.", "Error", JOptionPane.ERROR_MESSAGE);
+                mostrarMensaje(
+                        "No se pudo eliminar el libro. Verifique que no tenga ventas registradas.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
             }
         }
     }
@@ -286,7 +300,8 @@ public class VentanaPrincipal extends JFrame {
                 mostrarMensaje("La cantidad debe ser mayor a 0.", "Aviso", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            ItemCarrito existente = gestionCompras.obtenerCarritoActual().buscarItem(isbn);
+            Carrito carritoActual = gestionCompras.obtenerCarritoActual();
+            ItemCarrito existente = (carritoActual != null) ? carritoActual.buscarItem(isbn) : null;
             int enCarrito = (existente != null) ? existente.getCantidad() : 0;
             if (enCarrito + cant > l.getStock()) {
                 mostrarMensaje(
@@ -307,7 +322,30 @@ public class VentanaPrincipal extends JFrame {
     // ---------------- Acciones de Carrito ----------------
 
     public void refrescarCarrito() {
-        panelCarrito.actualizarTabla(gestionCompras.obtenerCarritoActual().getItems(), gestionCompras.calcularTotalFinal());
+        Carrito carritoActual = gestionCompras.obtenerCarritoActual();
+        List<ItemCarrito> items = (carritoActual != null) ? carritoActual.getItems() : new ArrayList<ItemCarrito>();
+        double totalImpuestos = calcularTotalImpuestos(items);
+        panelCarrito.actualizarTotales(items, totalImpuestos, gestionCompras.calcularTotalFinal());
+    }
+
+    private double calcularTotalImpuestos(List<ItemCarrito> items) {
+        if (items == null) {
+            return 0.0;
+        }
+        double totalImpuestos = 0.0;
+        for (int i = 0; i < items.size(); i++) {
+            ItemCarrito item = items.get(i);
+            if (item == null || item.getLibro() == null) {
+                continue;
+            }
+            double precioUnitario = item.getPrecioUnitarioOverride() != null
+                    ? item.getPrecioUnitarioOverride()
+                    : item.getLibro().getPrecioVenta();
+            double subtotalBase = precioUnitario * item.getCantidad();
+            double tasaIva = item.getLibro().getPorcentajeIva() / 100.0;
+            totalImpuestos += subtotalBase * tasaIva;
+        }
+        return totalImpuestos;
     }
 
     public void actualizarCantidadCarrito() {
@@ -378,8 +416,17 @@ public class VentanaPrincipal extends JFrame {
             mostrarMensaje("¡Gracias por tu compra! Se ha procesado tu orden con éxito.", "Compra Exitosa", JOptionPane.INFORMATION_MESSAGE);
             refrescarCarrito();
             refrescarLibros();
+            refrescarHistorial();
         } else {
             mostrarMensaje("El carrito está vacío o ocurrió un error al procesar la compra.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // ---------------- Acciones de Historial ----------------
+
+    public void refrescarHistorial() {
+        if (panelHistorial != null && gestionCompras != null) {
+            panelHistorial.actualizarHistorial(gestionCompras.obtenerHistorialCompras());
         }
     }
 

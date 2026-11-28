@@ -27,6 +27,9 @@ public class Evento implements ActionListener {
     public static final String ELIMINAR_DEL_CARRITO = "ELIMINAR_DEL_CARRITO";
     public static final String FINALIZAR_COMPRA = "FINALIZAR_COMPRA";
 
+    // Constantes de Historial
+    public static final String ACTUALIZAR_HISTORIAL = PanelHistorial.ACTUALIZAR_HISTORIAL;
+
     private final VentanaPrincipal ventana;
 
     public Evento(VentanaPrincipal ventana) {
@@ -49,7 +52,10 @@ public class Evento implements ActionListener {
         if (despacharLibros(comando)) {
             return;
         }
-        despacharCarritoCompra(comando);
+        if (despacharCarritoCompra(comando)) {
+            return;
+        }
+        despacharHistorial(comando);
     }
 
     private boolean despacharUsuario(String comando) {
@@ -112,6 +118,16 @@ public class Evento implements ActionListener {
                 return true;
             case FINALIZAR_COMPRA:
                 ventana.realizarCompra();
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private boolean despacharHistorial(String comando) {
+        switch (comando) {
+            case ACTUALIZAR_HISTORIAL:
+                ventana.refrescarHistorial();
                 return true;
             default:
                 return false;

@@ -1,6 +1,10 @@
 package co.edu.uptc.caso.estudio.negocio;
 
+import co.edu.uptc.caso.estudio.model.Cliente;
+import co.edu.uptc.caso.estudio.model.Compra;
+import co.edu.uptc.caso.estudio.model.ItemCarrito;
 import co.edu.uptc.caso.estudio.model.Libro;
+import co.edu.uptc.caso.estudio.persistence.IRepositorioCompra;
 import co.edu.uptc.caso.estudio.persistence.IRepositorioLibros;
 import co.edu.uptc.caso.estudio.persistence.RegistradorOperacionesTxt;
 import java.time.Year;
@@ -13,6 +17,9 @@ public class GestionLibrosImpl implements IGestionLibros {
     private final IRepositorioLibros repoMySQL;
     private final IRepositorioLibros repoJson;
     private final RegistradorOperacionesTxt registradorTxt;
+    private IRepositorioCompra repoCompraMySQL;
+    private IRepositorioCompra repoCompraJson;
+    private IGestionUsuarios gestionUsuarios;
 
     public GestionLibrosImpl(IRepositorioLibros repoMySQL, IRepositorioLibros repoJson) {
         this(repoMySQL, repoJson, null);
@@ -23,6 +30,19 @@ public class GestionLibrosImpl implements IGestionLibros {
         this.repoMySQL = repoMySQL;
         this.repoJson = repoJson;
         this.registradorTxt = registradorTxt;
+    }
+
+    public void setRepoCompra(IRepositorioCompra repoCompra) {
+        this.repoCompraMySQL = repoCompra;
+    }
+
+    public void setRepositoriosCompra(IRepositorioCompra repoCompraMySQL, IRepositorioCompra repoCompraJson) {
+        this.repoCompraMySQL = repoCompraMySQL;
+        this.repoCompraJson = repoCompraJson;
+    }
+
+    public void setGestionUsuarios(IGestionUsuarios gestionUsuarios) {
+        this.gestionUsuarios = gestionUsuarios;
     }
 
     // Consulta MySQL primero y recurre al respaldo JSON si no hay registros
@@ -90,10 +110,13 @@ public class GestionLibrosImpl implements IGestionLibros {
         return null;
     }
 
-    // Elimina un libro por ISBN y registra el evento si al menos un repositorio responde true
+    // Elimina un libro por ISBN solo si no tiene ventas registradas en las compras consultables
     @Override
     public boolean eliminarLibro(String isbn) {
         if (esVacio(isbn)) {
+            return false;
+        }
+        if (tieneVentasRegistradas(isbn)) {
             return false;
         }
 
@@ -103,6 +126,56 @@ public class GestionLibrosImpl implements IGestionLibros {
         if (okMySQL || okJson) {
             registrarEvento("LIBRO ELIMINADO - ISBN: " + isbn);
             return true;
+        }
+        return false;
+    }
+
+    // Verifica si el libro aparece en alguna compra del usuario autenticado en MySQL o JSON
+    private boolean tieneVentasRegistradas(String isbn) {
+        if (gestionUsuarios == null) {
+            return false;
+        }
+        Cliente logueado = gestionUsuarios.getUsuarioLogueado();
+        if (logueado == null || esVacio(logueado.getId())) {
+            return false;
+        }
+
+        String clienteId = logueado.getId();
+        if (repositorioTieneVenta(repoCompraMySQL, clienteId, isbn)) {
+            return true;
+        }
+        return repositorioTieneVenta(repoCompraJson, clienteId, isbn);
+    }
+
+    // Consulta las compras de un cliente en un repositorio específico y busca el ISBN
+    private boolean repositorioTieneVenta(IRepositorioCompra repo, String clienteId, String isbn) {
+        if (repo == null) {
+            return false;
+        }
+        List<Compra> compras = repo.obtenerComprasPorCliente(clienteId);
+        if (compras == null) {
+            return false;
+        }
+        for (int i = 0; i < compras.size(); i++) {
+            Compra compra = compras.get(i);
+            if (compra != null && compraContieneIsbn(compra, isbn)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Revisa los ítems de una compra para determinar si incluyen el ISBN indicado
+    private boolean compraContieneIsbn(Compra compra, String isbn) {
+        List<ItemCarrito> items = compra.getItems();
+        if (items == null) {
+            return false;
+        }
+        for (int i = 0; i < items.size(); i++) {
+            ItemCarrito item = items.get(i);
+            if (item != null && item.getLibro() != null && isbn.equalsIgnoreCase(item.getLibro().getIsbn())) {
+                return true;
+            }
         }
         return false;
     }

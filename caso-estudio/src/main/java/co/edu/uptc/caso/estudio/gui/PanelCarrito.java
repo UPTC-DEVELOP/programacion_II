@@ -7,6 +7,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class PanelCarrito extends JPanel {
 
     private DefaultTableModel modeloTablaCarrito;
     private JTable tablaCarrito;
+    private JLabel lblTotalImpuestos;
     private JLabel lblTotalCarrito;
     private JComboBox<String> cbMetodoPago;
     private JComboBox<String> cbBanco;
@@ -64,10 +66,18 @@ public class PanelCarrito extends JPanel {
         panelAcciones.add(crearBoton("Eliminar Seleccionados", Evento.ELIMINAR_DEL_CARRITO, evento));
         add(panelAcciones, BorderLayout.NORTH);
 
-        JPanel panelInferior = new JPanel(new BorderLayout(10, 10));
+        JPanel panelResumenTotales = new JPanel(new GridLayout(2, 1, 2, 2));
+        lblTotalImpuestos = new JLabel("Total Impuestos: $0.00", SwingConstants.RIGHT);
+        lblTotalImpuestos.setFont(new Font("SansSerif", Font.PLAIN, 14));
+
         lblTotalCarrito = new JLabel("Total Compra: $0.00", SwingConstants.RIGHT);
         lblTotalCarrito.setFont(new Font("SansSerif", Font.BOLD, 16));
-        panelInferior.add(lblTotalCarrito, BorderLayout.NORTH);
+
+        panelResumenTotales.add(lblTotalImpuestos);
+        panelResumenTotales.add(lblTotalCarrito);
+
+        JPanel panelInferior = new JPanel(new BorderLayout(10, 10));
+        panelInferior.add(panelResumenTotales, BorderLayout.NORTH);
         panelInferior.add(crearPanelPago(evento), BorderLayout.CENTER);
 
         add(panelInferior, BorderLayout.SOUTH);
@@ -143,6 +153,10 @@ public class PanelCarrito extends JPanel {
     }
 
     public void actualizarTabla(List<ItemCarrito> items, double totalFinal) {
+        actualizarTotales(items, 0.0, totalFinal);
+    }
+
+    public void actualizarTotales(List<ItemCarrito> items, double totalImpuestos, double totalFinal) {
         modeloTablaCarrito.setRowCount(0);
         if (items != null) {
             for (ItemCarrito it : items) {
@@ -162,6 +176,7 @@ public class PanelCarrito extends JPanel {
                 });
             }
         }
+        lblTotalImpuestos.setText("Total Impuestos: $" + String.format("%.2f", totalImpuestos));
         lblTotalCarrito.setText("Total Compra: $" + String.format("%.2f", totalFinal));
     }
 
@@ -211,5 +226,6 @@ public class PanelCarrito extends JPanel {
         txtExp.setText("");
         txtCvv.setText("");
         txtNequi.setText("");
+        lblTotalImpuestos.setText("Total Impuestos: $0.00");
     }
 }
