@@ -26,7 +26,7 @@
 [INFO]  T E S T S
 [INFO] -------------------------------------------------------
 [INFO] Running persistencia.FlujosPersistenciaTest
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.137 s -- in persistencia.FlujosPersistenciaTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.125 s -- in persistencia.FlujosPersistenciaTest
 [INFO] 
 [INFO] Results:
 [INFO] 
@@ -35,6 +35,6 @@
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  3.964 s
-[INFO] Finished at: 2026-11-28T11:56:11-05:00
+[INFO] Total time:  3.302 s
+[INFO] Finished at: 2026-11-28T11:58:57-05:00
 [INFO] ------------------------------------------------------------------------

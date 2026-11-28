@@ -74,6 +74,7 @@ Evidencias:
 
 - `docs/evidencias/pruebas/`: logs de las 13 pruebas.
 - `docs/evidencias/capturas/`: capturas de login, clientes, libros, carrito, recibo e historial.
+- `docs/evidencias/capturas_eclipse/`: las mismas capturas a pantalla completa con Eclipse detrás.
 - `docs/evidencias/README.md`: índice de evidencias.
 
 ## 4. Prueba de cambio de una línea

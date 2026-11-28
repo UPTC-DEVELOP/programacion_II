@@ -26,7 +26,7 @@
 [INFO]  T E S T S
 [INFO] -------------------------------------------------------
 [INFO] Running controller.ReglasNegocioTest
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.107 s -- in controller.ReglasNegocioTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.100 s -- in controller.ReglasNegocioTest
 [INFO] 
 [INFO] Results:
 [INFO] 
@@ -35,6 +35,6 @@
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  3.288 s
-[INFO] Finished at: 2026-11-28T11:56:52-05:00
+[INFO] Total time:  3.368 s
+[INFO] Finished at: 2026-11-28T11:59:36-05:00
 [INFO] ------------------------------------------------------------------------

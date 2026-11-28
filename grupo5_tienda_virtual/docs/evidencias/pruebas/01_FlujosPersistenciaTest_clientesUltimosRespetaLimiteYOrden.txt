@@ -17,10 +17,7 @@
 [INFO] skip non existing resourceDirectory C:\Users\juano\OneDrive\Documents\programaciòn 2\programacion_II_grupo5_remoto\grupo5_tienda_virtual\src\test\resources
 [INFO] 
 [INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ TiendaVirtual ---
-[INFO] Recompiling the module because of changed dependency.
-[INFO] Compiling 2 source files with javac [debug target 21] to target\test-classes
-[INFO] /C:/Users/juano/OneDrive/Documents/programaciòn 2/programacion_II_grupo5_remoto/grupo5_tienda_virtual/src/test/java/persistencia/FlujosPersistenciaTest.java: C:\Users\juano\OneDrive\Documents\programaciòn 2\programacion_II_grupo5_remoto\grupo5_tienda_virtual\src\test\java\persistencia\FlujosPersistenciaTest.java uses or overrides a deprecated API.
-[INFO] /C:/Users/juano/OneDrive/Documents/programaciòn 2/programacion_II_grupo5_remoto/grupo5_tienda_virtual/src/test/java/persistencia/FlujosPersistenciaTest.java: Recompile with -Xlint:deprecation for details.
+[INFO] Nothing to compile - all classes are up to date.
 [INFO] 
 [INFO] --- surefire:3.2.5:test (default-test) @ TiendaVirtual ---
 [INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
@@ -29,7 +26,7 @@
 [INFO]  T E S T S
 [INFO] -------------------------------------------------------
 [INFO] Running persistencia.FlujosPersistenciaTest
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.369 s -- in persistencia.FlujosPersistenciaTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.342 s -- in persistencia.FlujosPersistenciaTest
 [INFO] 
 [INFO] Results:
 [INFO] 
@@ -38,6 +35,6 @@
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  5.792 s
-[INFO] Finished at: 2026-11-28T11:55:56-05:00
+[INFO] Total time:  4.433 s
+[INFO] Finished at: 2026-11-28T11:58:42-05:00
 [INFO] ------------------------------------------------------------------------

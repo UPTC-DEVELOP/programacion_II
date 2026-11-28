@@ -6,6 +6,8 @@
 
 ## 1. Capturas de pantalla
 
+### Capturas de la ventana
+
 | Archivo | Evidencia |
 |---|---|
 | `capturas/01_login.png` | Ventana de inicio de sesión |
@@ -16,6 +18,23 @@
 | `capturas/06_compras_carrito.png` | Carrito con productos, subtotal, IVA, descuento y total |
 | `capturas/07_recibo.png` | Recibo con subtotal, IVA, descuento y total |
 | `capturas/08_historial_compras.png` | Historial de compras |
+
+### Capturas con Eclipse detrás
+
+En `capturas_eclipse/` están las mismas 8 ventanas, pero en pantalla completa
+(1920×1080) con Eclipse abierto detrás.
+
+| Archivo | Evidencia |
+|---|---|
+| `capturas_eclipse/00_eclipse_proyecto.png` | Eclipse con el proyecto abierto |
+| `capturas_eclipse/01_login.png` | Login con Eclipse detrás |
+| `capturas_eclipse/02_registro_cliente.png` | Registro con Eclipse detrás |
+| `capturas_eclipse/03_gestion_clientes.png` | Clientes con Eclipse detrás |
+| `capturas_eclipse/04_gestion_libros.png` | Libros con Eclipse detrás |
+| `capturas_eclipse/05_mi_cuenta.png` | Mi cuenta con Eclipse detrás |
+| `capturas_eclipse/06_compras_carrito.png` | Compras con Eclipse detrás |
+| `capturas_eclipse/07_recibo.png` | Recibo con Eclipse detrás |
+| `capturas_eclipse/08_historial_compras.png` | Historial con Eclipse detrás |
 
 Las capturas se generaron abriendo las ventanas reales del proyecto con datos de demostración:
 
