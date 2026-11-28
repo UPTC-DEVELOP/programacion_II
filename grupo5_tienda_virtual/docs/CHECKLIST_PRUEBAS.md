@@ -76,12 +76,16 @@ No se modificó ninguna ventana ni controlador.
 - [x] Clientes: últimos 10 y orden.
 - [x] Compra persistente: guardar, reiniciar, historial y stock.
 - [x] Fallo de guardado: no actualiza stock ni lista.
+- [x] Libro con ventas: no se elimina.
+- [x] Carrito: guardar, recargar y vaciar en JSON.
+- [x] Clientes: correo y contraseña inválidos se rechazan.
+- [x] Libros: IVA, año y páginas inválidos se rechazan.
 
 ```bash
 mvn test
 ```
 
-Resultado: **3 tests, 0 fallos**.
+Resultado: **7 tests, 0 fallos**.
 
 ## 6. Compilación
 
@@ -91,7 +95,12 @@ mvn clean compile
 
 Resultado: **BUILD SUCCESS** con 51 fuentes.
 
-## 7. Combo de Compras
+## 7. Funciones del caso de estudio
 
-El combo carga los últimos 10 libros y tiene un buscador por ISBN, título o autor.
-Al buscar, la lista se reemplaza con los resultados de la consulta al repositorio.
+- [x] Eliminar libro solo si no tiene ventas.
+- [x] Carrito persistente en `datos/carritos/<correo>.json`.
+- [x] Confirmación del resumen antes de comprar.
+- [x] Recibo con subtotal, IVA, descuento Premium y total.
+- [x] Validación de correo y contraseña en Clientes.
+- [x] Validación de año, páginas, IVA y stock en Libros.
+- [x] Combo de Compras con búsqueda por ISBN, título o autor.

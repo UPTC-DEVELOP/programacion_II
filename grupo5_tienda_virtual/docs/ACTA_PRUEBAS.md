@@ -43,6 +43,10 @@ Se agregó `src/test/java/persistencia/FlujosPersistenciaTest.java` con JUnit 5.
 | Clientes: 12 registros, últimos 10 y orden | OK |
 | Compra: guardar, reiniciar repositorios, historial y stock en plano/JSON/BD | OK |
 | Fallo de guardado: no actualiza stock ni lista | OK |
+| Libro con ventas: no se puede eliminar | OK |
+| Carrito: guardar, recargar y vaciar en JSON | OK |
+| Clientes: correo y contraseña inválidos se rechazan | OK |
+| Libros: IVA/año/páginas inválidos se rechazan | OK |
 
 Comando:
 
@@ -53,7 +57,7 @@ mvn test
 Resultado:
 
 ```text
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 ```
 
@@ -115,3 +119,7 @@ Resultado: correcto.
 - La compra y el descuento de stock no son atómicos cuando están en almacenamientos distintos.
 - El registro de operaciones es de apoyo y no reemplaza la persistencia principal.
 - Las pruebas de persistencia ya están en el repositorio y se ejecutan con `mvn test`.
+- El carrito se guarda en `datos/carritos/<correo>.json`.
+- El recibo muestra subtotal, IVA, descuento Premium y total.
+- La compra pide confirmación con resumen antes de guardar.
+- Un libro con ventas asociadas no se puede eliminar.

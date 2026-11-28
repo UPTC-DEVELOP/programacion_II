@@ -74,6 +74,18 @@ No agregar métodos abstractos sin actualizar **todas** las implementaciones el 
 | Libros | `RepositorioLibrosArchivoPlano` | `RepositorioLibrosJson` | `RepositorioLibrosBD` |
 | Compras | `RepositorioComprasArchivoPlano` | `RepositorioComprasJson` | `RepositorioComprasBD` |
 
+### `GestorCarritoJSON`
+
+```java
+GestorCarritoJSON();
+GestorCarritoJSON(String rutaCarpeta);
+Map<String, Integer> cargar(String correo);
+void guardar(Map<String, Integer> items, String correo);
+void eliminar(String correo);
+```
+
+Guarda el carrito en `datos/carritos/<correo>.json`.
+
 ### `RegistroOperacionesTXT`
 
 ```java
@@ -173,6 +185,22 @@ String getMensaje();
 Compra getCompra();
 ```
 
+### `IConsultaVentas`
+
+```java
+boolean tieneVentas(String isbn);
+```
+
+Sirve para impedir que se elimine un libro que ya tiene ventas asociadas.
+
+### `IServicioCarrito`
+
+```java
+CarritoCompras cargar(String correo);
+void guardar(CarritoCompras carrito, String correo);
+void vaciar(String correo);
+```
+
 ---
 
 ## 5. Controladores
@@ -215,6 +243,22 @@ Implementa `IServicioCompras`. La lógica de compra está en `finalizarCompra`.
 ```java
 ControladorOperaciones(RegistroOperacionesTXT registro);
 void registrar(String descripcion);
+```
+
+### `ControladorCarrito`
+
+```java
+ControladorCarrito(IServicioLibros libros, GestorCarritoJSON gestor);
+CarritoCompras cargar(String correo);
+void guardar(CarritoCompras carrito, String correo);
+void vaciar(String correo);
+```
+
+### `ConsultaVentas`
+
+```java
+ConsultaVentas(IRepositorio<Compra> repositorio);
+boolean tieneVentas(String isbn);
 ```
 
 ---

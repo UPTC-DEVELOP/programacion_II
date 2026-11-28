@@ -81,6 +81,10 @@ No se toca ninguna ventana ni ningún controlador.
 La carpeta `datos/` se crea automáticamente al ejecutar y está ignorada por Git;
 borrarla reinicia los datos de demostración.
 
+El carrito de cada cliente se guarda en `datos/carritos/<correo>.json`.
+El recibo muestra subtotal, IVA, descuento Premium y total.
+Un libro con ventas asociadas no se puede eliminar.
+
 
 ## Estado de la refactorización
 
@@ -137,7 +141,7 @@ mvn test
 ```
 
 - `src/test/java/persistencia/FlujosPersistenciaTest.java`
-- 3 pruebas: límite de Clientes, compra persistente en los 3 almacenamientos y fallo de guardado.
+- 7 pruebas: límite de Clientes, compra persistente, fallo de guardado, eliminación de libro con ventas, carrito JSON, validaciones de Clientes y validaciones de Libros.
 
 Pruebas manuales documentadas en `docs/`:
 

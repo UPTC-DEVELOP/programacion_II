@@ -57,6 +57,26 @@ No se tocan ventanas ni controladores.
 
 No se usa `-Dtienda.bd` ni `usarBD`. Esa variable ya no existe.
 
+### Carrito persistente
+
+El carrito de cada cliente se guarda en:
+
+```text
+datos/carritos/<correo>.json
+```
+
+Se maneja con `IServicioCarrito`, `ControladorCarrito` y `GestorCarritoJSON`.
+La GUI no escribe archivos directamente.
+
+### Reglas de negocio
+
+- Un libro con ventas asociadas no se puede eliminar.
+- El carrito se carga al abrir Compras y se guarda al agregar, modificar, eliminar o vaciar.
+- Antes de finalizar la compra se muestra un resumen y se pide confirmación.
+- El recibo muestra subtotal, IVA, descuento Premium y total.
+- Clientes valida correo y contraseña.
+- Libros valida año, páginas, precio, stock, formato e IVA de 19% o 5%.
+
 ---
 
 ## 3. Eventos
