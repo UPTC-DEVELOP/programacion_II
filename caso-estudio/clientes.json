@@ -1,0 +1,26 @@
+[
+  {
+    "idCliente": 1,
+    "nombreCompleto": "Derick Garcia",
+    "correoElectronico": "prueba@correo.com",
+    "direccion": "Doc: 12345",
+    "telefono": "3002223332",
+    "tipoCliente": "Premium"
+  },
+  {
+    "idCliente": 2,
+    "nombreCompleto": "derick garcia",
+    "correoElectronico": "err@fff.com",
+    "direccion": "Doc: 7417126",
+    "telefono": "232333333",
+    "tipoCliente": "Regular"
+  },
+  {
+    "idCliente": 3,
+    "nombreCompleto": "Derick Garcia",
+    "correoElectronico": "eeqeqw@fefe.com",
+    "direccion": "Doc: 7417122",
+    "telefono": "3203333333",
+    "tipoCliente": "Corporativo"
+  }
+]

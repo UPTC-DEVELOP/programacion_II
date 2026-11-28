@@ -1,4 +1,4 @@
-package co.uptc.edu.negocio;
+package co.uptc.edu.caso.estudio.negocio;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,3 +37,4 @@ public class Categoria {
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 	
 }
+

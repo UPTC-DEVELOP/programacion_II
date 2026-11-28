@@ -11,8 +11,8 @@
   <url>http://maven.apache.org</url>
 
   <properties>
-  	<maven.compiler.source>25</maven.compiler.source>
-    <maven.compiler.target>25</maven.compiler.target>
+  	<maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -22,14 +22,25 @@
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
       <scope>test</scope>
+      
     </dependency>
-    <!-- Source: https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client -->
+   <dependency>
+        <groupId>org.mariadb.jdbc</groupId>
+        <artifactId>mariadb-java-client</artifactId>
+        <version>3.5.1</version>
+    </dependency>
+    
 	<dependency>
-	    <groupId>org.mariadb.jdbc</groupId>
-	    <artifactId>mariadb-java-client</artifactId>
-	    <version>4.0.0</version>
-	    <scope>compile</scope>
-	</dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.11.0</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.11.0</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -38,8 +49,8 @@
             <artifactId>maven-compiler-plugin</artifactId>
             <version>3.11.0</version> <!-- Usa la versión más reciente del plugin -->
             <configuration>
-                <source>25</source>
-                <target>25</target>
+                <source>21</source>
+                <target>21</target>
             </configuration>
         </plugin>
     </plugins>

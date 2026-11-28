@@ -1,7 +1,7 @@
-package co.uptc.edu.negocio;
+package co.uptc.edu.caso.estudio.negocio;
 
 public class Cliente {
-	
+
 	// Atributos según el diagrama de clases (Negocio)
     private int idCliente;
     private String nombreCompleto;
@@ -63,5 +63,5 @@ public void setTelefono(String telefono) { this.telefono = telefono; }
 
 public String getTipoCliente() { return tipoCliente; }
 public void setTipoCliente(String tipoCliente) { this.tipoCliente = tipoCliente; }
+	
 }
-

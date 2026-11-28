@@ -1,9 +1,15 @@
-package co.uptc.edu.gui;
+package co.uptc.edu.caso.estudio.gui;
+
+import co.uptc.edu.caso.estudio.negocio.Cliente;
+import co.uptc.edu.caso.estudio.persistencia.ClienteDAO;
+import co.uptc.edu.caso.estudio.persistencia.GestorJson;
+import co.uptc.edu.caso.estudio.controller.LibroController;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 
 public class Login extends JFrame {
 
@@ -17,6 +23,8 @@ public class Login extends JFrame {
     private JButton btnRegistrar;
     private JButton btnLimpiar;
     private JButton btnSalir;
+    
+    private LibroController libroController;
 
     public Login() {
 
@@ -26,6 +34,11 @@ public class Login extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         crearInterfaz();
+    }
+    
+    public Login(LibroController libroController) {
+        this();
+        this.libroController = libroController;
     }
 
     private void crearInterfaz() {
@@ -117,17 +130,35 @@ public class Login extends JFrame {
         // EVENTOS
         
         btnRegistrar.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
+                String nombreCompleto = txtNombre.getText().trim() + " " + txtApellido.getText().trim();
+                String documento = txtDocumento.getText().trim();
+                String correo = txtCorreo.getText().trim();
+                String telefono = txtTelefono.getText().trim();
+                String tipoUsuario = (String) cmbTipoUsuario.getSelectedItem();
 
-                JOptionPane.showMessageDialog(
-                        Login.this,
-                        "Invocación: registrarUsuario()\n"
-                        + "El usuario será registrado en el sistema.",
-                        "Registro de usuario",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
+                if (txtNombre.getText().trim().isEmpty() || correo.isEmpty()) {
+                    JOptionPane.showMessageDialog(Login.this, "Nombre y correo son obligatorios.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                Cliente cliente = new Cliente(nombreCompleto, correo, "Doc: " + documento, telefono, tipoUsuario);
+                ClienteDAO clienteDAO = new ClienteDAO();
+                GestorJson gestorJson = new GestorJson();
+
+                if (clienteDAO.guardar(cliente)) {
+                    gestorJson.guardarClientes(clienteDAO.listarTodos());
+                    JOptionPane.showMessageDialog(Login.this,
+                            "Usuario guardado en MariaDB (ID: " + cliente.getIdCliente() + ") y en clientes.json",
+                            "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
+                    dispose();
+                    new VentanaCompra(libroController).setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(Login.this,
+                            "Error al guardar en la base de datos. Verifica que MariaDB esté activo.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 

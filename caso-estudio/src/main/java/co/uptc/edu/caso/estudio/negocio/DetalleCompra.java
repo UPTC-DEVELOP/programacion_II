@@ -1,4 +1,4 @@
-package co.uptc.edu.negocio;
+package co.uptc.edu.caso.estudio.negocio;
 
 public class DetalleCompra {
 
