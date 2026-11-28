@@ -6,16 +6,19 @@ import java.util.List;
 import co.edu.uptc.tienda.excepcion.CompraExcepcion;
 import co.edu.uptc.tienda.excepcion.LibroExcepcion;
 import co.edu.uptc.tienda.interfaz.IGestionCompra;
+import co.edu.uptc.tienda.interfaz.IRegistroOperaciones;
 import co.edu.uptc.tienda.modelo.Libro;
 import co.edu.uptc.tienda.persistencia.LibroDAO;
 import co.edu.uptc.tienda.persistencia.LibroDAOJSON;
 import co.edu.uptc.tienda.persistencia.LibroDAOMariaDB;
+import co.edu.uptc.tienda.persistencia.RegistroOperacionesTxt;
 
 public class ControlLibro {
 
     private List<Libro> libros;
     private List<LibroDAO> persistencias;
     private IGestionCompra compras;
+    private IRegistroOperaciones registro;
     private String avisoCarga;
 
     public ControlLibro() {
@@ -23,12 +26,13 @@ public class ControlLibro {
     }
 
     public ControlLibro(List<LibroDAO> persistencias) {
-        this(persistencias, new GestionCompra());
+        this(persistencias, new GestionCompra(), new RegistroOperacionesTxt("datos/operaciones.txt"));
     }
 
-    public ControlLibro(List<LibroDAO> persistencias, IGestionCompra compras) {
+    public ControlLibro(List<LibroDAO> persistencias, IGestionCompra compras, IRegistroOperaciones registro) {
         this.persistencias = persistencias;
         this.compras = compras;
+        this.registro = registro;
         libros = new ArrayList<>();
         cargar();
     }
@@ -79,6 +83,7 @@ public class ControlLibro {
                 errores.add(e.getMessage());
             }
         }
+        registro.registrar("Libros", "Registrar libro", "ISBN " + libro.getIsbn() + ", " + libro.getTitulo());
         avisarErrores(errores);
         return true;
     }
@@ -127,6 +132,7 @@ public class ControlLibro {
                 errores.add(e.getMessage());
             }
         }
+        registro.registrar("Libros", "Actualizar libro", "ISBN " + isbn + ", " + titulo);
         avisarErrores(errores);
         return true;
     }
@@ -180,6 +186,7 @@ public class ControlLibro {
                 errores.add(e.getMessage());
             }
         }
+        registro.registrar("Libros", "Eliminar libro", "ISBN " + libro.getIsbn() + ", " + libro.getTitulo());
         avisarErrores(errores);
         return true;
     }
