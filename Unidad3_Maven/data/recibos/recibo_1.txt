@@ -1,0 +1,12 @@
+TIENDA VIRTUAL DE LIBROS
+Pedido #1
+Fecha: 2026-11-21 10:34:36
+Cliente: camilo@uptc.edu.co
+Pago: Efectivo
+
+Cien años de soledad | 1 x $ 50.000 | Subtotal: $ 50.000 | IVA: $ 9.500
+
+Subtotal: $ 50.000
+Impuestos: $ 9.500
+Descuento: $ 5.950
+TOTAL: $ 53.550
