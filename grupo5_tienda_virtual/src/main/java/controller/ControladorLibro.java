@@ -41,6 +41,9 @@ public class ControladorLibro implements IServicioLibros {
         if (libro.getTitulo() == null || libro.getTitulo().trim().isEmpty()) {
             return false;
         }
+        if (libro.getAutor() == null || libro.getAutor().trim().isEmpty()) {
+            return false;
+        }
         if (libro.getPrecio() <= 0) {
             return false;
         }
@@ -90,6 +93,11 @@ public class ControladorLibro implements IServicioLibros {
     public boolean actualizar(String isbn, Libro datos) {
         Libro actual = buscar(isbn);
         if (actual == null || datos == null) {
+            return false;
+        }
+        if (datos.getTitulo() == null || datos.getTitulo().trim().isEmpty()
+                || datos.getAutor() == null || datos.getAutor().trim().isEmpty()
+                || datos.getPrecio() <= 0) {
             return false;
         }
         try {
