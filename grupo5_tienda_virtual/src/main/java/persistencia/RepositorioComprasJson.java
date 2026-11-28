@@ -142,6 +142,24 @@ public class RepositorioComprasJson implements IRepositorio<Compra> {
         return leerArchivo().size();
     }
 
+    @Override
+    public List<Compra> buscar(String criterio) {
+        List<Compra> resultado = new ArrayList<Compra>();
+        if (criterio == null || criterio.isBlank()) {
+            return resultado;
+        }
+        for (Compra compra : leerArchivo()) {
+            if (criterio.equalsIgnoreCase(compra.getCorreoCliente())) {
+                resultado.add(compra);
+            }
+        }
+        resultado.sort(Comparator.comparingLong(Compra::getId).reversed());
+        if (resultado.size() > 10) {
+            return new ArrayList<Compra>(resultado.subList(0, 10));
+        }
+        return resultado;
+    }
+
     private List<Compra> leerArchivo() {
         if (!Files.exists(archivo)) {
             return new ArrayList<Compra>();

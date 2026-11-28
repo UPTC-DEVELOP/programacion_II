@@ -1,6 +1,5 @@
 package controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +33,6 @@ public class ControladorCompras implements IServicioCompras {
         this.repositorio = repositorio;
         this.servicioLibros = servicioLibros;
         this.operaciones = operaciones;
-        this.repositorio.cargar();
     }
 
     @Override
@@ -48,12 +46,10 @@ public class ControladorCompras implements IServicioCompras {
             return false;
         }
         try {
-            repositorio.agregar(compra);
-            repositorio.guardar();
+            repositorio.insertar(compra);
             return true;
         } catch (PersistenciaException e) {
             compra.setId(0);
-            revertir();
             return false;
         }
     }
@@ -127,39 +123,25 @@ public class ControladorCompras implements IServicioCompras {
 
     @Override
     public List<Compra> listarCompras() {
-        return new ArrayList<Compra>(repositorio.listar());
+        return repositorio.listarUltimos(10);
     }
 
     @Override
     public List<Compra> listarPorCliente(String correo) {
-        List<Compra> resultado = new ArrayList<Compra>();
         if (correo == null || correo.trim().isEmpty()) {
-            return resultado;
+            return List.of();
         }
-        for (Compra compra : repositorio.listar()) {
-            if (correo.equalsIgnoreCase(compra.getCorreoCliente())) {
-                resultado.add(compra);
-            }
-        }
-        return resultado;
+        return repositorio.buscar(correo);
     }
 
     @Override
     public int cantidad() {
-        return repositorio.listar().size();
+        return repositorio.contar();
     }
 
     private void registrarOperacion(String descripcion) {
         if (operaciones != null) {
             operaciones.registrar(descripcion);
-        }
-    }
-
-    private void revertir() {
-        try {
-            repositorio.cargar();
-        } catch (PersistenciaException e) {
-            System.err.println("No se pudo recargar el estado de compras: " + e.getMessage());
         }
     }
 }

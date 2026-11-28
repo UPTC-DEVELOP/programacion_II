@@ -133,6 +133,31 @@ public class RepositorioComprasBD implements IRepositorio<Compra> {
         }
     }
 
+    @Override
+    public List<Compra> buscar(String criterio) {
+        List<Compra> resultado = new ArrayList<Compra>();
+        if (criterio == null || criterio.isBlank()) {
+            return resultado;
+        }
+        String sql = "SELECT id, fecha, metodo_pago, correo_cliente, total "
+                + "FROM compras WHERE LOWER(correo_cliente) = LOWER(?) "
+                + "ORDER BY id DESC LIMIT 10";
+        try (Connection conexion = conectar();
+                PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setString(1, criterio);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    resultado.add(mapearCompra(rs));
+                }
+            }
+            cargarDetalles(conexion, resultado);
+            return resultado;
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudieron buscar las compras en la BD", e);
+        }
+    }
+
     private Compra mapearCompra(ResultSet rs) throws SQLException {
         Compra compra = new Compra();
         compra.setId(rs.getLong("id"));
