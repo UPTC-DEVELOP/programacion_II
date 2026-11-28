@@ -1,8 +1,5 @@
 package co.edu.uptc.caso.estudio.negocio;
 
-import co.edu.uptc.caso.estudio.model.Cliente;
-import co.edu.uptc.caso.estudio.model.Compra;
-import co.edu.uptc.caso.estudio.model.ItemCarrito;
 import co.edu.uptc.caso.estudio.model.Libro;
 import co.edu.uptc.caso.estudio.persistence.IRepositorioCompra;
 import co.edu.uptc.caso.estudio.persistence.IRepositorioLibros;
@@ -17,32 +14,31 @@ public class GestionLibrosImpl implements IGestionLibros {
     private final IRepositorioLibros repoMySQL;
     private final IRepositorioLibros repoJson;
     private final RegistradorOperacionesTxt registradorTxt;
-    private IRepositorioCompra repoCompraMySQL;
-    private IRepositorioCompra repoCompraJson;
-    private IGestionUsuarios gestionUsuarios;
+    private final IRepositorioCompra repoCompraMySQL;
+    private final IRepositorioCompra repoCompraJson;
 
     public GestionLibrosImpl(IRepositorioLibros repoMySQL, IRepositorioLibros repoJson) {
-        this(repoMySQL, repoJson, null);
+        this(repoMySQL, repoJson, null, null, null);
     }
 
     public GestionLibrosImpl(IRepositorioLibros repoMySQL, IRepositorioLibros repoJson,
                              RegistradorOperacionesTxt registradorTxt) {
+        this(repoMySQL, repoJson, registradorTxt, null, null);
+    }
+
+    public GestionLibrosImpl(IRepositorioLibros repoMySQL, IRepositorioLibros repoJson,
+                             IRepositorioCompra repoCompraMySQL, IRepositorioCompra repoCompraJson) {
+        this(repoMySQL, repoJson, null, repoCompraMySQL, repoCompraJson);
+    }
+
+    public GestionLibrosImpl(IRepositorioLibros repoMySQL, IRepositorioLibros repoJson,
+                             RegistradorOperacionesTxt registradorTxt,
+                             IRepositorioCompra repoCompraMySQL, IRepositorioCompra repoCompraJson) {
         this.repoMySQL = repoMySQL;
         this.repoJson = repoJson;
         this.registradorTxt = registradorTxt;
-    }
-
-    public void setRepoCompra(IRepositorioCompra repoCompra) {
-        this.repoCompraMySQL = repoCompra;
-    }
-
-    public void setRepositoriosCompra(IRepositorioCompra repoCompraMySQL, IRepositorioCompra repoCompraJson) {
         this.repoCompraMySQL = repoCompraMySQL;
         this.repoCompraJson = repoCompraJson;
-    }
-
-    public void setGestionUsuarios(IGestionUsuarios gestionUsuarios) {
-        this.gestionUsuarios = gestionUsuarios;
     }
 
     // Consulta MySQL primero y recurre al respaldo JSON si no hay registros
@@ -130,54 +126,12 @@ public class GestionLibrosImpl implements IGestionLibros {
         return false;
     }
 
-    // Verifica si el libro aparece en alguna compra del usuario autenticado en MySQL o JSON
+    // Verifica si el libro tiene alguna venta registrada en MySQL o JSON sin importar el cliente
     private boolean tieneVentasRegistradas(String isbn) {
-        if (gestionUsuarios == null) {
-            return false;
-        }
-        Cliente logueado = gestionUsuarios.getUsuarioLogueado();
-        if (logueado == null || esVacio(logueado.getId())) {
-            return false;
-        }
-
-        String clienteId = logueado.getId();
-        if (repositorioTieneVenta(repoCompraMySQL, clienteId, isbn)) {
+        if (repoCompraMySQL != null && repoCompraMySQL.existeVentaDeLibro(isbn)) {
             return true;
         }
-        return repositorioTieneVenta(repoCompraJson, clienteId, isbn);
-    }
-
-    // Consulta las compras de un cliente en un repositorio específico y busca el ISBN
-    private boolean repositorioTieneVenta(IRepositorioCompra repo, String clienteId, String isbn) {
-        if (repo == null) {
-            return false;
-        }
-        List<Compra> compras = repo.obtenerComprasPorCliente(clienteId);
-        if (compras == null) {
-            return false;
-        }
-        for (int i = 0; i < compras.size(); i++) {
-            Compra compra = compras.get(i);
-            if (compra != null && compraContieneIsbn(compra, isbn)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Revisa los ítems de una compra para determinar si incluyen el ISBN indicado
-    private boolean compraContieneIsbn(Compra compra, String isbn) {
-        List<ItemCarrito> items = compra.getItems();
-        if (items == null) {
-            return false;
-        }
-        for (int i = 0; i < items.size(); i++) {
-            ItemCarrito item = items.get(i);
-            if (item != null && item.getLibro() != null && isbn.equalsIgnoreCase(item.getLibro().getIsbn())) {
-                return true;
-            }
-        }
-        return false;
+        return repoCompraJson != null && repoCompraJson.existeVentaDeLibro(isbn);
     }
 
     // Ajusta el stock en memoria y persiste el cambio en los repositorios

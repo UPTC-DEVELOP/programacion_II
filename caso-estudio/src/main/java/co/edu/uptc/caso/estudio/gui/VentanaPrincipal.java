@@ -9,6 +9,7 @@ import co.edu.uptc.caso.estudio.negocio.IGestionCompras;
 import co.edu.uptc.caso.estudio.negocio.IGestionLibros;
 import co.edu.uptc.caso.estudio.negocio.IGestionUsuarios;
 import co.edu.uptc.caso.estudio.negocio.dto.CredencialDto;
+import co.edu.uptc.caso.estudio.negocio.dto.PagoDto;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
@@ -17,7 +18,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
-// VentanaPrincipal: integra los paneles visuales y se comunica con la capa de negocio.
+// VentanaPrincipal: integra los paneles visuales y coordina las acciones con la capa de negocio.
 public class VentanaPrincipal extends JFrame {
 
     private static final long serialVersionUID = 1L;
@@ -196,7 +197,8 @@ public class VentanaPrincipal extends JFrame {
 
         List<Libro> filtrados = new ArrayList<>();
         List<Libro> todos = gestionLibros.listarLibros();
-        for (Libro l : todos) {
+        for (int i = 0; i < todos.size(); i++) {
+            Libro l = todos.get(i);
             if (l != null && coincideBusqueda(l, q)) {
                 filtrados.add(l);
             }
@@ -324,28 +326,8 @@ public class VentanaPrincipal extends JFrame {
     public void refrescarCarrito() {
         Carrito carritoActual = gestionCompras.obtenerCarritoActual();
         List<ItemCarrito> items = (carritoActual != null) ? carritoActual.getItems() : new ArrayList<ItemCarrito>();
-        double totalImpuestos = calcularTotalImpuestos(items);
+        double totalImpuestos = (carritoActual != null) ? carritoActual.calcularTotalImpuestos() : 0.0;
         panelCarrito.actualizarTotales(items, totalImpuestos, gestionCompras.calcularTotalFinal());
-    }
-
-    private double calcularTotalImpuestos(List<ItemCarrito> items) {
-        if (items == null) {
-            return 0.0;
-        }
-        double totalImpuestos = 0.0;
-        for (int i = 0; i < items.size(); i++) {
-            ItemCarrito item = items.get(i);
-            if (item == null || item.getLibro() == null) {
-                continue;
-            }
-            double precioUnitario = item.getPrecioUnitarioOverride() != null
-                    ? item.getPrecioUnitarioOverride()
-                    : item.getLibro().getPrecioVenta();
-            double subtotalBase = precioUnitario * item.getCantidad();
-            double tasaIva = item.getLibro().getPorcentajeIva() / 100.0;
-            totalImpuestos += subtotalBase * tasaIva;
-        }
-        return totalImpuestos;
     }
 
     public void actualizarCantidadCarrito() {
@@ -406,20 +388,39 @@ public class VentanaPrincipal extends JFrame {
         if (!haySesionActiva("Debe iniciar sesión para realizar la compra.")) {
             return;
         }
-        String errorPago = gestionCompras.registrarPago(panelCarrito.obtenerDatosPago());
+        PagoDto datosPago = panelCarrito.obtenerDatosPago();
+        String errorPago = gestionCompras.registrarPago(datosPago);
         if (errorPago != null) {
             mostrarMensaje(errorPago, "Error en los datos de pago", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
+        Compra recibo = construirReciboPrevio(datosPago);
         if (gestionCompras.finalizarCompra()) {
             panelCarrito.limpiarFormularioPago();
-            mostrarMensaje("¡Gracias por tu compra! Se ha procesado tu orden con éxito.", "Compra Exitosa", JOptionPane.INFORMATION_MESSAGE);
             refrescarCarrito();
             refrescarLibros();
             refrescarHistorial();
+            new DialogoRecibo(this, recibo).setVisible(true);
         } else {
             mostrarMensaje("El carrito está vacío o ocurrió un error al procesar la compra.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private Compra construirReciboPrevio(PagoDto datosPago) {
+        Cliente cliente = gestionUsuarios.getUsuarioLogueado();
+        Carrito carrito = gestionCompras.obtenerCarritoActual();
+        return new Compra("ORDEN-CONFIRMADA", cliente, carrito, describirMetodoPago(datosPago));
+    }
+
+    private String describirMetodoPago(PagoDto pago) {
+        if (pago == null || pago.getMetodo() == null) {
+            return "No especificado";
+        }
+        if (pago.getBanco() != null && !pago.getBanco().trim().isEmpty()) {
+            return pago.getMetodo().trim() + " (" + pago.getBanco().trim() + ")";
+        }
+        return pago.getMetodo().trim();
     }
 
     // ---------------- Acciones de Historial ----------------

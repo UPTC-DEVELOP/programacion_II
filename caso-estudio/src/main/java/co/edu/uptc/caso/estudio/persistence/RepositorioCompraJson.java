@@ -3,6 +3,7 @@ package co.edu.uptc.caso.estudio.persistence;
 import co.edu.uptc.caso.estudio.model.Carrito;
 import co.edu.uptc.caso.estudio.model.Cliente;
 import co.edu.uptc.caso.estudio.model.Compra;
+import co.edu.uptc.caso.estudio.model.ItemCarrito;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -44,12 +45,45 @@ public class RepositorioCompraJson implements IRepositorioCompra {
         }
 
         List<Compra> todas = manejadorJson.leerLista();
-        for (Compra compra : todas) {
+        for (int i = 0; i < todas.size(); i++) {
+            Compra compra = todas.get(i);
             if (compra != null && clienteId.equals(compra.getClienteId())) {
                 resultado.add(compra);
             }
         }
         return resultado;
+    }
+
+    // Verifica si el ISBN aparece en alguna compra registrada dentro del JSON
+    @Override
+    public boolean existeVentaDeLibro(String isbn) {
+        if (isbn == null || isbn.trim().isEmpty()) {
+            return false;
+        }
+
+        String isbnBuscado = isbn.trim();
+        List<Compra> todas = manejadorJson.leerLista();
+        if (todas == null) {
+            return false;
+        }
+
+        for (int i = 0; i < todas.size(); i++) {
+            Compra compra = todas.get(i);
+            if (compra == null || compra.getItems() == null) {
+                continue;
+            }
+            List<ItemCarrito> items = compra.getItems();
+            for (int j = 0; j < items.size(); j++) {
+                ItemCarrito item = items.get(j);
+                if (item != null
+                        && item.getLibro() != null
+                        && item.getLibro().getIsbn() != null
+                        && isbnBuscado.equalsIgnoreCase(item.getLibro().getIsbn().trim())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private String generarIdCompra() {

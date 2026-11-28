@@ -41,7 +41,12 @@ public class TiendaConfig {
         IRepositorioCompra repoCompraMySQL = new RepositorioCompraMySQL();
         IRepositorioCompra repoCompraJson = new RepositorioCompraJson();
 
-        this.gestionLibros = crearGestionLibros(repoLibrosMySQL, repoLibrosJson, registradorTxt);
+        this.gestionLibros = crearGestionLibros(
+                repoLibrosMySQL,
+                repoLibrosJson,
+                repoCompraMySQL,
+                repoCompraJson,
+                registradorTxt);
         this.gestionUsuarios = crearGestionUsuarios(
                 repoUsuarioMySQL,
                 repoUsuarioJson,
@@ -67,11 +72,18 @@ public class TiendaConfig {
         }
     }
 
-    // Construye el servicio de negocio de libros con sus repositorios y registrador
+    // Construye el servicio de negocio de libros con sus repositorios de libros, compras y log TXT
     private IGestionLibros crearGestionLibros(IRepositorioLibros repoLibrosMySQL,
                                               IRepositorioLibros repoLibrosJson,
+                                              IRepositorioCompra repoCompraMySQL,
+                                              IRepositorioCompra repoCompraJson,
                                               RegistradorOperacionesTxt registradorTxt) {
-        return new GestionLibrosImpl(repoLibrosMySQL, repoLibrosJson, registradorTxt);
+        return new GestionLibrosImpl(
+                repoLibrosMySQL,
+                repoLibrosJson,
+                registradorTxt,
+                repoCompraMySQL,
+                repoCompraJson);
     }
 
     // Construye el servicio de negocio de usuarios con persistencia y limpieza de carrito JSON

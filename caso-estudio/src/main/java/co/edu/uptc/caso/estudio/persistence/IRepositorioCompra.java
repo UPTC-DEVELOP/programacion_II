@@ -15,4 +15,9 @@ public interface IRepositorioCompra {
     default List<Compra> obtenerComprasPorCliente(String clienteId) {
         return Collections.emptyList();
     }
+
+    // Verifica si el ISBN aparece en alguna compra registrada de cualquier cliente
+    default boolean existeVentaDeLibro(String isbn) {
+        return false;
+    }
 }

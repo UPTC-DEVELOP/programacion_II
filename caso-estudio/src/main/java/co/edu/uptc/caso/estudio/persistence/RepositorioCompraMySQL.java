@@ -73,6 +73,26 @@ public class RepositorioCompraMySQL implements IRepositorioCompra {
         return compras;
     }
 
+    // Verifica si el ISBN tiene al menos una venta registrada en cualquier compra de MySQL
+    @Override
+    public boolean existeVentaDeLibro(String isbn) {
+        if (esVacio(isbn)) {
+            return false;
+        }
+
+        String sql = "SELECT 1 FROM compra_items WHERE libro_isbn = ? LIMIT 1";
+        try (Connection conn = ConexionMySQL.obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, isbn.trim());
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al verificar ventas del libro " + isbn + ": " + e.getMessage());
+            return false;
+        }
+    }
+
     // Mapea una fila de compras junto con sus ítems asociados
     private Compra mapearCompra(Connection conn, ResultSet rs) throws SQLException {
         int idCompra = rs.getInt("id");
@@ -164,7 +184,9 @@ public class RepositorioCompraMySQL implements IRepositorioCompra {
 
         try (PreparedStatement psItem = conn.prepareStatement(sqlItem);
              PreparedStatement psStock = conn.prepareStatement(sqlStock)) {
-            for (ItemCarrito it : carrito.getItems()) {
+            List<ItemCarrito> items = carrito.getItems();
+            for (int i = 0; i < items.size(); i++) {
+                ItemCarrito it = items.get(i);
                 if (it == null || it.getLibro() == null || esVacio(it.getLibro().getIsbn())) {
                     continue;
                 }
@@ -185,8 +207,9 @@ public class RepositorioCompraMySQL implements IRepositorioCompra {
                 psStock.addBatch();
             }
             psItem.executeBatch();
-            for (int filas : psStock.executeBatch()) {
-                if (filas == 0) {
+            int[] filasActualizadas = psStock.executeBatch();
+            for (int i = 0; i < filasActualizadas.length; i++) {
+                if (filasActualizadas[i] == 0) {
                     throw new SQLException("Stock insuficiente.");
                 }
             }
