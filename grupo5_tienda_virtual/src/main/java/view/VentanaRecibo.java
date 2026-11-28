@@ -73,7 +73,24 @@ public class VentanaRecibo extends JFrame {
             }
         }
 
-        double total = compra.getTotal() > 0 ? compra.getTotal() : compra.calcularTotal();
+        double subtotal = 0;
+        double iva = 0;
+        if (compra.getItems() != null) {
+            for (ItemCompra item : compra.getItems()) {
+                if (item != null) {
+                    subtotal += item.getSubtotal();
+                    iva += item.getImpuestos();
+                }
+            }
+        }
+        double porcentajeDescuento = cliente != null ? cliente.calcularDescuento() : 0.0;
+        double descuento = subtotal * porcentajeDescuento;
+        double total = compra.getTotal() > 0
+                ? compra.getTotal() : subtotal - descuento + iva;
+
+        texto.append("\nSubtotal: ").append(String.format("$%,.2f", subtotal));
+        texto.append("\nIVA: ").append(String.format("$%,.2f", iva));
+        texto.append("\nDescuento Premium: -").append(String.format("$%,.2f", descuento));
         texto.append("\nTOTAL: ").append(String.format("$%,.2f", total));
         return texto.toString();
     }
