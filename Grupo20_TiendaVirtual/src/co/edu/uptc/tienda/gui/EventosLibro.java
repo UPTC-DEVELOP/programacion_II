@@ -101,6 +101,10 @@ public class EventosLibro implements ActionListener {
                     .getSelectedItem()
                     .toString();
 
+            String categoria = ventana.getCmbCategoria()
+                    .getSelectedItem()
+                    .toString();
+
             if (isbn.isEmpty() || titulo.isEmpty() || autor.isEmpty()
                     || editorial.isEmpty() || anioTexto.isEmpty()
                     || paginasTexto.isEmpty() || precioTexto.isEmpty()
@@ -213,6 +217,7 @@ public class EventosLibro implements ActionListener {
                     titulo,
                     autor,
                     anio,
+                    categoria,
                     editorial,
                     paginas,
                     precio,
@@ -295,6 +300,7 @@ public class EventosLibro implements ActionListener {
         String ivaTexto = ventana.getTxtIva().getText().trim();
         String stockTexto = ventana.getTxtStock().getText().trim();
         String formato = (String) ventana.getCmbFormato().getSelectedItem();
+        String categoria = (String) ventana.getCmbCategoria().getSelectedItem();
 
         if (titulo.isEmpty() || autor.isEmpty() || anioTexto.isEmpty()
                 || editorial.isEmpty() || paginasTexto.isEmpty()
@@ -373,6 +379,7 @@ public class EventosLibro implements ActionListener {
                     titulo,
                     autor,
                     anio,
+                    categoria,
                     editorial,
                     paginas,
                     precio,
@@ -526,6 +533,7 @@ public class EventosLibro implements ActionListener {
             "ISBN",
             "Título",
             "Autor",
+            "Categoría",
             "Precio",
             "Cantidad"
         };
@@ -544,6 +552,7 @@ public class EventosLibro implements ActionListener {
                 libro.getIsbn(),
                 libro.getTitulo(),
                 libro.getAutor(),
+                libro.getCategoria() == null ? "Sin categoría" : libro.getCategoria(),
                 String.format("$%,.2f", libro.getPrecio()),
                 libro.getStock()
             };
