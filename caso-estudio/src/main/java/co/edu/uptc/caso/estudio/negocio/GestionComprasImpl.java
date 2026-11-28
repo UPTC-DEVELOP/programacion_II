@@ -161,7 +161,9 @@ public class GestionComprasImpl implements IGestionCompras {
         String bancoTransf = (transferencia != null && transferencia.getBanco() != null)
                 ? transferencia.getBanco().trim()
                 : "";
-        String detalle = !bancoDto.isEmpty() ? bancoDto : bancoTransf;
+        String detalle = (transferencia != null && transferencia.esNequi()) || bancoDto.isEmpty()
+                ? bancoTransf
+                : bancoDto;
 
         if (!metodo.isEmpty() && !detalle.isEmpty()) {
             return metodo + " (" + detalle + ")";

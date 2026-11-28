@@ -10,6 +10,8 @@ import co.edu.uptc.caso.estudio.negocio.IGestionLibros;
 import co.edu.uptc.caso.estudio.negocio.IGestionUsuarios;
 import co.edu.uptc.caso.estudio.negocio.dto.CredencialDto;
 import co.edu.uptc.caso.estudio.negocio.dto.PagoDto;
+import co.edu.uptc.caso.estudio.model.DatosTransferencia;
+import co.edu.uptc.caso.estudio.model.enums.MetodoPago;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
@@ -431,6 +433,9 @@ public class VentanaPrincipal extends JFrame {
     private String describirMetodoPago(PagoDto pago) {
         if (pago == null || pago.getMetodo() == null) {
             return "No especificado";
+        }
+        if (MetodoPago.TRANSFERENCIA.getEtiqueta().equalsIgnoreCase(pago.getMetodo().trim())) {
+            return pago.getMetodo().trim() + " (" + DatosTransferencia.NEQUI + ")";
         }
         if (pago.getBanco() != null && !pago.getBanco().trim().isEmpty()) {
             return pago.getMetodo().trim() + " (" + pago.getBanco().trim() + ")";
