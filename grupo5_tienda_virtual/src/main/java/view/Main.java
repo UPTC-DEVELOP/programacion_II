@@ -97,6 +97,8 @@ public class Main {
                 10,
                 FormatoLibro.FISICO
         );
+        libro1.setAnioPublicacion(2020);
+        libro1.setNumeroPaginas(250);
 
         Libro libro2 = new Libro(
                 "978-002",
@@ -107,6 +109,8 @@ public class Main {
                 8,
                 FormatoLibro.FISICO
         );
+        libro2.setAnioPublicacion(2021);
+        libro2.setNumeroPaginas(300);
 
         Libro libro3 = new Libro(
                 "978-003",
@@ -117,6 +121,8 @@ public class Main {
                 15,
                 FormatoLibro.DIGITAL
         );
+        libro3.setAnioPublicacion(2022);
+        libro3.setNumeroPaginas(280);
 
         if (!controladorLibro.registrar(libro1)
                 || !controladorLibro.registrar(libro2)

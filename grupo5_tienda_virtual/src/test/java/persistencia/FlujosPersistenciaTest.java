@@ -13,6 +13,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import controller.ConsultaVentas;
 import controller.ControladorCarrito;
+import controller.ControladorCliente;
 import controller.ControladorCompras;
 import controller.ControladorLibro;
 import model.CarritoCompras;
@@ -43,6 +44,26 @@ class FlujosPersistenciaTest {
                 new RepositorioComprasJson(ruta("compras.json")), "JSON");
         probarCompra(new RepositorioLibrosBD(ruta("tienda.db")),
                 new RepositorioComprasBD(ruta("tienda.db")), "BD");
+    }
+
+    @Test
+    void validaCorreoYContrasenaDeClientes() {
+        ControladorCliente clientes = new ControladorCliente(
+                new RepositorioClientesArchivoPlano(ruta("validacion_clientes.txt")));
+        assertFalse(clientes.registrarCliente("Regular", "Cliente",
+                "correo-malo", "Calle 1", "300", "1234"));
+        assertTrue(clientes.registrarCliente("Regular", "Cliente",
+                "valido@correo.com", "Calle 1", "300", "1234"));
+    }
+
+    @Test
+    void validaDatosDeLibros() {
+        ControladorLibro libros = new ControladorLibro(
+                new RepositorioLibrosArchivoPlano(ruta("validacion_libros.txt")));
+        Libro invalido = libro("VALID-1", 5);
+        invalido.setPorcentajeIva(10);
+        assertFalse(libros.registrar(invalido));
+        assertTrue(libros.registrar(libro("VALID-2", 5)));
     }
 
     @Test
@@ -80,7 +101,7 @@ class FlujosPersistenciaTest {
         CarritoCompras carrito = new CarritoCompras();
         carrito.agregarLibro(libro, 1);
         assertTrue(compras.finalizarCompra(
-                new ClienteRegular("Cliente venta", "venta@correo.com", "1"),
+                new ClienteRegular("Cliente venta", "venta@correo.com", "1234"),
                 carrito, "Efectivo").isExitoso());
 
         assertFalse(libros.eliminar("VENTA-1"));
@@ -99,7 +120,7 @@ class FlujosPersistenciaTest {
         carrito.agregarLibro(libro, 2);
 
         ResultadoCompra resultado = compras.finalizarCompra(
-                new ClienteRegular("Cliente fallo", "fallo@correo.com", "1"),
+                new ClienteRegular("Cliente fallo", "fallo@correo.com", "1234"),
                 carrito, "Efectivo");
 
         assertFalse(resultado.isExitoso());
@@ -110,7 +131,7 @@ class FlujosPersistenciaTest {
     private void probarClientes(IRepositorio<Cliente> repo, String nombre) {
         for (int i = 0; i < 12; i++) {
             repo.insertar(new ClienteRegular("Cliente " + i,
-                    "cliente" + i + "@correo.com", "1"));
+                    "cliente" + i + "@correo.com", "1234"));
         }
 
         IRepositorio<Cliente> recargado = nuevoClientes(nombre);
@@ -133,7 +154,7 @@ class FlujosPersistenciaTest {
         CarritoCompras carrito = new CarritoCompras();
         carrito.agregarLibro(libro, 2);
         assertTrue(compras.finalizarCompra(
-                new ClienteRegular("Cliente compra", "compra@correo.com", "1"),
+                new ClienteRegular("Cliente compra", "compra@correo.com", "1234"),
                 carrito, "Efectivo").isExitoso(), nombre + ": compra");
 
         ControladorLibro librosReiniciado = new ControladorLibro(nuevoLibros(nombre));
@@ -186,6 +207,8 @@ class FlujosPersistenciaTest {
         libro.setIsbn(isbn);
         libro.setTitulo("Libro " + isbn);
         libro.setAutor("Autor " + isbn);
+        libro.setAnioPublicacion(2020);
+        libro.setNumeroPaginas(100);
         libro.setPrecio(100);
         libro.setPorcentajeIva(19);
         libro.setCantidadDisponible(stock);

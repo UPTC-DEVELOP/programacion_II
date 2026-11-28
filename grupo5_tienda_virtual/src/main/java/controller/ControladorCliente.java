@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import model.Cliente;
 import model.ClientePremium;
@@ -19,6 +20,9 @@ import service.IServicioClientes;
  */
 public class ControladorCliente implements IServicioClientes {
 
+    private static final Pattern CORREO_VALIDO =
+            Pattern.compile("^[\\w.+-]+@[\\w-]+(\\.[\\w-]+)+$");
+
     private final IRepositorio<Cliente> repositorio;
     private final ControladorOperaciones operaciones;
 
@@ -34,8 +38,8 @@ public class ControladorCliente implements IServicioClientes {
 
     @Override
     public boolean registrar(Cliente cliente) {
-        if (cliente == null || cliente.getCorreo() == null
-                || cliente.getCorreo().trim().isEmpty()
+        if (cliente == null || !correoValido(cliente.getCorreo())
+                || !contrasenaValida(cliente.getContrasena())
                 || buscar(cliente.getCorreo()) != null) {
             return false;
         }
@@ -52,8 +56,8 @@ public class ControladorCliente implements IServicioClientes {
     public boolean registrarCliente(String tipo, String nombreCompleto, String correo,
             String direccion, String telefono, String contrasena) {
         if (nombreCompleto == null || nombreCompleto.trim().isEmpty()
-                || correo == null || correo.trim().isEmpty()
-                || contrasena == null || contrasena.isEmpty()) {
+                || !correoValido(correo)
+                || !contrasenaValida(contrasena)) {
             return false;
         }
 
@@ -96,7 +100,7 @@ public class ControladorCliente implements IServicioClientes {
     public boolean actualizarDatos(String correo, String nombreCompleto,
             String direccion, String telefono) {
         Cliente actual = buscar(correo);
-        if (actual == null) {
+        if (actual == null || nombreCompleto == null || nombreCompleto.trim().isEmpty()) {
             return false;
         }
         try {
@@ -126,6 +130,14 @@ public class ControladorCliente implements IServicioClientes {
         } catch (PersistenciaException e) {
             return false;
         }
+    }
+
+    private boolean correoValido(String correo) {
+        return correo != null && CORREO_VALIDO.matcher(correo.trim()).matches();
+    }
+
+    private boolean contrasenaValida(String contrasena) {
+        return contrasena != null && contrasena.length() >= 4;
     }
 
     private void registrarOperacion(String descripcion) {

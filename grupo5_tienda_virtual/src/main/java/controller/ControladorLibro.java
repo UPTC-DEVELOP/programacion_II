@@ -1,5 +1,6 @@
 package controller;
 
+import java.time.Year;
 import java.util.List;
 
 import model.Libro;
@@ -40,22 +41,7 @@ public class ControladorLibro implements IServicioLibros {
     // REGISTRO DE UN NUEVO LIBRO (RF01)
     @Override
     public boolean registrar(Libro libro) {
-        if (libro == null) {
-            return false;
-        }
-        if (libro.getIsbn() == null || libro.getIsbn().trim().isEmpty()) {
-            return false;
-        }
-        if (libro.getTitulo() == null || libro.getTitulo().trim().isEmpty()) {
-            return false;
-        }
-        if (libro.getAutor() == null || libro.getAutor().trim().isEmpty()) {
-            return false;
-        }
-        if (libro.getPrecio() <= 0) {
-            return false;
-        }
-        if (buscar(libro.getIsbn()) != null) {
+        if (!validarLibro(libro) || buscar(libro.getIsbn()) != null) {
             return false;
         }
         try {
@@ -105,12 +91,7 @@ public class ControladorLibro implements IServicioLibros {
     @Override
     public boolean actualizar(String isbn, Libro datos) {
         Libro actual = buscar(isbn);
-        if (actual == null || datos == null) {
-            return false;
-        }
-        if (datos.getTitulo() == null || datos.getTitulo().trim().isEmpty()
-                || datos.getAutor() == null || datos.getAutor().trim().isEmpty()
-                || datos.getPrecio() <= 0) {
+        if (actual == null || !validarLibro(datos)) {
             return false;
         }
         try {
@@ -177,6 +158,29 @@ public class ControladorLibro implements IServicioLibros {
             }
         }
         return false;
+    }
+
+    private boolean validarLibro(Libro libro) {
+        if (libro == null) {
+            return false;
+        }
+        if (libro.getIsbn() == null || libro.getIsbn().trim().isEmpty()
+                || libro.getTitulo() == null || libro.getTitulo().trim().isEmpty()
+                || libro.getAutor() == null || libro.getAutor().trim().isEmpty()) {
+            return false;
+        }
+        if (libro.getAnioPublicacion() <= 0
+                || libro.getAnioPublicacion() > Year.now().getValue()) {
+            return false;
+        }
+        if (libro.getNumeroPaginas() <= 0
+                || libro.getPrecio() <= 0
+                || libro.getCantidadDisponible() < 0
+                || libro.getFormato() == null) {
+            return false;
+        }
+        double iva = libro.getPorcentajeIva();
+        return Math.abs(iva - 19.0) < 0.01 || Math.abs(iva - 5.0) < 0.01;
     }
 
     private void registrarOperacion(String descripcion) {
