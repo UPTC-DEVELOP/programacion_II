@@ -3,6 +3,8 @@ package co.edu.uptc.caso.estudio.gui;
 import co.edu.uptc.caso.estudio.model.Carrito;
 import co.edu.uptc.caso.estudio.model.Cliente;
 import co.edu.uptc.caso.estudio.model.Compra;
+import co.edu.uptc.caso.estudio.model.DatosTransferencia;
+import co.edu.uptc.caso.estudio.model.enums.MetodoPago;
 import co.edu.uptc.caso.estudio.model.ItemCarrito;
 import co.edu.uptc.caso.estudio.model.Libro;
 import co.edu.uptc.caso.estudio.negocio.IGestionCompras;
@@ -10,8 +12,6 @@ import co.edu.uptc.caso.estudio.negocio.IGestionLibros;
 import co.edu.uptc.caso.estudio.negocio.IGestionUsuarios;
 import co.edu.uptc.caso.estudio.negocio.dto.CredencialDto;
 import co.edu.uptc.caso.estudio.negocio.dto.PagoDto;
-import co.edu.uptc.caso.estudio.model.DatosTransferencia;
-import co.edu.uptc.caso.estudio.model.enums.MetodoPago;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
@@ -89,6 +89,7 @@ public class VentanaPrincipal extends JFrame {
             panelUsuario.cargarDatosUsuario(log);
             mostrarMensaje("Bienvenido " + log.getNombreCompleto(), "Sesión iniciada", JOptionPane.INFORMATION_MESSAGE);
             refrescarCarrito();
+            buscarLibros();
             refrescarHistorial();
         } else {
             mostrarMensaje("Credenciales incorrectas.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -100,6 +101,7 @@ public class VentanaPrincipal extends JFrame {
         panelUsuario.limpiarFormulario();
         panelCarrito.limpiarCarrito();
         panelHistorial.actualizarHistorial(new ArrayList<Compra>());
+        buscarLibros();
         mostrarMensaje("Sesión cerrada.", "Información", JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -183,7 +185,7 @@ public class VentanaPrincipal extends JFrame {
     // ---------------- Acciones de Libros ----------------
 
     public void refrescarLibros() {
-        panelLibros.actualizarTabla(gestionLibros.listarLibros());
+        panelLibros.actualizarTabla(gestionLibros.listarLibros(), gestionCompras.obtenerCarritoActual());
     }
 
     public void mostrarTodosLosLibros() {
@@ -206,7 +208,7 @@ public class VentanaPrincipal extends JFrame {
                 filtrados.add(l);
             }
         }
-        panelLibros.actualizarTabla(filtrados);
+        panelLibros.actualizarTabla(filtrados, gestionCompras.obtenerCarritoActual());
     }
 
     private boolean coincideBusqueda(Libro l, String consulta) {
@@ -318,6 +320,7 @@ public class VentanaPrincipal extends JFrame {
             }
             gestionCompras.agregarAlCarrito(l, cant);
             refrescarCarrito();
+            buscarLibros();
             mostrarMensaje("Libro añadido al carrito con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (NumberFormatException e) {
             mostrarMensaje("Cantidad inválida.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -360,6 +363,7 @@ public class VentanaPrincipal extends JFrame {
                 mostrarMensaje(error, "Error", JOptionPane.ERROR_MESSAGE);
             } else {
                 refrescarCarrito();
+                buscarLibros();
                 mostrarMensaje("Cantidad actualizada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (NumberFormatException e) {
@@ -387,6 +391,7 @@ public class VentanaPrincipal extends JFrame {
             if (gestionCompras.eliminarDelCarrito(isbns)) {
                 mostrarMensaje("Libro(s) eliminado(s) del carrito correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 refrescarCarrito();
+                buscarLibros();
             } else {
                 mostrarMensaje("No se pudo eliminar del carrito.", "Error", JOptionPane.ERROR_MESSAGE);
             }

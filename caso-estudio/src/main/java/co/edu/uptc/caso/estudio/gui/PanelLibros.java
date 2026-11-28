@@ -1,6 +1,8 @@
 package co.edu.uptc.caso.estudio.gui;
 
 import co.edu.uptc.caso.estudio.model.Libro;
+import co.edu.uptc.caso.estudio.model.Carrito;
+import co.edu.uptc.caso.estudio.model.ItemCarrito;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -117,6 +119,11 @@ public class PanelLibros extends JPanel {
     }
 
     public void actualizarTabla(List<Libro> lista) {
+        actualizarTabla(lista, null);
+    }
+
+    public void actualizarTabla(List<Libro> lista, Carrito carrito) {
+        tablaLibros.clearSelection();
         modeloTablaLibros.setRowCount(0);
         if (lista == null) {
             return;
@@ -125,6 +132,8 @@ public class PanelLibros extends JPanel {
             if (l == null) {
                 continue;
             }
+            ItemCarrito enCarrito = (carrito != null) ? carrito.buscarItem(l.getIsbn()) : null;
+            int stockDisponible = l.getStock() - (enCarrito != null ? enCarrito.getCantidad() : 0);
             modeloTablaLibros.addRow(new Object[]{
                 l.getIsbn(),
                 l.getTitulo(),
@@ -134,7 +143,7 @@ public class PanelLibros extends JPanel {
                 l.getEditorial(),
                 l.getPaginas(),
                 l.getPrecioVenta(),
-                l.getStock(),
+                stockDisponible,
                 l.getFormato(),
                 l.getPorcentajeIva()
             });
