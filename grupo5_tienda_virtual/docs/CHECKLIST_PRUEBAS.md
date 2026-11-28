@@ -91,7 +91,7 @@ No se modificó ninguna ventana ni controlador.
 mvn test
 ```
 
-Resultado: **13 pruebas, 0 fallos**, ejecutadas individualmente con Maven.
+Resultado: **16 pruebas, 0 fallos**, ejecutadas individualmente con Maven.
 
 ## 6. Compilación
 

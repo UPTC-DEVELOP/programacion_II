@@ -66,8 +66,11 @@ mvn -Dtest=Clase#metodo test
 | 11 | Cliente duplicado y login inválido | OK | `pruebas/11_ReglasNegocioTest_rechazaClienteDuplicadoEInicioSesionInvalido.txt` |
 | 12 | Eliminar libro sin ventas | OK | `pruebas/12_ReglasNegocioTest_permiteEliminarLibroSinVentas.txt` |
 | 13 | Inventario y stock insuficiente | OK | `pruebas/13_ReglasNegocioTest_actualizaInventarioYRechazaCantidadMayorAlStock.txt` |
+| 14 | CRUD completo de Clientes | OK | `pruebas/14_CrudCompletoTest_clientesCrudCompleto.txt` |
+| 15 | CRUD completo de Libros | OK | `pruebas/15_CrudCompletoTest_librosCrudCompleto.txt` |
+| 16 | CRUD completo de Compras y carrito | OK | `pruebas/16_CrudCompletoTest_comprasCrudCompleto.txt` |
 
-Resultado: **13/13 pruebas correctas**.
+Resultado: **16/16 pruebas correctas**.
 
 ## 3. Datos de demostración
 
