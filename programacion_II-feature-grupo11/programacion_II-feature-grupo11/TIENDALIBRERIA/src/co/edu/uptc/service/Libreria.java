@@ -30,6 +30,7 @@ public class Libreria implements ILibreria{
 		    if (libro.getPaginas() <= 0) {
 		        throw new LibreriaException("El número de páginas debe ser mayor a cero.");
 		    }
+		 // 2. Persistencia delegada a la abstraccion ILibroRepositorio
 		    repositorio.guardar(libro);
 	 }
 	    @Override
