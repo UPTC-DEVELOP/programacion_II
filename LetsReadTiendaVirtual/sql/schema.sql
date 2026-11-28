@@ -22,3 +22,12 @@ CREATE TABLE IF NOT EXISTS libro (
   tiene_ventas        TINYINT(1)    NOT NULL DEFAULT 0,
   PRIMARY KEY (isbn)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS clientes (
+  correo          VARCHAR(120) NOT NULL,
+  tipo            VARCHAR(10)  NOT NULL,
+  nombre_completo VARCHAR(150) NOT NULL,
+  direccion       VARCHAR(200) NOT NULL,
+  telefono        VARCHAR(30)  NOT NULL,
+  clave           VARCHAR(100) NOT NULL,
+  PRIMARY KEY (correo)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
