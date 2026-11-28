@@ -43,7 +43,7 @@ public class EventosClientes extends Eventos {
 
     public void cargarTabla(DefaultTableModel modeloTabla) {
         modeloTabla.setRowCount(0);
-        for (Cliente cliente : controlador.listar()) {
+        for (Cliente cliente : controlador.listarUltimos(10)) {
             modeloTabla.addRow(new Object[] {
                     cliente.getNombreCompleto(),
                     cliente.getCorreo(),

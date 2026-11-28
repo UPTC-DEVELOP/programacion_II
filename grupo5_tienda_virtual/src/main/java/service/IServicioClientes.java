@@ -20,6 +20,8 @@ public interface IServicioClientes {
 
     List<Cliente> listar();
 
+    List<Cliente> listarUltimos(int limite);
+
     Cliente buscar(String correo);
 
     boolean actualizarDatos(String correo, String nombreCompleto, String direccion, String telefono);

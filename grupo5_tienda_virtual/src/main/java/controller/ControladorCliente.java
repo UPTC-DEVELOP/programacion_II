@@ -70,7 +70,12 @@ public class ControladorCliente implements IServicioClientes {
 
     @Override
     public List<Cliente> listar() {
-        return repositorio.listarUltimos(10);
+        return listarUltimos(10);
+    }
+
+    @Override
+    public List<Cliente> listarUltimos(int limite) {
+        return repositorio.listarUltimos(limite);
     }
 
     @Override
