@@ -1,0 +1,33 @@
+@startuml SecuenciaRegistrarCliente
+title Registrar cliente - flujo principal
+skinparam shadowing false
+
+actor "Administrador" as Admin
+participant "VentanaRegistroCliente" as Vista
+participant "EventosRegistroCliente" as Eventos
+participant "IServicioClientes" as Servicio
+participant "ControladorCliente" as Ctrl
+participant "IRepositorio<Cliente>" as Repo
+database "Almacenamiento\n(plano / JSON / BD)" as BD
+
+Admin -> Vista : diligencia datos y clic en Registrarse
+Vista -> Eventos : actionPerformed()
+Eventos -> Servicio : registrarCliente(tipo, nombre, correo,\ndireccion, telefono, contrasena)
+Servicio -> Ctrl : registrarCliente(...)
+Ctrl -> Ctrl : validar campos obligatorios
+Ctrl -> Ctrl : validar correo y contrasena
+alt datos invalidos
+    Ctrl --> Servicio : false
+    Servicio --> Eventos : false
+    Eventos -> Vista : mostrarError("Datos invalidos")
+else datos validos
+    Ctrl -> Repo : insertar(cliente)
+    Repo -> BD : INSERT
+    BD --> Repo : OK
+    Ctrl -> Ctrl : registrarOperacion()
+    Ctrl --> Servicio : true
+    Servicio --> Eventos : true
+    Eventos -> Vista : mostrarInfo("Cliente registrado")
+    Eventos -> Vista : limpiarFormulario()
+end
+@enduml

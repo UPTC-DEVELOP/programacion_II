@@ -1,0 +1,35 @@
+@startuml SecuenciaActualizarCliente
+title Actualizar datos del cliente
+skinparam shadowing false
+
+actor "Cliente" as Cli
+participant "VentanaMiCuenta" as Vista
+participant "EventosMiCuenta" as Eventos
+participant "IServicioClientes" as Servicio
+participant "ControladorCliente" as Ctrl
+participant "IRepositorio<Cliente>" as Repo
+database "Almacenamiento\n(plano / JSON / BD)" as BD
+
+Cli -> Vista : abre Mi Cuenta
+Vista -> Eventos : registrarEventos()
+Eventos -> Vista : cargar datos del cliente
+Cli -> Vista : edita nombre, direccion y telefono
+Cli -> Vista : clic en Guardar cambios
+Vista -> Eventos : actionPerformed()
+Eventos -> Servicio : actualizarDatos(correo, nombre,\ndireccion, telefono)
+Servicio -> Ctrl : actualizarDatos(...)
+Ctrl -> Ctrl : validar nombre obligatorio
+alt nombre vacio
+    Ctrl --> Servicio : false
+    Servicio --> Eventos : false
+    Eventos -> Vista : mostrarError("Nombre obligatorio")
+else datos validos
+    Ctrl -> Repo : actualizar(cliente)
+    Repo -> BD : UPDATE
+    BD --> Repo : OK
+    Ctrl -> Ctrl : registrarOperacion()
+    Ctrl --> Servicio : true
+    Servicio --> Eventos : true
+    Eventos -> Vista : mostrarInfo("Datos actualizados")
+end
+@enduml

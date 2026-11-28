@@ -1,0 +1,33 @@
+@startuml SecuenciaEliminarCliente
+title Eliminar cliente
+skinparam shadowing false
+
+actor "Administrador" as Admin
+participant "VentanaClientes" as Vista
+participant "EventosClientes" as Eventos
+participant "IServicioClientes" as Servicio
+participant "ControladorCliente" as Ctrl
+participant "IRepositorio<Cliente>" as Repo
+database "Almacenamiento\n(plano / JSON / BD)" as BD
+
+Admin -> Vista : selecciona un cliente y clic en Eliminar
+Vista -> Eventos : actionPerformed()
+Eventos -> Eventos : validar fila seleccionada
+alt sin seleccion
+    Eventos -> Vista : mostrarError("Seleccione un cliente")
+else con seleccion
+    Eventos -> Vista : confirmar("Desea eliminar el cliente?")
+    Admin --> Vista : Si
+    Eventos -> Servicio : eliminar(correo)
+    Servicio -> Ctrl : eliminar(correo)
+    Ctrl -> Repo : eliminar(correo)
+    Repo -> BD : DELETE
+    BD --> Repo : OK
+    Ctrl -> Ctrl : registrarOperacion()
+    Ctrl --> Servicio : true
+    Servicio --> Eventos : true
+    Eventos -> Vista : mostrarInfo("Cliente eliminado")
+    Eventos -> Servicio : listarUltimos(10)
+    Eventos -> Vista : recargar tabla
+end
+@enduml

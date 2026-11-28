@@ -1,0 +1,25 @@
+@startuml SecuenciaListarClientes
+title Listar y buscar clientes
+skinparam shadowing false
+
+actor "Administrador" as Admin
+participant "VentanaClientes" as Vista
+participant "EventosClientes" as Eventos
+participant "IServicioClientes" as Servicio
+participant "ControladorCliente" as Ctrl
+participant "IRepositorio<Cliente>" as Repo
+database "Almacenamiento\n(plano / JSON / BD)" as BD
+
+Admin -> Vista : abre Gestion de Clientes
+Vista -> Eventos : registrarEventos()
+Eventos -> Servicio : listarUltimos(10)
+Servicio -> Ctrl : listarUltimos(10)
+Ctrl -> Repo : listarUltimos(10)
+Repo -> BD : SELECT ... ORDER BY rowid DESC LIMIT 10
+BD --> Repo : filas
+Repo --> Ctrl : List<Cliente>
+Ctrl --> Servicio : List<Cliente>
+Servicio --> Eventos : List<Cliente>
+Eventos -> Vista : cargar tabla (nombre, correo,\ndireccion, telefono, tipo)
+Vista --> Admin : listado visible
+@enduml

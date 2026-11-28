@@ -1,0 +1,28 @@
+@startuml CasosUsoClientes
+title Casos de uso - Gestion de Clientes (RF05, RF06, RF07)
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Cliente" as Cliente
+actor "Administrador" as Admin
+
+rectangle "Tienda Virtual de Libros" {
+  usecase "Registrar cliente" as UC01
+  usecase "Iniciar sesion" as UC02
+  usecase "Listar y buscar clientes" as UC03
+  usecase "Actualizar datos personales" as UC04
+  usecase "Eliminar cliente" as UC05
+  usecase "Validar correo y contrasena" as UC06
+}
+
+Admin --> UC01
+Admin --> UC03
+Admin --> UC05
+Cliente --> UC02
+Cliente --> UC04
+
+UC01 ..> UC06 : <<include>>
+UC04 ..> UC02 : <<include>>
+UC01 ..> UC03 : <<extend>>
+@enduml
