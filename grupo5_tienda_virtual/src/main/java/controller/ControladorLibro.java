@@ -1,6 +1,5 @@
 package controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import model.Libro;
@@ -28,7 +27,6 @@ public class ControladorLibro implements IServicioLibros {
             ControladorOperaciones operaciones) {
         this.repositorio = repositorio;
         this.operaciones = operaciones;
-        this.repositorio.cargar();
     }
 
     // REGISTRO DE UN NUEVO LIBRO (RF01)
@@ -50,12 +48,10 @@ public class ControladorLibro implements IServicioLibros {
             return false;
         }
         try {
-            repositorio.agregar(libro);
-            repositorio.guardar();
+            repositorio.insertar(libro);
             registrarOperacion("Libro registrado: " + libro.getIsbn());
             return true;
         } catch (PersistenciaException e) {
-            revertir();
             return false;
         }
     }
@@ -63,7 +59,7 @@ public class ControladorLibro implements IServicioLibros {
     // LISTADO COMPLETO DE LIBROS (RF04)
     @Override
     public List<Libro> listar() {
-        return new ArrayList<Libro>(repositorio.listar());
+        return repositorio.listarUltimos(10);
     }
 
     // BUSCAR UN LIBRO POR SU CODIGO ISBN (RF09)
@@ -72,7 +68,7 @@ public class ControladorLibro implements IServicioLibros {
         if (isbn == null) {
             return null;
         }
-        for (Libro libro : repositorio.listar()) {
+        for (Libro libro : repositorio.buscar(isbn)) {
             if (isbn.equalsIgnoreCase(libro.getIsbn())) {
                 return libro;
             }
@@ -86,17 +82,7 @@ public class ControladorLibro implements IServicioLibros {
         if (criterio == null || criterio.trim().isEmpty()) {
             return listar();
         }
-        List<Libro> resultados = new ArrayList<Libro>();
-        String filtro = criterio.toLowerCase();
-        for (Libro libro : repositorio.listar()) {
-            boolean coincideIsbn = libro.getIsbn() != null && libro.getIsbn().toLowerCase().contains(filtro);
-            boolean coincideTitulo = libro.getTitulo() != null && libro.getTitulo().toLowerCase().contains(filtro);
-            boolean coincideAutor = libro.getAutor() != null && libro.getAutor().toLowerCase().contains(filtro);
-            if (coincideIsbn || coincideTitulo || coincideAutor) {
-                resultados.add(libro);
-            }
-        }
-        return resultados;
+        return repositorio.buscar(criterio);
     }
 
     // ACTUALIZAR LOS DATOS DE UN LIBRO EXISTENTE (RF02)
@@ -117,11 +103,10 @@ public class ControladorLibro implements IServicioLibros {
             actual.setPorcentajeIva(datos.getPorcentajeIva());
             actual.setCantidadDisponible(datos.getCantidadDisponible());
             actual.setFormato(datos.getFormato());
-            repositorio.guardar();
+            repositorio.actualizar(actual);
             registrarOperacion("Libro actualizado: " + isbn);
             return true;
         } catch (PersistenciaException e) {
-            revertir();
             return false;
         }
     }
@@ -134,12 +119,12 @@ public class ControladorLibro implements IServicioLibros {
             return false;
         }
         try {
-            repositorio.eliminar(actual);
-            repositorio.guardar();
-            registrarOperacion("Libro eliminado: " + isbn);
-            return true;
+            boolean eliminado = repositorio.eliminarPersistente(actual);
+            if (eliminado) {
+                registrarOperacion("Libro eliminado: " + isbn);
+            }
+            return eliminado;
         } catch (PersistenciaException e) {
-            revertir();
             return false;
         }
     }
@@ -161,10 +146,9 @@ public class ControladorLibro implements IServicioLibros {
         if (libro != null && libro.getCantidadDisponible() >= cantidadVendida) {
             try {
                 libro.setCantidadDisponible(libro.getCantidadDisponible() - cantidadVendida);
-                repositorio.guardar();
+                repositorio.actualizar(libro);
                 return true;
             } catch (PersistenciaException e) {
-                revertir();
                 return false;
             }
         }
@@ -174,14 +158,6 @@ public class ControladorLibro implements IServicioLibros {
     private void registrarOperacion(String descripcion) {
         if (operaciones != null) {
             operaciones.registrar(descripcion);
-        }
-    }
-
-    private void revertir() {
-        try {
-            repositorio.cargar();
-        } catch (PersistenciaException e) {
-            System.err.println("No se pudo recargar el estado de libros: " + e.getMessage());
         }
     }
 }

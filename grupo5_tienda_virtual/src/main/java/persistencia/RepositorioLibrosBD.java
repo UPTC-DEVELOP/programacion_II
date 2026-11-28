@@ -248,6 +248,34 @@ public class RepositorioLibrosBD implements IRepositorio<Libro> {
         }
     }
 
+    @Override
+    public List<Libro> buscar(String criterio) {
+        List<Libro> resultado = new ArrayList<Libro>();
+        if (criterio == null || criterio.isBlank()) {
+            return resultado;
+        }
+        String sql = "SELECT isbn, titulo, autor, anio_publicacion, categoria, editorial, "
+                + "numero_paginas, precio, porcentaje_iva, cantidad_disponible, formato "
+                + "FROM libros WHERE LOWER(isbn) LIKE ? OR LOWER(titulo) LIKE ? "
+                + "OR LOWER(autor) LIKE ? ORDER BY rowid DESC LIMIT 10";
+        String filtro = "%" + criterio.toLowerCase() + "%";
+        try (Connection conn = obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, filtro);
+            ps.setString(2, filtro);
+            ps.setString(3, filtro);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    resultado.add(mapearLibro(rs));
+                }
+            }
+            return resultado;
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudieron buscar los libros en la BD", e);
+        }
+    }
+
     private Libro mapearLibro(ResultSet rs) throws SQLException {
         String isbn = rs.getString("isbn");
         String formatoStr = rs.getString("formato");

@@ -133,6 +133,27 @@ public class RepositorioLibrosJson implements IRepositorio<Libro> {
         return leerArchivo().size();
     }
 
+    @Override
+    public List<Libro> buscar(String criterio) {
+        List<Libro> resultado = new ArrayList<Libro>();
+        if (criterio == null || criterio.isBlank()) {
+            return resultado;
+        }
+        String filtro = criterio.toLowerCase();
+        for (Libro libro : leerArchivo()) {
+            boolean coincideIsbn = libro.getIsbn() != null
+                    && libro.getIsbn().toLowerCase().contains(filtro);
+            boolean coincideTitulo = libro.getTitulo() != null
+                    && libro.getTitulo().toLowerCase().contains(filtro);
+            boolean coincideAutor = libro.getAutor() != null
+                    && libro.getAutor().toLowerCase().contains(filtro);
+            if (coincideIsbn || coincideTitulo || coincideAutor) {
+                resultado.add(libro);
+            }
+        }
+        return resultado;
+    }
+
     private List<Libro> leerArchivo() {
         if (!Files.exists(archivo)) {
             return new ArrayList<Libro>();

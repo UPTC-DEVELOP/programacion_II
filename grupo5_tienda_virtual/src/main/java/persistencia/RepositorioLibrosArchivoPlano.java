@@ -147,6 +147,27 @@ public class RepositorioLibrosArchivoPlano implements IRepositorio<Libro> {
         return leerTodos().size();
     }
 
+    @Override
+    public List<Libro> buscar(String criterio) {
+        List<Libro> resultado = new ArrayList<Libro>();
+        if (criterio == null || criterio.isBlank()) {
+            return resultado;
+        }
+        String filtro = criterio.toLowerCase();
+        for (Libro libro : leerTodos()) {
+            boolean coincideIsbn = libro.getIsbn() != null
+                    && libro.getIsbn().toLowerCase().contains(filtro);
+            boolean coincideTitulo = libro.getTitulo() != null
+                    && libro.getTitulo().toLowerCase().contains(filtro);
+            boolean coincideAutor = libro.getAutor() != null
+                    && libro.getAutor().toLowerCase().contains(filtro);
+            if (coincideIsbn || coincideTitulo || coincideAutor) {
+                resultado.add(libro);
+            }
+        }
+        return resultado;
+    }
+
     private List<Libro> leerTodos() {
         List<Libro> leidos = new ArrayList<Libro>();
         File archivo = new File(rutaArchivo);
