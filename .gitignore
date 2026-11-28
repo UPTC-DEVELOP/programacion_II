@@ -31,3 +31,7 @@ target/
 db.properties
 carrito_letsread.json
 registro_operaciones_letsread.txt
+
+# Datos generados por los repositorios JSON
+libros_letsread.json
+clientes_letsread.json
