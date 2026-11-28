@@ -65,8 +65,14 @@ Vista → EventosLibros → IServicioLibros → ControladorLibro → IRepositori
 
 ## Capturas
 
-- `capturas_eclipse/04_gestion_libros.png`
+- `app/27_libros_formulario_lleno.png`
+- `app/28_libros_registrado_aviso.png`
+- `app/29_libros_seleccionado.png`
+- `app/30_libros_actualizado_aviso.png`
+- `app/31_libros_confirmar_eliminar.png`
+- `app/32_libros_eliminar_con_ventas_error.png`
+- `app/35_libros_despues.png`
 - `crud/PI-LIB-01_crear_formulario.png`
 - `crud/PI-LIB-02_listar.png`
 - `crud/PI-LIB-03_actualizar.png`
-- `crud/PI-LIB-04_eliminar.png`
+- `crud/PI-LIB-04_eliminar_antes.png`

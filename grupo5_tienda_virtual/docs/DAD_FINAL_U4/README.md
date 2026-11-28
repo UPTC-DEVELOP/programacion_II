@@ -14,14 +14,18 @@ Esta carpeta es la **base** para construir el DAD final de Unidad 4. Todavía no
 4. [Compras](06_COMPRAS.md)
 5. [Pruebas cruzadas](07_PRUEBAS_CRUZADAS.md)
 6. [Integración](08_INTEGRACION.md)
-7. [Checklist y porcentaje](09_CHECKLIST.md)
+7. [Evidencias: qué va en el DAD](10_EVIDENCIAS.md)
+8. [Checklist y porcentaje](09_CHECKLIST.md)
 
 ## Evidencias existentes
 
-- `docs/evidencias/capturas/`: 8 capturas de ventanas.
-- `docs/evidencias/capturas_eclipse/`: 9 capturas a pantalla completa con Eclipse detrás.
+- `docs/evidencias/app/`: 43 capturas del recorrido completo de la aplicación.
+- `docs/evidencias/crud/`: 12 capturas por operación CRUD.
+- `docs/evidencias/capturas_eclipse/`: 1 captura de Eclipse con el proyecto.
 - `docs/evidencias/pruebas/`: 16 logs de pruebas Maven.
 - `docs/evidencias/README.md`: índice de evidencias.
+- Verificación de duplicados: 0 imágenes repetidas.
+- Evidencias completas: https://github.com/UPTC-DEVELOP/programacion_II/tree/feature/grupo5/grupo5_tienda_virtual/docs/evidencias
 
 ## Estado actual
 

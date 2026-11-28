@@ -69,9 +69,13 @@ Listar historial: EventosHistorialCompras → ControladorCompras → IRepositori
 
 ## Capturas
 
-- `capturas_eclipse/06_compras_carrito.png`
-- `capturas_eclipse/07_recibo.png`
-- `capturas_eclipse/08_historial_compras.png`
+- `app/43_compras_carrito_vacio.png`
+- `app/44_compras_agregado.png`
+- `app/46_compras_stock_insuficiente.png`
+- `app/47_compras_modificada.png`
+- `app/50_compras_confirmacion.png`
+- `app/52_recibo.png`
+- `app/54_historial.png`
 - `crud/PI-COM-01_carrito.png`
 - `crud/PI-COM-02_recibo.png`
 - `crud/PI-COM-03_historial.png`

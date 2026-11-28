@@ -63,11 +63,16 @@ Vista → Eventos → IServicioClientes → ControladorCliente → IRepositorio 
 
 ## Capturas
 
-- `capturas_eclipse/01_login.png`
-- `capturas_eclipse/02_registro_cliente.png`
-- `capturas_eclipse/03_gestion_clientes.png`
-- `capturas_eclipse/05_mi_cuenta.png`
+- `app/04_login_llenado.png`
+- `app/14_registro_llenado.png`
+- `app/15_registro_exitoso.png`
+- `app/18_clientes_listado.png`
+- `app/19_clientes_confirmar_eliminar.png`
+- `app/21_clientes_despues.png`
+- `app/36_mi_cuenta_datos.png`
+- `app/57_mi_cuenta_guardado_aviso.png`
 - `crud/PI-CLI-01_crear_formulario.png`
 - `crud/PI-CLI-02_listar.png`
 - `crud/PI-CLI-03_actualizar.png`
-- `crud/PI-CLI-04_eliminar.png`
+- `crud/PI-CLI-04_eliminar_antes.png`
+- `crud/PI-CLI-05_eliminar_despues.png`

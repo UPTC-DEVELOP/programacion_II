@@ -6,64 +6,88 @@
 
 ## 1. Capturas de pantalla
 
-### Capturas de la ventana
+Todas están a pantalla completa (1920×1080) con Eclipse abierto detrás.
+Se verificó que **no hay imágenes repetidas**: cada archivo muestra un estado
+distinto (comparación píxel a píxel de la ventana, ignorando el reloj).
+
+### 1.1 Recorrido completo de la app (`app/`, 43 capturas)
 
 | Archivo | Evidencia |
 |---|---|
-| `capturas/01_login.png` | Ventana de inicio de sesión |
-| `capturas/02_registro_cliente.png` | Registro de cliente |
-| `capturas/03_gestion_clientes.png` | Gestión y listado de clientes |
-| `capturas/04_gestion_libros.png` | Gestión y catálogo de libros |
-| `capturas/05_mi_cuenta.png` | Datos del cliente |
-| `capturas/06_compras_carrito.png` | Carrito con productos, subtotal, IVA, descuento y total |
-| `capturas/07_recibo.png` | Recibo con subtotal, IVA, descuento y total |
-| `capturas/08_historial_compras.png` | Historial de compras |
+| `app/01_login_vacio.png` | Login sin datos |
+| `app/02_login_campos_obligatorios.png` | Error de campos obligatorios |
+| `app/03_login_credenciales_invalidas.png` | Error de credenciales |
+| `app/04_login_llenado.png` | Login diligenciado |
+| `app/06_admin_menu.png` | Menú de administración |
+| `app/10_registro_vacio.png` | Registro vacío |
+| `app/11_registro_campos_obligatorios.png` | Registro sin datos obligatorios |
+| `app/12_registro_correo_invalido.png` | Registro con correo inválido |
+| `app/14_registro_llenado.png` | Registro diligenciado |
+| `app/15_registro_exitoso.png` | Cliente registrado correctamente |
+| `app/17_registro_correo_duplicado.png` | Correo ya registrado |
+| `app/18_clientes_listado.png` | Listado de clientes |
+| `app/19_clientes_confirmar_eliminar.png` | Confirmación de eliminación |
+| `app/20_clientes_eliminado_aviso.png` | Cliente eliminado |
+| `app/21_clientes_despues.png` | Listado actualizado |
+| `app/22_clientes_sin_seleccion.png` | Error sin selección |
+| `app/24_libros_eliminar_sin_isbn.png` | Error al eliminar sin ISBN |
+| `app/25_libros_isbn_duplicado.png` | ISBN duplicado |
+| `app/26_libros_datos_invalidos.png` | Datos numéricos inválidos |
+| `app/27_libros_formulario_lleno.png` | Libro diligenciado |
+| `app/28_libros_registrado_aviso.png` | Libro registrado |
+| `app/29_libros_seleccionado.png` | Libro seleccionado con formulario lleno |
+| `app/30_libros_actualizado_aviso.png` | Libro actualizado |
+| `app/31_libros_confirmar_eliminar.png` | Confirmación de eliminación |
+| `app/32_libros_eliminar_con_ventas_error.png` | Bloqueo por ventas asociadas |
+| `app/33_libros_con_ventas_bloqueado.png` | El libro con ventas sigue en el catálogo |
+| `app/34_libros_eliminado_aviso.png` | Libro sin ventas eliminado |
+| `app/35_libros_despues.png` | Catálogo final |
+| `app/36_mi_cuenta_datos.png` | Datos del cliente |
+| `app/40_mi_cuenta_a_compras.png` | Mi Cuenta abre Compras (carrito vacío) |
+| `app/41_mi_cuenta_a_historial.png` | Mi Cuenta abre el historial |
+| `app/43_compras_carrito_vacio.png` | Compra sin productos |
+| `app/44_compras_agregado.png` | Libro agregado al carrito |
+| `app/45_compras_cantidad_invalida.png` | Cantidad no numérica |
+| `app/46_compras_stock_insuficiente.png` | Stock insuficiente |
+| `app/47_compras_modificada.png` | Cantidad modificada |
+| `app/49_compras_lista_pagar.png` | Carrito listo con método de pago |
+| `app/50_compras_confirmacion.png` | Resumen de confirmación |
+| `app/51_compras_exitosa_aviso.png` | Compra registrada |
+| `app/52_recibo.png` | Recibo con subtotal, IVA, descuento y total |
+| `app/54_historial.png` | Historial de compras |
+| `app/55_mi_cuenta_nombre_obligatorio.png` | Validación de nombre |
+| `app/57_mi_cuenta_guardado_aviso.png` | Datos actualizados |
 
-### Capturas por operación CRUD
-
-En `crud/` están las capturas específicas por operación, a pantalla completa con Eclipse detrás:
+### 1.2 Pruebas individuales CRUD (`crud/`, 12 capturas)
 
 | Archivo | Operación |
 |---|---|
 | `crud/PI-CLI-01_crear_formulario.png` | Formulario de registro de cliente |
 | `crud/PI-CLI-02_listar.png` | Listado de clientes |
 | `crud/PI-CLI-03_actualizar.png` | Datos actualizados del cliente |
-| `crud/PI-CLI-04_eliminar.png` | Listado después de eliminar un cliente |
-| `crud/PI-LIB-01_crear_formulario.png` | Formulario de registro de libro |
-| `crud/PI-LIB-02_listar.png` | Catálogo/listado de libros |
+| `crud/PI-CLI-04_eliminar_antes.png` | Cliente seleccionado para eliminar |
+| `crud/PI-CLI-05_eliminar_despues.png` | Listado después de eliminar |
+| `crud/PI-LIB-01_crear_formulario.png` | Formulario de libro diligenciado |
+| `crud/PI-LIB-02_listar.png` | Búsqueda con formulario lleno |
 | `crud/PI-LIB-03_actualizar.png` | Libro actualizado |
-| `crud/PI-LIB-04_eliminar.png` | Listado después de eliminar un libro |
-| `crud/PI-COM-01_carrito.png` | Carrito con productos |
+| `crud/PI-LIB-04_eliminar_antes.png` | Libro seleccionado para eliminar |
+| `crud/PI-COM-01_carrito.png` | Carrito con productos y totales |
 | `crud/PI-COM-02_recibo.png` | Recibo de compra |
 | `crud/PI-COM-03_historial.png` | Historial de compras |
 
-Los errores y validaciones se evidencian en los logs de `pruebas/`:
-- Correo/contraseña inválidos.
-- Cliente duplicado.
-- Libro con datos inválidos.
-- Libro con ventas.
-- Stock insuficiente.
-- Compra inválida.
-- Fallo de guardado.
-
-### Capturas con Eclipse detrás
-
-En `capturas_eclipse/` están las mismas 8 ventanas, pero en pantalla completa
-(1920×1080) con Eclipse abierto detrás.
+### 1.3 Eclipse con el proyecto (`capturas_eclipse/`, 1 captura)
 
 | Archivo | Evidencia |
 |---|---|
-| `capturas_eclipse/00_eclipse_proyecto.png` | Eclipse con el proyecto abierto |
-| `capturas_eclipse/01_login.png` | Login con Eclipse detrás |
-| `capturas_eclipse/02_registro_cliente.png` | Registro con Eclipse detrás |
-| `capturas_eclipse/03_gestion_clientes.png` | Clientes con Eclipse detrás |
-| `capturas_eclipse/04_gestion_libros.png` | Libros con Eclipse detrás |
-| `capturas_eclipse/05_mi_cuenta.png` | Mi cuenta con Eclipse detrás |
-| `capturas_eclipse/06_compras_carrito.png` | Compras con Eclipse detrás |
-| `capturas_eclipse/07_recibo.png` | Recibo con Eclipse detrás |
-| `capturas_eclipse/08_historial_compras.png` | Historial con Eclipse detrás |
+| `capturas_eclipse/00_eclipse_proyecto.png` | Eclipse con el proyecto `grupo5_tienda_virtual [feature/grupo5]` abierto |
 
-Las capturas se generaron abriendo las ventanas reales del proyecto con datos de demostración:
+### Evidencias completas en GitHub
+
+```text
+https://github.com/UPTC-DEVELOP/programacion_II/tree/feature/grupo5/grupo5_tienda_virtual/docs/evidencias
+```
+
+Datos de demostración usados:
 
 - Cliente Premium: `laura@uptc.edu.co`.
 - Cliente Regular: `carlos@uptc.edu.co`.

@@ -80,9 +80,10 @@ Total: **16/16 pruebas correctas**.
 Evidencias:
 
 - `docs/evidencias/pruebas/`: logs de las 16 pruebas.
-- `docs/evidencias/capturas/`: capturas de login, clientes, libros, carrito, recibo e historial.
-- `docs/evidencias/capturas_eclipse/`: las mismas capturas a pantalla completa con Eclipse detrás.
-- `docs/evidencias/crud/`: capturas por operación CRUD.
+- `docs/evidencias/app/`: recorrido completo de la aplicación (43 capturas).
+- `docs/evidencias/capturas_eclipse/`: Eclipse con el proyecto abierto.
+- `docs/evidencias/crud/`: capturas por operación CRUD (12).
+- Enlace a todas: https://github.com/UPTC-DEVELOP/programacion_II/tree/feature/grupo5/grupo5_tienda_virtual/docs/evidencias
 - `docs/evidencias/README.md`: índice de evidencias.
 
 ## 4. Prueba de cambio de una línea
