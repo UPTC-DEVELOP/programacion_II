@@ -13,6 +13,7 @@ import co.edu.uptc.persistence.UsuarioRepository;
 import co.edu.uptc.persistence.json.CarritoJsonRepository;
 import co.edu.uptc.persistence.json.PedidoJsonRepository;
 import co.edu.uptc.persistence.json.ResenaJsonRepository;
+import co.edu.uptc.persistence.mariadb.CarritoMariaDbRepository;
 import co.edu.uptc.persistence.mariadb.LibroMariaDbRepository;
 import co.edu.uptc.persistence.mariadb.UsuarioMariaDbRepository;
 import co.edu.uptc.persistence.txt.RegistroOperacionesTxt;
@@ -32,7 +33,7 @@ public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             // Libros y usuarios/clientes se persisten en MariaDB; los demás módulos continúan temporalmente con JSON.
-            LibroRepository libros=new LibroMariaDbRepository(); UsuarioRepository usuarios=new UsuarioMariaDbRepository(); PedidoRepository pedidos=new PedidoJsonRepository(Rutas.pedidos()); CarritoRepository carritos=new CarritoJsonRepository(Rutas.carritos()); ResenaRepository resenasRepo=new ResenaJsonRepository(Rutas.resenas()); RegistroOperaciones registro=new RegistroOperacionesTxt(Rutas.registroOperaciones());
+            LibroRepository libros=new LibroMariaDbRepository(); UsuarioRepository usuarios=new UsuarioMariaDbRepository(); PedidoRepository pedidos=new PedidoJsonRepository(Rutas.pedidos()); CarritoRepository carritos=new CarritoMariaDbRepository(); ResenaRepository resenasRepo=new ResenaJsonRepository(Rutas.resenas()); RegistroOperaciones registro=new RegistroOperacionesTxt(Rutas.registroOperaciones());
             Sesion sesion=new Sesion(); AutenticacionService autenticacion=new AutenticacionService(usuarios,registro); CatalogoService catalogo=new CatalogoService(libros,pedidos,registro); CarritoService carrito=new CarritoService(libros,carritos,registro); ReciboService recibos=new ReciboService(Rutas.recibos()); CompraService compras=new CompraService(libros,pedidos,carritos,registro,recibos,sesion,new DescuentoClienteFrecuente()); ResenaService resenas=new ResenaService(resenasRepo,pedidos,registro);
             LoginFrame login=new LoginFrame(); new LoginController(login,autenticacion,sesion,()->new ControladorPrincipal(new VentanaPrincipal(),sesion.getUsuarioActual(),sesion,autenticacion,catalogo,carrito,compras,resenas,resenasRepo,libros)); login.setVisible(true);
         });
