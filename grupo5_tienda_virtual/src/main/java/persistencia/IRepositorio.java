@@ -37,4 +37,19 @@ public interface IRepositorio<T> extends IRepositorioConsulta<T> {
      * Guarda los datos actuales en el almacenamiento fisico.
      */
     void guardar();
+
+    default void insertar(T elemento) {
+        agregar(elemento);
+        guardar();
+    }
+
+    default void actualizar(T elemento) {
+        guardar();
+    }
+
+    default void eliminarPersistente(T elemento) {
+        if (eliminar(elemento)) {
+            guardar();
+        }
+    }
 }
