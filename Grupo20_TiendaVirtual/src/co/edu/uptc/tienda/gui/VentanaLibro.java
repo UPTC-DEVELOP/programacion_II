@@ -16,6 +16,7 @@ public class VentanaLibro extends JFrame {
     private JLabel lblIva;
     private JLabel lblStock;
     private JLabel lblFormato;
+    private JLabel lblCategoria;
 
     private JTextField txtIsbn;
     private JTextField txtTitulo;
@@ -28,12 +29,18 @@ public class VentanaLibro extends JFrame {
     private JTextField txtStock;
 
     private JComboBox<String> cmbFormato;
+    private JComboBox<String> cmbCategoria;
 
     private JButton btnRegistrar;
     private JButton btnActualizar;
     private JButton btnEliminar;
     private JButton btnListar;
     private JButton btnLimpiar;
+    private JButton btnCalificar;
+    private JButton btnCalificaciones;
+
+    public static final String[] CATEGORIAS = { "Novela", "Cuento", "Poesía", "Ensayo", "Historia", "Ciencia",
+            "Tecnología", "Infantil", "Juvenil", "Autoayuda", "Otro" };
 
     public VentanaLibro() {
         this(new ControlLibro());
@@ -64,13 +71,14 @@ public class VentanaLibro extends JFrame {
         panelPrincipal.add(titulo, BorderLayout.NORTH);
 
         JPanel panelFormulario = new JPanel(
-                new GridLayout(10, 2, 8, 8)
+                new GridLayout(11, 2, 8, 8)
         );
 
         lblIsbn = new JLabel("Ingrese el ISBN del libro:");
         lblTitulo = new JLabel("Ingrese el título del libro:");
         lblAutor = new JLabel("Ingrese el autor del libro:");
         lblAnio = new JLabel("Ingrese el año de publicación del libro:");
+        lblCategoria = new JLabel("Seleccione la categoría o género del libro:");
         lblEditorial = new JLabel("Ingrese la editorial del libro:");
         lblPaginas = new JLabel("Ingrese el número de páginas del libro:");
         lblPrecio = new JLabel("Ingrese el precio del libro:");
@@ -92,6 +100,8 @@ public class VentanaLibro extends JFrame {
                 new String[]{"Físico", "Digital"}
         );
 
+        cmbCategoria = new JComboBox<>(CATEGORIAS);
+
         panelFormulario.add(lblIsbn);
         panelFormulario.add(txtIsbn);
 
@@ -103,6 +113,9 @@ public class VentanaLibro extends JFrame {
 
         panelFormulario.add(lblAnio);
         panelFormulario.add(txtAnio);
+
+        panelFormulario.add(lblCategoria);
+        panelFormulario.add(cmbCategoria);
 
         panelFormulario.add(lblEditorial);
         panelFormulario.add(txtEditorial);
@@ -133,18 +146,24 @@ public class VentanaLibro extends JFrame {
         btnEliminar = new JButton(EventosLibro.ELIMINAR);
         btnListar = new JButton(EventosLibro.LISTAR);
         btnLimpiar = new JButton(EventosLibro.LIMPIAR);
+        btnCalificar = new JButton(EventosLibro.CALIFICAR);
+        btnCalificaciones = new JButton(EventosLibro.CALIFICACIONES);
 
         btnRegistrar.setActionCommand(EventosLibro.REGISTRAR);
         btnActualizar.setActionCommand(EventosLibro.ACTUALIZAR);
         btnEliminar.setActionCommand(EventosLibro.ELIMINAR);
         btnListar.setActionCommand(EventosLibro.LISTAR);
         btnLimpiar.setActionCommand(EventosLibro.LIMPIAR);
+        btnCalificar.setActionCommand(EventosLibro.CALIFICAR);
+        btnCalificaciones.setActionCommand(EventosLibro.CALIFICACIONES);
 
         panelBotones.add(btnRegistrar);
         panelBotones.add(btnActualizar);
         panelBotones.add(btnEliminar);
         panelBotones.add(btnListar);
         panelBotones.add(btnLimpiar);
+        panelBotones.add(btnCalificar);
+        panelBotones.add(btnCalificaciones);
 
         panelPrincipal.add(panelBotones, BorderLayout.SOUTH);
 
@@ -168,6 +187,14 @@ public class VentanaLibro extends JFrame {
 
     public JButton getBtnLimpiar() {
         return btnLimpiar;
+    }
+
+    public JButton getBtnCalificar() {
+        return btnCalificar;
+    }
+
+    public JButton getBtnCalificaciones() {
+        return btnCalificaciones;
     }
 
     public JTextField getTxtIsbn() {
@@ -210,6 +237,10 @@ public class VentanaLibro extends JFrame {
         return cmbFormato;
     }
 
+    public JComboBox<String> getCmbCategoria() {
+        return cmbCategoria;
+    }
+
     public void limpiarCampos() {
 
         txtIsbn.setText("");
@@ -223,6 +254,7 @@ public class VentanaLibro extends JFrame {
         txtStock.setText("");
 
         cmbFormato.setSelectedIndex(0);
+        cmbCategoria.setSelectedIndex(0);
 
         txtIsbn.requestFocus();
     }
