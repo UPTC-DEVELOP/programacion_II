@@ -30,7 +30,6 @@ public class RepositorioComprasBD implements IRepositorio<Compra> {
         this.compras = new ArrayList<Compra>();
         ConfiguracionBD.crearCarpeta(ruta);
         crearTablas();
-        cargar();
     }
 
     @Override

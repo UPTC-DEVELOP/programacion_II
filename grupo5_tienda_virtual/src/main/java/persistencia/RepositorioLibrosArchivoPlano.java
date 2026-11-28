@@ -36,7 +36,6 @@ public class RepositorioLibrosArchivoPlano implements IRepositorio<Libro> {
     public RepositorioLibrosArchivoPlano(String rutaArchivo) {
         this.rutaArchivo = rutaArchivo;
         this.libros = new ArrayList<Libro>();
-        cargar();
     }
 
     @Override

@@ -36,7 +36,6 @@ public class RepositorioClientesBD implements IRepositorio<Cliente> {
         this.clientes = new ArrayList<Cliente>();
         ConfiguracionBD.crearCarpeta(ruta);
         crearTabla();
-        cargar();
     }
 
     private Connection conectar() throws SQLException {

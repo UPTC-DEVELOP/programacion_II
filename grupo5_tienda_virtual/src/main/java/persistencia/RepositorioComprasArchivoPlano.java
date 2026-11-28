@@ -35,7 +35,6 @@ public class RepositorioComprasArchivoPlano implements IRepositorio<Compra> {
     public RepositorioComprasArchivoPlano(String ruta) {
         this.archivo = Path.of(ruta);
         this.compras = new ArrayList<Compra>();
-        cargar();
     }
 
     @Override

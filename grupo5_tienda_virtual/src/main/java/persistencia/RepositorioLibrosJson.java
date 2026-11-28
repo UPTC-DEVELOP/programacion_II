@@ -39,7 +39,6 @@ public class RepositorioLibrosJson implements IRepositorio<Libro> {
         this.archivo = Path.of(ruta);
         this.libros = new ArrayList<>();
         this.gson = new GsonBuilder().setPrettyPrinting().create();
-        cargar();
     }
 
     @Override

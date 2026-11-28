@@ -50,7 +50,6 @@ public class RepositorioClientesJson implements IRepositorio<Cliente> {
                 .registerTypeAdapter(java.time.LocalDate.class, new LocalDateAdapter())
                 .setPrettyPrinting()
                 .create();
-        cargar();
     }
 
     @Override

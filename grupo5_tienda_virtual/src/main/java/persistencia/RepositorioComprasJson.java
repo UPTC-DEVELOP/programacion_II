@@ -36,7 +36,6 @@ public class RepositorioComprasJson implements IRepositorio<Compra> {
                 .registerTypeAdapter(java.time.LocalDate.class, new LocalDateAdapter())
                 .setPrettyPrinting()
                 .create();
-        cargar();
     }
 
     @Override

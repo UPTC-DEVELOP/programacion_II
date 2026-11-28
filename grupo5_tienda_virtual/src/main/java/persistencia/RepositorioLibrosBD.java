@@ -35,7 +35,6 @@ public class RepositorioLibrosBD implements IRepositorio<Libro> {
         this.libros = new ArrayList<>();
         ConfiguracionBD.crearCarpeta(rutaBd);
         crearTablaSiNoExiste();
-        cargar();
     }
 
     // SE ESTABLECE LA CONEXIÓN CON LA BASE DE DATOS SQLITE
