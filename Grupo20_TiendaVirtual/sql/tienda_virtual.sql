@@ -81,3 +81,14 @@ CREATE TABLE IF NOT EXISTS detalle_compra (
     CONSTRAINT fk_detalle_compra FOREIGN KEY (numero_compra)
         REFERENCES compra (numero) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS calificacion (
+    isbn VARCHAR(13) NOT NULL,
+    id_cliente VARCHAR(20) NOT NULL,
+    puntaje INT NOT NULL,
+    comentario VARCHAR(300),
+    fecha DATETIME NOT NULL,
+    PRIMARY KEY (isbn, id_cliente),
+    CONSTRAINT fk_calificacion_libro FOREIGN KEY (isbn)
+        REFERENCES libros (isbn) ON DELETE CASCADE ON UPDATE CASCADE
+);
