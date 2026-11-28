@@ -1,0 +1,26 @@
+@startuml
+title Guardar libro - flujo independiente
+
+actor Usuario
+participant "EventosLibros" as UI
+participant "ControladorLibro" as Ctrl
+participant "IRepositorio<Libro>" as Repo
+participant "Almacenamiento\n(BD / JSON / plano)" as Storage
+
+Usuario -> UI : clic en Guardar
+UI -> Ctrl : registrar(libro)
+Ctrl -> Ctrl : validar ISBN, titulo y precio
+Ctrl -> Repo : insertar(libro)
+Repo -> Storage : INSERT / append / escribir archivo
+Storage --> Repo : confirmacion
+Repo --> Ctrl : operacion exitosa
+Ctrl --> UI : true
+UI --> Usuario : "Libro guardado correctamente"
+
+note right of UI
+  El flujo termina aqui.
+  No se consulta ni se muestra la lista
+  de libros en este diagrama.
+end note
+
+@enduml
