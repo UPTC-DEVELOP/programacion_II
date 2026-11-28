@@ -27,7 +27,8 @@ import co.edu.uptc.persistence.UsuarioRepository;
 public class UsuarioMariaDbRepository implements UsuarioRepository {
 
     private static final String SELECT_COLUMNAS =
-            "SELECT nombre, correo, hash, rol, tipo_usuario, direccion, telefono "
+            "SELECT nombre_completo, correo, contrasena_hash, rol, tipo_usuario, "
+                    + "direccion_envio, telefono "
                     + "FROM usuario";
 
     @Override
@@ -68,11 +69,13 @@ public class UsuarioMariaDbRepository implements UsuarioRepository {
     @Override
     public void guardar(Usuario usuario) {
         String sql = "INSERT INTO usuario "
-                + "(nombre, correo, hash, rol, tipo_usuario, direccion, telefono) "
+                + "(nombre_completo, correo, contrasena_hash, rol, tipo_usuario, "
+                + "direccion_envio, telefono) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?) "
-                + "ON DUPLICATE KEY UPDATE nombre = VALUES(nombre), hash = VALUES(hash), "
+                + "ON DUPLICATE KEY UPDATE nombre_completo = VALUES(nombre_completo), "
+                + "contrasena_hash = VALUES(contrasena_hash), "
                 + "rol = VALUES(rol), tipo_usuario = VALUES(tipo_usuario), "
-                + "direccion = VALUES(direccion), telefono = VALUES(telefono)";
+                + "direccion_envio = VALUES(direccion_envio), telefono = VALUES(telefono)";
 
         try (Connection conexion = obtenerConexion();
              PreparedStatement sentencia = conexion.prepareStatement(sql)) {
@@ -98,9 +101,9 @@ public class UsuarioMariaDbRepository implements UsuarioRepository {
     }
 
     private static Usuario mapearUsuario(ResultSet resultado) throws SQLException {
-        String nombre = resultado.getString("nombre");
+        String nombre = resultado.getString("nombre_completo");
         String correo = resultado.getString("correo");
-        String hash = resultado.getString("hash");
+        String hash = resultado.getString("contrasena_hash");
         Rol rol = Rol.valueOf(resultado.getString("rol"));
 
         if (rol == Rol.ADMINISTRADOR) {
@@ -108,7 +111,7 @@ public class UsuarioMariaDbRepository implements UsuarioRepository {
         }
 
         String tipo = resultado.getString("tipo_usuario");
-        String direccion = resultado.getString("direccion");
+        String direccion = resultado.getString("direccion_envio");
         String telefono = resultado.getString("telefono");
         if ("PREMIUM".equalsIgnoreCase(tipo)) {
             return new ClientePremium(nombre, correo, hash, direccion, telefono);

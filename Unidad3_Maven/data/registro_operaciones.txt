@@ -32,3 +32,4 @@
 [2026-11-26 19:36:21] [INFO] vas@uptc.edu.co - Cliente registrado
 [2026-11-27 15:28:59] [INFO] camilo@gmail.com - Cliente registrado
 >>>>>>> 52db778df1bb4857ca60a95ca851aa4e3ed6c6f7
+[2026-11-28 07:35:24] [INFO] edwin.cruz03@uptc.edu.co - Inicio de sesión
