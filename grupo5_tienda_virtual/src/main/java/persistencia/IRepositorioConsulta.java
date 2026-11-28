@@ -1,19 +1,27 @@
 package persistencia;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public interface IRepositorioConsulta<T> {
 
     List<T> listar();
 
+    /**
+     * Devuelve los ultimos N registros, del mas reciente al mas antiguo.
+     * El orden de referencia es el de listar(): insercion para
+     * Clientes/Libros y fecha/id descendente para Compras.
+     */
     default List<T> listarUltimos(int limite) {
         List<T> todos = listar();
         if (limite <= 0 || todos.isEmpty()) {
             return new ArrayList<T>();
         }
         int desde = Math.max(0, todos.size() - limite);
-        return new ArrayList<T>(todos.subList(desde, todos.size()));
+        List<T> ultimos = new ArrayList<T>(todos.subList(desde, todos.size()));
+        Collections.reverse(ultimos);
+        return ultimos;
     }
 
     default List<T> listarPagina(int inicio, int cantidad) {

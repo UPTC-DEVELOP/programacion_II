@@ -38,18 +38,34 @@ public interface IRepositorio<T> extends IRepositorioConsulta<T> {
      */
     void guardar();
 
+    /**
+     * Compatibilidad: inserta en memoria y persiste con guardar().
+     * La escritura incremental real se implementa en F09-F11.
+     */
     default void insertar(T elemento) {
         agregar(elemento);
         guardar();
     }
 
+    /**
+     * Compatibilidad: persiste los cambios de un elemento ya presente en memoria.
+     * Si el elemento no esta en la lista, no tiene efecto.
+     */
     default void actualizar(T elemento) {
         guardar();
     }
 
-    default void eliminarPersistente(T elemento) {
+    /**
+     * Compatibilidad: elimina en memoria y persiste con guardar().
+     * La escritura incremental real se implementa en F09-F11.
+     *
+     * @return true si el elemento existia y se persistio la eliminacion
+     */
+    default boolean eliminarPersistente(T elemento) {
         if (eliminar(elemento)) {
             guardar();
+            return true;
         }
+        return false;
     }
 }
