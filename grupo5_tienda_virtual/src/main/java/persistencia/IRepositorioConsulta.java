@@ -37,4 +37,8 @@ public interface IRepositorioConsulta<T> {
     default int contar() {
         return listar().size();
     }
+
+    default List<T> buscar(String criterio) {
+        return new ArrayList<T>();
+    }
 }

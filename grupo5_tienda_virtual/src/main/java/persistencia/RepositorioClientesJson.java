@@ -144,6 +144,20 @@ public class RepositorioClientesJson implements IRepositorio<Cliente> {
         return leerArchivo().size();
     }
 
+    @Override
+    public List<Cliente> buscar(String criterio) {
+        List<Cliente> resultado = new ArrayList<Cliente>();
+        if (criterio == null || criterio.isBlank()) {
+            return resultado;
+        }
+        for (Cliente cliente : leerArchivo()) {
+            if (criterio.equalsIgnoreCase(cliente.getCorreo())) {
+                resultado.add(cliente);
+            }
+        }
+        return resultado;
+    }
+
     private List<Cliente> leerArchivo() {
         if (!Files.exists(archivo)) {
             return new ArrayList<Cliente>();

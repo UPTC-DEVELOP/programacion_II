@@ -212,6 +212,29 @@ public class RepositorioClientesBD implements IRepositorio<Cliente> {
         }
     }
 
+    @Override
+    public List<Cliente> buscar(String criterio) {
+        List<Cliente> resultado = new ArrayList<Cliente>();
+        if (criterio == null || criterio.isBlank()) {
+            return resultado;
+        }
+        String sql = "SELECT correo, nombre, direccion, telefono, contrasena, tipo "
+                + "FROM clientes WHERE LOWER(correo) = LOWER(?) ORDER BY rowid ASC";
+        try (Connection conexion = conectar();
+                PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setString(1, criterio);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    resultado.add(mapearCliente(rs));
+                }
+            }
+            return resultado;
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudo buscar el cliente en la BD", e);
+        }
+    }
+
     private Cliente mapearCliente(ResultSet rs) throws SQLException {
         String tipo = rs.getString("tipo");
         Cliente cliente = "premium".equalsIgnoreCase(tipo)

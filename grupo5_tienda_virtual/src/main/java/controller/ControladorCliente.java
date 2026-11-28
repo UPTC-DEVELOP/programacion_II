@@ -1,6 +1,5 @@
 package controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import model.Cliente;
@@ -31,7 +30,6 @@ public class ControladorCliente implements IServicioClientes {
             ControladorOperaciones operaciones) {
         this.repositorio = repositorio;
         this.operaciones = operaciones;
-        this.repositorio.cargar();
     }
 
     @Override
@@ -42,12 +40,10 @@ public class ControladorCliente implements IServicioClientes {
             return false;
         }
         try {
-            repositorio.agregar(cliente);
-            repositorio.guardar();
+            repositorio.insertar(cliente);
             registrarOperacion("Cliente registrado: " + cliente.getCorreo());
             return true;
         } catch (PersistenciaException e) {
-            revertir();
             return false;
         }
     }
@@ -74,7 +70,7 @@ public class ControladorCliente implements IServicioClientes {
 
     @Override
     public List<Cliente> listar() {
-        return new ArrayList<Cliente>(repositorio.listar());
+        return repositorio.listarUltimos(10);
     }
 
     @Override
@@ -82,7 +78,8 @@ public class ControladorCliente implements IServicioClientes {
         if (correo == null) {
             return null;
         }
-        for (Cliente cliente : repositorio.listar()) {
+        List<Cliente> encontrados = repositorio.buscar(correo);
+        for (Cliente cliente : encontrados) {
             if (correo.equalsIgnoreCase(cliente.getCorreo())) {
                 return cliente;
             }
@@ -101,11 +98,10 @@ public class ControladorCliente implements IServicioClientes {
             actual.setNombreCompleto(nombreCompleto);
             actual.setDireccion(direccion);
             actual.setTelefono(telefono);
-            repositorio.guardar();
+            repositorio.actualizar(actual);
             registrarOperacion("Cliente actualizado: " + correo);
             return true;
         } catch (PersistenciaException e) {
-            revertir();
             return false;
         }
     }
@@ -117,12 +113,12 @@ public class ControladorCliente implements IServicioClientes {
             return false;
         }
         try {
-            repositorio.eliminar(actual);
-            repositorio.guardar();
-            registrarOperacion("Cliente eliminado: " + correo);
-            return true;
+            boolean eliminado = repositorio.eliminarPersistente(actual);
+            if (eliminado) {
+                registrarOperacion("Cliente eliminado: " + correo);
+            }
+            return eliminado;
         } catch (PersistenciaException e) {
-            revertir();
             return false;
         }
     }
@@ -130,14 +126,6 @@ public class ControladorCliente implements IServicioClientes {
     private void registrarOperacion(String descripcion) {
         if (operaciones != null) {
             operaciones.registrar(descripcion);
-        }
-    }
-
-    private void revertir() {
-        try {
-            repositorio.cargar();
-        } catch (PersistenciaException e) {
-            System.err.println("No se pudo recargar el estado de clientes: " + e.getMessage());
         }
     }
 
@@ -153,6 +141,6 @@ public class ControladorCliente implements IServicioClientes {
 
     @Override
     public int cantidad() {
-        return repositorio.listar().size();
+        return repositorio.contar();
     }
 }

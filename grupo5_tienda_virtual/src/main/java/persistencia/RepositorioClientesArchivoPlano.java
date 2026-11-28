@@ -148,6 +148,20 @@ public class RepositorioClientesArchivoPlano implements IRepositorio<Cliente> {
         return leerTodos().size();
     }
 
+    @Override
+    public List<Cliente> buscar(String criterio) {
+        List<Cliente> resultado = new ArrayList<Cliente>();
+        if (criterio == null || criterio.isBlank()) {
+            return resultado;
+        }
+        for (Cliente cliente : leerTodos()) {
+            if (criterio.equalsIgnoreCase(cliente.getCorreo())) {
+                resultado.add(cliente);
+            }
+        }
+        return resultado;
+    }
+
     private List<Cliente> leerTodos() {
         List<Cliente> leidos = new ArrayList<Cliente>();
         File archivo = new File(rutaArchivo);
