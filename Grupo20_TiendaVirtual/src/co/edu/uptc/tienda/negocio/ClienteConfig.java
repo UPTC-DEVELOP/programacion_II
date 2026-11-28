@@ -1,9 +1,12 @@
 package co.edu.uptc.tienda.negocio;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import co.edu.uptc.tienda.excepcion.CompraExcepcion;
 import co.edu.uptc.tienda.interfaz.ISesionCliente;
 import co.edu.uptc.tienda.modelo.Cliente;
+import co.edu.uptc.tienda.modelo.Compra;
 
 public class ClienteConfig implements ISesionCliente {
 
@@ -11,6 +14,10 @@ public class ClienteConfig implements ISesionCliente {
 
     public ClienteConfig() {
         gestionCliente = new GestionCliente();
+    }
+
+    public ClienteConfig(GestionCliente gestionCliente) {
+        this.gestionCliente = gestionCliente;
     }
 
     public String getAvisoCarga() {
@@ -50,5 +57,13 @@ public class ClienteConfig implements ISesionCliente {
     @Override
     public Cliente getClienteLogueado() {
         return gestionCliente.getClienteLogueado();
+    }
+
+    public List<Compra> listarCompras(String id) throws CompraExcepcion {
+        return gestionCliente.listarCompras(id);
+    }
+
+    public double obtenerDescuentoFrecuente(String id) {
+        return gestionCliente.obtenerDescuentoFrecuente(id);
     }
 }

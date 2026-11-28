@@ -1,5 +1,6 @@
 package co.edu.uptc.tienda.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,12 +8,16 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import co.edu.uptc.tienda.excepcion.CompraExcepcion;
 import co.edu.uptc.tienda.modelo.Cliente;
+import co.edu.uptc.tienda.modelo.Compra;
 import co.edu.uptc.tienda.negocio.ClienteConfig;
 
 public class EventosCliente implements ActionListener {
@@ -25,6 +30,9 @@ public class EventosCliente implements ActionListener {
     public final static String ELIMINAR = "Borrar";
     public final static String LISTAR = "Leer";
     public final static String LIMPIAR = "Limpiar";
+    public final static String INICIAR_SESION = "Iniciar sesión";
+    public final static String CERRAR_SESION = "Cerrar sesión";
+    public final static String HISTORIAL = "Historial de compras";
 
     private PanelCliente panelCliente;
     private ClienteConfig clienteConfig;
@@ -48,6 +56,11 @@ public class EventosCliente implements ActionListener {
         } catch (IllegalArgumentException ex) {
             panelCliente.mostrarAlerta("Clientes", ex.getMessage());
         }
+        actualizarSesion();
+    }
+
+    public void actualizarSesion() {
+        panelCliente.mostrarSesion(clienteConfig.getClienteLogueado());
     }
 
     private void ejecutar(ActionEvent e) {
@@ -146,6 +159,136 @@ public class EventosCliente implements ActionListener {
         else if (evento.equals(LIMPIAR)) {
             panelCliente.limpiarCampos();
         }
+
+        else if (evento.equals(INICIAR_SESION)) {
+            iniciarSesion();
+        }
+
+        else if (evento.equals(CERRAR_SESION)) {
+            cerrarSesion();
+        }
+
+        else if (evento.equals(HISTORIAL)) {
+            mostrarHistorial();
+        }
+    }
+
+    private void iniciarSesion() {
+
+        String correo = panelCliente.pedirCorreo();
+
+        if (correo == null) {
+            return;
+        }
+
+        if (correo.trim().isEmpty()) {
+            panelCliente.mostrarAlerta("Validación", "Debe escribir el correo para iniciar sesión.");
+            return;
+        }
+
+        if (clienteConfig.iniciarSesion(correo.trim())) {
+            Cliente cliente = clienteConfig.getClienteLogueado();
+            panelCliente.mostrarMensajeExito("Iniciar sesión", "Bienvenido(a), " + cliente.getNombreCompleto() + ".");
+        } else {
+            panelCliente.mostrarAlerta("Iniciar sesión", "No hay un cliente registrado con el correo " + correo.trim() + ".");
+        }
+    }
+
+    private void cerrarSesion() {
+
+        Cliente cliente = clienteConfig.getClienteLogueado();
+
+        if (cliente == null) {
+            panelCliente.mostrarAlerta("Cerrar sesión", "No hay ninguna sesión iniciada.");
+            return;
+        }
+
+        clienteConfig.cerrarSesion();
+        panelCliente.mostrarMensajeExito("Cerrar sesión", "Se cerró la sesión de " + cliente.getNombreCompleto() + ".");
+    }
+
+    private void mostrarHistorial() {
+
+        Cliente cliente = clienteConfig.getClienteLogueado();
+
+        if (cliente == null) {
+            panelCliente.mostrarAlerta("Historial de compras", "Debe iniciar sesión para ver el historial de compras.");
+            return;
+        }
+
+        List<Compra> compras;
+
+        try {
+            compras = clienteConfig.listarCompras(cliente.getId());
+        } catch (CompraExcepcion ex) {
+            panelCliente.mostrarAlerta("Historial de compras", ex.getMessage());
+            return;
+        }
+
+        if (compras.isEmpty()) {
+            panelCliente.mostrarMensajeExito("Historial de compras", cliente.getNombreCompleto() + " todavía no tiene compras.");
+            return;
+        }
+
+        String[] columnas = {
+            "N.º",
+            "Fecha",
+            "Método de pago",
+            "Libros",
+            "Subtotal",
+            "IVA",
+            "Descuento",
+            "Total"
+        };
+
+        DefaultTableModel modelo = new DefaultTableModel(columnas, 0) {
+            @Override
+            public boolean isCellEditable(int fila, int columna) {
+                return false;
+            }
+        };
+
+        double gastado = 0;
+
+        for (Compra compra : compras) {
+            Object[] fila = {
+                compra.getNumero(),
+                compra.getFecha(),
+                compra.getMetodoPago(),
+                compra.obtenerCantidadLibros(),
+                String.format("$%,.2f", compra.getSubtotal()),
+                String.format("$%,.2f", compra.getImpuestos()),
+                String.format("$%,.2f (%.0f %%)", compra.getDescuento(), compra.getPorcentajeDescuento()),
+                String.format("$%,.2f", compra.getTotal())
+            };
+            modelo.addRow(fila);
+            gastado += compra.getTotal();
+        }
+
+        JTable tabla = new JTable(modelo);
+        tabla.getColumnModel().getColumn(0).setPreferredWidth(40);
+        tabla.getColumnModel().getColumn(1).setPreferredWidth(150);
+        tabla.getColumnModel().getColumn(3).setPreferredWidth(50);
+
+        JScrollPane scroll = new JScrollPane(tabla);
+        scroll.setPreferredSize(new Dimension(850, 250));
+
+        double frecuente = clienteConfig.obtenerDescuentoFrecuente(cliente.getId());
+        String resumen = cliente.getNombreCompleto() + ": " + compras.size() + " compra(s), total gastado "
+                + String.format("$%,.2f", gastado) + ". "
+                + (frecuente > 0 ? String.format("Cliente frecuente: %.0f %% de descuento en la próxima compra.", frecuente)
+                        : "Aún no tiene descuento por cliente frecuente.");
+
+        JPanel contenido = new JPanel(new BorderLayout(8, 8));
+        contenido.add(new JLabel(resumen), BorderLayout.NORTH);
+        contenido.add(scroll, BorderLayout.CENTER);
+
+        JOptionPane.showMessageDialog(
+                panelCliente,
+                contenido,
+                "Historial de compras",
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
     private void listar() {

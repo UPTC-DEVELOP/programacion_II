@@ -1,18 +1,28 @@
 package co.edu.uptc.tienda.negocio;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import co.edu.uptc.tienda.excepcion.CompraExcepcion;
 import co.edu.uptc.tienda.interfaz.IGestionCliente;
+import co.edu.uptc.tienda.interfaz.IGestionCompra;
 import co.edu.uptc.tienda.modelo.Cliente;
+import co.edu.uptc.tienda.modelo.Compra;
 import co.edu.uptc.tienda.persistencia.LocalCliente;
 
 public class GestionCliente implements IGestionCliente {
 
     private LocalCliente localCliente;
+    private IGestionCompra compras;
     private Cliente clienteLogueado;
 
     public GestionCliente() {
-        localCliente = new LocalCliente();
+        this(new LocalCliente(), new GestionCompra());
+    }
+
+    public GestionCliente(LocalCliente localCliente, IGestionCompra compras) {
+        this.localCliente = localCliente;
+        this.compras = compras;
         clienteLogueado = null;
     }
 
@@ -87,6 +97,14 @@ public class GestionCliente implements IGestionCliente {
 
     public void cerrarSesion() {
         clienteLogueado = null;
+    }
+
+    public List<Compra> listarCompras(String id) throws CompraExcepcion {
+        return compras.listarComprasCliente(id);
+    }
+
+    public double obtenerDescuentoFrecuente(String id) {
+        return compras.obtenerDescuentoFrecuente(id);
     }
 
     public Cliente getClienteLogueado() {

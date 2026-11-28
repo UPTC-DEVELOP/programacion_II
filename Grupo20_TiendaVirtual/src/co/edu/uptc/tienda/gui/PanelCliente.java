@@ -35,6 +35,7 @@ public class PanelCliente extends JPanel {
     private JButton botonLimpiar;
     private JButton botonIniciarSesion;
     private JButton botonCerrarSesion;
+    private JButton botonHistorial;
     private JLabel etiquetaSesion;
 
     private EventosCliente eventos;
@@ -58,6 +59,7 @@ public class PanelCliente extends JPanel {
         botonLimpiar = new JButton(EventosCliente.LIMPIAR);
         botonIniciarSesion = new JButton(EventosCliente.INICIAR_SESION);
         botonCerrarSesion = new JButton(EventosCliente.CERRAR_SESION);
+        botonHistorial = new JButton(EventosCliente.HISTORIAL);
         etiquetaSesion = new JLabel();
         mostrarSesion(null);
 
@@ -102,6 +104,7 @@ public class PanelCliente extends JPanel {
         panelSesion.add(etiquetaSesion);
         panelSesion.add(botonIniciarSesion);
         panelSesion.add(botonCerrarSesion);
+        panelSesion.add(botonHistorial);
 
         JPanel panelInferior = new JPanel(new GridLayout(2, 1));
         panelInferior.add(panelBotones);
@@ -184,6 +187,7 @@ public class PanelCliente extends JPanel {
         botonLimpiar.setActionCommand(EventosCliente.LIMPIAR);
         botonIniciarSesion.setActionCommand(EventosCliente.INICIAR_SESION);
         botonCerrarSesion.setActionCommand(EventosCliente.CERRAR_SESION);
+        botonHistorial.setActionCommand(EventosCliente.HISTORIAL);
         botonGuardar.addActionListener(eventos);
         botonBuscar.addActionListener(eventos);
         botonActualizar.addActionListener(eventos);
@@ -192,6 +196,7 @@ public class PanelCliente extends JPanel {
         botonLimpiar.addActionListener(eventos);
         botonIniciarSesion.addActionListener(eventos);
         botonCerrarSesion.addActionListener(eventos);
+        botonHistorial.addActionListener(eventos);
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentShown(ComponentEvent e) {
