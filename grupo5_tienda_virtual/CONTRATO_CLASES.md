@@ -56,6 +56,14 @@ boolean eliminarPersistente(T elemento);
 Los métodos `insertar`, `actualizar` y `eliminarPersistente` tienen implementación por defecto de compatibilidad.
 La escritura incremental real se implementa por repositorio en F09-F11.
 
+Los métodos `listar()`, `agregar()`, `eliminar()`, `cargar()` y `guardar()` están **deprecados**.
+No se deben usar en código nuevo:
+- `listar()` → `listarUltimos()` o `listarPagina()`
+- `agregar()` → `insertar()`
+- `eliminar()` → `eliminarPersistente()`
+- `cargar()` → ya no se necesita; las consultas leen el almacenamiento
+- `guardar()` → `insertar()`, `actualizar()` o `eliminarPersistente()`
+
 No agregar métodos abstractos sin actualizar **todas** las implementaciones el mismo día.
 
 ### Implementaciones

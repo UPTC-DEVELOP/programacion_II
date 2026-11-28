@@ -13,35 +13,40 @@ import java.util.List;
 public interface IRepositorio<T> extends IRepositorioConsulta<T> {
 
     /**
-     * Devuelve la lista almacenada con las referencias vivas a los elementos,
-     * de modo que la capa de servicio pueda actualizar sus campos.
+     * @deprecated usar listarUltimos() o listarPagina().
      */
+    @Deprecated
     List<T> listar();
 
     /**
-     * Agrega un elemento en memoria (NO persiste hasta llamar guardar()).
+     * @deprecated usar insertar().
      */
+    @Deprecated
     void agregar(T elemento);
 
     /**
-     * Elimina un elemento en memoria (NO persiste hasta llamar guardar()).
+     * @deprecated usar eliminarPersistente().
      */
+    @Deprecated
     boolean eliminar(T elemento);
 
     /**
-     * Carga los datos desde el almacenamiento fisico.
+     * @deprecated las consultas nuevas leen el almacenamiento cuando se necesitan.
      */
+    @Deprecated
     void cargar();
 
     /**
-     * Guarda los datos actuales en el almacenamiento fisico.
+     * @deprecated usar insertar(), actualizar() o eliminarPersistente().
      */
+    @Deprecated
     void guardar();
 
     /**
      * Compatibilidad: inserta en memoria y persiste con guardar().
      * La escritura incremental real se implementa en F09-F11.
      */
+    @SuppressWarnings("deprecation")
     default void insertar(T elemento) {
         agregar(elemento);
         guardar();
@@ -51,6 +56,7 @@ public interface IRepositorio<T> extends IRepositorioConsulta<T> {
      * Compatibilidad: persiste los cambios de un elemento ya presente en memoria.
      * Si el elemento no esta en la lista, no tiene efecto.
      */
+    @SuppressWarnings("deprecation")
     default void actualizar(T elemento) {
         guardar();
     }
@@ -61,6 +67,7 @@ public interface IRepositorio<T> extends IRepositorioConsulta<T> {
      *
      * @return true si el elemento existia y se persistio la eliminacion
      */
+    @SuppressWarnings("deprecation")
     default boolean eliminarPersistente(T elemento) {
         if (eliminar(elemento)) {
             guardar();
