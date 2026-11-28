@@ -1,2 +1,10 @@
 [2026-11-12 12:40:53] [INFO] admin@libreria.com - Inicio de sesión
 [2026-11-12 16:21:05] [INFO] admin@libreria.com - Inicio de sesión
+[2026-11-13 21:17:50] [INFO] admin@libreria.com - Inicio de sesión
+[2026-11-13 21:19:39] [INFO] admin - Libro registrado: 978-958-00-0007-7
+[2026-11-13 21:50:33] [INFO] admin@libreria.com - Inicio de sesión
+[2026-11-13 21:51:37] [INFO] admin - Libro actualizado: 978-958-00-0007-7
+[2026-11-13 21:53:17] [INFO] admin - Libro eliminado: 978-958-00-0007-7
+[2026-11-27 21:30:12] [INFO] admin@libreria.com - Inicio de sesión
+[2026-11-28 06:41:10] [INFO] cliente.prueba@correo.com - Cliente registrado
+[2026-11-28 06:41:33] [INFO] cliente.prueba@correo.com - Inicio de sesión

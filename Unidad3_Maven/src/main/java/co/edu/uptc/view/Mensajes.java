@@ -12,3 +12,6 @@ public final class Mensajes {
     public static void informacion(Component padre, String mensaje) { JOptionPane.showMessageDialog(padre, mensaje, "Información", JOptionPane.INFORMATION_MESSAGE); }
     public static boolean confirmar(Component padre, String mensaje) { return JOptionPane.showConfirmDialog(padre, mensaje, "Confirmar", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION; }
 }
+
+
+
