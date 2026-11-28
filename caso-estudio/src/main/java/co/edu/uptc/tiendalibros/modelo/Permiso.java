@@ -52,18 +52,10 @@ public enum Permiso {
   EDITORIAL_ELIMINAR,
   /// Crear libros con sus formatos.
   LIBRO_CREAR,
-  /// Editar los datos de los libros y de sus formatos, menos el precio base y el tipo
-  /// de IVA.
+  /// Editar los datos de los libros y de sus formatos.
   LIBRO_EDITAR,
   /// Eliminar libros.
   LIBRO_ELIMINAR,
-  
-  // Permisos para actualizar los Precios
-  
-  /// Editar el precio base de un formato de libro.
-  FORMATO_LIBRO_EDITAR_PRECIO_BASE,
-  /// Editar el tipo de IVA de un formato de libro.
-  FORMATO_LIBRO_EDITAR_TIPO_IVA,
   
   // Permisos para gestionar las ventas y clientes
   

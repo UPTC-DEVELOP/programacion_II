@@ -16,8 +16,7 @@ INSERT INTO tienda_libros_gr9.rol_permiso (rol,permiso) VALUES ('VEN','ACCEDER_E
 INSERT INTO tienda_libros_gr9.rol_permiso (rol,permiso) VALUES ('VEN','ACCEDER_GESTION_CATALOGO');
 INSERT INTO tienda_libros_gr9.rol_permiso (rol,permiso) VALUES ('VEN','ACCEDER_GESTION_VENTAS');
 INSERT INTO tienda_libros_gr9.rol_permiso (rol,permiso) VALUES ('VEN','ACCEDER_GESTION_CLIENTES');
-INSERT INTO tienda_libros_gr9.rol_permiso (rol,permiso) VALUES ('VEN','FORMATO_LIBRO_EDITAR_PRECIO_BASE');
-INSERT INTO tienda_libros_gr9.rol_permiso (rol,permiso) VALUES ('VEN','FORMATO_LIBRO_EDITAR_TIPO_IVA');
+INSERT INTO tienda_libros_gr9.rol_permiso (rol,permiso) VALUES ('VEN','LIBRO_EDITAR');
 INSERT INTO tienda_libros_gr9.rol_permiso (rol,permiso) VALUES ('VEN','CLIENTE_EDITAR_TIPO');
 INSERT INTO tienda_libros_gr9.rol_permiso (rol,permiso) VALUES ('VEN','CLIENTE_ELIMINAR');
 INSERT INTO tienda_libros_gr9.rol_permiso (rol,permiso) VALUES ('VEN','DESCUENTO_FRECUENTES_EDITAR');

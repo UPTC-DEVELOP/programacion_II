@@ -115,7 +115,13 @@ public class Aplicacion {
     );
     
     // crear los gestores de lógica del negocio
-    GestionEditorial gestorEditorial = new GestionEditorial(repositorioEditorial, repositorioLibro);
+    // gestor de la seguridad
+    IRepositorioUsuario repositorioUsuario = new RepositorioUsuarioJDBC(this.conexionBaseDatos);
+    SesionUsuario sesionUsuario = new SesionUsuario();
+    IProtectorContrasena protectorContrasena = new ProtectorContrasenaPBKDF2();
+    GestionSeguridad gestorSeguridad = new GestionSeguridad(repositorioUsuario, protectorContrasena, sesionUsuario);
+    
+    GestionEditorial gestorEditorial = new GestionEditorial(repositorioEditorial, repositorioLibro, sesionUsuario);
     
     GestionAutor gestorAutor = new GestionAutor(repositorioAutor);
     
@@ -125,20 +131,12 @@ public class Aplicacion {
     // editoriales, categorías y asociaciones autor-libro
     GestionLibro gestorLibro = new GestionLibro(
       repositorioLibro, repositorioLibroConFormatos, repositorioEditorial, repositorioCategoria,
-      repositorioAutorLibro
+      repositorioAutorLibro, sesionUsuario
     );
     
-    
-
     // el gestor del explorador del catálogo solo necesita el repositorio de libros con
     // formatos porque hace la lista únicamente de los libros que se pueden comprar
     GestionExploradorCatalogo gestorExplorador = new GestionExploradorCatalogo(repositorioLibroConFormatos);
-    
-    // gestor de la seguridad
-    IRepositorioUsuario repositorioUsuario = new RepositorioUsuarioJDBC(this.conexionBaseDatos);
-    SesionUsuario sesionUsuario = new SesionUsuario();
-    IProtectorContrasena protectorContrasena = new ProtectorContrasenaPBKDF2();
-    GestionSeguridad gestorSeguridad = new GestionSeguridad(repositorioUsuario, protectorContrasena, sesionUsuario);
     
     // Gestor para la lógica de negocio de clientes.
     GestionCliente gestorCliente = new GestionCliente(repositorioCliente, repositorioUsuario, gestorSeguridad);

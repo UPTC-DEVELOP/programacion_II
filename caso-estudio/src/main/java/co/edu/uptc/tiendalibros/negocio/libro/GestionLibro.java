@@ -10,9 +10,11 @@ import co.edu.uptc.tiendalibros.interfaces.IRepositorioCategoria;
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioEditorial;
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioLibro;
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioLibroConFormatos;
+import co.edu.uptc.tiendalibros.modelo.EstadoEnCatalogo;
 import co.edu.uptc.tiendalibros.modelo.FormatoLibro;
 import co.edu.uptc.tiendalibros.modelo.Libro;
 import co.edu.uptc.tiendalibros.modelo.LibroConFormatos;
+import co.edu.uptc.tiendalibros.modelo.Permiso;
 import co.edu.uptc.tiendalibros.negocio.IReglaValidacion;
 import co.edu.uptc.tiendalibros.negocio.Respuesta;
 import co.edu.uptc.tiendalibros.negocio.RespuestaExitosa;
@@ -37,6 +39,8 @@ import co.edu.uptc.tiendalibros.negocio.libro.reglas.ReglaLibroIsbnSoloDigitosYG
 import co.edu.uptc.tiendalibros.negocio.libro.reglas.ReglaLibroIsbnUnico;
 import co.edu.uptc.tiendalibros.negocio.libro.reglas.ReglaLibroTituloLongitudMaxima;
 import co.edu.uptc.tiendalibros.negocio.libro.reglas.ReglaLibroTituloNoVacio;
+import co.edu.uptc.tiendalibros.negocio.seguridad.SesionUsuario;
+import co.edu.uptc.tiendalibros.negocio.seguridad.reglas.ReglaUsuarioAutorizado;
 
 /// Representa un gestor de la lógica de negocio para los libros como obras intelectuales,
 /// junto con sus formatos comerciales impreso y digital.
@@ -77,6 +81,9 @@ public class GestionLibro {
   /// Lista de reglas de validación que se aplican al eliminar un libro.
   private final List<IReglaValidacion<Libro>> reglasValidacionEliminarLibro;
   
+  /// Sesión del usuario que usa el programa, para verificar sus permisos.
+  private final SesionUsuario sesionUsuario;
+  
   /// Crea un nuevo objeto [GestionLibro].
   ///
   /// @param repositorioLibro            Repositorio de datos de los libros.
@@ -85,19 +92,22 @@ public class GestionLibro {
   /// @param repositorioEditorial        Repositorio de datos de las editoriales.
   /// @param repositorioCategoria        Repositorio de datos de las categorías.
   /// @param repositorioAutorLibro       Repositorio de datos de las
+  /// @param sesionUsuario               Sesión del usuario, para verificar sus permisos.
   ///                                    asociaciones autor-libro.
   public GestionLibro(
     IRepositorioLibro repositorioLibro,
     IRepositorioLibroConFormatos repositorioLibroConFormatos,
     IRepositorioEditorial repositorioEditorial,
     IRepositorioCategoria repositorioCategoria,
-    IRepositorioAutorLibro repositorioAutorLibro
+    IRepositorioAutorLibro repositorioAutorLibro,
+    SesionUsuario sesionUsuario
   ) {
     this.repositorioLibro = repositorioLibro;
     this.repositorioLibroConFormatos = repositorioLibroConFormatos;
     this.repositorioEditorial = repositorioEditorial;
     this.repositorioCategoria = repositorioCategoria;
     this.repositorioAutorLibro = repositorioAutorLibro;
+    this.sesionUsuario = sesionUsuario;
     
     // agregar las reglas de validación para guardar un libro, ordenadas por atributo
     this.reglasValidacionGuardarLibro = new ArrayList<>(
@@ -156,6 +166,33 @@ public class GestionLibro {
   /// @return Respuesta con el resultado de la operación de guardar.
   public Respuesta<LibroConFormatos> guardar(LibroConFormatos libroConFormatos) {
     ResultadoValidacion errores = new ResultadoValidacion();
+    
+    // primero, verificar que el usuario tiene permiso. Si no lo tiene, no se valida nada más
+    boolean esElementoNuevo = (libroConFormatos.getId() == null);
+    
+    IReglaValidacion<LibroConFormatos> reglaAutorizacion = null;
+    
+    if (esElementoNuevo) {
+      reglaAutorizacion = new ReglaUsuarioAutorizado<LibroConFormatos>(
+        this.sesionUsuario, "crear libros", Permiso.LIBRO_CREAR
+      );
+    } else {
+      reglaAutorizacion = new ReglaUsuarioAutorizado<LibroConFormatos>(
+        this.sesionUsuario, "editar libros",
+        Permiso.LIBRO_EDITAR
+      );
+    }
+    
+    reglaAutorizacion.validar(errores, libroConFormatos);
+    
+    if (errores.hayErrores()) {
+      return new RespuestaFallida<>(Optional.of(libroConFormatos), "No se guardó el libro.", errores);
+    }
+    
+    if (esElementoNuevo) {
+      // un libro nuevo siempre empieza con sus formatos en estado PENDIENTE
+      forzarEstadoPendiente(libroConFormatos);
+    }
     
     // obtener el libro como obra intelectual
     Libro libro = libroConFormatos.getLibro();
@@ -225,6 +262,10 @@ public class GestionLibro {
   /// @return Respuesta con el resultado de la operación de eliminar.
   public Respuesta<Libro> eliminar(Long id) {
     ResultadoValidacion errores = new ResultadoValidacion();
+    
+    // primero, verificar que el usuario tiene permiso. Si no lo tiene, no se busca nada
+    new ReglaUsuarioAutorizado<Long>(this.sesionUsuario, "eliminar libros", Permiso.LIBRO_ELIMINAR)
+      .validar(errores, id);
     
     // buscar el libro como obra intelectual
     Optional<Libro> libro = this.repositorioLibro.buscarPorId(id);
@@ -306,6 +347,15 @@ public class GestionLibro {
     );
   }
   
+  /// Indica si el usuario de la sesión actual tiene permiso para crear libros.
+  /// 
+  /// La interfaz lo usa para habilitar o deshabilitar el botón de crear.
+  ///
+  /// @return `true` si el usuario puede crear editoriales.
+  public boolean usuarioPuedeCrear() {
+    return this.sesionUsuario.tienePermiso(Permiso.LIBRO_CREAR);
+  }
+  
   /// Aplica las reglas de validación de un formato de libro y acumula los errores en el
   /// resultado especificado.
   /// 
@@ -344,6 +394,26 @@ public class GestionLibro {
         new ReglaFormatoLibroEstadoNoNulo(prefijo + ".estadoEnCatalogo")
       )
     );
+  }
+  
+  /// Pone en estado PENDIENTE los formatos que ofrece un libro nuevo, sin importar el
+  /// estado que haya elegido el usuario.
+  ///
+  /// @param libroConFormatos Libro nuevo con sus formatos. No es nulo.
+  private void forzarEstadoPendiente(LibroConFormatos libroConFormatos) {
+    if (libroConFormatos.getFormatoImpreso()
+      .isPresent()) {
+      libroConFormatos.getFormatoImpreso()
+        .get()
+        .setEstadoEnCatalogo(EstadoEnCatalogo.PENDIENTE);
+    }
+    
+    if (libroConFormatos.getFormatoDigital()
+      .isPresent()) {
+      libroConFormatos.getFormatoDigital()
+        .get()
+        .setEstadoEnCatalogo(EstadoEnCatalogo.PENDIENTE);
+    }
   }
   
 }

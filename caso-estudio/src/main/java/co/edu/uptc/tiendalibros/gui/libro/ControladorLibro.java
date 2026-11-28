@@ -80,6 +80,10 @@ public class ControladorLibro extends ControladorBase {
   
   /// Carga la lista de libros y los visualiza en la tabla visual de datos de usuario.
   public void listar() {
+    // prueba fácil de permiso: el botón Crear Nuevo solo se habilita si el usuario tiene
+    // permiso
+    this.panelLibros.habilitarBotonCrear(this.gestorLibro.usuarioPuedeCrear());
+    
     // cargar la lista de libros
     List<Libro> libros = this.gestorLibro.listar();
     

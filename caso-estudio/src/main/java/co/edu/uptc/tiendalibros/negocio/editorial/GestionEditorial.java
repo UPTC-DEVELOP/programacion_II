@@ -8,6 +8,7 @@ import java.util.Optional;
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioEditorial;
 import co.edu.uptc.tiendalibros.interfaces.IRepositorioLibro;
 import co.edu.uptc.tiendalibros.modelo.Editorial;
+import co.edu.uptc.tiendalibros.modelo.Permiso;
 import co.edu.uptc.tiendalibros.negocio.IReglaValidacion;
 import co.edu.uptc.tiendalibros.negocio.Respuesta;
 import co.edu.uptc.tiendalibros.negocio.RespuestaExitosa;
@@ -19,6 +20,8 @@ import co.edu.uptc.tiendalibros.negocio.editorial.reglas.ReglaEditorialNombreNoV
 import co.edu.uptc.tiendalibros.negocio.editorial.reglas.ReglaEditorialNombreUnico;
 import co.edu.uptc.tiendalibros.negocio.editorial.reglas.ReglaEditorialSinLibrosAsociados;
 import co.edu.uptc.tiendalibros.negocio.excepciones.ViolacionElementoNoExisteException;
+import co.edu.uptc.tiendalibros.negocio.seguridad.SesionUsuario;
+import co.edu.uptc.tiendalibros.negocio.seguridad.reglas.ReglaUsuarioAutorizado;
 
 /// Representa un gestor de la lógica de negocio para las editoriales.
 public class GestionEditorial {
@@ -35,17 +38,23 @@ public class GestionEditorial {
   /// Lista de reglas de validación para eliminar una editorial
   private final List<IReglaValidacion<Editorial>> reglasValidacionEliminar;
   
+  /// Sesión del usuario que está usando el programa.
+  private final SesionUsuario sesionUsuario;
+  
   /// Crea un nuevo objeto [GestionEditorial].
   ///
   /// @param repositorioEditorial Repositorio de datos de las editoriales.
   /// @param repositorioLibro     Repositorio de datos de los libros, para saber si una
   ///                             editorial tiene libros asociados.
+  /// @param sesionUsuario        Sesión del usuario.
   public GestionEditorial(
     IRepositorioEditorial repositorioEditorial,
-    IRepositorioLibro repositorioLibro
+    IRepositorioLibro repositorioLibro,
+    SesionUsuario sesionUsuario
   ) {
     this.repositorioEditorial = repositorioEditorial;
     this.repositorioLibro = repositorioLibro;
+    this.sesionUsuario = sesionUsuario;
     
     // agregar las reglas de validación para guardar una editorial
     this.reglasValidacionGuardar = new ArrayList<>(
@@ -78,6 +87,30 @@ public class GestionEditorial {
   public Respuesta<Editorial> guardar(Editorial editorial) {
     // objeto para notificar los errores
     ResultadoValidacion errores = new ResultadoValidacion();
+    
+    // primero, verificar que el usuario tiene el permiso necesario.
+    // si el usuario no tiene el permiso, no se continúa validando más
+    
+    // determinar si el elemento que se quiere guardar es nuevo en el repositorio (ID =
+    // null).
+    boolean esElementoNuevo = (editorial.getId() == null);
+    
+    // si el elemento es nuevo, se pide el permiso para crear
+    // si el elemento es existente, se pide el permiso para editar
+    IReglaValidacion<Editorial> reglaAutorizacion = null;
+    if (esElementoNuevo) {
+      reglaAutorizacion = new ReglaUsuarioAutorizado<Editorial>(this.sesionUsuario, "crear editoriales", Permiso.EDITORIAL_CREAR);
+    } else {
+      reglaAutorizacion = new ReglaUsuarioAutorizado<Editorial>(this.sesionUsuario, "editar editoriales", Permiso.EDITORIAL_EDITAR);
+    }
+    
+    reglaAutorizacion.validar(errores, editorial);
+    
+    if (errores.hayErrores()) {
+      return new RespuestaFallida<Editorial>(
+        Optional.of(editorial), "No se guardó la editorial.", errores
+      );
+    }
     
     // copiar la lista de reglas de validación para guardar
     List<IReglaValidacion<Editorial>> reglasParaValidar = new ArrayList<>(this.reglasValidacionGuardar);
@@ -131,6 +164,14 @@ public class GestionEditorial {
   public Respuesta<Editorial> eliminar(Long id) {
     // resultado de la validación de errores
     ResultadoValidacion errores = new ResultadoValidacion();
+    
+    // primero, verificar que el usuario tiene permiso. Si no lo tiene, no se busca nada
+    new ReglaUsuarioAutorizado<Long>(this.sesionUsuario, "eliminar editoriales", Permiso.EDITORIAL_ELIMINAR)
+      .validar(errores, id);
+    
+    if (errores.hayErrores()) {
+      return new RespuestaFallida<Editorial>(Optional.empty(), "No se eliminó la editorial.", errores);
+    }
     
     // buscar la editorial con el ID dado
     Optional<Editorial> editorial = this.repositorioEditorial.buscarPorId(id);

@@ -83,6 +83,13 @@ public class PanelLibros extends PanelGestionElementoBase<ElementoVistaLibroConF
       });
   }
   
+  /// Habilita o deshabilita el botón para crear un libro.
+  ///
+  /// @param habilitado `true` para habilitar el botón, `false` para deshabilitarlo.
+  public void habilitarBotonCrear(boolean habilitado) {
+    this.btnCrear.setEnabled(habilitado);
+  }
+  
   @Override
   public String getRutaEventoSolicitarEdicion() {
     // devolver la ruta que el controlador usa para editar
