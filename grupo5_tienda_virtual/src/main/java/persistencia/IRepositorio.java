@@ -10,7 +10,7 @@ import java.util.List;
  * depende SOLO de esta interfaz: si manejamos JSON hoy y una base de datos
  * manana, el resto del codigo no cambia (SOLID: Dependency Inversion).
  */
-public interface IRepositorio<T> {
+public interface IRepositorio<T> extends IRepositorioConsulta<T> {
 
     /**
      * Devuelve la lista almacenada con las referencias vivas a los elementos,
