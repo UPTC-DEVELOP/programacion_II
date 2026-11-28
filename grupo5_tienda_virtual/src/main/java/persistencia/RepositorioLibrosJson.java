@@ -58,6 +58,48 @@ public class RepositorioLibrosJson implements IRepositorio<Libro> {
     }
 
     @Override
+    public void insertar(Libro elemento) {
+        if (elemento == null) {
+            return;
+        }
+        List<Libro> todos = leerArchivo();
+        todos.add(elemento);
+        escribirTodos(todos);
+    }
+
+    @Override
+    public void actualizar(Libro elemento) {
+        if (elemento == null) {
+            return;
+        }
+        List<Libro> todos = leerArchivo();
+        boolean encontrado = false;
+        for (int i = 0; i < todos.size(); i++) {
+            if (todos.get(i).equals(elemento)) {
+                todos.set(i, elemento);
+                encontrado = true;
+                break;
+            }
+        }
+        if (encontrado) {
+            escribirTodos(todos);
+        }
+    }
+
+    @Override
+    public boolean eliminarPersistente(Libro elemento) {
+        if (elemento == null) {
+            return false;
+        }
+        List<Libro> todos = leerArchivo();
+        if (!todos.remove(elemento)) {
+            return false;
+        }
+        escribirTodos(todos);
+        return true;
+    }
+
+    @Override
     public void cargar() {
         libros.clear();
         libros.addAll(leerArchivo());
@@ -107,11 +149,15 @@ public class RepositorioLibrosJson implements IRepositorio<Libro> {
 
     @Override
     public void guardar() {
+        escribirTodos(libros);
+    }
+
+    private void escribirTodos(List<Libro> lista) {
         try {
             if (archivo.getParent() != null) {
                 Files.createDirectories(archivo.getParent());
             }
-            Files.writeString(archivo, gson.toJson(libros, tipoLista), StandardCharsets.UTF_8);
+            Files.writeString(archivo, gson.toJson(lista, tipoLista), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new PersistenciaException(
                     "No se pudo escribir " + archivo.toAbsolutePath(), e);

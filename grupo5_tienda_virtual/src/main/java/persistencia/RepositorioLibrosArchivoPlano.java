@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,6 +57,60 @@ public class RepositorioLibrosArchivoPlano implements IRepositorio<Libro> {
             return false;
         }
         return libros.remove(elemento);
+    }
+
+    @Override
+    public void insertar(Libro elemento) {
+        if (elemento == null) {
+            return;
+        }
+        File archivo = new File(rutaArchivo);
+        File carpetaPadre = archivo.getParentFile();
+        if (carpetaPadre != null && !carpetaPadre.exists()) {
+            carpetaPadre.mkdirs();
+        }
+        try {
+            Files.writeString(archivo.toPath(),
+                    formatearLinea(elemento) + System.lineSeparator(),
+                    StandardCharsets.UTF_8,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new PersistenciaException(
+                    "Error al insertar libro en " + rutaArchivo, e);
+        }
+    }
+
+    @Override
+    public void actualizar(Libro elemento) {
+        if (elemento == null) {
+            return;
+        }
+        List<Libro> todos = leerTodos();
+        boolean encontrado = false;
+        for (int i = 0; i < todos.size(); i++) {
+            if (todos.get(i).equals(elemento)) {
+                todos.set(i, elemento);
+                encontrado = true;
+                break;
+            }
+        }
+        if (encontrado) {
+            escribirTodos(todos);
+        }
+    }
+
+    @Override
+    public boolean eliminarPersistente(Libro elemento) {
+        if (elemento == null) {
+            return false;
+        }
+        List<Libro> todos = leerTodos();
+        if (!todos.remove(elemento)) {
+            return false;
+        }
+        escribirTodos(todos);
+        return true;
     }
 
     @Override
@@ -188,6 +244,10 @@ public class RepositorioLibrosArchivoPlano implements IRepositorio<Libro> {
 
     @Override
     public void guardar() {
+        escribirTodos(libros);
+    }
+
+    private void escribirTodos(List<Libro> lista) {
         File archivo = new File(rutaArchivo);
         File carpetaPadre = archivo.getParentFile();
         if (carpetaPadre != null && !carpetaPadre.exists()) {
@@ -196,7 +256,7 @@ public class RepositorioLibrosArchivoPlano implements IRepositorio<Libro> {
 
         try (BufferedWriter writer = new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(archivo), StandardCharsets.UTF_8))) {
-            for (Libro libro : libros) {
+            for (Libro libro : lista) {
                 writer.write(formatearLinea(libro));
                 writer.newLine();
             }

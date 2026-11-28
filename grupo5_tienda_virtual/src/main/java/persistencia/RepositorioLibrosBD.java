@@ -95,6 +95,79 @@ public class RepositorioLibrosBD implements IRepositorio<Libro> {
     // SE CONSULTA LA BASE DE DATOS Y SE LEEN TODOS LOS LIBROS ALMACENADOS
     
     @Override
+    public void insertar(Libro libro) {
+        if (libro == null) {
+            return;
+        }
+        String sql = "INSERT OR REPLACE INTO libros (isbn, titulo, autor, anio_publicacion, "
+                + "categoria, editorial, numero_paginas, precio, porcentaje_iva, "
+                + "cantidad_disponible, formato) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = obtenerConexion();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, libro.getIsbn());
+            ps.setString(2, libro.getTitulo());
+            ps.setString(3, libro.getAutor());
+            ps.setInt(4, libro.getAnioPublicacion());
+            ps.setString(5, libro.getCategoria());
+            ps.setString(6, libro.getEditorial());
+            ps.setInt(7, libro.getNumeroPaginas());
+            ps.setDouble(8, libro.getPrecio());
+            ps.setDouble(9, libro.getPorcentajeIva());
+            ps.setInt(10, libro.getCantidadDisponible());
+            ps.setString(11, libro.getFormato() != null ? libro.getFormato().name() : null);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudo insertar el libro en la BD", e);
+        }
+    }
+
+    @Override
+    public void actualizar(Libro libro) {
+        if (libro == null) {
+            return;
+        }
+        String sql = "UPDATE libros SET titulo = ?, autor = ?, anio_publicacion = ?, "
+                + "categoria = ?, editorial = ?, numero_paginas = ?, precio = ?, "
+                + "porcentaje_iva = ?, cantidad_disponible = ?, formato = ? "
+                + "WHERE isbn = ?";
+        try (Connection conn = obtenerConexion();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, libro.getTitulo());
+            ps.setString(2, libro.getAutor());
+            ps.setInt(3, libro.getAnioPublicacion());
+            ps.setString(4, libro.getCategoria());
+            ps.setString(5, libro.getEditorial());
+            ps.setInt(6, libro.getNumeroPaginas());
+            ps.setDouble(7, libro.getPrecio());
+            ps.setDouble(8, libro.getPorcentajeIva());
+            ps.setInt(9, libro.getCantidadDisponible());
+            ps.setString(10, libro.getFormato() != null ? libro.getFormato().name() : null);
+            ps.setString(11, libro.getIsbn());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudo actualizar el libro en la BD", e);
+        }
+    }
+
+    @Override
+    public boolean eliminarPersistente(Libro libro) {
+        if (libro == null || libro.getIsbn() == null) {
+            return false;
+        }
+        String sql = "DELETE FROM libros WHERE isbn = ?";
+        try (Connection conn = obtenerConexion();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, libro.getIsbn());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new PersistenciaException(
+                    "No se pudo eliminar el libro de la BD", e);
+        }
+    }
+
+    @Override
     public void cargar() {
         libros.clear();
         String sql = "SELECT isbn, titulo, autor, anio_publicacion, categoria, editorial, "
