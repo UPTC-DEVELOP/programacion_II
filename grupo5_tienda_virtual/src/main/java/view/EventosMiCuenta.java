@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 
 import model.Cliente;
+import service.IServicioCarrito;
 import service.IServicioClientes;
 import service.IServicioCompras;
 import service.IServicioLibros;
@@ -20,15 +21,17 @@ public class EventosMiCuenta extends Eventos {
     private final IServicioClientes controlador;
     private final IServicioLibros controladorLibro;
     private final IServicioCompras controladorCompras;
+    private final IServicioCarrito controladorCarrito;
     private final Cliente cliente;
 
     public EventosMiCuenta(VentanaMiCuenta vista, IServicioClientes controlador,
             IServicioLibros controladorLibro, IServicioCompras controladorCompras,
-            Cliente cliente) {
+            IServicioCarrito controladorCarrito, Cliente cliente) {
         super(vista);
         this.controlador = controlador;
         this.controladorLibro = controladorLibro;
         this.controladorCompras = controladorCompras;
+        this.controladorCarrito = controladorCarrito;
         this.cliente = cliente;
     }
 
@@ -88,7 +91,8 @@ public class EventosMiCuenta extends Eventos {
     }
 
     private void abrirCompras() {
-        new VentanaCompras(cliente, controladorLibro, controladorCompras).setVisible(true);
+        new VentanaCompras(cliente, controladorLibro, controladorCompras,
+                controladorCarrito).setVisible(true);
     }
 
     private void abrirHistorial() {

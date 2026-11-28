@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import model.Cliente;
+import service.IServicioCarrito;
 import service.IServicioClientes;
 import service.IServicioCompras;
 import service.IServicioLibros;
@@ -38,9 +39,11 @@ public class VentanaMiCuenta extends JFrame {
 
     public VentanaMiCuenta(
             IServicioClientes controlador, IServicioLibros controladorLibro,
-            IServicioCompras controladorCompras, Cliente cliente, JFrame padre) {
+            IServicioCompras controladorCompras, IServicioCarrito controladorCarrito,
+            Cliente cliente, JFrame padre) {
         this.eventos = new EventosMiCuenta(
-                this, controlador, controladorLibro, controladorCompras, cliente);
+                this, controlador, controladorLibro, controladorCompras,
+                controladorCarrito, cliente);
 
         setTitle("Mi Cuenta");
         setSize(420, 300);

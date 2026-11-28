@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import service.IServicioCarrito;
 import service.IServicioClientes;
 import service.IServicioCompras;
 import service.IServicioLibros;
@@ -35,8 +36,9 @@ public class VentanaLogin extends JFrame {
     private JButton btnAdministrador;
 
     public VentanaLogin(IServicioClientes controlador, IServicioLibros controladorLibro,
-            IServicioCompras controladorCompras) {
-        this.eventos = new EventosLogin(this, controlador, controladorLibro, controladorCompras);
+            IServicioCompras controladorCompras, IServicioCarrito controladorCarrito) {
+        this.eventos = new EventosLogin(this, controlador, controladorLibro,
+                controladorCompras, controladorCarrito);
 
         setTitle("Iniciar Sesi\u00f3n");
         setSize(420, 300);

@@ -6,6 +6,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import model.Cliente;
+import service.IServicioCarrito;
 import service.IServicioClientes;
 import service.IServicioCompras;
 import service.IServicioLibros;
@@ -18,13 +19,16 @@ public class EventosLogin extends Eventos {
     private final IServicioClientes controlador;
     private final IServicioLibros controladorLibro;
     private final IServicioCompras controladorCompras;
+    private final IServicioCarrito controladorCarrito;
 
     public EventosLogin(VentanaLogin vista, IServicioClientes controlador,
-            IServicioLibros controladorLibro, IServicioCompras controladorCompras) {
+            IServicioLibros controladorLibro, IServicioCompras controladorCompras,
+            IServicioCarrito controladorCarrito) {
         super(vista);
         this.controlador = controlador;
         this.controladorLibro = controladorLibro;
         this.controladorCompras = controladorCompras;
+        this.controladorCarrito = controladorCarrito;
     }
 
     public void registrarEventos(JTextField txtCorreo, JPasswordField txtContrasena,
@@ -45,8 +49,8 @@ public class EventosLogin extends Eventos {
 
         Cliente cliente = controlador.iniciarSesion(correo, contrasena);
         if (cliente != null) {
-            new VentanaMiCuenta(controlador, controladorLibro, controladorCompras, cliente, ventana)
-                    .setVisible(true);
+            new VentanaMiCuenta(controlador, controladorLibro, controladorCompras,
+                    controladorCarrito, cliente, ventana).setVisible(true);
             ventana.setVisible(false);
         } else {
             mostrarError("Correo o contrase\u00f1a no v\u00e1lidos.");

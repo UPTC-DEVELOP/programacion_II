@@ -5,6 +5,7 @@ import javax.swing.SwingUtilities;
 
 import config.ProjectConfig;
 import controller.ConsultaVentas;
+import controller.ControladorCarrito;
 import controller.ControladorCliente;
 import controller.ControladorCompras;
 import controller.ControladorLibro;
@@ -13,8 +14,10 @@ import model.Cliente;
 import model.ClientePremium;
 import model.FormatoLibro;
 import model.Libro;
+import persistencia.GestorCarritoJSON;
 import persistencia.PersistenciaException;
 import persistencia.RegistroOperacionesTXT;
+import service.IServicioCarrito;
 import service.IServicioClientes;
 import service.IServicioCompras;
 import service.IServicioLibros;
@@ -45,13 +48,15 @@ public class Main {
                     IServicioCompras controladorCompras =
                             new ControladorCompras(
                                     ProjectConfig.compras(), controladorLibros, operaciones);
+                    IServicioCarrito controladorCarrito =
+                            new ControladorCarrito(controladorLibros, new GestorCarritoJSON());
 
                     cargarDatosDePrueba(controladorClientes);
                     cargarLibrosDePrueba(controladorLibros);
 
                     // CAPA 3: INTERFAZ GRÁFICA
-                    new VentanaLogin(controladorClientes, controladorLibros, controladorCompras)
-                            .setVisible(true);
+                    new VentanaLogin(controladorClientes, controladorLibros,
+                            controladorCompras, controladorCarrito).setVisible(true);
                 } catch (PersistenciaException e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(null,

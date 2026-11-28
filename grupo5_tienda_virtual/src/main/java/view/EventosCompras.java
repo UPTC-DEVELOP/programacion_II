@@ -8,6 +8,7 @@ import javax.swing.table.DefaultTableModel;
 import model.CarritoCompras;
 import model.Libro;
 import model.MetodoPago;
+import service.IServicioCarrito;
 import service.IServicioCompras;
 import service.ResultadoCompra;
 
@@ -15,11 +16,14 @@ public class EventosCompras extends Eventos {
 
     private final VentanaCompras vista;
     private final IServicioCompras compras;
+    private final IServicioCarrito carritoService;
 
-    public EventosCompras(VentanaCompras vista, IServicioCompras compras) {
+    public EventosCompras(VentanaCompras vista, IServicioCompras compras,
+            IServicioCarrito carritoService) {
         super(vista);
         this.vista = vista;
         this.compras = compras;
+        this.carritoService = carritoService;
     }
 
     public void registrarEventos() {
@@ -68,6 +72,7 @@ public class EventosCompras extends Eventos {
 
         carrito.agregarLibro(libro, cantidad);
         actualizarTabla();
+        persistirCarrito();
     }
 
     private void modificarCantidad() {
@@ -94,6 +99,7 @@ public class EventosCompras extends Eventos {
 
         vista.getCarrito().modificarCantidad(libro, cantidad);
         actualizarTabla();
+        persistirCarrito();
     }
 
     private void eliminarDelCarrito() {
@@ -106,11 +112,13 @@ public class EventosCompras extends Eventos {
         Libro libro = (Libro) vista.getModeloTabla().getValueAt(filaSeleccionada, 0);
         vista.getCarrito().eliminarLibro(libro);
         actualizarTabla();
+        persistirCarrito();
     }
 
     private void vaciarCarrito() {
         vista.getCarrito().vaciar();
         actualizarTabla();
+        persistirCarrito();
     }
 
     private void cargarSeleccion() {
@@ -163,11 +171,18 @@ public class EventosCompras extends Eventos {
         MetodoPago metodoPago = (MetodoPago) vista.getCmbMetodoPago().getSelectedItem();
         String nombreMetodo = metodoPago != null ? metodoPago.getNombre() : null;
 
+        if (!confirmar(construirResumen(nombreMetodo))) {
+            return;
+        }
+
         ResultadoCompra resultado = compras.finalizarCompra(
                 vista.getCliente(), vista.getCarrito(), nombreMetodo);
 
         if (resultado.isExitoso()) {
             mostrarInfo(resultado.getMensaje());
+            if (carritoService != null && vista.getCliente() != null) {
+                carritoService.vaciar(vista.getCliente().getCorreo());
+            }
             if (resultado.getCompra() != null) {
                 new VentanaRecibo(vista.getCliente(), resultado.getCompra(), vista)
                         .setVisible(true);
@@ -177,5 +192,31 @@ public class EventosCompras extends Eventos {
         }
 
         actualizarTabla();
+    }
+
+    private String construirResumen(String metodoPago) {
+        CarritoCompras carrito = vista.getCarrito();
+        double subtotal = carrito.calcularSubtotal();
+        double iva = carrito.calcularIVA();
+        double descuento = vista.getCliente() != null
+                ? vista.getCliente().calcularDescuento() : 0.0;
+        double total = carrito.calcularTotal(descuento);
+
+        return "Resumen de compra\n\n"
+                + "Cliente: " + (vista.getCliente() != null
+                        ? vista.getCliente().getNombreCompleto() : "")
+                + "\nProductos: " + carrito.getItems().size()
+                + "\nMetodo de pago: " + (metodoPago != null ? metodoPago : "No seleccionado")
+                + "\n\nSubtotal: " + String.format("$%,.2f", subtotal)
+                + "\nIVA: " + String.format("$%,.2f", iva)
+                + "\nDescuento: " + String.format("$%,.2f", subtotal * descuento)
+                + "\nTOTAL: " + String.format("$%,.2f", total)
+                + "\n\n¿Desea confirmar la compra?";
+    }
+
+    private void persistirCarrito() {
+        if (carritoService != null && vista.getCliente() != null) {
+            carritoService.guardar(vista.getCarrito(), vista.getCliente().getCorreo());
+        }
     }
 }

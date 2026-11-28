@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import controller.ConsultaVentas;
+import controller.ControladorCarrito;
 import controller.ControladorCompras;
 import controller.ControladorLibro;
 import model.CarritoCompras;
@@ -42,6 +43,27 @@ class FlujosPersistenciaTest {
                 new RepositorioComprasJson(ruta("compras.json")), "JSON");
         probarCompra(new RepositorioLibrosBD(ruta("tienda.db")),
                 new RepositorioComprasBD(ruta("tienda.db")), "BD");
+    }
+
+    @Test
+    void carritoSePersisteEnJson() {
+        ControladorLibro libros = new ControladorLibro(
+                new RepositorioLibrosArchivoPlano(ruta("carrito_libros.txt")));
+        Libro libro = libro("CARRITO-1", 5);
+        assertTrue(libros.registrar(libro));
+
+        ControladorCarrito servicio = new ControladorCarrito(
+                libros, new GestorCarritoJSON(ruta("carritos")));
+        CarritoCompras carrito = new CarritoCompras();
+        carrito.agregarLibro(libro, 2);
+        servicio.guardar(carrito, "carrito@correo.com");
+
+        CarritoCompras recargado = servicio.cargar("carrito@correo.com");
+        assertEquals(1, recargado.getItems().size());
+        assertEquals(2, recargado.getItems().get(libro));
+
+        servicio.vaciar("carrito@correo.com");
+        assertTrue(servicio.cargar("carrito@correo.com").estaVacio());
     }
 
     @Test

@@ -14,6 +14,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import service.IServicioCarrito;
 import service.IServicioCompras;
 import service.IServicioLibros;
 import model.CarritoCompras;
@@ -33,6 +34,7 @@ public class VentanaCompras extends JFrame {
 	private Cliente cliente;
 	private IServicioLibros controladorLibro;
 	private IServicioCompras controladorCompras;
+	private IServicioCarrito controladorCarrito;
 	
 	
     // Campos de selección
@@ -65,12 +67,15 @@ public class VentanaCompras extends JFrame {
 
  // RECIBIR EL CLIENTE Y LOS CONTROLADORES
     public VentanaCompras(Cliente cliente, IServicioLibros controladorLibro,
-            IServicioCompras controladorCompras) {
+            IServicioCompras controladorCompras, IServicioCarrito controladorCarrito) {
 
         this.cliente = cliente;
         this.controladorLibro = controladorLibro;
         this.controladorCompras = controladorCompras;
-        carrito = new CarritoCompras();
+        this.controladorCarrito = controladorCarrito;
+        carrito = controladorCarrito != null
+                ? controladorCarrito.cargar(cliente != null ? cliente.getCorreo() : null)
+                : new CarritoCompras();
 
         setTitle("Gestion de Compras");
         setSize(850, 600);
@@ -85,7 +90,7 @@ public class VentanaCompras extends JFrame {
         add(crearTablaCarrito(), BorderLayout.CENTER);
         add(crearPanelInferior(), BorderLayout.SOUTH);
         
-        new EventosCompras(this, controladorCompras).registrarEventos();
+        new EventosCompras(this, controladorCompras, controladorCarrito).registrarEventos();
     }
     
     
