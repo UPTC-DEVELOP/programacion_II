@@ -43,3 +43,7 @@ Desktop.ini
 *.tmp
 *.swp
 ~$*
+
+# --- Planes internos (solo local, no se publican) ---
+docs/DAD_FINAL_U4/
+docs/PLAN_*.md
