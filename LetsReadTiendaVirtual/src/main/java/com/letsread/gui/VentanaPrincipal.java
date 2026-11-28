@@ -2,10 +2,11 @@ package com.letsread.gui;
 
 import com.letsread.model.Cliente;
 import com.letsread.model.ClientePremium;
-import com.letsread.model.ClienteRegular;
 import com.letsread.model.ElementoCarrito;
 import com.letsread.model.Libro;
+import com.letsread.service.ClienteService;
 import com.letsread.service.TiendaService;
+
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -49,14 +50,15 @@ public class VentanaPrincipal extends JFrame {
     private JSpinner spinnerCantidad;
     private JLabel lblSubtotal, lblImpuestos, lblDescuento, lblTotal;
     private JTextArea txtRecibo;
-    private final java.util.Map<String, Cliente> clientesRegistrados = new java.util.HashMap<>();
-    private final java.util.Map<String, String> clavesRegistradas = new java.util.HashMap<>();
+    private final ClienteService clienteService;
 
-    public VentanaPrincipal() {
+    
+    
+    public VentanaPrincipal(ClienteService clienteService) {
+        this.clienteService = clienteService;
         service = new TiendaService();
 
         setTitle("Let's Read - Tienda Virtual de Libros    YEISSON CRUZ & CRISTTOPHER MORENO  ");
-        setSize(680, 460);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -156,8 +158,8 @@ public class VentanaPrincipal extends JFrame {
                 return;
             }
 
-            Cliente cliente = clientesRegistrados.get(correo);
-            if (cliente == null || !clave.equals(clavesRegistradas.get(correo))) {
+            Cliente cliente = clienteService.autenticar(correo, clave).orElse(null);
+            if (cliente == null) {
                 JOptionPane.showMessageDialog(this, "Correo o contraseña incorrectos, o el usuario no está registrado.");
                 return;
             }
@@ -194,19 +196,16 @@ public class VentanaPrincipal extends JFrame {
                 return;
             }
 
-            if (clientesRegistrados.containsKey(correo)) {
-                JOptionPane.showMessageDialog(this, "Ese correo ya está registrado. Use la pestaña \"Iniciar Sesión\".");
-                return;
-            }
-
             String nombreCompleto = nombres + " " + apellidos;
             String tipo = (String) comboTipoCliente.getSelectedItem();
-            Cliente cliente = tipo.equals("Premium") ?
-                    new ClientePremium(nombreCompleto, correo, txtDireccion.getText().trim(), txtTelefono.getText().trim(), clave) :
-                    new ClienteRegular(nombreCompleto, correo, txtDireccion.getText().trim(), txtTelefono.getText().trim(), clave);
-
-            clientesRegistrados.put(correo, cliente);
-            clavesRegistradas.put(correo, clave);
+            Cliente cliente;
+            try {
+                cliente = clienteService.registrar(tipo, nombreCompleto, correo,
+                        txtDireccion.getText(), txtTelefono.getText(), clave);
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage());
+                return;
+            }
 
             service.setClienteActual(cliente);
             lblEstadoSesion.setText("Sesión activa: " + cliente.getNombreCompleto() + " (" + tipo + ")");
