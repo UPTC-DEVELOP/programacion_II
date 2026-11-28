@@ -1,0 +1,44 @@
+[2026-11-12 12:40:53] [INFO] admin@libreria.com - Inicio de sesión
+[2026-11-12 16:21:05] [INFO] admin@libreria.com - Inicio de sesión
+<<<<<<< HEAD
+[2026-11-13 21:17:50] [INFO] admin@libreria.com - Inicio de sesión
+[2026-11-13 21:19:39] [INFO] admin - Libro registrado: 978-958-00-0007-7
+[2026-11-13 21:50:33] [INFO] admin@libreria.com - Inicio de sesión
+[2026-11-13 21:51:37] [INFO] admin - Libro actualizado: 978-958-00-0007-7
+[2026-11-13 21:53:17] [INFO] admin - Libro eliminado: 978-958-00-0007-7
+[2026-11-27 21:30:12] [INFO] admin@libreria.com - Inicio de sesión
+[2026-11-28 06:41:10] [INFO] cliente.prueba@correo.com - Cliente registrado
+[2026-11-28 06:41:33] [INFO] cliente.prueba@correo.com - Inicio de sesión
+=======
+[2026-11-21 10:33:05] [INFO] camilo@uptc.edu.co - Cliente registrado
+[2026-11-21 10:33:17] [INFO] camilo@uptc.edu.co - Inicio de sesión
+[2026-11-21 10:34:07] [INFO] camilo@uptc.edu.co - Cambio en carrito
+[2026-11-21 10:34:36] [INFO] camilo@uptc.edu.co - Pedido #1 registrado por 53550.0
+[2026-11-21 10:35:09] [INFO] camilo@uptc.edu.co - Inicio de sesión
+[2026-11-21 10:37:01] [INFO] camilo@uptc.edu.co - Pedido #2 registrado por 212625.0
+[2026-11-21 10:37:35] [INFO] camilo@uptc.edu.co - Cambio en carrito
+[2026-11-21 10:37:38] [INFO] camilo@uptc.edu.co - Pedido #3 registrado por 42525.0
+[2026-11-24 18:30:49] [INFO] 123@uptc.edu.co - Cliente registrado
+[2026-11-24 18:34:26] [INFO] prueba123@gmail.com - Cliente registrado
+[2026-11-24 18:59:55] [INFO] cris@uptc.edu.co - Cliente registrado
+[2026-11-25 18:18:25] [INFO] cristianv@uptc.edu.co - Cliente registrado
+[2026-11-25 18:23:19] [INFO] fercha@uptc.edu.co - Cliente registrado
+[2026-11-25 18:24:10] [INFO] fercha@uptc.edu.co - Inicio de sesión
+[2026-11-25 19:36:15] [INFO] cristiancamilo@uptc.edu.co - Cliente registrado
+[2026-11-25 19:36:47] [INFO] cristiancamilo@uptc.edu.co - Inicio de sesión
+[2026-11-26 19:20:37] [INFO] osman@uptc.edu.co - Cliente registrado
+[2026-11-26 19:22:25] [INFO] otilio@uptc.edu.co - Cliente registrado
+[2026-11-26 19:35:12] [INFO] safia@uptc.edu.co - Cliente registrado
+[2026-11-26 19:36:21] [INFO] vas@uptc.edu.co - Cliente registrado
+[2026-11-27 15:28:59] [INFO] camilo@gmail.com - Cliente registrado
+>>>>>>> 52db778df1bb4857ca60a95ca851aa4e3ed6c6f7
+[2026-11-28 07:35:24] [INFO] edwin.cruz03@uptc.edu.co - Inicio de sesión
+[2026-11-28 07:45:46] [INFO] edwin.cruz03@uptc.edu.co - Inicio de sesión
+[2026-11-28 08:23:48] [INFO] isavilla17@gmail.com - Cliente registrado
+[2026-11-28 08:24:28] [INFO] isavilla17@gmail.com - Inicio de sesión
+[2026-11-28 08:24:53] [INFO] isavilla17@gmail.com - Cambio en carrito
+[2026-11-28 08:25:03] [INFO] isavilla17@gmail.com - Cambio en carrito
+[2026-11-28 08:28:33] [INFO] isavilla17@gmail.com - Pedido #4 registrado por 91035.0
+[2026-11-28 08:40:50] [INFO] isavilla17@gmail.com - Inicio de sesión
+[2026-11-28 08:40:54] [INFO] isavilla17@gmail.com - Cambio en carrito
+[2026-11-28 08:41:06] [INFO] isavilla17@gmail.com - Pedido #5 registrado por 57834.0

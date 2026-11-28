@@ -1,0 +1,12 @@
+TIENDA VIRTUAL DE LIBROS
+Pedido #4
+Fecha: 2026-11-28 08:28:33
+Cliente: isavilla17@gmail.com
+Pago: Tarjeta de crédito
+
+Clean Code | 1 x $ 85.000 | Subtotal: $ 85.000 | IVA: $ 16.150
+
+Subtotal: $ 85.000
+Impuestos: $ 16.150
+Descuento: $ 10.115
+TOTAL: $ 91.035
