@@ -20,8 +20,12 @@ public class Cliente {
         this.tipoCliente = tipoCliente;
     }
 
+    public boolean esPremium() {
+        return "Premium".equalsIgnoreCase(tipoCliente == null ? null : tipoCliente.trim());
+    }
+
     public double obtenerPorcentajeDescuento() {
-        return "Premium".equalsIgnoreCase(tipoCliente == null ? null : tipoCliente.trim()) ? 10 : 0;
+        return esPremium() ? 10 : 0;
     }
 
 	public String getId() {
@@ -71,4 +75,12 @@ public class Cliente {
 	public void setTipoCliente(String tipoCliente) {
 		this.tipoCliente = tipoCliente;
 	}
+
+    public boolean tieneCorreoElectronico() {
+        return correoElectronico != null && !correoElectronico.trim().isEmpty();
+    }
+
+    public boolean tieneDireccionEnvio() {
+        return direccionEnvio != null && !direccionEnvio.trim().isEmpty();
+    }
 }

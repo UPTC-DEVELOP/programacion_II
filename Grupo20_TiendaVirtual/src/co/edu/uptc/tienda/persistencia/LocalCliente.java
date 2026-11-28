@@ -11,6 +11,7 @@ public class LocalCliente {
 
     private ArrayList<Cliente> clientes;
     private List<IPersistenciaCliente> persistencias;
+    private String avisoCarga;
 
     public LocalCliente() {
         this(crearPersistencias());
@@ -70,31 +71,44 @@ public class LocalCliente {
         }
     }
 
+    public String getAvisoCarga() {
+        return avisoCarga;
+    }
+
     private void cargar() {
+        List<String> errores = new ArrayList<>();
         for (IPersistenciaCliente persistencia : persistencias) {
             try {
-                clientes.addAll(persistencia.leer());
-                return;
+                for (Cliente cliente : persistencia.leer()) {
+                    if (buscarPorId(cliente.getId()) == null) {
+                        clientes.add(cliente);
+                    }
+                }
             } catch (ClienteExcepcion e) {
-                System.out.println(e.getMessage());
+                errores.add(e.getMessage());
             }
+        }
+        if (!errores.isEmpty()) {
+            avisoCarga = String.join("\n", errores);
         }
     }
 
     private void persistir() {
-        int fallos = 0;
-        String mensaje = "";
+        List<String> errores = new ArrayList<>();
         for (IPersistenciaCliente persistencia : persistencias) {
             try {
                 persistencia.guardar(clientes);
             } catch (ClienteExcepcion e) {
-                System.out.println(e.getMessage());
-                fallos++;
-                mensaje = e.getMessage();
+                errores.add(e.getMessage());
             }
         }
-        if (fallos == persistencias.size()) {
-            throw new IllegalArgumentException(mensaje);
+        if (errores.size() == persistencias.size()) {
+            throw new IllegalArgumentException("El cambio quedó en el programa, pero no se guardó en ninguna parte:\n"
+                    + String.join("\n", errores));
+        }
+        if (!errores.isEmpty()) {
+            throw new IllegalArgumentException("El cambio se guardó, pero no en todas partes:\n"
+                    + String.join("\n", errores));
         }
     }
 }

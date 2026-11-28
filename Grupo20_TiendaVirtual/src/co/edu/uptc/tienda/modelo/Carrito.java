@@ -45,4 +45,48 @@ public class Carrito {
     public boolean estaVacio() {
         return items.isEmpty();
     }
+
+    public int obtenerCantidadTotalProductos() {
+        int total = 0;
+
+        for (ItemCarrito item : items) {
+            total += item.getCantidad();
+        }
+
+        return total;
+    }
+
+    public double obtenerSubtotalTotal() {
+        double subtotal = 0;
+
+        for (ItemCarrito item : items) {
+            subtotal += item.obtenerSubtotalItem();
+        }
+
+        return subtotal;
+    }
+
+    public boolean contieneLibro(String isbn) {
+        return buscarItem(isbn) != null;
+    }
+
+    public int obtenerCantidadDeUnLibro(String isbn) {
+        ItemCarrito item = buscarItem(isbn);
+
+        if (item == null) {
+            return 0;
+        }
+
+        return item.getCantidad();
+    }
+
+    public double obtenerImpuestoTotal() {
+        double impuestoTotal = 0;
+
+        for (ItemCarrito item : items) {
+            impuestoTotal += item.obtenerImpuestoItem();
+        }
+
+        return impuestoTotal;
+    }
 }

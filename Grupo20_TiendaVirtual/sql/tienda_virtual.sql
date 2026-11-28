@@ -27,14 +27,54 @@ CREATE TABLE IF NOT EXISTS cliente (
 );
 
 CREATE TABLE IF NOT EXISTS carrito (
+    id_cliente VARCHAR(20) NOT NULL,
     isbn VARCHAR(13) NOT NULL,
-    id_cliente VARCHAR(20),
     cantidad INT NOT NULL,
-    PRIMARY KEY (isbn)
+    PRIMARY KEY (id_cliente, isbn)
 );
+
+DELETE FROM carrito WHERE id_cliente IS NULL;
+
+ALTER TABLE carrito DROP FOREIGN KEY IF EXISTS fk_carrito_cliente;
+
+ALTER TABLE carrito
+    MODIFY id_cliente VARCHAR(20) NOT NULL,
+    ADD INDEX IF NOT EXISTS idx_carrito_isbn (isbn),
+    DROP PRIMARY KEY,
+    ADD PRIMARY KEY (id_cliente, isbn);
 
 ALTER TABLE carrito
     ADD CONSTRAINT fk_carrito_libro FOREIGN KEY IF NOT EXISTS (isbn)
-        REFERENCES libros (isbn) ON DELETE CASCADE ON UPDATE CASCADE,
+        REFERENCES libros (isbn) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE carrito
     ADD CONSTRAINT fk_carrito_cliente FOREIGN KEY IF NOT EXISTS (id_cliente)
-        REFERENCES cliente (id) ON DELETE SET NULL ON UPDATE CASCADE;
+        REFERENCES cliente (id) ON DELETE CASCADE ON UPDATE CASCADE;
+
+CREATE TABLE IF NOT EXISTS compra (
+    numero INT NOT NULL,
+    id_cliente VARCHAR(20) NOT NULL,
+    nombre_cliente VARCHAR(100) NOT NULL,
+    fecha DATETIME NOT NULL,
+    metodo_pago VARCHAR(40) NOT NULL,
+    subtotal DOUBLE NOT NULL,
+    impuestos DOUBLE NOT NULL,
+    porcentaje_descuento DOUBLE NOT NULL,
+    descuento DOUBLE NOT NULL,
+    total DOUBLE NOT NULL,
+    PRIMARY KEY (numero),
+    INDEX idx_compra_cliente (id_cliente)
+);
+
+CREATE TABLE IF NOT EXISTS detalle_compra (
+    numero_compra INT NOT NULL,
+    isbn VARCHAR(13) NOT NULL,
+    titulo VARCHAR(150) NOT NULL,
+    cantidad INT NOT NULL,
+    precio_unitario DOUBLE NOT NULL,
+    iva_porcentaje DOUBLE NOT NULL,
+    PRIMARY KEY (numero_compra, isbn),
+    INDEX idx_detalle_isbn (isbn),
+    CONSTRAINT fk_detalle_compra FOREIGN KEY (numero_compra)
+        REFERENCES compra (numero) ON DELETE CASCADE
+);

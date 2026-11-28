@@ -1,6 +1,8 @@
 package co.edu.uptc.tienda.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -19,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
@@ -43,6 +46,7 @@ public class PanelCarrito extends JPanel {
     private JButton btnCambiar;
     private JButton btnEliminar;
     private JButton btnVaciar;
+    private JButton btnFinalizar;
     private JTable tablaItems;
     private DefaultTableModel modeloTabla;
     private JLabel lblSubtotal;
@@ -60,11 +64,13 @@ public class PanelCarrito extends JPanel {
         btnEliminar.setActionCommand(EventosCarrito.ELIMINAR);
         btnVaciar.setActionCommand(EventosCarrito.VACIAR);
         cmbClientes.setActionCommand(EventosCarrito.CLIENTE);
+        btnFinalizar.setActionCommand(EventosCarrito.FINALIZAR);
         btnAgregar.addActionListener(eventos);
         btnCambiar.addActionListener(eventos);
         btnEliminar.addActionListener(eventos);
         btnVaciar.addActionListener(eventos);
         cmbClientes.addActionListener(eventos);
+        btnFinalizar.addActionListener(eventos);
     }
 
     private void initComponents() {
@@ -144,7 +150,12 @@ public class PanelCarrito extends JPanel {
         panelTotales.add(lblDescuento);
         panelTotales.add(new JLabel("Total:"));
         panelTotales.add(lblTotal);
-        panelSur.add(panelTotales, BorderLayout.EAST);
+
+        JPanel panelCompra = new JPanel(new BorderLayout(5, 5));
+        btnFinalizar = new JButton(EventosCarrito.FINALIZAR);
+        panelCompra.add(panelTotales, BorderLayout.CENTER);
+        panelCompra.add(btnFinalizar, BorderLayout.SOUTH);
+        panelSur.add(panelCompra, BorderLayout.EAST);
 
         add(panelSur, BorderLayout.SOUTH);
     }
@@ -223,6 +234,40 @@ public class PanelCarrito extends JPanel {
 
     public void mostrarAlerta(String titulo, String mensaje) {
         JOptionPane.showMessageDialog(this, mensaje, titulo, JOptionPane.WARNING_MESSAGE);
+    }
+
+    public String pedirCorreo(String nombreCliente) {
+        return JOptionPane.showInputDialog(this, "Para pagar, " + nombreCliente
+                + " debe iniciar sesión.\nEscriba su correo electrónico:", "Iniciar sesión",
+                JOptionPane.QUESTION_MESSAGE);
+    }
+
+    public String pedirMetodoPago(String resumen, String[] metodos) {
+        JPanel contenido = new JPanel(new BorderLayout(5, 10));
+        contenido.add(crearTexto(resumen, 360, 220), BorderLayout.CENTER);
+        JPanel panelPago = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        JComboBox<String> cmbMetodos = new JComboBox<>(metodos);
+        panelPago.add(new JLabel("Método de pago (simulado):"));
+        panelPago.add(cmbMetodos);
+        contenido.add(panelPago, BorderLayout.SOUTH);
+        String[] opciones = { "Confirmar compra", "Cancelar" };
+        int respuesta = JOptionPane.showOptionDialog(this, contenido, "Resumen del pedido",
+                JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, opciones, opciones[0]);
+        return respuesta == 0 ? (String) cmbMetodos.getSelectedItem() : null;
+    }
+
+    public void mostrarRecibo(String recibo) {
+        JOptionPane.showMessageDialog(this, crearTexto(recibo, 560, 330), "Recibo de compra",
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private JScrollPane crearTexto(String texto, int ancho, int alto) {
+        JTextArea area = new JTextArea(texto);
+        area.setEditable(false);
+        area.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        JScrollPane scroll = new JScrollPane(area);
+        scroll.setPreferredSize(new Dimension(ancho, alto));
+        return scroll;
     }
 
     public boolean confirmar(String mensaje) {

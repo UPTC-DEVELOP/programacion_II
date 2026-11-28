@@ -36,6 +36,9 @@ public class EventosCliente implements ActionListener {
     public EventosCliente(PanelCliente panelCliente, ClienteConfig clienteConfig) {
         this.panelCliente = panelCliente;
         this.clienteConfig = clienteConfig;
+        if (clienteConfig.getAvisoCarga() != null) {
+            panelCliente.mostrarAlerta("Clientes", clienteConfig.getAvisoCarga());
+        }
     }
 
     @Override
